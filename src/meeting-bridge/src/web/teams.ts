@@ -147,20 +147,36 @@ function beginWhenReady(c: Call): void {
 async function shareBoard(c: Call): Promise<void> {
   if (sharing) return;
   sharing = true;
-  try {
-    await c.startScreenSharing(new LocalVideoStream(board.stream()));
-  } catch (e) {
-    sharing = false;
-    // Sharing can be refused right after connecting; retry until it takes.
-    setTimeout(() => void shareBoard(c), 5000);
-    send({
-      type: 'callState',
-      state: 'Info',
-      message: `Could not share the board: ${e instanceof Error ? e.message : 'unknown error'}`,
-    });
-  }
+  let last = '';
+  const note = (message: string): void => {
+    console.log(`[share] ${message}`);
+    if (message !== last) send({ type: 'callState', state: 'Info', message });
+    last = message;
+  };
+  // Supervisor: keep trying until Teams reports the share is on, and restart it if it drops. Sharing is best effort.
+  const tick = async (): Promise<void> => {
+    if (c.state !== 'Connected') return;
+    if (c.isScreenSharingOn) {
+      note('Sharing the standup board.');
+      return;
+    }
+    try {
+      note('Starting the board share.');
+      await c.startScreenSharing(new LocalVideoStream(board.stream()));
+      note(
+        c.isScreenSharingOn
+          ? 'Sharing the standup board.'
+          : 'Share requested; waiting for Teams to confirm.',
+      );
+    } catch (e) {
+      note(`Could not share the board: ${e instanceof Error ? e.message : 'unknown error'}`);
+      await c.stopScreenSharing().catch(() => undefined);
+    }
+  };
+  await new Promise((r) => setTimeout(r, 2000));
+  void tick();
+  setInterval(() => void tick(), 5000);
 }
-
 async function join(): Promise<void> {
   report('Joining', 'Requesting an ACS identity.');
   const credential = new AzureCommunicationTokenCredential(await fetchAcsToken());
