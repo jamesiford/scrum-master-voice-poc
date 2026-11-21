@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Domain: BCL only. Enforced by Mcm.Scrum.ArchitectureTests. -->
+</Project>

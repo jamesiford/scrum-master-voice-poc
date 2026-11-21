@@ -1,0 +1,13 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.5">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>mcm-scrum-apphost</UserSecretsId>
+    <!-- DEMO: the CLI bundle is not needed for local runs. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.JavaScript" />
+    <ProjectReference Include="..\Mcm.Scrum.Api\Mcm.Scrum.Api.csproj" />
+  </ItemGroup>
+</Project>

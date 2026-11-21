@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simulated Room - MCM Scrum Agent</title>
+    <link rel="icon" href="data:," />
+    <style>
+      :root {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1f2933;
+      }
+      body {
+        margin: 0;
+        background: #f4f6f8;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 20px;
+        background: #fff;
+        border-bottom: 1px solid #d9dee3;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      #status {
+        font-size: 13px;
+        padding: 2px 10px;
+        border-radius: 10px;
+        background: #e4e7eb;
+      }
+      #status.ok {
+        background: #d1f0d8;
+      }
+      #status.bad {
+        background: #f8d4d4;
+      }
+      #banner {
+        display: none;
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+      #banner.error {
+        display: block;
+        background: #fde2e2;
+        color: #7a1c1c;
+      }
+      #banner.info {
+        display: block;
+        background: #e0f0ff;
+        color: #0c4a78;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 280px 1fr 300px;
+        gap: 16px;
+        padding: 16px 20px;
+      }
+      section {
+        background: #fff;
+        border: 1px solid #d9dee3;
+        border-radius: 8px;
+        padding: 12px;
+      }
+      h2 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #52606d;
+        margin: 0 0 8px;
+      }
+      .member {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px;
+        border-radius: 6px;
+        border: 2px solid transparent;
+      }
+      .member.speaking {
+        border-color: #2f80ed;
+        background: #eaf3ff;
+      }
+      .member.absent {
+        opacity: 0.55;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .tag {
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 8px;
+        background: #e4e7eb;
+        margin-left: 4px;
+      }
+      #captions {
+        height: 420px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .caption {
+        padding: 8px 10px;
+        border-radius: 8px;
+        max-width: 88%;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .caption.agent {
+        background: #eaf3ff;
+        align-self: flex-start;
+      }
+      .caption.participant {
+        background: #f0f2f5;
+        align-self: flex-end;
+      }
+      .caption b {
+        display: block;
+        font-size: 12px;
+        color: #52606d;
+      }
+      #timebox {
+        height: 10px;
+        border-radius: 5px;
+        background: #e4e7eb;
+        overflow: hidden;
+        margin: 6px 0;
+      }
+      #timebar {
+        height: 100%;
+        background: #2f80ed;
+        width: 100%;
+        transition: width 1s linear;
+      }
+      #timebar.warn {
+        background: #e8a317;
+      }
+      button {
+        font: inherit;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #9aa5b1;
+        background: #fff;
+        cursor: pointer;
+        margin: 2px 4px 2px 0;
+      }
+      button.primary {
+        background: #2f80ed;
+        color: #fff;
+        border-color: #2f80ed;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #parking li {
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 6px 0;
+        font-size: 14px;
+      }
+      small {
+        color: #52606d;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Simulated Room</h1>
+      <span id="status">Connecting...</span>
+      <span id="floor"></span>
+    </header>
+    <div id="banner" role="alert"></div>
+    <main>
+      <section>
+        <h2>Team</h2>
+        <div id="roster"></div>
+        <div class="row">
+          <label for="me">Who am I?</label>
+          <select id="me"></select>
+        </div>
+        <div class="row">
+          <input type="checkbox" id="autopilot" /><label for="autopilot"
+            >Autopilot (cast plays my lines)</label
+          >
+        </div>
+        <small>Cast members speak with synthetic voices. Absent members never speak.</small>
+      </section>
+      <section>
+        <h2>Conversation</h2>
+        <div id="captions" aria-live="polite"></div>
+      </section>
+      <section>
+        <h2>Timebox</h2>
+        <div id="timebox"><div id="timebar"></div></div>
+        <div class="row"><span id="remaining">--:--</span></div>
+        <h2>Controls</h2>
+        <div>
+          <button id="start" class="primary" disabled>Start standup</button>
+          <button id="takeover" disabled>I'll take it from here</button>
+          <button id="skip" disabled>Skip speaker</button>
+          <button id="mute" disabled>Mute agent</button>
+          <button id="end" disabled>End</button>
+        </div>
+        <div class="row">
+          <input type="checkbox" id="micopen" checked /><label for="micopen">Microphone open</label>
+        </div>
+        <small id="mictip"
+          >Half duplex: your mic is paused while the agent or cast speak, so speakers do not echo
+          into it.</small
+        >
+        <h2 style="margin-top: 14px">Parking lot</h2>
+        <ul id="parking"></ul>
+        <h2>Latency</h2>
+        <div id="latency">p50 -- ms, p95 -- ms</div>
+        <small>End of speech to first agent audio.</small>
+      </section>
+    </main>
+    <script type="module" src="/static/room.js"></script>
+  </body>
+</html>

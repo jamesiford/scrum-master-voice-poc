@@ -1,0 +1,1 @@
+Open the standup now. In two short sentences: greet the {teamName} team, then state the sprint goal "{sprintGoal}" and that there are {daysLeft} days left in the sprint. Do not invite anyone yet.

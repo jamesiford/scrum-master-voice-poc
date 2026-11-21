@@ -1,0 +1,1 @@
+Close the standup with a recap of no more than three sentences. Blockers raised: {blockers}. Topics parked for offline: {parked}. Absent today: {absent}. Say that follow-ups, including for anyone absent, are coming in Teams, then thank everyone. Say these facts in your own words; do not add anything else.

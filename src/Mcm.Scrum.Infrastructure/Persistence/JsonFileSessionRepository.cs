@@ -1,0 +1,64 @@
+using Mcm.Scrum.Application.Abstractions.Ports;
+using Mcm.Scrum.Domain.Standups;
+using Microsoft.Extensions.Options;
+
+namespace Mcm.Scrum.Infrastructure.Persistence;
+
+/// <summary>Stores sessions in a single JSON file. Good enough for the PoC and the Simulated Room.</summary>
+/// <remarks>PROD: replaced by <c>CosmosSessionRepository</c> (Store__Mode=Cosmos) behind the same port.</remarks>
+public sealed class JsonFileSessionRepository : ISessionRepository, IDisposable
+{
+    private readonly string _path;
+    private readonly SemaphoreSlim _gate = new(1, 1);
+
+    /// <summary>Initializes a new instance of the <see cref="JsonFileSessionRepository"/> class.</summary>
+    /// <param name="options">Store options.</param>
+    public JsonFileSessionRepository(IOptions<StoreOptions> options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        _path = Path.Combine(options.Value.DataPath, "sessions.json");
+    }
+
+    /// <inheritdoc />
+    public async Task<StandupSession?> GetAsync(Guid id, CancellationToken ct) =>
+        (await ListAsync(ct)).FirstOrDefault(s => s.Id == id);
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<StandupSession>> ListAsync(CancellationToken ct)
+    {
+        await _gate.WaitAsync(ct);
+        try
+        {
+            return (await JsonFile.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct))
+                .Select(StandupSession.Restore)
+                .OrderByDescending(s => s.CreatedAt)
+                .ToList();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task SaveAsync(StandupSession session, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        await _gate.WaitAsync(ct);
+        try
+        {
+            var records = await JsonFile.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct);
+            records.RemoveAll(r => r.Id == session.Id);
+            records.Add(session.ToSnapshot());
+            await JsonFile.WriteAsync(_path, records, ct);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose() => _gate.Dispose();
+
+}

@@ -1,0 +1,11 @@
+using Mcm.Scrum.Domain.Standups;
+
+namespace Mcm.Scrum.Application.Features.Standups;
+
+/// <summary>A session in the Sessions list.</summary>
+/// <param name="Id">Session id.</param>
+/// <param name="TeamId">Team id.</param>
+/// <param name="Status">Lifecycle status.</param>
+/// <param name="CreatedAt">When it was prepared.</param>
+/// <param name="FlaggedItems">Number of open items with at least one flag.</param>
+public sealed record SessionSummaryDto(Guid Id, string TeamId, StandupStatus Status, DateTimeOffset CreatedAt, int FlaggedItems);

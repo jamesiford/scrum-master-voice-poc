@@ -1,0 +1,1 @@
+Invite {firstName} to give their update. Thank the previous speaker only if there was one, in four words or fewer. Ask {firstName} what they finished, what is next, and whether anything is blocking them. Keep it to two sentences.

@@ -1,0 +1,70 @@
+using Mcm.Scrum.Application.Abstractions.Ports;
+using Mcm.Scrum.Domain.FollowUps;
+using Microsoft.Extensions.Options;
+
+namespace Mcm.Scrum.Infrastructure.Persistence;
+
+/// <summary>Stores follow-ups in a JSON file.</summary>
+/// <remarks>PROD: <c>CosmosFollowUpRepository</c> behind the same port.</remarks>
+public sealed class JsonFileFollowUpRepository : IFollowUpRepository, IDisposable
+{
+    private readonly string _path;
+    private readonly SemaphoreSlim _gate = new(1, 1);
+
+    /// <summary>Initializes a new instance of the <see cref="JsonFileFollowUpRepository"/> class.</summary>
+    /// <param name="options">Store options.</param>
+    public JsonFileFollowUpRepository(IOptions<StoreOptions> options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        _path = Path.Combine(options.Value.DataPath, "followups.json");
+    }
+
+    /// <inheritdoc />
+    public async Task<FollowUp?> GetAsync(Guid id, CancellationToken ct) =>
+        (await ReadAllAsync(ct)).FirstOrDefault(f => f.Id == id);
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<FollowUp>> ListAsync(string teamId, FollowUpStatus? status, CancellationToken ct) =>
+        (await ReadAllAsync(ct)).Where(f => f.TeamId == teamId && (status is null || f.Status == status)).ToList();
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<FollowUp>> ListBySessionAsync(Guid sessionId, CancellationToken ct) =>
+        (await ReadAllAsync(ct)).Where(f => f.SessionId == sessionId).ToList();
+
+    /// <inheritdoc />
+    public async Task SaveAsync(FollowUp followUp, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(followUp);
+        await _gate.WaitAsync(ct);
+        try
+        {
+            var records = await JsonFile.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct);
+            records.RemoveAll(r => r.Id == followUp.Id);
+            records.Add(followUp.ToSnapshot());
+            await JsonFile.WriteAsync(_path, records, ct);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose() => _gate.Dispose();
+
+    private async Task<List<FollowUp>> ReadAllAsync(CancellationToken ct)
+    {
+        await _gate.WaitAsync(ct);
+        try
+        {
+            return (await JsonFile.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct))
+                .Select(FollowUp.Restore)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToList();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+}

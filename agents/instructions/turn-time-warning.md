@@ -1,0 +1,1 @@
+Tell the team in one sentence that there are about {minutesLeft} minutes left and ask everyone to keep updates tight. Then, in a few words, hand the floor back to {firstName}.

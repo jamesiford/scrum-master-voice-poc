@@ -1,0 +1,127 @@
+using Mcm.Scrum.Application.Abstractions.Messaging;
+using Mcm.Scrum.Application.Abstractions.Ports;
+using Mcm.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
+using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Mcm.Scrum.Application.Tests.TestDoubles;
+using Mcm.Scrum.Domain.Common;
+using Mcm.Scrum.Domain.FollowUps;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Mcm.Scrum.Application.Tests.Features.FollowUps;
+
+public sealed class ApplyApprovedChangesTests : IAsyncDisposable
+{
+    private readonly FakeWriter _writer = new();
+    private readonly InMemoryFollowUpRepository _repo = new();
+    private readonly ServiceProvider _sp;
+
+    public ApplyApprovedChangesTests()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddApplication();
+        services.AddSingleton<IFollowUpRepository>(_repo);
+        services.AddSingleton<IWorkItemWriter>(_writer);
+        services.AddSingleton<IClock>(new FixedClock(StandupHarness.Now));
+        _sp = services.BuildServiceProvider();
+    }
+
+    private ISender Sender => _sp.GetRequiredService<ISender>();
+
+    [Fact]
+    public async Task Apply_Pending_IsRefusedAndNothingIsWritten()
+    {
+        var id = await AddAsync();
+
+        var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.Equal(ErrorType.NotApproved, result.Error!.Type);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Apply_Rejected_IsRefusedAndNothingIsWritten()
+    {
+        var id = await AddAsync();
+        await Sender.Send(new RejectFollowUpCommand(id, "Dana"));
+
+        var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.Equal(ErrorType.NotApproved, result.Error!.Type);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Approve_WithoutApproverName_IsInvalidAndNothingIsWritten()
+    {
+        var id = await AddAsync();
+
+        var result = await Sender.Send(new ApproveFollowUpCommand(id, " "));
+
+        Assert.False(result.IsSuccess);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Approve_Pending_WritesOnceWithAttributionAndMarksApplied()
+    {
+        var id = await AddAsync();
+
+        var approved = await Sender.Send(new ApproveFollowUpCommand(id, "Dana"));
+        var again = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.True(approved.IsSuccess);
+        Assert.True(again.IsSuccess);
+        var written = Assert.Single(_writer.Written);
+        Assert.Equal("Dana", written.ApprovedBy);
+        Assert.Contains("Approved by Dana in Teams", written.Attribution, StringComparison.Ordinal);
+        Assert.Equal(FollowUpStatus.Applied, (await _repo.GetAsync(id, default))!.Status);
+    }
+
+    [Fact]
+    public async Task Apply_WriterFails_StaysApprovedWithErrorAndRetrySucceeds()
+    {
+        var id = await AddAsync();
+        _writer.Fail = true;
+        await Sender.Send(new ApproveFollowUpCommand(id, "Dana"));
+        var stored = await _repo.GetAsync(id, default);
+        Assert.Equal(FollowUpStatus.Approved, stored!.Status);
+        Assert.NotNull(stored.ApplyError);
+
+        _writer.Fail = false;
+        var retry = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.True(retry.IsSuccess);
+        Assert.Equal(FollowUpStatus.Applied, (await _repo.GetAsync(id, default))!.Status);
+    }
+
+    public ValueTask DisposeAsync() => _sp.DisposeAsync();
+
+    private async Task<Guid> AddAsync()
+    {
+        var followUp = FollowUp.Create(
+            Guid.NewGuid(), "t1", Guid.NewGuid(), "m-priya", FollowUpKind.Followup, "msg",
+            [new ProposedChange(1, ChangeOp.Comment, "Back on track", "said so")], new DateOnly(2026, 1, 8), StandupHarness.Now);
+        await _repo.SaveAsync(followUp, default);
+        return followUp.Id;
+    }
+
+    private sealed class FakeWriter : IWorkItemWriter
+    {
+        public List<ApprovedChange> Written { get; } = [];
+
+        public bool Fail { get; set; }
+
+        public Task<Result> ApplyAsync(ApprovedChange change, CancellationToken ct)
+        {
+            if (Fail)
+            {
+                return Task.FromResult(Result.Failure(Error.ExternalRejected("ado.write_rejected", "rejected")));
+            }
+
+            Written.Add(change);
+            return Task.FromResult(Result.Success());
+        }
+    }
+}

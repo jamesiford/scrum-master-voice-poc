@@ -1,0 +1,29 @@
+using FluentValidation;
+using Mcm.Scrum.Application.Abstractions.Messaging;
+using Mcm.Scrum.Application.Behaviors;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Mcm.Scrum.Application;
+
+/// <summary>Registers the Application layer.</summary>
+public static class DependencyInjection
+{
+    /// <summary>
+    /// Registers the mediator, handlers, validators and pipeline behaviours.
+    /// Behaviour order is fixed: Logging, Validation, ExceptionMapping (outermost first).
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The same collection.</returns>
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        var assembly = typeof(DependencyInjection).Assembly;
+        services.AddMediator(assembly);
+        services.AddScoped<Tools.IScrumTools, Tools.ScrumTools>();
+        services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ExceptionMappingBehavior<,>));
+        return services;
+    }
+}

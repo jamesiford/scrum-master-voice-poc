@@ -1,0 +1,1 @@
+Say that {firstName} is not here today and that you will follow up with them in Teams. Then say you will move on. One or two short sentences.

@@ -1,0 +1,1 @@
+Two or more people have been discussing a side topic for a while. Politely interrupt in one sentence: say "Let's take that offline" and that you will add it to the parking lot, then ask {firstName} to carry on.

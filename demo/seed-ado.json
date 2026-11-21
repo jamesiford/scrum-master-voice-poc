@@ -1,0 +1,36 @@
+{
+  "project": "MCM-Scrum-Demo",
+  "team": "Payments (Demo)",
+  "areaPath": "Payments",
+  "iteration": "Demo Sprint",
+  "sprintLengthDays": 14,
+  "daysElapsed": 7,
+  "sprintGoal": "Customers can pay by card and failed payments retry automatically.",
+  "members": [
+    { "key": "priya", "displayName": "Priya S.", "pronunciation": "PREE-ya", "order": 1 },
+    { "key": "marcus", "displayName": "Marcus O.", "pronunciation": "MAR-kus", "order": 2 },
+    { "key": "aisha", "displayName": "Aisha K.", "pronunciation": "AY-ee-sha", "order": 3 },
+    { "key": "tom", "displayName": "Tom W.", "pronunciation": "Tom", "order": 4 },
+    { "key": "lena", "displayName": "Lena R.", "pronunciation": "LAY-na", "order": 5 }
+  ],
+  "workItems": [
+    { "key": "retry-story", "type": "User Story", "title": "Payment retry with exponential backoff", "state": "Active", "points": 5, "owner": "priya", "tags": ["demo-age-3"] },
+    { "key": "settlement-validation", "type": "User Story", "title": "Settlement file validation", "state": "Active", "points": 8, "owner": "marcus", "tags": ["demo-age-3"] },
+    { "key": "plan-summary", "type": "User Story", "title": "Customer payment plan summary page", "state": "Active", "points": 5, "owner": "aisha", "tags": [] },
+    { "key": "idempotency", "type": "User Story", "title": "Idempotency key on payment requests", "state": "Active", "points": 5, "owner": "tom", "tags": [] },
+    { "key": "pci-exceptions", "type": "User Story", "title": "Update PCI scan exceptions", "state": "Active", "points": 3, "owner": "lena", "tags": [] },
+    { "key": "reminder-sms", "type": "User Story", "title": "Payment plan reminder SMS", "state": "New", "points": 3, "owner": "tom", "tags": [] },
+    { "key": "ledger-refactor", "type": "User Story", "title": "Refactor ledger reconciliation job", "state": "New", "points": 5, "owner": null, "tags": [] },
+    { "key": "dispute-evidence", "type": "User Story", "title": "Dispute workflow: attach evidence", "state": "New", "points": 5, "owner": null, "tags": [] },
+    { "key": "tokenisation", "type": "User Story", "title": "Add card tokenisation to checkout", "state": "Closed", "points": 8, "owner": "tom", "tags": [] },
+    { "key": "csv-export", "type": "User Story", "title": "Export statements as CSV", "state": "Closed", "points": 3, "owner": "lena", "tags": [] },
+    { "key": "status-api", "type": "User Story", "title": "Payment status API v2", "state": "Closed", "points": 3, "owner": "aisha", "tags": [] },
+    { "key": "gateway-timeouts", "type": "Bug", "title": "Sandbox gateway timeouts on retry", "state": "Active", "points": 2, "owner": "marcus", "tags": ["Blocked", "demo-age-4"] },
+    { "key": "partial-refund-rounding", "type": "Bug", "title": "Rounding error on partial refunds", "state": "New", "points": 2, "owner": "lena", "tags": [] },
+    { "key": "retry-load-test", "type": "Task", "title": "Write retry load test", "state": "Active", "remaining": 4, "owner": "priya", "finishInDays": -2, "tags": [] },
+    { "key": "gateway-logging", "type": "Task", "title": "Add structured logging to gateway client", "state": "Active", "remaining": 3, "owner": "tom", "tags": [] },
+    { "key": "settlement-schema-review", "type": "Task", "title": "Review settlement schema change", "state": "Active", "remaining": 6, "owner": "marcus", "tags": ["demo-quiet-3"] },
+    { "key": "batch-runbook", "type": "Task", "title": "Update runbook for batch failure", "state": "New", "remaining": 2, "owner": "aisha", "tags": [] },
+    { "key": "qa-demo-data", "type": "Task", "title": "Prepare demo data for QA", "state": "New", "remaining": 2, "owner": "lena", "tags": [] }
+  ]
+}

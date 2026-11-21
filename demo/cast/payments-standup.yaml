@@ -1,0 +1,42 @@
+# Scripted participants for the Simulated Room (SPEC 7.3).
+# The first line without `when` is a member's opening update. Later lines run only when the agent's question
+# contains one of the `when` keywords, so unrelated agent turns get no reply.
+# m-priya is normally the human presenter; her lines are used when the room runs with ?autopilot=1.
+members:
+  - memberId: m-priya
+    voice: en-IN-NeerjaNeural
+    turns:
+      - say: "Yesterday I finished the refund API tests. Today I'm still working on the payment retry story. No blockers."
+      - when: ["track", "thursday", "stale", "active"]
+        say: "It slipped because the sandbox was down. I should finish it tomorrow."
+  - memberId: m-marcus
+    voice: en-US-AndrewNeural
+    turns:
+      - say: "Yesterday I reviewed the settlement schema. Today I'm continuing the settlement file validation. I'm blocked on bug 12. The sandbox gateway keeps timing out, and I need access to the platform team's staging gateway."
+      - when: ["unblock", "platform", "access", "who", "help", "needed", "blocked", "bug", "staging", "waiting", "status"]
+        say: "The platform team lead said they can grant me staging access today. I'm just waiting for the confirmation."
+  - memberId: m-aisha
+    voice: en-GB-SoniaNeural
+    turns:
+      - say: "Yesterday I shipped the payment status API version two. Today I'm on the payment plan summary page. Nothing blocking me."
+      - when: ["slow", "risk", "next", "step"]
+        say: "Only design feedback, but I can keep going without it."
+  - memberId: m-tom
+    voice: en-US-GuyNeural
+    turns:
+      - say: "Yesterday I finished card tokenisation. Today I'm adding idempotency keys to payment requests. Nothing blocking me."
+      - when: ["slow", "risk", "way", "riskiest"]
+        say: "The riskiest part is how it interacts with retries, so I'll test that first."
+  - memberId: m-lena
+    voice: en-US-JennyNeural
+    absent: true
+    turns: []
+
+# After Marcus's first line, two teammates start a side discussion. Long enough to cross the parking-lot threshold.
+sidebar:
+  after: m-marcus
+  lines:
+    - memberId: m-tom
+      say: "Sorry to jump in, Marcus. We hit the same gateway timeouts last sprint when we upgraded the TLS library, and it took us days to track down."
+    - memberId: m-aisha
+      say: "Right, I think the root cause was the connection pool settings. We should compare the gateway configuration between sandbox and staging, and also check whether the sandbox certificate was rotated."

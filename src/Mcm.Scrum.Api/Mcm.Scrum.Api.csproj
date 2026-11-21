@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\Mcm.Scrum.Application\Mcm.Scrum.Application.csproj" />
+    <ProjectReference Include="..\Mcm.Scrum.Infrastructure\Mcm.Scrum.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

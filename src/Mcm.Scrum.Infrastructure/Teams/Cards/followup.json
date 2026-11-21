@@ -1,0 +1,16 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "body": [
+    { "type": "TextBlock", "text": "${title}", "weight": "Bolder", "size": "Medium", "wrap": true },
+    { "type": "TextBlock", "text": "${text}", "wrap": true },
+    { "type": "FactSet", "id": "facts", "facts": [] },
+    { "type": "Input.Text", "id": "approver", "placeholder": "Your name (approver)" }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "Approve", "verb": "approve", "style": "positive", "data": { "followUpId": "${followUpId}" } },
+    { "type": "Action.Execute", "title": "Edit", "verb": "edit", "data": { "followUpId": "${followUpId}" } },
+    { "type": "Action.Execute", "title": "Reject", "verb": "reject", "style": "destructive", "data": { "followUpId": "${followUpId}" } }
+  ]
+}
