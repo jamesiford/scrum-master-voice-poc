@@ -4,7 +4,19 @@
 >
 > **Companions:** *MCM AI Scrum Master Agent - Solution Architecture* (the why and the options) and *MCM AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
-> **Owner:** James Ford (Microsoft). **Version 0.3**, November 20, 2026. Status: draft for account-team review.
+> **Owner:** James Ford (Microsoft). **Version 0.4 (as built)**, November 21, 2026. Status: updated to describe what was actually built. Companion: *PoC As-Built* (`AS-BUILT.md`) and the decision records (`adr/0001` to `0008`).
+
+### What changed in v0.4 (as built)
+
+The PoC is built and deployed to Azure (M0 to M8, except Work IQ). This version updates the spec so it describes **what exists**, not only what was planned. Changes are marked **As built** in the sections below. The headline differences:
+
+- **Demo scale:** three roster members (Daniel Park, Maya Lin, Admin) matching real tenant users, not five. Seed data is 18 work items.
+- **The real Teams meeting works** end to end through ACS, including agent audio (a fake microphone device is required for headless Chromium, ADR 0007) and a **screen-shared standup board**.
+- **Reactive, goal-driven orchestration** (ADR 0008): the agent handles chime-ins, members stepping away (skip and circle back), silence (present but no response, different from absent), what-to-report questions, item questions, corrections that retract earlier statements, and one member giving another's update. Decisions are made by plain rules in code; the model only phrases speech.
+- **Item linking is done in code**, never by a model guess, and clarifying questions are per flagged item (up to three per person).
+- **Portal** moved from Fluent UI to **Tailwind CSS v4** with a sidebar layout and 13 pages.
+- **M8 stretch** built: planning prep, retrospective, Story Writer, email outbox, model comparison, Foundry voice-agent mode. **Not built:** Work IQ real-time transcripts.
+- Hosted in **West US 3**; Cosmos DB is live (public network, Entra-only auth) because the tenant policy blocked the private default.
 
 ### What changed in v0.3
 
@@ -150,16 +162,16 @@ External dependencies:
 | Code quality | Central package management, `.editorconfig`, `TreatWarningsAsErrors`, XML docs required, `dotnet format`; ESLint + Prettier for TypeScript |
 | Local orchestration | **Aspire** AppHost (runs the API, bridge and portal together with one command; **VERIFY** current Aspire version). If Aspire blocks progress, fall back to a `Makefile` or `docker compose` |
 | Agents | **Microsoft Agent Framework (MAF)** for .NET, chat-client agents over Foundry model deployments via the **Foundry v2 SDK** (`Azure.AI.Projects` 2.x, Responses API) |
-| Voice | **Azure Voice Live API** over WebSocket `wss://<foundry-resource>.services.ai.azure.com/voice-live/realtime`, GA API version (**VERIFY**, `2026-07-15` assumed). Use the .NET Voice Live client if available, else `ClientWebSocket` |
-| Realtime model | Config-driven: `gpt-realtime` default; `GPT Live 1` and `Microsoft Realtime Flash 1` (preview) switchable for comparison (**VERIFY** model names) |
+| Voice | **Azure Voice Live API** over WebSocket `wss://<foundry-resource>.services.ai.azure.com/voice-live/realtime`, API version `2026-04-10` (**As built**; configurable). Use the .NET Voice Live client if available, else `ClientWebSocket` |
+| Realtime model | Config-driven: `gpt-realtime-2.1` default (**As built**); alternatives compared on the Models page. Optional Foundry voice-agent binding via `VoiceLive:AgentName` |
 | Reasoning model | A GPT mini-class deployment for reconciliation, follow-ups and summaries (config-driven) |
 | Teams and Copilot | **Microsoft 365 Agents SDK** for .NET (`Microsoft.Agents.*`), Azure Bot Service (single tenant), app package built with the Microsoft 365 Agents Toolkit |
 | Azure DevOps | REST API 7.x via `HttpClient` (WIQL, work items, iterations, team members, Analytics OData) |
 | Meeting bridge | **Node.js 22 + TypeScript**, Playwright headless Chromium hosting the ACS Calling Web SDK (pattern from Azure-Samples `voicelive-webapp/samples/teams-meeting-delegate`, **VERIFY**) |
 | Demo cast voices | Azure AI Speech text to speech (neural voices, varied accents) |
-| Admin portal | **React 19 + Vite + TypeScript + Fluent UI v9**, MSAL.js |
-| State | **Azure Cosmos DB for NoSQL** (serverless) in Azure; in-memory or JSON-file repository locally |
-| Hosting | **Azure Container Apps** (two apps: `api`, `bridge`) |
+| Admin portal | **React 19 + Vite + TypeScript + Tailwind CSS v4 + lucide-react**, MSAL.js and Container Apps Easy Auth (**As built**: Fluent UI was replaced for a modern layout) |
+| State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
+| Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
 | Telemetry | OpenTelemetry to Application Insights (basic) |
 | Tests | xUnit for Domain rules, state machine, handlers (hand-written fakes) and the mediator; NetArchTest.Rules architecture tests (**VERIFY** version; ArchUnitNET fallback); one Playwright end-to-end test of a scripted standup |
@@ -308,17 +320,8 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 | Follow-ups | `ProposeAdoChangeCommand`, `EscalateBlockerCommand`, `SendFollowUpsCommand`, `ApproveFollowUpCommand`, `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery` | `FollowUpApproved` -> `ApplyApprovedChangeHandler` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `BlockerEscalated` -> `NotifyScrumMasterHandler` |
 | Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (Teams/Copilot Q&A) | |
 | Demo | `ResetDemoCommand` | `GetDemoStatusQuery` | |
-| Health | | `GetHealthQuery` (M0; proves the pipeline, served at `GET /api/health`) | |
-
-Implemented so far: M0 `GetHealthQuery`; M1 `GetTeamQuery`, `UpdateTeamSettingsCommand`, `GetRosterQuery`, `SyncRosterCommand`, `PrepareStandupCommand`, `ListSessionsQuery`, `GetSessionQuery`; M2 commands `StartStandupCommand`, `EndStandupCommand`, `RecordStandupEventCommand`, `MarkAbsentCommand`, `ParkTopicCommand`, `CompleteSpeakerTurnCommand` (added: advances the speaking order), `RecordAgentLatencyCommand` (added: stores the latency metric) and queries `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetTimeRemainingQuery`, `GetSessionEventsQuery`, `GetTurnInstructionQuery` (added: renders a turn prompt from `agents/instructions/turn-*.md`), `GetFacilitatorInstructionsQuery` (added). `GetPreBriefQuery` is not needed: the pre-brief is part of `GetSessionQuery`. `ControlStandupCommand` arrives with the portal Live console in M5; until then the Simulated Room's own buttons talk to the gateway directly.
-
-M3b to M6 add: JoinMeetingCommand (Teams join via the bridge), ControlStandupCommand, GetLiveStateQuery, GetScheduleQuery, UpdateScheduleCommand, RunScheduleTickCommand, ListPromptsQuery, GetPromptQuery, UpdatePromptCommand, ResetDemoCommand, GetDemoStatusQuery, GetKpisQuery, GetSprintReportQuery, GetMonthlyReportQuery, AnswerTeamQuestionQuery, and domain events FollowUpRejected and FollowUpApplied (handled by UpdateFollowUpCardHandler). See ADR 0005 and 0006. M8 adds: GetPlanningPrepQuery, GetRetrospectiveQuery, DraftUserStoryQuery, ListParkedTopicsQuery, GetModelComparisonQuery, ListEmailsQuery (ADR 0007), RetractStandupEventCommand (corrections), UtteranceClassifier and deferral/circle-back (ADR 0008), GetWorkItemDetailsQuery (ItemMentions in Domain links answers to items in code; up to three clarifying questions per member, one per uncovered flagged item; tool get_work_item_details; teammates can ask about an item's due date, state or owner). Routes: GET /api/planning, GET /api/retrospective, GET /api/stories/topics, POST /api/stories/draft, GET /api/models, GET /api/emails.
-
-The facilitator model is offered only the read-only tools `get_member_brief` and `get_time_remaining` (ADR 0003). The other tools in 7.2 are implemented and dispatchable through `IScrumTools`, but the gateway, not the model, records events, parks topics and ends the standup.
 
 Voice Live tool names (section 7.2) map one-to-one onto these: for example `reconcile_update` -> `ReconcileUpdateQuery`, `mark_absent` -> `MarkAbsentCommand`, `propose_ado_change` -> `ProposeAdoChangeCommand`.
-
-M3 adds `ProposeAdoChangeCommand`, `SendFollowUpsCommand`, `ApproveFollowUpCommand`, `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` and queries `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListCardsQuery` (card outbox). Differences from the table above (ADR 0004): `EscalateBlockerCommand` is folded into `SendFollowUpsCommand` (escalation is a follow-up kind from `FollowUpPlanner`), so there is no `BlockerEscalated` event; the event handlers are `SendPreBriefCardOnStandupPrepared`, `PostRecapOnStandupEnded`, `SendFollowUpsOnStandupEnded` and `ApplyOnFollowUpApproved`; `UpdateFollowUpCardHandler` is deferred until the Teams bot exists.
 
 #### 6.1.5 Code standards summary
 
@@ -333,6 +336,14 @@ M3 adds `ProposeAdoChangeCommand`, `SendFollowUpsCommand`, `ApproveFollowUpComma
 | Well commented | Comments explain why, cite SPEC section or requirement id; `// PROD:`, `// VERIFY:`, `// DEMO:` markers; no bare TODOs or commented-out code | Code review; a lint rule banning `TODO` |
 
 
+### 6.1.5 Use cases added during the build (as built)
+
+Beyond the catalogue in 6.1.4, these were added (see ADRs 0004 to 0008):
+
+- **Teams, schedule and live control (M3b to M5):** `JoinMeetingCommand` (Teams join via the bridge), `ControlStandupCommand`, `GetLiveStateQuery`, `GetScheduleQuery`, `UpdateScheduleCommand`, `RunScheduleTickCommand`, `ListPromptsQuery`, `GetPromptQuery`, `UpdatePromptCommand`, `ResetDemoCommand`, `GetDemoStatusQuery`; domain events `FollowUpRejected` and `FollowUpApplied` (handled by `UpdateFollowUpCardHandler`).
+- **Reports (M6):** `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery`.
+- **M8:** `GetPlanningPrepQuery`, `GetRetrospectiveQuery`, `DraftUserStoryQuery`, `ListParkedTopicsQuery`, `GetModelComparisonQuery`, `ListEmailsQuery`.
+- **Reactive standup (ADR 0008):** `GetWorkItemDetailsQuery` (tool `get_work_item_details`), `RetractStandupEventCommand` (corrections). Domain rules: `ItemMentions` (links speech to items), `UtteranceClassifier`, `CoverageNotes`, `ReportingPriorities`, deferral and circle-back in `StandupSession`, and the extended `FloorControl`.
 ---
 
 ## 7. Components
@@ -342,16 +353,16 @@ M3 adds `ProposeAdoChangeCommand`, `SendFollowUpsCommand`, `ApproveFollowUpComma
 - The bullets below are **Api-layer adapters**: they map input to a command or query and contain no business logic.
 - **Voice gateway:** WebSocket `/ws/bridge/{sessionId}` (protocol in section 8), one Voice Live session per standup, floor control (section 11.3), tool dispatch to in-process tools.
 - **Bot:** `/api/messages` for Teams and Microsoft 365 Copilot (section 12).
-- **Scheduler:** a `BackgroundService` that checks schedules every 30 seconds. At T-10 minutes it runs `PrepareStandup` and sends the pre-brief card to the human Scrum Master. At T-1 minute it starts the session with the configured bridge.
+- **Scheduler:** a `BackgroundService` that checks schedules every 30 seconds. (**As built**: it ticks every 15 seconds.) At T-10 minutes it runs `PrepareStandup` and sends the pre-brief card to the human Scrum Master. At T-1 minute it starts the session with the configured bridge.
 - **Portal API:** section 14.
 
 ### 7.2 Scrum tools (in process)
-`get_next_speaker`, `get_member_brief`, `reconcile_update`, `record_event`, `park_topic`, `mark_absent`, `get_time_remaining`, `end_standup`, `propose_ado_change`, `escalate_blocker`, `get_kpis`. Implement them in the Application layer behind an `IScrumTools` interface; each tool sends the matching command or query (section 6.1.4) through `ISender` and holds no logic of its own. This keeps the tools exposable as an MCP server later without changing callers.
+`get_next_speaker`, `get_member_brief`, `reconcile_update`, `record_event`, `park_topic`, `mark_absent`, `get_time_remaining`, `end_standup`, `propose_ado_change`, `escalate_blocker`, `get_kpis`, `get_work_item_details` (**As built**: live state, owner, due date, overdue and points for one sprint item; used to answer teammates' questions). The facilitator model is offered only the read-only tools (`get_member_brief`, `get_time_remaining`, `get_work_item_details`); the gateway records events, parks topics and ends the standup itself. Implement them in the Application layer behind an `IScrumTools` interface; each tool sends the matching command or query (section 6.1.4) through `ISender` and holds no logic of its own. This keeps the tools exposable as an MCP server later without changing callers.
 
 ### 7.3 `meeting-bridge`
 Implements one protocol (section 8) in three modes:
 - **`simulated`** (build first): `/room/{sessionId}` is a browser page. It shows the roster with avatars, the current speaker, live captions, a timebox bar and the parking lot. The presenter picks "who am I" and talks with push-to-talk or open mic. It needs no ACS and runs locally.
-- **Demo cast** (part of `simulated`): `demo/cast/*.yaml` scripts the other participants. When the agent calls on a cast member, the bridge synthesises their line with Azure AI Speech and streams it as that participant. One presenter can then demo a five-person standup. Script lines can branch on keywords in the agent's question.
+- **Demo cast** (part of `simulated`): `demo/cast/*.yaml` scripts the other participants. When the agent calls on a cast member, the bridge synthesises their line with Azure AI Speech and streams it as that participant. One presenter can then demo a standup (**As built**: three people). Script lines can branch on keywords in the agent's question.
 
 ```yaml
 # demo/cast/payments-standup.yaml
@@ -371,7 +382,7 @@ members:
       - say: "I'm blocked on bug 4602. I need database access from the platform team."
 ```
 
-- **`acs`**: Playwright launches headless Chromium on an internal page using the ACS Calling Web SDK. The page joins the Teams meeting by `joinUrl` as "MCM Scrum Agent", captures incoming meeting audio and dominant-speaker events, and plays agent audio as its microphone stream (**VERIFY** the raw-audio APIs in the sample). It reports participants and lobby state.
+- **`acs`**: Playwright launches headless Chromium on an internal page using the ACS Calling Web SDK. The page joins the Teams meeting by `joinUrl` as "MCM Scrum Agent", captures incoming meeting audio and dominant-speaker events, and plays agent audio as its microphone stream (**VERIFY** the raw-audio APIs in the sample). It reports participants and lobby state. **As built:** the page also (a) shares a canvas-drawn standup board as the agent's screen (`call.startScreenSharing`, supervised and retried, status shown as Bridge events), (b) reports each participant's live speaking state so the gateway can attribute mixed audio to a member, and (c) matches Teams names to the roster by any word of the name ("System Administrator" matches "Admin"). Chromium is launched with `--use-fake-device-for-media-stream`, without which the ACS SDK ignores custom audio when no microphone exists.
 
 ### 7.4 `admin-portal`
 Section 13.
@@ -394,12 +405,11 @@ WebSocket `wss://{api}/ws/bridge/{sessionId}?mode=acs|simulated`, authenticated 
 { "type": "agentAudioState", "state": "speaking|idle" }
 { "type": "caption", "role": "agent|participant", "memberId": "m-014|null", "text": "..." }
 { "type": "ui", "state": { "currentSpeaker": "m-014", "remainingSec": 420, "parkingLot": ["..."] } }  // gateway -> simulated room
-{ "type": "control", "action": "mute|unmute|leave" }            // gateway -> bridge
-```
-
-**M2 additions to the protocol** (the Simulated Room needs them; ADR 0003): `hello` carries `standupMinutes` and `members[]`; `participants.items[]` carries `memberId` and `present`; the room sends `{ "type": "speaking", "memberId", "active" }` when a cast member starts or stops, `{ "type": "utterance", "memberId", "text", "durationMs" }` when a cast line ends (cast lines are injected as text; the presenter's real microphone audio goes through speech-to-text), `{ "type": "command", "action": "begin|takeover|release|mute|unmute|skip|end" }`, and `agentAudioState: idle` when its playback queue drains. The gateway adds `control: flush` (drop queued agent audio) and `info` / `error` messages with a plain `message` for the portal banner.
-
-```jsonc
+{ "type": "control", "action": "flush|mute|unmute|leave" }       // gateway -> bridge
+{ "type": "board", "speaker": "Maya Lin|null", "focus": 14, "items": [ { "id": 14, "title": "...", "flags": ["Overdue"], "covered": false, "owner": "..." } ], "team": [ { "name": "...", "total": 5, "covered": 2, "status": "away|no response|null" } ], "ended": false }  // gateway -> bridge (As built: drives the shared screen)
+{ "type": "speaking", "memberId": "m-maya", "active": true }       // bridge -> gateway (As built)
+{ "type": "callState", "state": "Joining|Lobby|Connected|Live|Ended|Info", "message": "..." }  // bridge -> gateway (As built: recorded as Bridge events)
+{ "type": "command", "action": "begin|takeover|release|mute|unmute|skip|end" }  // As built
 { "type": "error", "code": "LOBBY_TIMEOUT|JOIN_FAILED|MEDIA_FAILED", "message": "..." }
 ```
 
@@ -408,7 +418,8 @@ WebSocket `wss://{api}/ws/bridge/{sessionId}?mode=acs|simulated`, authenticated 
 1. Match `aadObjectId` to `members.aadObjectId`.
 2. Otherwise, fuzzy-match the display name.
 3. In the Simulated Room, use `localSpeaker`.
-4. In a standup, the person called on is the default attribution for speech during their turn. If someone else speaks for longer than three seconds, the agent confirms who it was.
+4. **As built:** in Teams, the member whose live `speaking` event overlaps the speech is the speaker; otherwise the person whose turn it is. A member speaking for a teammate is attributed to that teammate (and recorded as such).
+5. In a standup, the person called on is the default attribution for speech during their turn. If someone else speaks for longer than three seconds, the agent confirms who it was.
 
 ---
 
@@ -582,7 +593,11 @@ Any state -> Paused (portal mute)
 - **Timebox:** at 80 % of `standupMinutes` the agent warns; at 100 % the gateway moves to `Recap`.
 - **Late joiner:** if an absent member appears in `participants` before `Recap`, they go to the end of the speaking order.
 
+**As built (ADR 0008).** The state machine also has `Deferring` and these inputs and actions: `DeferCurrent` (a member cannot speak now), `DeferSpeaker` (skip and come back), `SpeakerSelected(CircleBack)`, and up to `MaxClarifications` (3) clarifying questions per member, one per uncovered flagged item. Silence before the first word is "present but no response" (deferred once, then final and noted in the follow-up), which is different from absent. A teammate starting to talk while the agent prepares a question makes the agent wait. The `UtteranceClassifier` (pure rules) decides whether speech is an update, step-away, proxy, what-to-report, item question, correction, out-of-turn update, back, or chatter, so it adds no latency.
+
 Implement it as a pure, table-tested class with no I/O.
+
+![Standup flow as built](MCM-Scrum-Agent-PoC-Standup-Flow-As-Built.png)
 
 ---
 
@@ -626,8 +641,9 @@ Implement it as a pure, table-tested class with no I/O.
 | Live console | Current state, current speaker, time remaining, captions, events as they are recorded, latency p50; buttons: Mute agent, Next speaker, Skip, Take over, End |
 | Sessions | List; detail with transcript, events, pre-brief, follow-ups and their status |
 | Reports | Sprint summary and monthly report; KPI charts with the "illustrative" label when fixture-backed |
+| Overview, Planning, Retrospective, Story Writer, Models and email | **As built (M8):** the four-step flow overview; load, carry-over, readiness gaps and suggested owners; start-stop-continue draft; user story draft from a parked topic; realtime model cost and latency comparison and the email outbox |
 
-Sign-in uses MSAL against MCM's or the demo tenant; any signed-in user may edit in the PoC.
+**As built:** the portal has 13 pages in a sidebar layout (light and dark), is protected by Container Apps Easy Auth, and Prompts edits are stored in Cosmos so they survive restarts. Sign-in uses MSAL against MCM's or the demo tenant; any signed-in user may edit in the PoC.
 
 ---
 
@@ -635,23 +651,23 @@ Sign-in uses MSAL against MCM's or the demo tenant; any signed-in user may edit 
 
 | Method | Route | Purpose |
 |---|---|---|
-| GET | `/api/health` | M0 health read model (`GetHealthQuery`); `/healthz` is the plain liveness probe |
 | GET/PUT | `/api/teams/{id}` | Team settings |
 | GET/PUT | `/api/teams/{id}/members`, POST `/sync` | Roster; sync from the Azure DevOps team |
 | GET/PUT | `/api/teams/{id}/schedule` | Schedule and join URL |
 | GET/PUT | `/api/teams/{id}/prompts/{name}` | Prompt text |
-| POST | `/api/sessions/prepare` | `{teamId}`; returns the new session id (M1); read it with `GET /api/sessions/{id}` to get the pre-brief |
-| POST | `/api/sessions/{id}/start` | `{mode, joinUrl?, standupMinutes?}`; returns `{bridgeToken, roomUrl}` (M2: `simulated` only) |
+| POST | `/api/sessions/prepare` | `{teamId}`; returns a session with a pre-brief |
+| POST | `/api/sessions/{id}/start` | `{mode, joinUrl?}`; returns a bridge token and room URL |
 | POST | `/api/sessions/{id}/control` | `{action: mute|unmute|next|skip|takeover|end}` |
-| GET | `/api/sessions?teamId=`, `/api/sessions/{id}`, `/api/sessions/{id}/events` | History and timeline (`/events` since M2; `GET /api/sessions/{id}` also returns events, attendance, latency p50/p95 and questions asked) |
+| GET | `/api/sessions`, `/api/sessions/{id}`, `/api/sessions/{id}/events` | History and timeline |
 | GET | `/api/sessions/{id}/live` | Server-sent events for the live console |
-| GET | `/api/followups?teamId=&status=`, `/api/followups/{id}` | Follow-ups (M3) |
-| POST | `/api/followups/propose` | `{sessionId, memberId, workItemId, op, value, rationale?}`; creates a pending follow-up. Ids outside the sprint are refused |
-| POST | `/api/followups/{id}/approve`, `/reject` | `{approver}`; also used by the card actions. Approve triggers the Azure DevOps write |
-| POST | `/api/followups/{id}/apply` | Retries the write of an approved follow-up; refused with `followup.not_approved` otherwise |
-| POST | `/api/sessions/{id}/followups` | Plans and sends follow-ups for a session (idempotent; normally triggered by `StandupEnded`) |
-| GET | `/api/cards?sessionId=` | Cards sent through the outbox messenger, with Adaptive Card JSON (M3) |
-| GET | `/api/reports/sprint`, `/api/reports/monthly` | Reports |
+| GET | `/api/followups?teamId=&status=` | Follow-ups |
+| POST | `/api/followups/{id}/approve`, `/reject` | Also used by the card actions |
+| GET | `/api/reports/kpis`, `/api/reports/sprint`, `/api/reports/monthly` | Reports |
+| POST | `/api/ask` | Reporting Q&A (**As built**; also used by Teams chat) |
+| GET | `/api/planning` | Planning prep (**As built**) |
+| GET | `/api/retrospective` | Start-stop-continue draft (**As built**) |
+| GET/POST | `/api/stories/topics`, `/api/stories/draft` | Story Writer (**As built**; draft only) |
+| GET | `/api/models`, `/api/emails` | Model comparison and email outbox (**As built**) |
 | POST | `/api/demo/reset` | Reset demo state (sessions, follow-ups) without touching Azure DevOps |
 | POST | `/api/messages` | Bot endpoint |
 | WS | `/ws/bridge/{sessionId}` | Bridge |
@@ -701,6 +717,8 @@ Locally, the same role-specific repository ports (`ITeamRepository`, `ISessionRe
 ---
 
 ## 16. Milestones (one issue each; demo check = acceptance)
+
+**Status as built:** M0 to M7 complete and deployed. M8 complete except the Work IQ listener. The M4 Teams join was verified in real meetings (audio both ways, lobby, roster matching, shared board). Known gaps: Teams app installation from the admin center failed with a tenant/admin-portal error (per-user sideloading is the workaround); voice latency p50 is about 2 to 3 seconds against the 1 second target.
 
 **M0 Skeleton and local run.**
 - Build: the solution and Aspire AppHost with the four Clean Architecture projects and test projects (section 6); `Directory.Build.props`, `Directory.Packages.props` and `.editorconfig`; the hand-rolled mediator with `LoggingBehavior`, `ValidationBehavior` and `ExceptionMappingBehavior`, `Result`/`Error` and `ToHttpResult()`, with unit tests; architecture tests for the dependency rule; `Mcm.Scrum.Api` with health checks and the JSON-file repository; the bridge serving an empty `/room` page; the portal shell with sign-in; the configuration layout from section 17.
@@ -763,6 +781,8 @@ Locally, the same role-specific repository ports (`ITeamRepository`, `ISessionRe
 - the Facilitator bound to a Foundry voice agent (`FoundryAgent` mode) instead of model-direct, to inform the production design;
 - a Work IQ real-time transcript listener when the preview is available.
 
+**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts: it needs delegated sign-in, a Work IQ MCP connection and the Teams admin setting `EnableWorkIQTranscriptAccess`, and the real-time delivery contract is not documented enough to code against.
+
 ---
 
 ## 17. Configuration
@@ -772,6 +792,9 @@ Foundry__ProjectEndpoint, Foundry__ReasoningDeployment, Foundry__SpeechRegion
 VoiceLive__Endpoint, VoiceLive__ApiVersion, VoiceLive__Model, VoiceLive__Voice
 Ado__Org, Ado__AuthMode=Entra|Pat, Ado__Pat (user secrets only)
 Store__Mode=Json|Cosmos, Cosmos__Endpoint
+VoiceLive__AgentName, VoiceLive__AgentProjectName   # optional Foundry voice-agent mode (As built)
+ModelComparison__Models                             # candidate models and list prices (As built)
+Voice__SilenceMs, Voice__PauseMs, Voice__ParkAfterSeconds, Voice__NoResponseSeconds   # floor-control timing (As built)
 Acs__Endpoint, Bridge__DisplayName="MCM Scrum Agent"
 Bot__AppId, Bot__TenantId, Bot__AuthType=FederatedCredential|ClientSecret (secret in user secrets locally)
 Demo__CastFile=demo/cast/payments-standup.yaml, Demo__KpiFixture=demo/kpi-history.json, Demo__HonorAgeTags=true
@@ -785,7 +808,7 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 
 ## 18. Azure resources (PoC)
 
-One resource group in a region with Voice Live and the chosen realtime model (**VERIFY**, for example East US 2 or Sweden Central):
+**As built:** resource group `rg-mcm-scrum-demo-wus3` in West US 3, deployed with `azd up`; Cosmos DB has public network access with Entra-only auth (the resource group carries the tag `SecurityControl=Ignore` to satisfy the tenant policy). Planned: one resource group in a region with Voice Live and the chosen realtime model (**VERIFY**, for example East US 2 or Sweden Central):
 
 - Foundry resource and project with the realtime and reasoning deployments (Speech is included);
 - Container Apps environment with apps `api` and `bridge` (the bridge needs about 2 vCPU and 4 GiB for headless Chromium);
@@ -806,6 +829,7 @@ One resource group in a region with Voice Live and the chosen realtime model (**
 - Architecture tests (`Mcm.Scrum.ArchitectureTests`): Domain references nothing; Application does not reference Infrastructure or Api; Infrastructure does not reference Api; handlers are `internal sealed` and end in `Handler`; commands end in `Command` and queries in `Query`; no handler depends on `ISender` (no handler-to-handler calls).
 - Repository contract tests run against both the JSON-file and Cosmos implementations.
 - One Playwright test that runs a scripted standup in the Simulated Room using the demo cast, and asserts that the session completes with events, an absent mark and follow-ups created.
+- **As built:** 142 Domain, 46 Application, 20 Infrastructure and 7 architecture tests. Added: utterance classification, item linking, deferral and circle-back, retraction, reporting priorities, no-response follow-ups. The Playwright Simulated Room test passes (6 checks) and a scripted "messy standup" exercised every reactive path against the real gateway. The Cosmos repository contract test is not yet automated.
 - No evaluation pipeline in the PoC. The human Scrum Master's judgement in the demo is the quality bar; collect transcripts for production evaluations.
 
 ---
@@ -833,5 +857,7 @@ One resource group in a region with Voice Live and the chosen realtime model (**
 5. Median voice latency is about one second for US participants; India latency is measured and reported.
 6. The demo can be reset and re-run in under five minutes.
 7. The code meets the engineering standards in section 6.1: zero build warnings, architecture tests green, public APIs documented, every use case in the catalogue, so the PoC is a credible starting point for the production build.
+
+**Result as built:** criteria 1 to 4, 6 and 7 are met in the demo environment (storyboard scenes 2 to 11 work; scene 8 runs in a real Teams meeting). Criterion 5 is not yet met: median latency is about 2 to 3 seconds, measured and shown in the portal. Teams card delivery in the tenant depends on the Teams app being installed (see section 16 status); cards are otherwise available in the portal outbox.
 
 Everything else (scale, the production bridge, identity, governance, evaluation, networking, operations) is in the *Production Specification*.
