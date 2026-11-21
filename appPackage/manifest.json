@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
   "manifestVersion": "1.25",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "id": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
   "developer": {
     "name": "MCM Scrum PoC",
@@ -16,12 +16,12 @@
   },
   "icons": { "color": "color.png", "outline": "outline.png" },
   "accentColor": "#005FB8",
+  "supportsChannelFeatures": "tier1",
   "bots": [
     {
       "botId": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
       "scopes": ["personal", "team", "groupChat"],
       "supportsFiles": false,
-      "supportsChannelFeatures": "tier1",
       "isNotificationOnly": false
     }
   ],
