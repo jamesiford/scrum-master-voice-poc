@@ -29,6 +29,9 @@ let members: RoomMember[] = [];
 let begun = false;
 let player: AgentPlayer;
 let context: AudioContext;
+// Outgoing audio uses its own 48 kHz context: WebRTC sends 48 kHz, and a 24 kHz track can be dropped silently.
+let outContext: AudioContext;
+let meter: AnalyserNode;
 let localAudio: LocalAudioStream;
 const wired = new Set<string>();
 
@@ -148,21 +151,24 @@ async function ensureOutgoingAudio(
 ): Promise<void> {
   try {
     if (context.state !== 'running') await context.resume();
-    if (c.localAudioStreams.length === 0) await c.startAudio(localAudio);
+    if (outContext.state !== 'running') await outContext.resume();
+    // Re-attach after the call connects; attaching only at join time is not always honoured by the SDK.
+    if (c.localAudioStreams.length > 0) await c.stopAudio();
+    await c.startAudio(localAudio);
     if (c.isMuted) await c.unmute();
     const track = virtualMic.stream.getAudioTracks()[0];
     send({
       type: 'callState',
       state: 'Audio',
-      message: `Outgoing audio ready (context ${context.state}, track ${track?.readyState ?? 'none'}, muted ${c.isMuted}).`,
+      message: `Outgoing audio ready (out ${outContext.state}  Hz, track ${track?.readyState ?? 'none'}, muted ${c.isMuted}).`,
     });
-    const osc = context.createOscillator();
-    const gain = context.createGain();
+    const osc = outContext.createOscillator();
+    const gain = outContext.createGain();
     gain.gain.value = 0.15;
     osc.frequency.value = 660;
     osc.connect(gain).connect(virtualMic);
     osc.start();
-    osc.stop(context.currentTime + 0.4);
+    osc.stop(outContext.currentTime + 0.4);
   } catch (e) {
     send({
       type: 'callState',
@@ -172,18 +178,47 @@ async function ensureOutgoingAudio(
   }
 }
 
+/**
+ * Reports the loudest outgoing sample about once a second while the agent speaks, so the portal shows whether audio leaves
+ * this page. A peak above zero here with silence in the meeting means the problem is after the page (the SDK or Teams).
+ */
+function watchLevel(): void {
+  const buffer = new Float32Array(meter.fftSize);
+  let peak = 0;
+  let last = 0;
+  setInterval(() => {
+    meter.getFloatTimeDomainData(buffer);
+    for (const s of buffer) peak = Math.max(peak, Math.abs(s));
+    if (peak > 0.01 && Date.now() - last > 4000) {
+      send({
+        type: 'callState',
+        state: 'Audio',
+        message: `Agent audio leaving the page (peak ${peak.toFixed(2)}).`,
+      });
+      last = Date.now();
+    }
+    peak = 0;
+  }, 250);
+}
+
 async function join(): Promise<void> {
   report('Joining', 'Requesting an ACS identity.');
   const credential = new AzureCommunicationTokenCredential(await fetchAcsToken());
   const client = new CallClient();
   const agent = await client.createCallAgent(credential, { displayName });
 
-  const virtualMic = context.createMediaStreamDestination();
+  outContext = new AudioContext({ sampleRate: 48000 });
+  const virtualMic = outContext.createMediaStreamDestination();
+  const outGain = outContext.createGain();
+  meter = outContext.createAnalyser();
+  outGain.connect(virtualMic);
+  outGain.connect(meter);
+  watchLevel();
   player = new AgentPlayer(
-    context,
+    outContext,
     () => send({ type: 'agentAudioState', state: 'idle' }),
     () => undefined,
-    virtualMic,
+    outGain,
   );
   localAudio = new LocalAudioStream(virtualMic.stream);
   await context.audioWorklet.addModule('/static/mic-worklet.js');
