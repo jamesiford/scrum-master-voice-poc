@@ -1,4 +1,4 @@
-import { Badge } from '@fluentui/react-components';
+import { Badge } from '../../ui/Badge';
 import { useHealth } from '../../hooks/useHealth';
 
 /**
@@ -7,19 +7,15 @@ import { useHealth } from '../../hooks/useHealth';
  */
 export function HealthBadge() {
   const state = useHealth();
-
-  if (state.kind === 'loading') {
-    return <Badge appearance="outline">Checking API...</Badge>;
-  }
-  if (state.kind === 'unhealthy') {
+  if (state.kind === 'loading') return <Badge dot>Checking API</Badge>;
+  if (state.kind === 'unhealthy')
     return (
-      <Badge appearance="filled" color="danger">
-        API unreachable: {state.message}
+      <Badge tone="bad" dot>
+        API unreachable
       </Badge>
     );
-  }
   return (
-    <Badge appearance="filled" color="success">
+    <Badge tone="ok" dot>
       API healthy
     </Badge>
   );

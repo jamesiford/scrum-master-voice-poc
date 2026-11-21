@@ -1,18 +1,13 @@
-import {
-  Badge,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableHeaderCell,
-  TableRow,
-  Text,
-} from '@fluentui/react-components';
+import { RefreshCw } from 'lucide-react';
 import { TEAM_ID } from '../../api/config';
 import { getRoster, syncRoster } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Badge } from '../../ui/Badge';
+import { Button } from '../../ui/Button';
+import { EmptyState } from '../../ui/Feedback';
+import { PageHeader } from '../../ui/PageHeader';
+import { Table } from '../../ui/Table';
 import { QueryStatus } from '../QueryStatus';
 
 /**
@@ -29,43 +24,44 @@ export function RosterPage() {
   };
 
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        <Button appearance="primary" disabled={sync.busy} onClick={() => void onSync()}>
-          Sync roster
-        </Button>
-        <Text>Local edits (active, pronunciation, order) survive a sync.</Text>
-      </div>
-      <QueryStatus loading={roster.loading || sync.busy} error={sync.error ?? roster.error} />
-      {roster.data?.length === 0 && <Text>No members yet. Sync the roster.</Text>}
-      {roster.data && roster.data.length > 0 && (
-        <Table aria-label="Roster">
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell>Order</TableHeaderCell>
-              <TableHeaderCell>Name</TableHeaderCell>
-              <TableHeaderCell>Pronunciation</TableHeaderCell>
-              <TableHeaderCell>Key</TableHeaderCell>
-              <TableHeaderCell>Today</TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+    <>
+      <PageHeader
+        title="Roster"
+        description="The people the agent calls on, in speaking order. Local edits survive a sync."
+        actions={
+          <Button
+            variant="primary"
+            icon={<RefreshCw className="size-4" />}
+            disabled={sync.busy}
+            onClick={() => void onSync()}
+          >
+            Sync roster
+          </Button>
+        }
+      />
+      <div className="grid gap-6">
+        <QueryStatus loading={roster.loading || sync.busy} error={sync.error ?? roster.error} />
+        {roster.data?.length === 0 && (
+          <EmptyState title="No members yet" hint="Sync the roster to load the team." />
+        )}
+        {roster.data && roster.data.length > 0 && (
+          <Table label="Roster" headings={['Order', 'Name', 'Pronunciation', 'Key', 'Today']}>
             {roster.data.map((m) => (
-              <TableRow key={m.id}>
-                <TableCell>{m.speakingOrder}</TableCell>
-                <TableCell>{m.displayName}</TableCell>
-                <TableCell>{m.pronunciation}</TableCell>
-                <TableCell>{m.key}</TableCell>
-                <TableCell>
-                  <Badge appearance="tint" color={m.active ? 'success' : 'warning'}>
+              <tr key={m.id}>
+                <td className="px-4 py-3 text-muted">{m.speakingOrder}</td>
+                <td className="px-4 py-3 font-medium">{m.displayName}</td>
+                <td className="px-4 py-3 text-muted">{m.pronunciation}</td>
+                <td className="px-4 py-3 text-muted">{m.key}</td>
+                <td className="px-4 py-3">
+                  <Badge tone={m.active ? 'ok' : 'warn'} dot>
                     {m.active ? 'Present' : 'Absent'}
                   </Badge>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      )}
-    </section>
+          </Table>
+        )}
+      </div>
+    </>
   );
 }

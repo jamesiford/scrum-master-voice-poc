@@ -1,14 +1,15 @@
-import { Badge, Card, CardHeader, Text, Title3 } from '@fluentui/react-components';
 import type { BriefItem, Flag, PreBrief } from '../../api/client';
+import { Badge, type Tone } from '../../ui/Badge';
+import { Card } from '../../ui/Card';
+import { Progress } from '../../ui/Feedback';
 
-const flagColor: Record<Flag, 'danger' | 'warning' | 'important' | 'informative' | 'brand'> = {
-  Blocked: 'danger',
-  Overdue: 'danger',
-  Stale: 'warning',
-  NoRecentUpdate: 'informative',
-  Unassigned: 'important',
+const flagTone: Record<Flag, Tone> = {
+  Blocked: 'bad',
+  Overdue: 'bad',
+  Stale: 'warn',
+  NoRecentUpdate: 'neutral',
+  Unassigned: 'brand',
 };
-
 const flagLabel: Record<Flag, string> = {
   Blocked: 'Blocked',
   Overdue: 'Overdue',
@@ -19,19 +20,19 @@ const flagLabel: Record<Flag, string> = {
 
 function ItemLine({ item }: { item: BriefItem }) {
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-      <Text weight="semibold">
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm">
+      <span className="font-medium">
         {item.type} {item.id.value}
-      </Text>
-      <Text>
-        {item.title} ({item.state}, {item.daysInState}d)
-      </Text>
+      </span>
+      <span className="text-muted">
+        {item.title} · {item.state}, {item.daysInState}d
+      </span>
       {item.flags.map((f) => (
-        <Badge key={f} appearance="filled" color={flagColor[f]}>
+        <Badge key={f} tone={flagTone[f]}>
           {flagLabel[f]}
         </Badge>
       ))}
-    </div>
+    </li>
   );
 }
 
@@ -43,47 +44,65 @@ function ItemLine({ item }: { item: BriefItem }) {
 export function PreBriefView({ brief }: { brief: PreBrief }) {
   const { burndown } = brief;
   return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <Title3>Pre-brief</Title3>
-      <Text>
-        <b>Goal:</b> {brief.sprintGoal || 'not set'} <b>Iteration:</b> {brief.iterationPath}
-      </Text>
-      <Text>
-        {burndown.completedPoints} of {burndown.committedPoints} points done,{' '}
-        {burndown.remainingPoints} left, {burndown.daysLeft} days to go{' '}
-        <Badge appearance="filled" color={burndown.atRisk ? 'danger' : 'success'}>
-          {burndown.atRisk ? 'Burndown at risk' : 'On pace'}
-        </Badge>
-      </Text>
-      <Text>{brief.summary}</Text>
-      {brief.teamRisks.length > 0 && (
-        <ul aria-label="Team risks" style={{ margin: 0 }}>
-          {brief.teamRisks.map((r) => (
-            <li key={r}>{r}</li>
-          ))}
-        </ul>
-      )}
-      {brief.members.map((m) => (
-        <Card key={m.memberId}>
-          <CardHeader
-            header={<Text weight="semibold">{m.displayName}</Text>}
-            description={<Text italic>{m.suggestedQuestion}</Text>}
-          />
-          {m.items.length === 0 ? (
-            <Text>No open items.</Text>
-          ) : (
-            m.items.map((i) => <ItemLine key={i.id.value} item={i} />)
+    <Card title="Pre-brief" description={brief.iterationPath}>
+      <div className="grid gap-6">
+        <div className="grid gap-2">
+          <p className="text-sm">
+            <span className="font-medium">Goal:</span> {brief.sprintGoal || 'not set'}
+          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <Progress
+                value={burndown.completedPoints}
+                max={burndown.committedPoints}
+                tone={burndown.atRisk ? 'warn' : 'ok'}
+              />
+            </div>
+            <Badge tone={burndown.atRisk ? 'bad' : 'ok'} dot>
+              {burndown.atRisk ? 'Burndown at risk' : 'On pace'}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted">
+            {burndown.completedPoints} of {burndown.committedPoints} points done,{' '}
+            {burndown.remainingPoints} left, {burndown.daysLeft} days to go.
+          </p>
+          <p className="text-sm">{brief.summary}</p>
+          {brief.teamRisks.length > 0 && (
+            <ul aria-label="Team risks" className="list-disc pl-5 text-sm text-muted">
+              {brief.teamRisks.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
           )}
-        </Card>
-      ))}
-      {brief.unassignedItems.length > 0 && (
-        <Card>
-          <CardHeader header={<Text weight="semibold">Unassigned</Text>} />
-          {brief.unassignedItems.map((i) => (
-            <ItemLine key={i.id.value} item={i} />
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {brief.members.map((m) => (
+            <div key={m.memberId} className="rounded-lg border border-line p-4">
+              <h3 className="font-semibold">{m.displayName}</h3>
+              <p className="mt-1 text-sm italic text-muted">“{m.suggestedQuestion}”</p>
+              {m.items.length === 0 ? (
+                <p className="mt-3 text-sm text-muted">No open items.</p>
+              ) : (
+                <ul className="mt-2 divide-y divide-line">
+                  {m.items.map((i) => (
+                    <ItemLine key={i.id.value} item={i} />
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
-        </Card>
-      )}
-    </div>
+          {brief.unassignedItems.length > 0 && (
+            <div className="rounded-lg border border-dashed border-line p-4">
+              <h3 className="font-semibold">Unassigned</h3>
+              <ul className="mt-2 divide-y divide-line">
+                {brief.unassignedItems.map((i) => (
+                  <ItemLine key={i.id.value} item={i} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
   );
 }

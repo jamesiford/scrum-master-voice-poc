@@ -1,18 +1,9 @@
-import {
-  Badge,
-  Button,
-  Card,
-  CardHeader,
-  Field,
-  Input,
-  MessageBar,
-  MessageBarBody,
-  Text,
-} from '@fluentui/react-components';
+import { Check, X, RotateCw, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { TEAM_ID } from '../../api/config';
 import {
   applyFollowUp,
+  getRoster,
   approveFollowUp,
   listCards,
   listFollowUps,
@@ -22,14 +13,20 @@ import {
 } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Badge, type Tone } from '../../ui/Badge';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { Alert, EmptyState } from '../../ui/Feedback';
+import { Field, Input } from '../../ui/Form';
+import { PageHeader } from '../../ui/PageHeader';
 import { QueryStatus } from '../QueryStatus';
 
-const STATUS_COLOR: Record<FollowUpStatus, 'brand' | 'success' | 'danger' | 'informative'> = {
-  Pending: 'informative',
+const statusTone: Record<FollowUpStatus, Tone> = {
+  Pending: 'neutral',
   Sent: 'brand',
-  Approved: 'brand',
-  Rejected: 'danger',
-  Applied: 'success',
+  Approved: 'warn',
+  Rejected: 'bad',
+  Applied: 'ok',
 };
 
 /**
@@ -40,6 +37,9 @@ export function FollowUpsPage() {
   const [approver, setApprover] = useState('');
   const [showCards, setShowCards] = useState(false);
   const followUps = useApiQuery((signal) => listFollowUps(TEAM_ID, signal), TEAM_ID);
+  const roster = useApiQuery((signal) => getRoster(TEAM_ID, signal), TEAM_ID);
+  const nameOf = (id: string | null) =>
+    id ? (roster.data?.find((m) => m.id === id)?.displayName ?? id) : 'Team';
   const cards = useApiQuery((signal) => listCards(signal), showCards ? 'cards' : null);
   const approve = useApiAction((id: string, name: string) => approveFollowUp(id, name));
   const reject = useApiAction((id: string, name: string) => rejectFollowUp(id, name));
@@ -49,112 +49,161 @@ export function FollowUpsPage() {
     await run();
     followUps.reload();
   };
+  const list = followUps.data ?? [];
+  const needsDecision = list.filter(
+    (f) => f.kind === 'Followup' && (f.status === 'Pending' || f.status === 'Sent'),
+  ).length;
 
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'end', flexWrap: 'wrap' }}>
-        <Field label="Approving as">
-          <Input
-            value={approver}
-            onChange={(_, d) => setApprover(d.value)}
-            placeholder="Your name"
+    <>
+      <PageHeader
+        title="Follow-ups"
+        description="After each standup the agent proposes changes to Azure DevOps. Nothing is written until a named person approves."
+        actions={
+          <Button
+            variant="ghost"
+            icon={<RefreshCw className="size-4" />}
+            aria-label="Refresh"
+            onClick={followUps.reload}
           />
-        </Field>
-        <Button onClick={followUps.reload}>Refresh</Button>
-        <Button onClick={() => setShowCards((v) => !v)}>
-          {showCards ? 'Hide card outbox' : 'Show card outbox'}
-        </Button>
-      </div>
-      <QueryStatus
-        loading={followUps.loading}
-        error={followUps.error ?? approve.error ?? reject.error ?? retry.error}
+        }
       />
-      {followUps.data?.length === 0 && (
-        <Text>No follow-ups yet. They appear when a standup ends.</Text>
-      )}
-      {followUps.data?.map((f) => (
-        <FollowUpCard
-          key={f.id}
-          followUp={f}
-          canDecide={approver.trim().length > 0}
-          onApprove={() => void decide(() => approve.run(f.id, approver))}
-          onReject={() => void decide(() => reject.run(f.id, approver))}
-          onRetry={() => void decide(() => retry.run(f.id))}
-        />
-      ))}
-      {showCards && (
-        <div style={{ display: 'grid', gap: 8 }}>
-          <QueryStatus loading={cards.loading} error={cards.error} />
-          {cards.data?.map((c) => (
-            <Card key={c.id}>
-              <CardHeader
-                header={
-                  <Text weight="semibold">
-                    {c.message.kind}: {c.message.title}
-                  </Text>
-                }
+      <div className="grid gap-6">
+        <Card>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <Field
+              label="Approving as"
+              hint="Your name is recorded on every change written to Azure DevOps."
+              className="w-full max-w-xs"
+            >
+              <Input
+                value={approver}
+                onChange={(e) => setApprover(e.target.value)}
+                placeholder="Your name"
               />
-              <pre style={{ margin: 0, overflow: 'auto', maxHeight: 220 }}>
-                {c.adaptiveCardJson}
-              </pre>
-            </Card>
+            </Field>
+            {needsDecision > 0 && (
+              <Badge tone="warn" dot>
+                {needsDecision} waiting for a decision
+              </Badge>
+            )}
+          </div>
+        </Card>
+        <QueryStatus
+          loading={followUps.loading}
+          error={followUps.error ?? approve.error ?? reject.error ?? retry.error}
+        />
+        {list.length === 0 && !followUps.loading && (
+          <EmptyState title="No follow-ups yet" hint="They appear here when a standup ends." />
+        )}
+        <div className="grid gap-4">
+          {list.map((f) => (
+            <FollowUpCard
+              key={f.id}
+              followUp={f}
+              who={nameOf(f.memberId)}
+              canDecide={approver.trim().length > 0}
+              onApprove={() => void decide(() => approve.run(f.id, approver))}
+              onReject={() => void decide(() => reject.run(f.id, approver))}
+              onRetry={() => void decide(() => retry.run(f.id))}
+            />
           ))}
         </div>
-      )}
-    </section>
+        <div>
+          <Button variant="secondary" onClick={() => setShowCards((v) => !v)}>
+            {showCards ? 'Hide card outbox' : 'Show card outbox'}
+          </Button>
+        </div>
+        {showCards && (
+          <div className="grid gap-3">
+            <QueryStatus loading={cards.loading} error={cards.error} />
+            {cards.data?.map((c) => (
+              <Card
+                key={c.id}
+                title={`${c.message.kind}: ${c.message.title}`}
+                description="Adaptive Card JSON, as sent to Teams"
+              >
+                <pre className="max-h-56 overflow-auto rounded-lg bg-subtle p-3 text-xs">
+                  {c.adaptiveCardJson}
+                </pre>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
 interface FollowUpCardProps {
   followUp: FollowUp;
+  who: string;
   canDecide: boolean;
   onApprove: () => void;
   onReject: () => void;
   onRetry: () => void;
 }
 
-/**
- * One follow-up with its proposed changes and the actions its status allows.
- * @param props - The follow-up and action callbacks.
- * @returns The card.
- */
-function FollowUpCard({ followUp: f, canDecide, onApprove, onReject, onRetry }: FollowUpCardProps) {
+function FollowUpCard({
+  followUp: f,
+  who,
+  canDecide,
+  onApprove,
+  onReject,
+  onRetry,
+}: FollowUpCardProps) {
   const undecided = f.status === 'Pending' || f.status === 'Sent';
   return (
-    <Card>
-      <CardHeader
-        header={
-          <Text weight="semibold">
-            {f.kind} {f.memberId ? `for ${f.memberId}` : ''}
-          </Text>
-        }
-        action={<Badge color={STATUS_COLOR[f.status]}>{f.status}</Badge>}
-      />
-      <Text style={{ whiteSpace: 'pre-wrap' }}>{f.message}</Text>
-      {f.changes.map((c) => (
-        <Text key={`${c.workItemId}-${c.value}`} size={200}>
-          Work item {c.workItemId} ({c.op}): {c.value}
-        </Text>
-      ))}
-      {f.approvedBy && <Text size={200}>Approved by {f.approvedBy}</Text>}
-      {f.rejectedBy && <Text size={200}>Rejected by {f.rejectedBy}</Text>}
-      {f.applyError && (
-        <MessageBar intent="error">
-          <MessageBarBody>Azure DevOps write failed: {f.applyError}</MessageBarBody>
-        </MessageBar>
-      )}
-      <div style={{ display: 'flex', gap: 8 }}>
-        {undecided && f.kind === 'Followup' && (
-          <>
-            <Button appearance="primary" disabled={!canDecide} onClick={onApprove}>
-              Approve
-            </Button>
-            <Button disabled={!canDecide} onClick={onReject}>
-              Reject
-            </Button>
-          </>
+    <Card
+      title={`${f.kind === 'Absent' ? 'Missed standup' : f.kind === 'Escalation' ? 'Escalation' : 'Follow-up'} · ${who}`}
+      actions={
+        <Badge tone={statusTone[f.status]} dot>
+          {f.status}
+        </Badge>
+      }
+    >
+      <div className="grid gap-4">
+        <p className="whitespace-pre-wrap text-sm">{f.message}</p>
+        {f.changes.length > 0 && (
+          <ul className="grid gap-2">
+            {f.changes.map((c) => (
+              <li
+                key={`${c.workItemId}-${c.value}`}
+                className="rounded-lg bg-subtle px-3 py-2 text-sm"
+              >
+                <span className="font-medium">
+                  Work item {c.workItemId} · {c.op}
+                </span>
+                <span className="text-muted"> {c.value}</span>
+              </li>
+            ))}
+          </ul>
         )}
-        {f.status === 'Approved' && <Button onClick={onRetry}>Retry write</Button>}
+        {f.approvedBy && <p className="text-xs text-muted">Approved by {f.approvedBy}</p>}
+        {f.rejectedBy && <p className="text-xs text-muted">Rejected by {f.rejectedBy}</p>}
+        {f.applyError && <Alert tone="bad">Azure DevOps write failed: {f.applyError}</Alert>}
+        <div className="flex flex-wrap gap-2">
+          {undecided && f.kind === 'Followup' && (
+            <>
+              <Button
+                variant="primary"
+                icon={<Check className="size-4" />}
+                disabled={!canDecide}
+                onClick={onApprove}
+              >
+                Approve and write
+              </Button>
+              <Button icon={<X className="size-4" />} disabled={!canDecide} onClick={onReject}>
+                Reject
+              </Button>
+            </>
+          )}
+          {f.status === 'Approved' && (
+            <Button icon={<RotateCw className="size-4" />} onClick={onRetry}>
+              Retry write
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );

@@ -1,6 +1,6 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { Button, Text } from '@fluentui/react-components';
 import type { ReactNode } from 'react';
+import { Button } from '../ui/Button';
 import { authEnabled } from './msal';
 
 /**
@@ -12,19 +12,22 @@ import { authEnabled } from './msal';
 export function SignInGate({ children }: { children: ReactNode }) {
   const { instance } = useMsal();
   const signedIn = useIsAuthenticated();
-
-  if (!authEnabled || signedIn) {
-    return <>{children}</>;
-  }
-
+  if (!authEnabled || signedIn) return <>{children}</>;
   return (
-    <div style={{ padding: 24 }}>
-      <Text as="p" size={500}>
-        Sign in to manage the MCM Scrum Agent.
-      </Text>
-      <Button appearance="primary" onClick={() => void instance.loginRedirect()}>
-        Sign in
-      </Button>
-    </div>
+    <main className="grid min-h-full place-items-center p-6">
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8 text-center shadow-card">
+        <h1 className="text-xl font-semibold">MCM Scrum Agent</h1>
+        <p className="mt-2 text-sm text-muted">
+          Sign in to manage standups, follow-ups and reports.
+        </p>
+        <Button
+          variant="primary"
+          className="mt-6 w-full"
+          onClick={() => void instance.loginRedirect()}
+        >
+          Sign in
+        </Button>
+      </div>
+    </main>
   );
 }

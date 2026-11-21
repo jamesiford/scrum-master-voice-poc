@@ -1,16 +1,13 @@
-import {
-  Button,
-  Field,
-  Input,
-  MessageBar,
-  MessageBarBody,
-  Textarea,
-} from '@fluentui/react-components';
 import { useState } from 'react';
 import { TEAM_ID } from '../../api/config';
 import { getTeam, updateTeam, type Team, type TeamSettingsInput } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Alert } from '../../ui/Feedback';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { Field, Input, Textarea } from '../../ui/Form';
+import { PageHeader } from '../../ui/PageHeader';
 import { QueryStatus } from '../QueryStatus';
 
 function toInput(team: Team): TeamSettingsInput {
@@ -34,7 +31,10 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
 
   const text = (key: keyof TeamSettingsInput, label: string, hint?: string) => (
     <Field label={label} hint={hint}>
-      <Input value={String(form[key])} onChange={(_, d) => setForm({ ...form, [key]: d.value })} />
+      <Input
+        value={String(form[key])}
+        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+      />
     </Field>
   );
   const num = (key: keyof TeamSettingsInput, label: string) => (
@@ -42,7 +42,7 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
       <Input
         type="number"
         value={String(form[key])}
-        onChange={(_, d) => setForm({ ...form, [key]: Number(d.value) })}
+        onChange={(e) => setForm({ ...form, [key]: Number(e.target.value) })}
       />
     </Field>
   );
@@ -57,55 +57,65 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
   };
 
   return (
-    <form style={{ display: 'grid', gap: 12, maxWidth: 520 }} onSubmit={(e) => e.preventDefault()}>
-      <Field label="Azure DevOps organisation" hint="Set with Ado__Org; not editable here.">
-        <Input value={team.ado.org} readOnly />
-      </Field>
-      {text('name', 'Team name')}
-      {text('project', 'Azure DevOps project')}
-      {text('adoTeam', 'Azure DevOps team')}
-      {text('areaPath', 'Area path')}
-      {text('timeZone', 'Time zone')}
-      {num('standupMinutes', 'Standup length (minutes)')}
-      {num('staleDays', 'Stale after (days in state)')}
-      {num('escalateBlockerAfterDays', 'Escalate blockers after (days)')}
-      <Field label="Sprint goal" hint="Azure DevOps has no sprint goal field, so it is kept here.">
-        <Textarea
-          value={form.sprintGoal}
-          onChange={(_, d) => setForm({ ...form, sprintGoal: d.value })}
-        />
-      </Field>
+    <form className="grid max-w-3xl gap-6" onSubmit={(e) => e.preventDefault()}>
+      <Card title="Azure DevOps" description="Where the agent reads the sprint from.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Organisation" hint="Set with Ado__Org; not editable here.">
+            <Input value={team.ado.org} readOnly />
+          </Field>
+          {text('project', 'Project')}
+          {text('adoTeam', 'Team')}
+          {text('areaPath', 'Area path')}
+        </div>
+      </Card>
+      <Card title="Standup" description="Timing and the rules that raise flags.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {text('name', 'Team name')}
+          {text('timeZone', 'Time zone')}
+          {num('standupMinutes', 'Standup length (minutes)')}
+          {num('staleDays', 'Stale after (days in state)')}
+          {num('escalateBlockerAfterDays', 'Escalate blockers after (days)')}
+        </div>
+        <div className="mt-4">
+          <Field
+            label="Sprint goal"
+            hint="Azure DevOps has no sprint goal field, so it is kept here."
+          >
+            <Textarea
+              value={form.sprintGoal}
+              rows={3}
+              onChange={(e) => setForm({ ...form, sprintGoal: e.target.value })}
+            />
+          </Field>
+        </div>
+      </Card>
+      {save.error && <Alert tone="bad">{save.error}</Alert>}
+      {saved && !save.error && <Alert tone="ok">Saved.</Alert>}
       <div>
-        <Button appearance="primary" disabled={save.busy} onClick={() => void onSave()}>
-          Save
+        <Button variant="primary" disabled={save.busy} onClick={() => void onSave()}>
+          Save changes
         </Button>
       </div>
-      {save.error && (
-        <MessageBar intent="error">
-          <MessageBarBody>{save.error}</MessageBarBody>
-        </MessageBar>
-      )}
-      {saved && !save.error && (
-        <MessageBar intent="success">
-          <MessageBarBody>Saved.</MessageBarBody>
-        </MessageBar>
-      )}
     </form>
   );
 }
 
 /**
- * Team settings page (SPEC 13). Human Scrum Master and Teams channel arrive with M3.
+ * Team settings page (SPEC 13).
  * @returns The page.
  */
 export function TeamPage() {
   const team = useApiQuery((signal) => getTeam(TEAM_ID, signal), TEAM_ID);
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
+    <>
+      <PageHeader
+        title="Team"
+        description="Azure DevOps location, standup timing and the thresholds that decide what gets flagged."
+      />
       <QueryStatus loading={team.loading} error={team.error} />
       {team.data && (
         <TeamForm key={JSON.stringify(team.data)} team={team.data} onSaved={team.reload} />
       )}
-    </section>
+    </>
   );
 }

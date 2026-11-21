@@ -1,9 +1,14 @@
-import { Button, Dropdown, Field, Option, Text, Textarea } from '@fluentui/react-components';
 import { useEffect, useState } from 'react';
 import { TEAM_ID } from '../../api/config';
 import { getPrompt, listPrompts, savePrompt } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Alert, EmptyState } from '../../ui/Feedback';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { PageHeader } from '../../ui/PageHeader';
+import { Textarea } from '../../ui/Form';
+import { cx } from '../../ui/cx';
 import { QueryStatus } from '../QueryStatus';
 
 /**
@@ -29,45 +34,67 @@ export function PromptsPage() {
   };
 
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
+    <>
+      <PageHeader
+        title="Prompts"
+        description="The agent's instructions live in plain files. Edit one and it applies on the next agent turn, with no rebuild."
+      />
       <QueryStatus
         loading={names.loading || prompt.loading}
         error={names.error ?? prompt.error ?? save.error}
       />
-      <Field label="Prompt">
-        <Dropdown
-          placeholder="Choose a prompt"
-          value={name ?? ''}
-          onOptionSelect={(_, d) => setName(d.optionValue ?? null)}
+      <div className="mt-4 grid gap-6 lg:grid-cols-[16rem_1fr]">
+        <nav
+          aria-label="Prompts"
+          className="grid content-start gap-1 rounded-xl border border-line bg-surface p-2 shadow-card"
         >
           {(names.data ?? []).map((n) => (
-            <Option key={n} value={n}>
-              {n}
-            </Option>
-          ))}
-        </Dropdown>
-      </Field>
-      {name && (
-        <>
-          <Textarea
-            value={text}
-            rows={22}
-            resize="vertical"
-            onChange={(_, d) => setText(d.value)}
-            style={{ fontFamily: 'Consolas, monospace' }}
-          />
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <Button
-              appearance="primary"
-              disabled={save.busy || !text.trim()}
-              onClick={() => void onSave()}
+            <button
+              key={n}
+              onClick={() => setName(n)}
+              aria-current={name === n}
+              className={cx(
+                'rounded-lg px-3 py-2 text-left text-sm font-medium transition',
+                name === n
+                  ? 'bg-brand-soft text-brand'
+                  : 'text-muted hover:bg-subtle hover:text-ink',
+              )}
             >
-              Save prompt
-            </Button>
-            {saved && !save.error && <Text>Saved. Applies on the next agent turn.</Text>}
-          </div>
-        </>
-      )}
-    </section>
+              {n}
+            </button>
+          ))}
+        </nav>
+        {!name && (
+          <EmptyState title="Choose a prompt" hint="Pick one on the left to read and edit it." />
+        )}
+        {name && (
+          <Card
+            title={name}
+            actions={
+              <Button
+                variant="primary"
+                disabled={save.busy || !text.trim()}
+                onClick={() => void onSave()}
+              >
+                Save prompt
+              </Button>
+            }
+          >
+            <div className="grid gap-3">
+              <Textarea
+                value={text}
+                rows={22}
+                onChange={(e) => setText(e.target.value)}
+                className="font-mono text-xs leading-relaxed"
+                aria-label="Prompt text"
+              />
+              {saved && !save.error && (
+                <Alert tone="ok">Saved. Applies on the next agent turn.</Alert>
+              )}
+            </div>
+          </Card>
+        )}
+      </div>
+    </>
   );
 }

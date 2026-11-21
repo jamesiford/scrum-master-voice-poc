@@ -1,9 +1,14 @@
-import { Button, Checkbox, Dropdown, Field, Input, Option, Text } from '@fluentui/react-components';
 import { useEffect, useState } from 'react';
 import { TEAM_ID } from '../../api/config';
 import { getSchedule, updateSchedule } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Alert } from '../../ui/Feedback';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { Check, Field, Input, Select } from '../../ui/Form';
+import { PageHeader } from '../../ui/PageHeader';
+import { cx } from '../../ui/cx';
 import { QueryStatus } from '../QueryStatus';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -19,6 +24,7 @@ export function SchedulePage() {
   const [time, setTime] = useState('09:30');
   const [mode, setMode] = useState<'simulated' | 'acs'>('simulated');
   const [joinUrl, setJoinUrl] = useState('');
+  const [saved, setSaved] = useState(false);
   const save = useApiAction(() =>
     updateSchedule(TEAM_ID, { enabled, days, startTime: time, mode, joinUrl: joinUrl || null }),
   );
@@ -33,60 +39,79 @@ export function SchedulePage() {
     setJoinUrl(s.joinUrl ?? '');
   }, [schedule.data]);
 
-  const toggle = (day: string, on: boolean) =>
-    setDays((d) => (on ? [...d, day] : d.filter((x) => x !== day)));
+  const toggle = (day: string) =>
+    setDays((d) => (d.includes(day) ? d.filter((x) => x !== day) : [...d, day]));
+  const onSave = async () => {
+    setSaved(false);
+    await save.run();
+    schedule.reload();
+    setSaved(true);
+  };
 
   return (
-    <section style={{ display: 'grid', gap: 12, maxWidth: 640 }}>
-      <QueryStatus loading={schedule.loading} error={schedule.error ?? save.error} />
-      <Checkbox
-        checked={enabled}
-        onChange={(_, d) => setEnabled(d.checked === true)}
-        label="Run this standup automatically"
+    <>
+      <PageHeader
+        title="Schedule"
+        description="Run the standup on its own. Preparation starts ten minutes before, and Teams mode joins one minute before."
       />
-      <Field label="Days">
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {DAYS.map((d) => (
-            <Checkbox
-              key={d}
-              checked={days.includes(d)}
-              onChange={(_, x) => toggle(d, x.checked === true)}
-              label={d.slice(0, 3)}
-            />
-          ))}
+      <div className="grid max-w-2xl gap-6">
+        <QueryStatus loading={schedule.loading} error={schedule.error ?? save.error} />
+        <Card>
+          <div className="grid gap-6">
+            <Check checked={enabled} onChange={setEnabled} label="Run this standup automatically" />
+            <div className="grid gap-1.5">
+              <span className="text-sm font-medium">Days</span>
+              <div className="flex flex-wrap gap-2">
+                {DAYS.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    aria-pressed={days.includes(d)}
+                    onClick={() => toggle(d)}
+                    className={cx(
+                      'h-9 w-12 rounded-lg border text-sm font-medium transition',
+                      days.includes(d)
+                        ? 'border-brand bg-brand-soft text-brand'
+                        : 'border-line text-muted hover:bg-subtle',
+                    )}
+                  >
+                    {d.slice(0, 3)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Field label="Start time" hint="In the team's time zone.">
+              <Input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="max-w-40"
+              />
+            </Field>
+            <Field label="Mode">
+              <Select
+                value={mode}
+                onChange={(e) => setMode(e.target.value === 'acs' ? 'acs' : 'simulated')}
+                className="max-w-sm"
+              >
+                <option value="simulated">Prepare only (Simulated Room)</option>
+                <option value="acs">Join the Teams meeting</option>
+              </Select>
+            </Field>
+            {mode === 'acs' && (
+              <Field label="Teams meeting link">
+                <Input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} />
+              </Field>
+            )}
+          </div>
+        </Card>
+        {saved && !save.error && <Alert tone="ok">Schedule saved.</Alert>}
+        <div>
+          <Button variant="primary" disabled={save.busy} onClick={() => void onSave()}>
+            Save schedule
+          </Button>
         </div>
-      </Field>
-      <Field label="Start time (team time zone)">
-        <Input type="time" value={time} onChange={(_, d) => setTime(d.value)} />
-      </Field>
-      <Field label="Mode">
-        <Dropdown
-          value={mode === 'acs' ? 'Join the Teams meeting' : 'Prepare only (Simulated Room)'}
-          selectedOptions={[mode]}
-          onOptionSelect={(_, d) => setMode(d.optionValue === 'acs' ? 'acs' : 'simulated')}
-        >
-          <Option value="simulated">Prepare only (Simulated Room)</Option>
-          <Option value="acs">Join the Teams meeting</Option>
-        </Dropdown>
-      </Field>
-      {mode === 'acs' && (
-        <Field label="Teams meeting link">
-          <Input value={joinUrl} onChange={(_, d) => setJoinUrl(d.value)} />
-        </Field>
-      )}
-      <Text size={200}>
-        Prepare runs at T-10 minutes and posts the pre-brief card. Teams mode starts and joins at
-        T-1 minute; the agent waits in the lobby until admitted.
-      </Text>
-      <div>
-        <Button
-          appearance="primary"
-          disabled={save.busy}
-          onClick={() => void save.run().then(schedule.reload)}
-        >
-          Save schedule
-        </Button>
       </div>
-    </section>
+    </>
   );
 }

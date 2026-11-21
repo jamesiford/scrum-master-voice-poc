@@ -1,27 +1,23 @@
-import {
-  Badge,
-  Button,
-  Field,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableHeaderCell,
-  TableRow,
-  Text,
-} from '@fluentui/react-components';
+import { Play, Plus, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { TEAM_ID } from '../../api/config';
 import { getSession, listSessions, prepareStandup, startSession } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { Badge, type Tone } from '../../ui/Badge';
+import { Button } from '../../ui/Button';
+import { EmptyState } from '../../ui/Feedback';
+import { Field, Input } from '../../ui/Form';
+import { PageHeader } from '../../ui/PageHeader';
+import { Table } from '../../ui/Table';
 import { QueryStatus } from '../QueryStatus';
 import { PreBriefView } from './PreBriefView';
 import { SessionTimeline } from './SessionTimeline';
 
+const statusTone: Record<string, Tone> = { Prepared: 'brand', Live: 'ok', Ended: 'neutral' };
+
 /**
- * Sessions page: list, "Prepare now", "Start in Simulated Room", and the selected session's pre-brief and timeline (SPEC 13).
+ * Sessions page: prepare a standup, start it in the Simulated Room, and read any session's timeline and pre-brief (SPEC 13).
  * @returns The page.
  */
 export function SessionsPage() {
@@ -55,69 +51,98 @@ export function SessionsPage() {
   };
 
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'end', flexWrap: 'wrap' }}>
-        <Button appearance="primary" disabled={prepare.busy} onClick={() => void onPrepare()}>
-          Prepare now
-        </Button>
-        <Field
-          label="Timebox (minutes)"
-          hint="Use a short timebox, for example 3, to see the time warning."
-        >
-          <Input
-            type="number"
-            value={String(minutes)}
-            onChange={(_, d) => setMinutes(Math.max(1, Number(d.value) || 15))}
-            style={{ width: 90 }}
-          />
-        </Field>
-        <Button onClick={refresh}>Refresh</Button>
-      </div>
-      <QueryStatus
-        loading={prepare.busy || start.busy}
-        error={prepare.error ?? start.error ?? sessions.error}
+    <>
+      <PageHeader
+        title="Sessions"
+        description="Each session is one standup: a pre-brief built from Azure DevOps, the run itself, and everything that was recorded."
+        actions={
+          <>
+            <Field label="Timebox (min)" className="w-28">
+              <Input
+                type="number"
+                min={1}
+                value={String(minutes)}
+                onChange={(e) => setMinutes(Math.max(1, Number(e.target.value) || 15))}
+                aria-label="Timebox in minutes"
+              />
+            </Field>
+            <Button
+              variant="ghost"
+              icon={<RefreshCw className="size-4" />}
+              onClick={refresh}
+              aria-label="Refresh"
+            />
+            <Button
+              variant="primary"
+              icon={<Plus className="size-4" />}
+              disabled={prepare.busy}
+              onClick={() => void onPrepare()}
+            >
+              Prepare now
+            </Button>
+          </>
+        }
       />
-      {sessions.data?.length === 0 && <Text>No sessions yet. Select Prepare now.</Text>}
-      {sessions.data && sessions.data.length > 0 && (
-        <Table aria-label="Sessions">
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell>Prepared</TableHeaderCell>
-              <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Flagged items</TableHeaderCell>
-              <TableHeaderCell />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="grid gap-6">
+        <QueryStatus
+          loading={prepare.busy || start.busy || sessions.loading}
+          error={prepare.error ?? start.error ?? sessions.error}
+        />
+        {sessions.data?.length === 0 && (
+          <EmptyState
+            title="No sessions yet"
+            hint="Prepare a standup to build the pre-brief from the current sprint."
+            action={
+              <Button variant="primary" onClick={() => void onPrepare()}>
+                Prepare now
+              </Button>
+            }
+          />
+        )}
+        {sessions.data && sessions.data.length > 0 && (
+          <Table label="Sessions" headings={['Prepared', 'Status', 'Flagged items', '']}>
             {sessions.data.map((s) => (
-              <TableRow key={s.id} aria-selected={s.id === selected}>
-                <TableCell>{new Date(s.createdAt).toLocaleString()}</TableCell>
-                <TableCell>
-                  <Badge appearance="tint">{s.status}</Badge>
-                </TableCell>
-                <TableCell>{s.flaggedItems}</TableCell>
-                <TableCell>
-                  <Button
-                    size="small"
-                    appearance={s.id === selected ? 'primary' : 'secondary'}
-                    onClick={() => setSelected(s.id)}
-                  >
-                    View
-                  </Button>{' '}
-                  {s.status === 'Prepared' && (
-                    <Button size="small" disabled={start.busy} onClick={() => void onStart(s.id)}>
-                      Start in Simulated Room
+              <tr
+                key={s.id}
+                aria-selected={s.id === selected}
+                className={s.id === selected ? 'bg-brand-soft/40' : 'hover:bg-subtle/50'}
+              >
+                <td className="px-4 py-3">{new Date(s.createdAt).toLocaleString()}</td>
+                <td className="px-4 py-3">
+                  <Badge tone={statusTone[s.status] ?? 'neutral'} dot>
+                    {s.status}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3">{s.flaggedItems}</td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant={s.id === selected ? 'primary' : 'secondary'}
+                      onClick={() => setSelected(s.id)}
+                    >
+                      View
                     </Button>
-                  )}
-                </TableCell>
-              </TableRow>
+                    {s.status === 'Prepared' && (
+                      <Button
+                        size="sm"
+                        icon={<Play className="size-3.5" />}
+                        disabled={start.busy}
+                        onClick={() => void onStart(s.id)}
+                      >
+                        Simulated Room
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      )}
-      {selected && <QueryStatus loading={detail.loading} error={detail.error} />}
-      {selected && detail.data && <SessionTimeline session={detail.data} />}
-      {selected && detail.data?.preBrief && <PreBriefView brief={detail.data.preBrief} />}
-    </section>
+          </Table>
+        )}
+        {selected && <QueryStatus loading={detail.loading} error={detail.error} />}
+        {selected && detail.data && <SessionTimeline session={detail.data} />}
+        {selected && detail.data?.preBrief && <PreBriefView brief={detail.data.preBrief} />}
+      </div>
+    </>
   );
 }

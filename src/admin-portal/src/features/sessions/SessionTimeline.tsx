@@ -1,11 +1,20 @@
-import { Badge, Text, Title3 } from '@fluentui/react-components';
 import type { MemberBrief, Session } from '../../api/client';
+import { Badge, type Tone } from '../../ui/Badge';
+import { Card } from '../../ui/Card';
 
 function nameOf(brief: MemberBrief[] | undefined, memberId: string | null): string {
   return (
     brief?.find((m) => m.memberId === memberId)?.displayName ?? (memberId ? memberId : 'Agent')
   );
 }
+
+const eventTone: Record<string, Tone> = {
+  Blocker: 'bad',
+  ParkingLot: 'warn',
+  Commitment: 'ok',
+  Question: 'brand',
+  Bridge: 'neutral',
+};
 
 /**
  * Shows what happened in a standup: key metrics and the event timeline (SPEC 13 Sessions).
@@ -16,49 +25,48 @@ export function SessionTimeline({ session }: { session: Session }) {
   if (session.status === 'Prepared') return null;
   const members = session.preBrief?.members;
   const events = session.events.filter((e) => e.type !== 'ToolCall');
-  return (
-    <div style={{ display: 'grid', gap: 8 }}>
-      <Title3>Standup run</Title3>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Badge appearance="filled">{session.status}</Badge>
-        <Text>
-          Latency p50 <b>{session.p50LatencyMs || '--'} ms</b>, p95{' '}
-          <b>{session.p95LatencyMs || '--'} ms</b>
-        </Text>
-        <Text>
-          Questions asked <b>{session.questionsAsked}</b>
-        </Text>
-        <Text>
-          Timebox <b>{session.standupMinutes} min</b>
-        </Text>
-      </div>
-      <ol aria-label="Events" style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 4 }}>
-        {events.map((e) => (
-          <li key={e.id}>
-            <Badge
-              appearance="tint"
-              size="small"
-              color={
-                e.type === 'Blocker'
-                  ? 'danger'
-                  : e.type === 'ParkingLot'
-                    ? 'warning'
-                    : 'informative'
-              }
-            >
-              {e.type}
-            </Badge>{' '}
-            <b>
-              {e.type === 'Transcript' || e.type === 'Question'
-                ? nameOf(members, e.memberId)
-                : e.memberId
-                  ? nameOf(members, e.memberId)
-                  : ''}
-            </b>{' '}
-            {e.text}
-          </li>
-        ))}
-      </ol>
+  const metric = (label: string, value: string) => (
+    <div>
+      <p className="text-xs text-muted">{label}</p>
+      <p className="text-lg font-semibold">{value}</p>
     </div>
+  );
+  return (
+    <Card
+      title="Standup run"
+      actions={
+        <Badge tone={session.status === 'Live' ? 'ok' : 'neutral'} dot>
+          {session.status}
+        </Badge>
+      }
+    >
+      <div className="grid gap-6">
+        <div className="flex flex-wrap gap-8">
+          {metric('Latency p50', `${session.p50LatencyMs || '–'} ms`)}
+          {metric('Latency p95', `${session.p95LatencyMs || '–'} ms`)}
+          {metric('Questions asked', String(session.questionsAsked))}
+          {metric('Timebox', `${session.standupMinutes} min`)}
+        </div>
+        <ol aria-label="Events" className="relative grid gap-3 border-l border-line pl-5">
+          {events.map((e) => (
+            <li key={e.id} className="relative text-sm">
+              <span
+                className="absolute -left-[26px] top-1.5 size-2 rounded-full bg-line"
+                aria-hidden
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge tone={eventTone[e.type] ?? 'neutral'}>{e.type}</Badge>
+                <span className="font-medium">
+                  {e.memberId || e.type === 'Transcript' || e.type === 'Question'
+                    ? nameOf(members, e.memberId)
+                    : ''}
+                </span>
+              </div>
+              <p className="mt-1 text-muted">{e.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </Card>
   );
 }
