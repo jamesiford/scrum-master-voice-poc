@@ -71,6 +71,7 @@ public sealed class VoiceGateway(
     private readonly HashSet<string> _offTopicSpeakers = [];
     private readonly HashSet<int> _covered = [];
     private string? _lastBoard;
+    private readonly Dictionary<string, string> _noted = [];
 
     private abstract record Msg;
 
@@ -534,7 +535,7 @@ public sealed class VoiceGateway(
         }
 
         var actions = _floor.Handle(new MemberSpoke(memberId, Math.Max(durationMs, 500), now));
-        if (text.Contains("scrum agent", StringComparison.OrdinalIgnoreCase))
+        if (text.Contains("scrum agent", StringComparison.OrdinalIgnoreCase) || ItemQuestionDetector.IsItemQuestion(text))
         {
             actions = [.. actions, .. _floor.Handle(new AgentAddressed())];
         }
@@ -590,8 +591,15 @@ public sealed class VoiceGateway(
                 }
             }
 
+            lock (_gate)
+            {
+                _covered.UnionWith(r.MentionedWorkItemIds);
+            }
+
+            _noted[done.MemberId] = CoverageNotes.Noted(r.Events.Select(e => (e.Type, e.Text)));
+
             _pendingQuestion[done.MemberId] = r.SuggestedQuestion;
-            hasQuestion = !string.IsNullOrWhiteSpace(r.SuggestedQuestion);
+            hasQuestion = !string.IsNullOrWhiteSpace(r.SuggestedQuestion) || _noted[done.MemberId].Length > 0;
         }
 
         if (!done.Background)
@@ -636,7 +644,7 @@ public sealed class VoiceGateway(
     private async Task SpeakAsync(AgentSpeak speak)
     {
         var question = speak.Reason == SpeakReason.Clarify && speak.MemberId is not null ? _pendingQuestion.GetValueOrDefault(speak.MemberId) : null;
-        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, speak.Reason, speak.MemberId, question), _run);
+        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, speak.Reason, speak.MemberId, question, NotesFor(speak)), _run);
         if (!instruction.IsSuccess)
         {
             await _bridge.SendAsync(new { type = "error", code = "TURN_INSTRUCTION", message = instruction.Error!.Message }, _run);
@@ -659,6 +667,24 @@ public sealed class VoiceGateway(
 
         await _voice.CreateResponseAsync(instruction.Value, _run);
         _createSentAt = clock.UtcNow;
+    }
+
+    private string? NotesFor(AgentSpeak speak)
+    {
+        if (speak.Reason == SpeakReason.Clarify && speak.MemberId is not null)
+        {
+            return _noted.GetValueOrDefault(speak.MemberId);
+        }
+
+        if (speak.Reason != SpeakReason.Recap || _session.PreBrief is not { } brief)
+        {
+            return null;
+        }
+
+        lock (_gate)
+        {
+            return CoverageNotes.Describe(CoverageNotes.UncoveredFlagged(brief, _covered));
+        }
     }
 
     private void StartReconcile(RunReconcile r)
@@ -703,7 +729,7 @@ public sealed class VoiceGateway(
 
         var next = await sender.Send(new GetNextSpeakerQuery(_sessionId), _run);
         var more = _floor.Handle(next.IsSuccess
-            ? new SpeakerSelected(next.Value.MemberId, next.Value.Absent, next.Value.HasFlaggedItems)
+            ? new SpeakerSelected(next.Value.MemberId, next.Value.Absent, true)
             : new SpeakerSelected(null, false));
         await ExecuteAsync(more);
     }

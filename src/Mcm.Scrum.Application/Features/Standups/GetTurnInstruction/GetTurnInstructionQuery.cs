@@ -8,4 +8,5 @@ namespace Mcm.Scrum.Application.Features.Standups.GetTurnInstruction;
 /// <param name="Reason">Why the agent is speaking.</param>
 /// <param name="MemberId">The member the turn concerns, if any.</param>
 /// <param name="Question">The grounded question to ask (for <see cref="SpeakReason.Clarify"/>).</param>
-public sealed record GetTurnInstructionQuery(Guid SessionId, SpeakReason Reason, string? MemberId = null, string? Question = null) : IQuery<string>;
+/// <param name="Notes">Facts the template may mention: what was just noted (clarify) or flagged items nobody covered (recap).</param>
+public sealed record GetTurnInstructionQuery(Guid SessionId, SpeakReason Reason, string? MemberId = null, string? Question = null, string? Notes = null) : IQuery<string>;

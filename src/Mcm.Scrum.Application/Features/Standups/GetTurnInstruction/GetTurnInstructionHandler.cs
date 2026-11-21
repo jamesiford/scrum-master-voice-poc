@@ -52,6 +52,7 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             ["daysLeft"] = (session.PreBrief?.DaysLeft ?? 0).ToString(System.Globalization.CultureInfo.InvariantCulture),
             ["firstName"] = member is null ? string.Empty : Names.First(member.DisplayName),
             ["question"] = request.Question ?? string.Empty,
+            ["notes"] = request.Notes ?? string.Empty,
             ["minutesLeft"] = Math.Max(1, (int)Math.Round(session.StandupMinutes - elapsed)).ToString(System.Globalization.CultureInfo.InvariantCulture),
             ["blockers"] = Lines(session, StandupEventType.Blocker, "none raised"),
             ["parked"] = Lines(session, StandupEventType.ParkingLot, "none"),

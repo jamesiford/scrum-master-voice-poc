@@ -38,7 +38,7 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
         var mentioned = s.MentionedWorkItemIds.Where(id => known.Contains(new WorkItemId(id))).Distinct().ToList();
         var question = !string.IsNullOrWhiteSpace(s.SuggestedQuestion) && WorkItemIdGuard.IsGrounded(s.SuggestedQuestion, known)
             ? s.SuggestedQuestion
-            : FallbackQuestion(brief);
+            : FallbackQuestion(brief, string.IsNullOrWhiteSpace(s.SuggestedQuestion) ? mentioned : null);
         var events = s.Events
             .Where(e => !string.IsNullOrWhiteSpace(e.Text) && WorkItemIdGuard.IsGrounded(e.Text, known) && !IsNoBlockerStatement(e))
             .Select(e => new ReconcileEvent(e.Type, e.Text, e.WorkItemIds.Where(id => known.Contains(new WorkItemId(id))).Distinct().ToList()))
@@ -58,6 +58,10 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
     private static partial Regex NoBlocker();
 
     // A member with nothing flagged gets no question: a clarifying question must be grounded in a real flag.
-    private static string? FallbackQuestion(MemberBrief brief) =>
-        brief.Items.Any(i => i.Flags.Count > 0) ? FallbackQuestions.For(brief.Items) : null;
+    // Flagged items the member did not mention are asked about; ones they covered are not asked twice.
+    private static string? FallbackQuestion(MemberBrief brief, IReadOnlyList<int>? mentioned = null)
+    {
+        var open = brief.Items.Where(i => mentioned is null || !mentioned.Contains(i.Id.Value)).ToList();
+        return open.Any(i => i.Flags.Count > 0) ? FallbackQuestions.For(open) : null;
+    }
 }

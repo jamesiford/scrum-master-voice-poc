@@ -4,6 +4,7 @@ using Mcm.Scrum.Application.Features.Standups.EndStandup;
 using Mcm.Scrum.Application.Features.Standups.GetMemberBrief;
 using Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
 using Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
+using Mcm.Scrum.Application.Features.Standups.GetWorkItemDetails;
 using Mcm.Scrum.Application.Features.Standups.MarkAbsent;
 using Mcm.Scrum.Application.Features.Standups.ParkTopic;
 using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
@@ -30,6 +31,7 @@ internal sealed class ScrumTools(ISender sender) : IScrumTools
         new("park_topic", "Parks a topic for offline discussion.", """{"type":"object","properties":{"topic":{"type":"string"}},"required":["topic"]}"""),
         new("mark_absent", "Marks a member absent today.", """{"type":"object","properties":{"memberId":{"type":"string"}},"required":["memberId"]}"""),
         new("get_time_remaining", "Gets seconds left in the standup.", """{"type":"object","properties":{}}"""),
+        new("get_work_item_details", "Gets current facts about one sprint work item (state, owner, due date, whether overdue, points, tags). Use it to answer a question about an item.", """{"type":"object","properties":{"workItemId":{"type":"integer"}},"required":["workItemId"]}"""),
         new("end_standup", "Ends the standup after the recap.", """{"type":"object","properties":{}}"""),
     ];
 
@@ -38,7 +40,7 @@ internal sealed class ScrumTools(ISender sender) : IScrumTools
 
     /// <inheritdoc />
     public IReadOnlyList<ToolDefinition> FacilitatorDefinitions { get; } =
-        [.. Tools.Where(t => t.Name is "get_member_brief" or "get_time_remaining")];
+        [.. Tools.Where(t => t.Name is "get_member_brief" or "get_time_remaining" or "get_work_item_details")];
 
     /// <inheritdoc />
     public async Task<string> InvokeAsync(Guid sessionId, string name, string argumentsJson, CancellationToken ct)
@@ -55,6 +57,7 @@ internal sealed class ScrumTools(ISender sender) : IScrumTools
             "park_topic" => Out(await sender.Send(new ParkTopicCommand(sessionId, Str(args, "topic")), ct)),
             "mark_absent" => Out(await sender.Send(new MarkAbsentCommand(sessionId, Str(args, "memberId")), ct)),
             "get_time_remaining" => Out(await sender.Send(new GetTimeRemainingQuery(sessionId), ct)),
+            "get_work_item_details" => Out(await sender.Send(new GetWorkItemDetailsQuery(sessionId, args.TryGetProperty("workItemId", out var wid) && wid.ValueKind == JsonValueKind.Number ? wid.GetInt32() : 0), ct)),
             "end_standup" => Out(await sender.Send(new EndStandupCommand(sessionId), ct)),
             _ => JsonSerializer.Serialize(new { error = $"Unknown tool '{name}'." }, Json),
         };
