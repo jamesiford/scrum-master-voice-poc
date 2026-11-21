@@ -165,12 +165,61 @@ public sealed class StandupSession : AggregateRoot
         }
     }
 
-    /// <summary>Gets the next member who has not had a turn, in speaking order.</summary>
-    /// <returns>The member's brief and whether they are absent, or <see langword="null"/> when everyone is done.</returns>
-    public (MemberBrief Member, bool Absent)? NextSpeaker()
+    /// <summary>Gets the events that still count: everything the speakers have not retracted.</summary>
+    public IEnumerable<StandupEvent> ActiveEvents => _events.Where(e => !e.Retracted);
+
+    /// <summary>Marks an earlier statement as corrected by its speaker. The event stays in the audit trail but no rule uses it.</summary>
+    /// <param name="eventId">The event.</param>
+    /// <returns><see langword="true"/> when an event was retracted.</returns>
+    public bool Retract(Guid eventId)
     {
-        var next = PreBrief?.Members.FirstOrDefault(m => !_handled.Contains(m.MemberId));
-        return next is null ? null : (next, _attendance.TryGetValue(next.MemberId, out var a) && a == Standups.Attendance.Absent);
+        var i = _events.FindIndex(e => e.Id == eventId && !e.Retracted);
+        if (i < 0)
+        {
+            return false;
+        }
+
+        _events[i] = _events[i] with { Retracted = true };
+        return true;
+    }
+
+    /// <summary>Checks whether a member was skipped for now and has not been circled back to yet.</summary>
+    /// <param name="memberId">The member.</param>
+    /// <returns><see langword="true"/> when they are waiting to be asked again.</returns>
+    public bool IsDeferred(string memberId)
+    {
+        var deferred = _events.FindLastIndex(e => e.Type == StandupEventType.Deferred && e.MemberId == memberId);
+        return deferred >= 0 && _events.FindLastIndex(e => e.Type == StandupEventType.CircledBack && e.MemberId == memberId) < deferred;
+    }
+
+    /// <summary>Counts how many times a member was called and did not respond.</summary>
+    /// <param name="memberId">The member.</param>
+    /// <returns>The count.</returns>
+    public int NoResponseCount(string memberId) => _events.Count(e => e.Type == StandupEventType.NoResponse && e.MemberId == memberId);
+
+    /// <summary>Checks whether a member said anything in the standup, in their own voice or through someone speaking for them.</summary>
+    /// <param name="memberId">The member.</param>
+    /// <returns><see langword="true"/> when at least one statement is attributed to them.</returns>
+    public bool HasSpoken(string memberId) =>
+        _events.Any(e => e.MemberId == memberId && e.Type is StandupEventType.Transcript or StandupEventType.Commitment or StandupEventType.Blocker or StandupEventType.Decision);
+
+    /// <summary>
+    /// Gets the next member to ask: members in speaking order first, skipping anyone deferred, then the deferred members so
+    /// nobody is forgotten (the agent circles back at the end).
+    /// </summary>
+    /// <returns>The member, whether they are absent and whether this is a circle-back, or <see langword="null"/> when everyone is done.</returns>
+    public (MemberBrief Member, bool Absent, bool CircleBack)? NextSpeaker()
+    {
+        var open = PreBrief?.Members.Where(m => !_handled.Contains(m.MemberId)).ToList() ?? [];
+        var next = open.FirstOrDefault(m => !IsDeferred(m.MemberId));
+        var circleBack = false;
+        if (next is null)
+        {
+            next = open.FirstOrDefault();
+            circleBack = next is not null;
+        }
+
+        return next is null ? null : (next, _attendance.TryGetValue(next.MemberId, out var a) && a == Standups.Attendance.Absent, circleBack);
     }
 
     /// <summary>Adds an end-of-speech to first-audio latency sample.</summary>

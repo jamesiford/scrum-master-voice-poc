@@ -29,4 +29,19 @@ public enum StandupEventType
 
     /// <summary>A call or bridge status change, such as waiting in the Teams lobby.</summary>
     Bridge,
+
+    /// <summary>A member was skipped for now (stepped away, or silent) and will be asked again at the end.</summary>
+    Deferred,
+
+    /// <summary>The agent came back to a deferred member.</summary>
+    CircledBack,
+
+    /// <summary>A member was present but did not respond when called. Different from absent.</summary>
+    NoResponse,
+
+    /// <summary>One member is giving another's update on their behalf.</summary>
+    Proxy,
+
+    /// <summary>A member corrected an earlier statement.</summary>
+    Correction,
 }

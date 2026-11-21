@@ -38,6 +38,9 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
         SpeakReason.Park => "turn-park",
         SpeakReason.TimeWarning => "turn-time-warning",
         SpeakReason.Addressed => "turn-addressed",
+        SpeakReason.StepAway => "turn-step-away",
+        SpeakReason.NoResponse => "turn-no-response",
+        SpeakReason.CircleBack => "turn-circle-back",
         _ => "turn-recap",
     };
 
@@ -57,14 +60,24 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             ["blockers"] = Lines(session, StandupEventType.Blocker, "none raised"),
             ["parked"] = Lines(session, StandupEventType.ParkingLot, "none"),
             ["absent"] = AbsentNames(session),
-            ["commitments"] = session.Events.Count(e => e.Type == StandupEventType.Commitment).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            ["noResponse"] = SilentNames(session),
+            ["commitments"] = session.ActiveEvents.Count(e => e.Type == StandupEventType.Commitment).ToString(System.Globalization.CultureInfo.InvariantCulture),
         };
     }
 
     private static string Lines(StandupSession session, StandupEventType type, string none)
     {
-        var texts = session.Events.Where(e => e.Type == type).Select(e => e.Text).ToList();
+        var texts = session.ActiveEvents.Where(e => e.Type == type).Select(e => e.Text).ToList();
         return texts.Count == 0 ? none : string.Join("; ", texts);
+    }
+
+    private static string SilentNames(StandupSession session)
+    {
+        var names = session.PreBrief?.Members
+            .Where(m => session.NoResponseCount(m.MemberId) > 0 && !session.HasSpoken(m.MemberId))
+            .Select(m => Names.First(m.DisplayName))
+            .ToList() ?? [];
+        return names.Count == 0 ? "nobody" : string.Join(" and ", names);
     }
 
     private static string AbsentNames(StandupSession session)

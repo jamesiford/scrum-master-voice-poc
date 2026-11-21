@@ -14,6 +14,7 @@ public sealed record ReconcileEvent(StandupEventType Type, string Text, IReadOnl
 /// <param name="Risks">Short risk statements.</param>
 /// <param name="SuggestedQuestion">One grounded question, or <see langword="null"/>.</param>
 /// <param name="Events">Events to record.</param>
+/// <param name="RetractedEventIds">Earlier events the member corrected; the caller retracts them.</param>
 /// <param name="QuestionItemId">The work item the suggested question is about, so the next answer is attributed to it.</param>
 public sealed record ReconcileResult(
     bool Consistent,
@@ -21,4 +22,5 @@ public sealed record ReconcileResult(
     IReadOnlyList<string> Risks,
     string? SuggestedQuestion,
     IReadOnlyList<ReconcileEvent> Events,
-    int? QuestionItemId = null);
+    int? QuestionItemId = null,
+    IReadOnlyList<Guid>? RetractedEventIds = null);

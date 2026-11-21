@@ -16,7 +16,7 @@ internal sealed class PostRecapOnStandupEnded(ISessionRepository sessions, IMemb
         }
 
         var roster = (await members.ListAsync(session.TeamId, ct)).ToDictionary(m => m.Id, m => m.DisplayName);
-        var facts = session.Events
+        var facts = session.ActiveEvents
             .Where(e => e.Type is StandupEventType.Blocker or StandupEventType.Commitment or StandupEventType.ParkingLot)
             .Select(e => new CardFact(
                 $"{e.Type}{(e.MemberId is not null && roster.TryGetValue(e.MemberId, out var n) ? $" ({n})" : string.Empty)}",

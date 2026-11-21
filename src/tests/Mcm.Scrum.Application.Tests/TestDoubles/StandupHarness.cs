@@ -11,7 +11,7 @@ namespace Mcm.Scrum.Application.Tests.TestDoubles;
 
 internal sealed class FakeReconcileAgent(ReconcileSuggestion? suggestion) : IReconcileAgent
 {
-    public Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct) => Task.FromResult(suggestion);
+    public Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct, IReadOnlyList<RecordedStatement>? recorded = null) => Task.FromResult(suggestion);
 }
 
 internal sealed class FakePrompts(Dictionary<string, string> prompts) : IPromptStore

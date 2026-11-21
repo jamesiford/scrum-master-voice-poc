@@ -17,7 +17,7 @@ internal sealed class GetNextSpeakerHandler(ISessionRepository sessions) : IRequ
 
         var next = session.NextSpeaker();
         return Result<NextSpeakerDto>.Success(next is null
-            ? new NextSpeakerDto(null, null, null, false, false)
-            : new NextSpeakerDto(next.Value.Member.MemberId, next.Value.Member.DisplayName, Names.First(next.Value.Member.DisplayName), next.Value.Absent, next.Value.Member.Items.Any(i => i.Flags.Count > 0)));
+            ? new NextSpeakerDto(null, null, null, false, false, false)
+            : new NextSpeakerDto(next.Value.Member.MemberId, next.Value.Member.DisplayName, Names.First(next.Value.Member.DisplayName), next.Value.Absent, next.Value.Member.Items.Any(i => i.Flags.Count > 0), next.Value.CircleBack));
     }
 }

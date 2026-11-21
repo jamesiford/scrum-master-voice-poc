@@ -122,7 +122,48 @@ public sealed class FloorControlTests
         Assert.Empty(f.Handle(new Tick(At(8 + 24))));
         var actions = f.Handle(new Tick(At(8 + 26)));
 
+        Assert.Equal(new DeferSpeaker("m1", DeferReason.NoResponse), actions[0]);
+        Assert.Equal(new AgentSpeak(SpeakReason.NoResponse, "m1"), actions[1]);
+        Assert.Equal(new AdvanceSpeaker(), Assert.Single(f.Handle(new AgentSpeechEnded(At(8 + 30)))));
+    }
+
+    [Fact]
+    public void Tick_SilenceAfterTheMemberAlreadySpoke_AdvancesWithoutCallingItNoResponse()
+    {
+        var f = Listening();
+        f.Handle(new MemberSpoke("m1", 3000, At(12)));
+        var reconcile = f.Handle(new Tick(At(14))).OfType<RunReconcile>().Single();
+        f.Handle(new ReconcileFinished(reconcile.Version, true));
+        f.Handle(new AgentSpeechEnded(At(18)));
+
+        var actions = f.Handle(new Tick(At(18 + 26)));
+
         Assert.Equal(new AdvanceSpeaker(), Assert.Single(actions));
+    }
+
+    [Fact]
+    public void DeferCurrent_SpeakerStepsAway_SpeaksThenAdvances()
+    {
+        var f = Listening();
+
+        var actions = f.Handle(new DeferCurrent(DeferReason.StepAway));
+        var after = f.Handle(new AgentSpeechEnded(At(12)));
+
+        Assert.Equal(new DeferSpeaker("m1", DeferReason.StepAway), actions[0]);
+        Assert.Equal(new AgentSpeak(SpeakReason.StepAway, "m1"), actions[1]);
+        Assert.Equal(new AdvanceSpeaker(), Assert.Single(after));
+    }
+
+    [Fact]
+    public void SpeakerSelected_CircleBack_UsesTheCircleBackReason()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(5)));
+
+        var actions = f.Handle(new SpeakerSelected("m1", false, CircleBack: true));
+
+        Assert.Equal(new AgentSpeak(SpeakReason.CircleBack, "m1"), Assert.Single(actions));
     }
 
     [Fact]

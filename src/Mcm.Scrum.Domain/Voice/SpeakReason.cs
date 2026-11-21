@@ -26,4 +26,13 @@ public enum SpeakReason
 
     /// <summary>Closing recap.</summary>
     Recap,
+
+    /// <summary>Acknowledging that a member stepped away; the agent will circle back.</summary>
+    StepAway,
+
+    /// <summary>Noting that a present member did not respond.</summary>
+    NoResponse,
+
+    /// <summary>Returning to a member who was skipped earlier.</summary>
+    CircleBack,
 }

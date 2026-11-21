@@ -36,7 +36,7 @@ export interface BoardState {
     flags: string[];
     covered: boolean;
   }[];
-  team: { name: string; total: number; covered: number }[];
+  team: { name: string; total: number; covered: number; status?: string | null }[];
 }
 
 /** Gateway to room. */

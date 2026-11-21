@@ -15,6 +15,7 @@ using Mcm.Scrum.Application.Features.Standups.ParkTopic;
 using Mcm.Scrum.Application.Features.Standups.RecordAgentLatency;
 using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
 using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Mcm.Scrum.Application.Features.Standups.RetractStandupEvent;
 using Mcm.Scrum.Application.Tools;
 using Mcm.Scrum.Domain.Common;
 using Mcm.Scrum.Domain.Standups;
@@ -44,6 +45,18 @@ public sealed class VoiceGateway(
     private readonly Dictionary<string, string?> _pendingQuestion = [];
     private readonly Dictionary<string, string> _asked = [];
     private readonly Dictionary<string, int> _focus = [];
+    private readonly Dictionary<string, string> _proxy = [];
+    private readonly Dictionary<string, string> _status = [];
+    private readonly Dictionary<string, int> _noResponses = [];
+    private readonly HashSet<string> _deferredNow = [];
+    private readonly HashSet<string> _correcting = [];
+    private readonly HashSet<string> _redirected = [];
+    private IReadOnlyList<NameRef> _roster = [];
+    private string? _directive;
+    private string? _deferNotes;
+    private string? _speechSpeaker;
+    private string? _lastActiveId;
+    private DateTimeOffset _lastActiveAt;
     private readonly Dictionary<string, int?> _pendingItem = [];
     private readonly List<string> _offTopic = [];
     private readonly List<string> _parking = [];
@@ -153,6 +166,7 @@ public sealed class VoiceGateway(
         }
 
         _session = session.Value;
+        _roster = _session.PreBrief?.Members.Select(m => new NameRef(m.MemberId, m.DisplayName)).ToList() ?? [];
         var o = options.Value;
         _floor = new FloorControl(new FloorOptions(TimeSpan.FromMinutes(_session.StandupMinutes), o.SilenceMs, o.ParkAfterSeconds * 1000, o.NoResponseSeconds * 1000, PauseMs: o.PauseMs));
 
@@ -183,7 +197,7 @@ public sealed class VoiceGateway(
                 mode = _session.Mode,
                 version = 1,
                 standupMinutes = _session.StandupMinutes,
-                members = _session.PreBrief.Members.Select(m => new { memberId = m.MemberId, displayName = m.DisplayName }),
+                members = _roster.Select(m => new { memberId = m.MemberId, displayName = m.DisplayName }),
             },
             ct);
         return true;
@@ -343,7 +357,14 @@ public sealed class VoiceGateway(
                 _presenter = Str(json, "memberId") ?? _presenter;
                 break;
             case "speaking":
-                await ExecuteAsync(_floor.Handle(new SpeechActive(Str(json, "memberId") ?? string.Empty, Bool(json, "active"), clock.UtcNow)));
+                var talker = Str(json, "memberId") ?? string.Empty;
+                if (Bool(json, "active"))
+                {
+                    _lastActiveId = talker;
+                }
+
+                _lastActiveAt = clock.UtcNow;
+                await ExecuteAsync(_floor.Handle(new SpeechActive(Attribute(talker), Bool(json, "active"), clock.UtcNow)));
                 break;
             case "utterance":
                 await OnUtteranceAsync(Str(json, "memberId") ?? string.Empty, Str(json, "text") ?? string.Empty, Int(json, "durationMs"), fromCast: true);
@@ -422,22 +443,23 @@ public sealed class VoiceGateway(
         {
             case UserSpeechStarted:
                 _speechStartedAt = clock.UtcNow;
+                _speechSpeaker = ResolveSpeaker();
                 _bargeCheckAt = _floor.AgentHasFloor && _audioStarted ? clock.UtcNow.AddMilliseconds(500) : null;
-                await ExecuteAsync(_floor.Handle(new SpeechActive(_presenter, true, clock.UtcNow)));
+                await ExecuteAsync(_floor.Handle(new SpeechActive(Attribute(_speechSpeaker), true, clock.UtcNow)));
                 break;
             case UserSpeechStopped:
                 _bargeCheckAt = null;
                 _lastHumanEnd = clock.UtcNow;
                 _pendingTranscripts++;
                 _lastStoppedAt = clock.UtcNow;
-                await ExecuteAsync(_floor.Handle(new SpeechActive(_presenter, false, clock.UtcNow)));
+                await ExecuteAsync(_floor.Handle(new SpeechActive(Attribute(_speechSpeaker ?? _presenter), false, clock.UtcNow)));
                 break;
             case UserTranscript t:
                 _pendingTranscripts = Math.Max(0, _pendingTranscripts - 1);
                 if (!string.IsNullOrWhiteSpace(t.Text))
                 {
                     var started = _speechStartedAt ?? clock.UtcNow.AddSeconds(-2);
-                    await OnUtteranceAsync(_presenter, t.Text.Trim(), (int)(clock.UtcNow - started).TotalMilliseconds, fromCast: false);
+                    await OnUtteranceAsync(_speechSpeaker ?? ResolveSpeaker(), t.Text.Trim(), (int)(clock.UtcNow - started).TotalMilliseconds, fromCast: false);
                 }
 
                 break;
@@ -525,11 +547,22 @@ public sealed class VoiceGateway(
         }
 
         await _bridge.SendAsync(new { type = "caption", role = "participant", memberId, text }, _run);
-        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Transcript, memberId, text), _run);
 
-        if (memberId == _floor.CurrentMemberId)
+        // Someone speaking for a teammate counts as that teammate for the floor and the record.
+        var owner = Attribute(memberId);
+        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Transcript, owner, owner == memberId ? text : $"({NameOf(memberId)} for {NameOf(owner)}) {text}"), _run);
+
+        var interpretation = owner != memberId
+            ? new Interpretation(ItemMentionsCorrection(text) ? UtteranceIntent.Correction : UtteranceIntent.Update, owner)
+            : UtteranceClassifier.Classify(text, memberId, _floor.CurrentMemberId, _roster);
+        if (await ReactAsync(interpretation, memberId, text))
         {
-            Remember(memberId, text);
+            return;
+        }
+
+        if (owner == _floor.CurrentMemberId)
+        {
+            Remember(owner, text);
         }
         else
         {
@@ -537,15 +570,126 @@ public sealed class VoiceGateway(
             _offTopicSpeakers.Add(NameOf(memberId));
         }
 
-        var actions = _floor.Handle(new MemberSpoke(memberId, Math.Max(durationMs, 500), now));
-        if (text.Contains("scrum agent", StringComparison.OrdinalIgnoreCase) || ItemQuestionDetector.IsItemQuestion(text))
+        var actions = _floor.Handle(new MemberSpoke(owner, Math.Max(durationMs, 500), now));
+        if (text.Contains("scrum agent", StringComparison.OrdinalIgnoreCase) || interpretation.Intent == UtteranceIntent.AskItemInfo)
         {
-            actions = [.. actions, .. _floor.Handle(new AgentAddressed())];
+            actions = [.. actions, .. RespondActions(null)];
         }
 
         await ExecuteAsync(actions);
     }
 
+    private static bool ItemMentionsCorrection(string text) =>
+        UtteranceClassifier.Classify(text, "x", "x", []).Intent == UtteranceIntent.Correction;
+
+    // ---- goal-driven reactions -----------------------------------------------------------------------------------
+    // The standup has one goal: every member's items covered. Whatever happens in the room (a chime-in, someone stepping away,
+    // a proxy, a correction) is handled by changing who is asked next or what the agent says, never by losing the goal.
+
+    // Returns true when the utterance was fully handled and must not be treated as part of the holder's update.
+    private async Task<bool> ReactAsync(Interpretation i, string speakerId, string text)
+    {
+        var holder = _floor.CurrentMemberId;
+        switch (i.Intent)
+        {
+            case UtteranceIntent.ProxyUpdate when i.TargetMemberId is { } target && i.ByMemberId is { } by:
+                _proxy[target] = by;
+                _status[target] = $"update by {Short(NameOf(by))}";
+                await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Proxy, target, $"{NameOf(by)} gives {NameOf(target)}'s update"), _run);
+                await RespondAsync(target == holder
+                    ? $"{Short(NameOf(by))} will give {Short(NameOf(target))}'s update. Acknowledge in one short sentence, say that anything captured still needs {Short(NameOf(target))} to approve it, and invite {Short(NameOf(by))} to go ahead. Do not move on."
+                    : $"{Short(NameOf(by))} will give {Short(NameOf(target))}'s update when it is {Short(NameOf(target))}'s turn. Acknowledge in one short sentence and say that anything captured still needs {Short(NameOf(target))} to approve it. Then carry on with {Short(NameOf(holder ?? string.Empty))}.");
+                return true;
+            case UtteranceIntent.StepAway when i.TargetMemberId is { } away:
+                return await OnStepAwayAsync(away, holder, speakerId);
+            case UtteranceIntent.AskWhatToReport when MemberOf(i.TargetMemberId ?? speakerId) is { } brief:
+                lock (_gate)
+                {
+                    _directive = $"{Short(brief.DisplayName)} asked what to report on. Tell them, briefly and in this order: {ReportingPriorities.For(brief, _covered)}";
+                }
+
+                await RespondAsync(_directive);
+                return true;
+            case UtteranceIntent.OutOfTurnUpdate when holder is not null && _redirected.Add($"{speakerId}>{holder}"):
+                await RespondAsync($"{Short(NameOf(speakerId))} started giving an update, but it is {Short(NameOf(holder))}'s turn. In one friendly sentence say it is {Short(NameOf(holder))}'s turn now, that {Short(NameOf(speakerId))} will be asked in turn, and if it is urgent they can say so.");
+                return true;
+            case UtteranceIntent.BackNow when _status.ContainsKey(speakerId) && holder != speakerId:
+                _status.Remove(speakerId);
+                await RespondAsync($"{Short(NameOf(speakerId))} is back. Welcome them in a few words and say you will get to them after {Short(NameOf(holder ?? string.Empty))}'s update.");
+                return true;
+            case UtteranceIntent.Correction:
+                _correcting.Add(i.TargetMemberId ?? speakerId);
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    private async Task<bool> OnStepAwayAsync(string away, string? holder, string speakerId)
+    {
+        var by = speakerId == away ? string.Empty : $" {Short(NameOf(speakerId))} said so.";
+        if (away == holder)
+        {
+            _deferNotes = $"{Short(NameOf(away))} has stepped away.{by}";
+            await ExecuteAsync(_floor.Handle(new DeferCurrent(DeferReason.StepAway)));
+            return true;
+        }
+
+        if (MemberOf(away) is null || _absent.Contains(away))
+        {
+            return false;
+        }
+
+        // Not their turn yet: they are skipped in advance and circled back to at the end.
+        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Deferred, away, $"{NameOf(away)} stepped away; will circle back"), _run);
+        _status[away] = "away";
+        await RespondAsync($"{Short(NameOf(away))} is away for a few minutes.{by} Say in one sentence that you will skip them for now and come back to them at the end, then carry on with {Short(NameOf(holder ?? string.Empty))}.");
+        return true;
+    }
+
+    private async Task RespondAsync(string directive)
+    {
+        lock (_gate)
+        {
+            _directive = directive;
+        }
+
+        var actions = RespondActions(directive);
+        if (actions.Count == 0)
+        {
+            lock (_gate)
+            {
+                _directive = null;
+            }
+        }
+
+        await ExecuteAsync(actions);
+    }
+
+    private IReadOnlyList<FloorAction> RespondActions(string? directive)
+    {
+        _ = directive;
+        return _floor.Handle(new AgentAddressed());
+    }
+
+    private string Attribute(string memberId) =>
+        _proxy.FirstOrDefault(p => p.Value == memberId && p.Key == _floor.CurrentMemberId).Key ?? memberId;
+
+    // In Teams the mixed audio has no speaker, so the member whose "speaking" event is live (or was a moment ago) is the speaker.
+    // Without one, the person whose turn it is is the best guess; the Simulated Room has an explicit presenter.
+    private string ResolveSpeaker()
+    {
+        if (_lastActiveId is not null && clock.UtcNow - _lastActiveAt < TimeSpan.FromSeconds(2))
+        {
+            return _lastActiveId;
+        }
+
+        return _session.Mode == "acs" ? _floor.CurrentMemberId ?? _presenter : _presenter;
+    }
+
+    private MemberBrief? MemberOf(string memberId) => _session.PreBrief?.Members.FirstOrDefault(m => m.MemberId == memberId);
+
+    private static string Short(string displayName) => Names.First(displayName);
     private void Remember(string memberId, string text)
     {
         lock (_gate)
@@ -599,7 +743,15 @@ public sealed class VoiceGateway(
                 _covered.UnionWith(r.MentionedWorkItemIds);
             }
 
-            _noted[done.MemberId] = CoverageNotes.Noted(r.Events.Select(e => (e.Type, e.Text)));
+            var retracted = r.RetractedEventIds ?? [];
+            foreach (var id in retracted)
+            {
+                await sender.Send(new RetractStandupEventCommand(_sessionId, id), _run);
+            }
+
+            _correcting.Remove(done.MemberId);
+            var corrected = retracted.Count > 0 ? "you corrected an earlier statement, so I have removed it; " : string.Empty;
+            _noted[done.MemberId] = corrected + CoverageNotes.Noted(r.Events.Select(e => (e.Type, e.Text)));
 
             _pendingQuestion[done.MemberId] = r.SuggestedQuestion;
             _pendingItem[done.MemberId] = r.QuestionItemId;
@@ -632,6 +784,9 @@ public sealed class VoiceGateway(
                     break;
                 case AdvanceSpeaker:
                     await AdvanceAsync();
+                    break;
+                case DeferSpeaker d:
+                    await DeferAsync(d);
                     break;
                 case ParkTopic:
                     await ParkAsync();
@@ -685,7 +840,7 @@ public sealed class VoiceGateway(
     {
         lock (_gate)
         {
-            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null);
+            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId));
         }
     }
 
@@ -712,9 +867,19 @@ public sealed class VoiceGateway(
             return _noted.GetValueOrDefault(speak.MemberId);
         }
 
+        if (speak.Reason is SpeakReason.StepAway or SpeakReason.NoResponse)
+        {
+            return _deferNotes;
+        }
+
         if (speak.Reason == SpeakReason.Addressed && speak.MemberId is not null)
         {
-            return ItemContext(speak.MemberId);
+            lock (_gate)
+            {
+                var directive = _directive;
+                _directive = null;
+                return directive ?? ItemContext(speak.MemberId);
+            }
         }
 
         if (speak.Reason != SpeakReason.Recap || _session.PreBrief is not { } brief)
@@ -771,14 +936,65 @@ public sealed class VoiceGateway(
                 _asked.Remove(previous);
             }
 
+            _proxy.Remove(previous);
+            _status.Remove(previous);
+            if (_noResponses.GetValueOrDefault(previous) >= 2 && !_deferredNow.Contains(previous))
+            {
+                await sender.Send(new CompleteSpeakerTurnCommand(_sessionId, previous), _run);
+                await AdvanceToNextAsync();
+                return;
+            }
+
+            if (_deferredNow.Remove(previous))
+            {
+                // Skipped for now, not finished: do not complete the turn.
+                await AdvanceToNextAsync();
+                return;
+            }
+
             await sender.Send(new CompleteSpeakerTurnCommand(_sessionId, previous), _run);
         }
 
+        await AdvanceToNextAsync();
+    }
+
+    private async Task AdvanceToNextAsync()
+    {
         var next = await sender.Send(new GetNextSpeakerQuery(_sessionId), _run);
+        if (next.IsSuccess && next.Value.CircleBack && next.Value.MemberId is { } back)
+        {
+            _status.Remove(back);
+            await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.CircledBack, back, $"Circling back to {NameOf(back)}"), _run);
+        }
+
         var more = _floor.Handle(next.IsSuccess
-            ? new SpeakerSelected(next.Value.MemberId, next.Value.Absent, true)
+            ? new SpeakerSelected(next.Value.MemberId, next.Value.Absent, true, next.Value.CircleBack)
             : new SpeakerSelected(null, false));
         await ExecuteAsync(more);
+    }
+
+    // A deferred member is not "handled": NextSpeaker skips them now and returns them last. Someone who stays silent twice is
+    // finished (recorded as present but silent, which is different from absent) so the standup cannot loop.
+    private async Task DeferAsync(DeferSpeaker d)
+    {
+        var name = Short(NameOf(d.MemberId));
+        if (d.Reason == DeferReason.NoResponse)
+        {
+            var count = _noResponses[d.MemberId] = _noResponses.GetValueOrDefault(d.MemberId) + 1;
+            await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.NoResponse, d.MemberId, $"{NameOf(d.MemberId)} was in the meeting but did not respond"), _run);
+            if (count >= 2)
+            {
+                _status[d.MemberId] = "no response";
+                _deferNotes = $"{name} still did not respond when you came back. Say in one sentence that you could not get an update from {name}, that they were here, and that a follow-up will be sent.";
+                return;
+            }
+
+            _deferNotes = $"{name} did not answer within the wait time.";
+        }
+
+        _status[d.MemberId] = d.Reason == DeferReason.NoResponse ? "no response yet" : "away";
+        _deferredNow.Add(d.MemberId);
+        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Deferred, d.MemberId, d.Reason == DeferReason.NoResponse ? $"{NameOf(d.MemberId)} did not respond; will circle back" : $"{NameOf(d.MemberId)} stepped away; will circle back"), _run);
     }
 
     private async Task ParkAsync()
@@ -881,6 +1097,7 @@ public sealed class VoiceGateway(
                 name = m.DisplayName,
                 total = m.Items.Count,
                 covered = m.Items.Count(i => covered.Contains(i.Id.Value)),
+                status = _status.GetValueOrDefault(m.MemberId),
             }),
         };
         var json = JsonSerializer.Serialize(board);

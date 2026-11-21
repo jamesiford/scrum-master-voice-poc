@@ -9,6 +9,7 @@ public interface IReconcileAgent
     /// <param name="brief">The member's brief.</param>
     /// <param name="utterance">What they said, transcribed.</param>
     /// <param name="ct">Cancellation token.</param>
+    /// <param name="recorded">Earlier statements by this member, offered when the member is correcting themselves.</param>
     /// <returns>A suggestion, or <see langword="null"/> when the model is unavailable.</returns>
-    Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct);
+    Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct, IReadOnlyList<RecordedStatement>? recorded = null);
 }

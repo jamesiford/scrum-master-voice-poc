@@ -8,5 +8,6 @@ namespace Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
 /// <param name="Utterance">What they said.</param>
 /// <param name="Asked">The clarifying question this utterance answers, if any, so the answer is attributed to that item.</param>
 /// <param name="FocusItemId">The item the asked question was about; an answer that names no item is attributed to it.</param>
+/// <param name="Correction">True when the member is correcting an earlier statement.</param>
 /// <param name="Covered">Work item ids already discussed in this standup; questions never ask about them again.</param>
-public sealed record ReconcileUpdateQuery(Guid SessionId, string MemberId, string Utterance, string? Asked = null, IReadOnlyCollection<int>? Covered = null, int? FocusItemId = null) : IQuery<ReconcileResult>;
+public sealed record ReconcileUpdateQuery(Guid SessionId, string MemberId, string Utterance, string? Asked = null, IReadOnlyCollection<int>? Covered = null, int? FocusItemId = null, bool Correction = false) : IQuery<ReconcileResult>;

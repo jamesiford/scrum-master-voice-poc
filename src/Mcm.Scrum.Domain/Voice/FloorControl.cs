@@ -13,6 +13,7 @@ public sealed class FloorControl(FloorOptions options)
     private DateTimeOffset _lastHolderEnd;
     private DateTimeOffset _lastAnyEnd;
     private bool _heard;
+    private bool _turnHeard;
     private readonly HashSet<string> _active = [];
     private bool _canClarify = true;
     private int _offHolderMs;
@@ -30,7 +31,7 @@ public sealed class FloorControl(FloorOptions options)
     public string? CurrentMemberId { get; private set; }
 
     /// <summary>Gets a value indicating whether the agent is meant to be speaking right now.</summary>
-    public bool AgentHasFloor => State is FloorState.Opening or FloorState.CallingOn or FloorState.Clarifying or FloorState.Interjecting or FloorState.Recap;
+    public bool AgentHasFloor => State is FloorState.Opening or FloorState.CallingOn or FloorState.Clarifying or FloorState.Interjecting or FloorState.Recap or FloorState.Deferring;
 
     /// <summary>Applies an input and returns what the gateway must do.</summary>
     /// <param name="input">The input.</param>
@@ -42,6 +43,7 @@ public sealed class FloorControl(FloorOptions options)
         {
             StartFloor s => OnStart(s),
             AgentSpeechEnded e => OnAgentSpeechEnded(e),
+            DeferCurrent d => OnDefer(d.Reason),
             SpeakerSelected s => OnSpeakerSelected(s),
             MemberSpoke m => OnMemberSpoke(m),
             Tick t => OnTick(t.Now),
@@ -94,6 +96,9 @@ public sealed class FloorControl(FloorOptions options)
             case FloorState.Clarifying:
                 BeginListening(e.Now, resetHeard: true);
                 return None;
+            case FloorState.Deferring:
+                State = FloorState.Advancing;
+                return [new AdvanceSpeaker()];
             case FloorState.Interjecting:
                 State = FloorState.Listening;
                 _offHolderMs = 0;
@@ -122,8 +127,9 @@ public sealed class FloorControl(FloorOptions options)
         _canClarify = s.CanClarify;
         _offHolderMs = 0;
         _heard = false;
+        _turnHeard = false;
         State = FloorState.CallingOn;
-        return [new AgentSpeak(s.Absent ? SpeakReason.Absent : SpeakReason.CallOn, s.MemberId)];
+        return [new AgentSpeak(s.Absent ? SpeakReason.Absent : s.CircleBack ? SpeakReason.CircleBack : SpeakReason.CallOn, s.MemberId)];
     }
 
     private FloorAction[] OnMemberSpoke(MemberSpoke m)
@@ -137,6 +143,7 @@ public sealed class FloorControl(FloorOptions options)
         if (m.MemberId == CurrentMemberId)
         {
             _heard = true;
+            _turnHeard = true;
             _lastHolderEnd = m.At;
             if (State == FloorState.Reconciling)
             {
@@ -211,6 +218,7 @@ public sealed class FloorControl(FloorOptions options)
         if (s.Active)
         {
             _heard = true;
+            _turnHeard = true;
             if (State == FloorState.Reconciling)
             {
                 _version++;
@@ -258,8 +266,14 @@ public sealed class FloorControl(FloorOptions options)
 
         if (!_heard && now - _listeningSince >= TimeSpan.FromMilliseconds(options.NoResponseMs))
         {
-            State = FloorState.Advancing;
-            return [new AdvanceSpeaker()];
+            // Silence after a clarifying question is not "no response": the member already spoke this turn.
+            if (_turnHeard)
+            {
+                State = FloorState.Advancing;
+                return [new AdvanceSpeaker()];
+            }
+
+            return OnDefer(DeferReason.NoResponse);
         }
 
         return None;
@@ -327,6 +341,22 @@ public sealed class FloorControl(FloorOptions options)
 
         BeginListening(_lastAnyEnd == default ? _listeningSince : _lastAnyEnd, resetHeard: false);
         return None;
+    }
+
+    // Goal-driven: a member who cannot speak now is skipped, not lost. The gateway records why and the agent circles back at the end.
+    private FloorAction[] OnDefer(DeferReason reason)
+    {
+        if (CurrentMemberId is null || State is not (FloorState.Listening or FloorState.Reconciling or FloorState.CallingOn or FloorState.Clarifying))
+        {
+            return None;
+        }
+
+        var cancel = AgentHasFloor;
+        State = FloorState.Deferring;
+        _version++;
+        FloorAction speak = new AgentSpeak(reason == DeferReason.NoResponse ? SpeakReason.NoResponse : SpeakReason.StepAway, CurrentMemberId);
+        FloorAction defer = new DeferSpeaker(CurrentMemberId, reason);
+        return cancel ? [new CancelResponse(), defer, speak] : [defer, speak];
     }
 
     private FloorAction[] OnAddressed() =>

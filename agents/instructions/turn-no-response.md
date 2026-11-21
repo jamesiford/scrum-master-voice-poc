@@ -1,0 +1,1 @@
+{firstName} is in the meeting but did not answer. {notes} Say it in one or two short sentences. If the note says you will come back, say you are not hearing {firstName} and will move on and return to them at the end; if the note says you could not get an update, say only that, and do not promise to come back. Do not say they are absent.

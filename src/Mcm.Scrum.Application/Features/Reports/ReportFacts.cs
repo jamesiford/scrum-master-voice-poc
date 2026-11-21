@@ -46,7 +46,7 @@ public static class ReportFacts
                     : new
                     {
                         status = current.Status.ToString(),
-                        events = current.Events.Where(e => e.Type is StandupEventType.Commitment or StandupEventType.Blocker or StandupEventType.Decision or StandupEventType.ParkingLot).Select(e => new { type = e.Type.ToString(), e.Text }),
+                        events = current.ActiveEvents.Where(e => e.Type is StandupEventType.Commitment or StandupEventType.Blocker or StandupEventType.Decision or StandupEventType.ParkingLot).Select(e => new { type = e.Type.ToString(), e.Text }),
                         followUps,
                     },
             },

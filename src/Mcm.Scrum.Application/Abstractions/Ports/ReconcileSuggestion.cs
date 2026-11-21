@@ -14,9 +14,17 @@ public sealed record SuggestedEvent(StandupEventType Type, string Text, IReadOnl
 /// <param name="Risks">Short risk statements.</param>
 /// <param name="SuggestedQuestion">One question to ask, if any.</param>
 /// <param name="Events">Events worth recording.</param>
+/// <param name="Retracts">Numbers (from the recorded statements given to the model) of earlier statements the member just corrected.</param>
 public sealed record ReconcileSuggestion(
     bool Consistent,
     IReadOnlyList<int> MentionedWorkItemIds,
     IReadOnlyList<string> Risks,
     string? SuggestedQuestion,
-    IReadOnlyList<SuggestedEvent> Events);
+    IReadOnlyList<SuggestedEvent> Events,
+    IReadOnlyList<int>? Retracts = null);
+
+/// <summary>An earlier statement shown to the model so it can tell which one a correction refers to.</summary>
+/// <param name="Ref">Number the model uses to refer to it.</param>
+/// <param name="Type">Commitment, blocker or decision.</param>
+/// <param name="Text">What was recorded.</param>
+public sealed record RecordedStatement(int Ref, StandupEventType Type, string Text);

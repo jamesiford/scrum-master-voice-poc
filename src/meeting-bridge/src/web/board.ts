@@ -118,7 +118,8 @@ export class BoardRenderer {
       const y = 200 + i * 56;
       ctx.fillStyle = m.name === s.speaker ? '#38bdf8' : '#cbd5e1';
       ctx.font = '20px Segoe UI, Arial, sans-serif';
-      ctx.fillText(`${m.name}  ${m.covered}/${m.total}`, 948, y);
+      const status = m.status ? `  (${m.status})` : '';
+      ctx.fillText(`${m.name}  ${m.covered}/${m.total}${status}`, 948, y);
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(948, y + 10, 280, 10);
       ctx.fillStyle = '#4ade80';

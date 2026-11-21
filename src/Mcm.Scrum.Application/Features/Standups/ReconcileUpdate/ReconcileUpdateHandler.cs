@@ -42,10 +42,35 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
         var question = next is null ? null : FallbackQuestions.ForItem(next);
 
         var utterance = request.FocusItemId is null || string.IsNullOrWhiteSpace(request.Asked) ? request.Utterance : $"(The member is answering this question: \"{request.Asked}\") {request.Utterance}";
-        var suggestion = await agent.ReconcileAsync(brief, utterance, ct);
+        var recorded = request.Correction ? RecordedFor(session, request.MemberId) : null;
+        var suggestion = await agent.ReconcileAsync(brief, utterance, ct, recorded?.Select(r => r.Statement).ToList());
         var events = suggestion is null ? [] : GroundEvents(suggestion, brief, known, knownIds, mentioned);
         var risks = suggestion?.Risks.Where(r => WorkItemIdGuard.IsGrounded(r, known)).ToList() ?? [];
-        return Result<ReconcileResult>.Success(new ReconcileResult(suggestion?.Consistent ?? true, mentioned, risks, question, events, next?.Id.Value));
+        return Result<ReconcileResult>.Success(new ReconcileResult(suggestion?.Consistent ?? true, mentioned, risks, question, events, next?.Id.Value, Retractions(recorded, suggestion)));
+    }
+
+    // Only this member's own recent statements can be retracted, and only by number, so a model cannot retract anyone else's.
+    private static List<(RecordedStatement Statement, Guid Id)>? RecordedFor(StandupSession session, string memberId) =>
+        session.ActiveEvents
+            .Where(e => e.MemberId == memberId && e.Type is StandupEventType.Commitment or StandupEventType.Blocker or StandupEventType.Decision)
+            .TakeLast(8)
+            .Select((e, i) => (new RecordedStatement(i + 1, e.Type, e.Text), e.Id))
+            .ToList();
+
+    // Without a model the most recent statement is assumed to be the one corrected.
+    private static List<Guid> Retractions(List<(RecordedStatement Statement, Guid Id)>? recorded, ReconcileSuggestion? suggestion)
+    {
+        if (recorded is null or { Count: 0 })
+        {
+            return [];
+        }
+
+        if (suggestion is null)
+        {
+            return [recorded[^1].Id];
+        }
+
+        return (suggestion.Retracts ?? []).Select(n => recorded.FirstOrDefault(r => r.Statement.Ref == n)).Where(r => r.Id != Guid.Empty).Select(r => r.Id).Distinct().ToList();
     }
 
     // Item links come from code (the ids in the event text, else the single item the member was talking about), never from model guesses.

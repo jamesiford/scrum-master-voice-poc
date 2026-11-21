@@ -14,8 +14,9 @@ public sealed record AgentSpeechEnded(DateTimeOffset Now) : FloorInput;
 /// <summary>The application chose the next speaker.</summary>
 /// <param name="MemberId">The member, or <see langword="null"/> when everyone has had a turn.</param>
 /// <param name="Absent">True when the member is absent today.</param>
+/// <param name="CircleBack">True when the member was skipped earlier and is being asked again.</param>
 /// <param name="CanClarify">False when no clarifying question is possible (nothing flagged), so the next speaker is called without waiting.</param>
-public sealed record SpeakerSelected(string? MemberId, bool Absent, bool CanClarify = true) : FloorInput;
+public sealed record SpeakerSelected(string? MemberId, bool Absent, bool CanClarify = true, bool CircleBack = false) : FloorInput;
 
 /// <summary>A participant finished an utterance.</summary>
 /// <param name="MemberId">Who spoke.</param>
@@ -56,3 +57,7 @@ public sealed record BargeIn(string MemberId, bool IsHuman) : FloorInput;
 /// <param name="Active">True while they talk.</param>
 /// <param name="At">When it changed.</param>
 public sealed record SpeechActive(string MemberId, bool Active, DateTimeOffset At) : FloorInput;
+
+/// <summary>The current speaker cannot speak right now (stepped away, or was said to have), so skip them and circle back.</summary>
+/// <param name="Reason">Why.</param>
+public sealed record DeferCurrent(DeferReason Reason) : FloorInput;

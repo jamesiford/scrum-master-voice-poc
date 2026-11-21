@@ -20,7 +20,7 @@ public static class FallbackQuestions
                 : "Anything that could get in the way of finishing your work this sprint?";
         }
 
-        var label = $"{flagged.Type} {flagged.Id}";
+        var label = CoverageNotes.Label(flagged);
         return Primary(flagged.Flags) switch
         {
             Flag.Blocked => $"{label}, {flagged.Title}, is blocked. What is needed to unblock it, and who can help?",

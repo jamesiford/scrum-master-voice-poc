@@ -1,0 +1,1 @@
+{firstName} cannot speak right now. {notes} Say, in one short sentence, that it is no problem and you will come back to {firstName} at the end, then say you will move on to the next person. Do not ask {firstName} anything.

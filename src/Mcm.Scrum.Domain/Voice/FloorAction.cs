@@ -25,3 +25,18 @@ public sealed record ParkTopic : FloorAction;
 
 /// <summary>Finish the session.</summary>
 public sealed record EndSession : FloorAction;
+
+/// <summary>Why a member is skipped for now.</summary>
+public enum DeferReason
+{
+    /// <summary>They (or a teammate) said they stepped away.</summary>
+    StepAway,
+
+    /// <summary>They were called and did not respond.</summary>
+    NoResponse,
+}
+
+/// <summary>Skip a member for now; the agent circles back to them at the end.</summary>
+/// <param name="MemberId">The member.</param>
+/// <param name="Reason">Why.</param>
+public sealed record DeferSpeaker(string MemberId, DeferReason Reason) : FloorAction;

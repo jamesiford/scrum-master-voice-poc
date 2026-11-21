@@ -10,7 +10,7 @@ public sealed class FoundryReconcileAgent(FoundryChat chat, IPromptStore prompts
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     /// <inheritdoc />
-    public async Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct)
+    public async Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct, IReadOnlyList<RecordedStatement>? recorded = null)
     {
         ArgumentNullException.ThrowIfNull(brief);
         if (!chat.IsConfigured || string.IsNullOrWhiteSpace(utterance))
@@ -24,7 +24,7 @@ public sealed class FoundryReconcileAgent(FoundryChat chat, IPromptStore prompts
             return null;
         }
 
-        var user = JsonSerializer.Serialize(new { brief = new { brief.DisplayName, brief.Items }, utterance }, Json);
+        var user = JsonSerializer.Serialize(new { brief = new { brief.DisplayName, brief.Items }, utterance, recorded }, Json);
         var content = await chat.TryCompleteJsonAsync(instructions, user, ct);
         return content is null ? null : Parse(content);
     }
@@ -44,7 +44,7 @@ public sealed class FoundryReconcileAgent(FoundryChat chat, IPromptStore prompts
                     && t is StandupEventType.Commitment or StandupEventType.Blocker or StandupEventType.Decision)
                 .Select(e => new SuggestedEvent(Enum.Parse<StandupEventType>(e.Type!, ignoreCase: true), e.Text!, e.WorkItemIds ?? []))
                 .ToList();
-            return new ReconcileSuggestion(r.Consistent ?? true, r.MentionedWorkItemIds ?? [], r.Risks ?? [], r.SuggestedQuestion, events);
+            return new ReconcileSuggestion(r.Consistent ?? true, r.MentionedWorkItemIds ?? [], r.Risks ?? [], r.SuggestedQuestion, events, r.Retracts ?? []);
         }
         catch (JsonException)
         {
@@ -52,7 +52,7 @@ public sealed class FoundryReconcileAgent(FoundryChat chat, IPromptStore prompts
         }
     }
 
-    private sealed record ModelReply(bool? Consistent, List<int>? MentionedWorkItemIds, List<string>? Risks, string? SuggestedQuestion, List<ModelEvent>? Events);
+    private sealed record ModelReply(bool? Consistent, List<int>? MentionedWorkItemIds, List<string>? Risks, string? SuggestedQuestion, List<ModelEvent>? Events, List<int>? Retracts);
 
     private sealed record ModelEvent(string? Type, string? Text, List<int>? WorkItemIds);
 }

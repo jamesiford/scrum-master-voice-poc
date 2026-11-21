@@ -34,6 +34,13 @@ public static class FollowUpPlanner
                 continue;
             }
 
+            if (session.NoResponseCount(member.MemberId) > 0 && !session.HasSpoken(member.MemberId))
+            {
+                // Present but silent is not the same as absent: the message says so.
+                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Absent, NoResponseMessage(member), [], date, now));
+                continue;
+            }
+
             var changes = ChangesFor(session, member);
             if (changes.Count > 0)
             {
@@ -46,7 +53,7 @@ public static class FollowUpPlanner
     }
 
     private static List<ProposedChange> ChangesFor(StandupSession session, MemberBrief member) =>
-        session.Events
+        session.ActiveEvents
             .Where(e => e.MemberId == member.MemberId && e.Type is StandupEventType.Blocker or StandupEventType.Commitment && e.WorkItemIds.Count > 0)
             .Select(e => new ProposedChange(
                 e.WorkItemIds[0],
@@ -63,12 +70,15 @@ public static class FollowUpPlanner
     private static string AbsentMessage(MemberBrief member) =>
         $"Hi {Name(member)}, you were not at today's standup. What did you finish, what is next, and is anything blocking you?";
 
+    private static string NoResponseMessage(MemberBrief member) =>
+        $"Hi {Name(member)}, you were in today's standup but I did not hear an update from you. What did you finish, what is next, and is anything blocking you?";
+
     private static IEnumerable<FollowUp> Escalations(StandupSession session, int afterDays, Func<Guid> newId, DateOnly date, DateTimeOffset now)
     {
         var items = session.PreBrief!.Members.SelectMany(m => m.Items.Select(i => (Member: m, Item: i)));
         foreach (var (member, item) in items.Where(x => x.Item.Flags.Contains(Flag.Blocked) && x.Item.DaysInState >= afterDays))
         {
-            var raised = session.Events.Any(e => e.Type == StandupEventType.Blocker && e.WorkItemIds.Contains(item.Id.Value));
+            var raised = session.ActiveEvents.Any(e => e.Type == StandupEventType.Blocker && e.WorkItemIds.Contains(item.Id.Value));
             if (!raised)
             {
                 continue;

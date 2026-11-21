@@ -5,5 +5,6 @@ namespace Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
 /// <param name="DisplayName">Full display name.</param>
 /// <param name="FirstName">Name to say aloud.</param>
 /// <param name="Absent">True when absent today.</param>
+/// <param name="CircleBack">True when the member was skipped earlier and is being asked again.</param>
 /// <param name="HasFlaggedItems">True when the member owns a flagged item, so a grounded clarifying question is possible.</param>
-public sealed record NextSpeakerDto(string? MemberId, string? DisplayName, string? FirstName, bool Absent, bool HasFlaggedItems);
+public sealed record NextSpeakerDto(string? MemberId, string? DisplayName, string? FirstName, bool Absent, bool HasFlaggedItems, bool CircleBack = false);

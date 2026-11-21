@@ -28,7 +28,7 @@ public static class RetrospectiveBuilder
         ArgumentNullException.ThrowIfNull(sessions);
         ArgumentNullException.ThrowIfNull(prep);
 
-        var events = sessions.SelectMany(s => s.Events).ToList();
+        var events = sessions.SelectMany(s => s.ActiveEvents).ToList();
         var blockers = events.Where(e => e.Type == StandupEventType.Blocker).Select(e => e.Text.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(MaxLines).Select(t => $"Blocker raised in standup: {t}");
         var flagged = (sessions.Count > 0 ? sessions[0].PreBrief : null)?.Members.SelectMany(m => m.Items).Where(i => i.Flags.Count > 0).Take(MaxLines)
             .Select(i => $"#{i.Id} \"{i.Title}\" was flagged {string.Join(", ", i.Flags)}") ?? [];
