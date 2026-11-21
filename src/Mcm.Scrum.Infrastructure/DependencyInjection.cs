@@ -35,6 +35,7 @@ public static class DependencyInjection
         AddOptions<DemoOptions>(services, configuration, DemoOptions.SectionName);
         AddOptions<FoundryOptions>(services, configuration, FoundryOptions.SectionName);
         AddOptions<VoiceLiveOptions>(services, configuration, VoiceLiveOptions.SectionName);
+        services.AddOptions<BridgeOptions>().Bind(configuration.GetSection(BridgeOptions.SectionName));
         AddOptions<BotOptions>(services, configuration, BotOptions.SectionName);
         AddOptions<TeamDefaultsOptions>(services, configuration, TeamDefaultsOptions.SectionName);
 
@@ -55,6 +56,12 @@ public static class DependencyInjection
         services.AddSingleton<ITeamsMessenger, TeamsBotMessenger>();
         services.AddSingleton<ICardOutbox>(sp => sp.GetRequiredService<OutboxTeamsMessenger>());
 
+        services.AddHttpClient<IMeetingBridge, HttpMeetingBridge>((sp, client) =>
+        {
+            var bridge = sp.GetRequiredService<IOptions<BridgeOptions>>().Value;
+            client.BaseAddress = new Uri((bridge.BaseUrl ?? bridge.RoomBaseUrl).TrimEnd('/') + "/");
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
         AddAdoClient(services);
         AddFoundry(services);
         services.AddSingleton<IVoiceSessionFactory, VoiceLiveSessionFactory>();

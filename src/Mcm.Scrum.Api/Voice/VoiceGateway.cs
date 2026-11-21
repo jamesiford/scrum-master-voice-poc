@@ -338,6 +338,9 @@ public sealed class VoiceGateway(
                 _audioIdle = true;
                 await MaybeFinishSpeechAsync();
                 break;
+            case "callState":
+                await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Bridge, null, $"{Str(json, "state")}: {Str(json, "message")}"), _run);
+                break;
             case "command":
                 await OnCommandAsync(Str(json, "action") ?? string.Empty, Str(json, "memberId"));
                 break;

@@ -1,9 +1,10 @@
-# The bridge hosts the Simulated Room page and the cast player. The Teams-joining Chromium bridge is not built yet.
+# The bridge serves the Simulated Room and runs the headless Chromium call page that joins Teams meetings through ACS (M4).
 # Build context is the repository root so demo/ (the cast script) is available.
 FROM node:22-slim
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 WORKDIR /app/src/meeting-bridge
 COPY src/meeting-bridge/package*.json ./
-RUN npm ci
+RUN npm ci && npx playwright-core install --with-deps chromium
 COPY src/meeting-bridge/ ./
 RUN npm run build:web
 COPY demo/ /app/demo/

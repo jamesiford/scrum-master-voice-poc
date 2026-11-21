@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import type { CastRoutes } from './castRoutes.js';
 import { sendJson } from './castRoutes.js';
+import type { TeamsRoutes } from './teamsRoutes.js';
 
 const types: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -20,9 +21,10 @@ const types: Record<string, string> = {
 export function createRouter(
   publicDir: string,
   cast: CastRoutes,
+  teams: TeamsRoutes,
 ): (req: IncomingMessage, res: ServerResponse) => void {
   return (req, res) => {
-    void route(req, res, publicDir, cast).catch((error: unknown) => {
+    void route(req, res, publicDir, cast, teams).catch((error: unknown) => {
       sendJson(res, 500, {
         error: 'bridge_error',
         detail: error instanceof Error ? error.message : 'Unexpected error',
@@ -36,12 +38,18 @@ async function route(
   res: ServerResponse,
   publicDir: string,
   cast: CastRoutes,
+  teams: TeamsRoutes,
 ): Promise<void> {
   const path = new URL(req.url ?? '/', 'http://localhost').pathname;
 
   if (path === '/healthz') return sendJson(res, 200, { status: 'healthy' });
   if (path === '/cast/script' && req.method === 'GET') return cast.script(res);
   if (path === '/cast/line' && req.method === 'POST') return cast.line(req, res);
+  if (path === '/acs/token' && req.method === 'POST') return teams.token(res);
+  if (path === '/teams/join' && req.method === 'POST') return teams.control(req, res);
+  if (path.startsWith('/teams/') && req.method === 'DELETE')
+    return teams.control(req, res, decodeURIComponent(path.slice('/teams/'.length)));
+  if (path.startsWith('/teams/')) return serveFile(res, join(publicDir, 'teams.html'));
   if (path === '/room' || path.startsWith('/room/'))
     return serveFile(res, join(publicDir, 'room.html'));
   if (path.startsWith('/static/')) {

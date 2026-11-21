@@ -2,6 +2,7 @@ using Mcm.Scrum.Api.Voice;
 using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Features.Standups.GetSession;
 using Mcm.Scrum.Application.Features.Standups.GetSessionEvents;
+using Mcm.Scrum.Application.Features.Standups.JoinMeeting;
 using Mcm.Scrum.Application.Features.Standups.ListSessions;
 using Mcm.Scrum.Application.Features.Standups.PrepareStandup;
 using Mcm.Scrum.Application.Features.Standups.StartStandup;
@@ -40,6 +41,13 @@ public static class SessionsEndpoints
             }
 
             var token = tokens.Issue(id);
+            if (string.Equals(body.Mode, "acs", StringComparison.OrdinalIgnoreCase))
+            {
+                var publicApi = (config["Bridge:ApiPublicUrl"] ?? $"{http.Request.Scheme}://{http.Request.Host}").TrimEnd('/');
+                var joined = await sender.Send(new JoinMeetingCommand(id, token, publicApi), ct);
+                return joined.IsSuccess ? Results.Ok(new StartResponse(token, string.Empty)) : joined.ToHttpResult();
+            }
+
             var api = $"{http.Request.Scheme}://{http.Request.Host}";
             var roomBase = (config["Bridge:RoomBaseUrl"] ?? "http://localhost:5090").TrimEnd('/');
             return Results.Ok(new StartResponse(token, $"{roomBase}/room/{id}?token={Uri.EscapeDataString(token)}&api={Uri.EscapeDataString(api)}"));
@@ -53,7 +61,7 @@ public static class SessionsEndpoints
     public sealed record PrepareBody(string TeamId);
 
     /// <summary>Request body for <c>POST /api/sessions/{id}/start</c>.</summary>
-    /// <param name="Mode">simulated or acs.</param>
+    /// <param name="Mode">simulated or acs (joins the Teams meeting in JoinUrl).</param>
     /// <param name="JoinUrl">Teams join URL (acs).</param>
     /// <param name="StandupMinutes">Timebox override.</param>
     public sealed record StartBody(string Mode, string? JoinUrl = null, int? StandupMinutes = null);

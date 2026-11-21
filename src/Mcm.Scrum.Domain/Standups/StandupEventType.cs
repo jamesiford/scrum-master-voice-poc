@@ -26,4 +26,7 @@ public enum StandupEventType
 
     /// <summary>A grounded clarifying question the agent asked a member.</summary>
     Question,
+
+    /// <summary>A call or bridge status change, such as waiting in the Teams lobby.</summary>
+    Bridge,
 }

@@ -34,11 +34,13 @@ export class AgentPlayer {
    * @param context - The shared audio context (24 kHz).
    * @param onIdle - Called once playback has been silent long enough that the agent has finished.
    * @param onActive - Called when playback starts.
+   * @param destination - Where agent audio goes: the speakers in the Simulated Room, or the meeting's virtual microphone in Teams.
    */
   constructor(
     private readonly context: AudioContext,
     private readonly onIdle: () => void,
     private readonly onActive: () => void,
+    private readonly destination: AudioNode = context.destination,
   ) {}
 
   /** Gets a value indicating whether agent audio is queued or playing. */
@@ -61,7 +63,7 @@ export class AgentPlayer {
     for (let i = 0; i < samples.length; i++) channel[i] = (samples[i] ?? 0) / 0x8000;
     const source = this.context.createBufferSource();
     source.buffer = buffer;
-    source.connect(this.context.destination);
+    source.connect(this.destination);
     this.nextTime = Math.max(this.nextTime, this.context.currentTime + 0.05);
     source.start(this.nextTime);
     this.nextTime += buffer.duration;

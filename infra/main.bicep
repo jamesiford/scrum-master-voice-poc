@@ -29,6 +29,10 @@ param portalClientId string
 @secure()
 param portalClientSecret string
 
+@secure()
+@description('Shared secret for API-to-bridge control calls.')
+param bridgeApiKey string
+
 var tenantId = subscription().tenantId
 var token = toLower(uniqueString(resourceGroup().id, environmentName))
 var tags = { 'azd-env-name': environmentName }
@@ -44,6 +48,13 @@ resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
 
 resource insights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
+}
+
+resource acs 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: 'acs-mcm-scrum-demo'
+  location: 'global'
+  tags: tags
+  properties: { dataLocation: 'United States' }
 }
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
@@ -131,7 +142,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: { external: true, targetPort: 8080, transport: 'auto' }
       registries: [ { server: registry.properties.loginServer, identity: identity.id } ]
-      secrets: concat(commonSecrets, [ { name: 'bot-secret', value: botClientSecret } ])
+      secrets: concat(commonSecrets, [ { name: 'bot-secret', value: botClientSecret }, { name: 'bridge-key', value: bridgeApiKey } ])
     }
     template: {
       containers: [
@@ -149,6 +160,8 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Connections__ServiceConnection__Settings__ClientId', value: botAppId }
             { name: 'Connections__ServiceConnection__Settings__ClientSecret', secretRef: 'bot-secret' }
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
+            { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
+            { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: insights.properties.ConnectionString }
           ]
         }
@@ -173,20 +186,22 @@ resource bridge 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: { external: true, targetPort: 8080, transport: 'auto' }
       registries: [ { server: registry.properties.loginServer, identity: identity.id } ]
-      secrets: commonSecrets
+      secrets: concat(commonSecrets, [ { name: 'bridge-key', value: bridgeApiKey }, { name: 'acs-connection', value: acs.listKeys().primaryConnectionString } ])
     }
     template: {
       containers: [
         {
           name: 'bridge'
           image: placeholderImage
-          resources: { cpu: json('0.5'), memory: '1Gi' }
+          resources: { cpu: json('2.0'), memory: '4Gi' }
           env: [
             { name: 'AZURE_CLIENT_ID', value: identity.properties.clientId }
             { name: 'AZURE_TENANT_ID', value: tenantId }
             { name: 'API_URL', value: 'https://${apiFqdn}' }
             { name: 'SPEECH_ENDPOINT', value: foundry.properties.endpoint }
             { name: 'PORT', value: '8080' }
+            { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
+            { name: 'ACS_CONNECTION_STRING', secretRef: 'acs-connection' }
           ]
         }
       ]
@@ -206,7 +221,7 @@ resource apiAuth 'Microsoft.App/containerApps/authConfigs@2024-03-01' = {
     globalValidation: {
       unauthenticatedClientAction: 'RedirectToLoginPage'
       redirectToProvider: 'azureactivedirectory'
-      excludedPaths: [ '/api/messages', '/healthz' ]
+      excludedPaths: [ '/api/messages', '/healthz', '/ws/bridge/*' ]
     }
     identityProviders: {
       azureActiveDirectory: {
@@ -229,6 +244,7 @@ resource bridgeAuth 'Microsoft.App/containerApps/authConfigs@2024-03-01' = {
     globalValidation: {
       unauthenticatedClientAction: 'RedirectToLoginPage'
       redirectToProvider: 'azureactivedirectory'
+      excludedPaths: [ '/teams/*', '/healthz' ]
     }
     identityProviders: {
       azureActiveDirectory: {

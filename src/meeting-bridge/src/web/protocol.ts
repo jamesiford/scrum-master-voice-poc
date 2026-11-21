@@ -43,6 +43,7 @@ export type ClientMessage =
   | { type: 'speaking'; memberId: string; active: boolean }
   | { type: 'utterance'; memberId: string; text: string; durationMs: number }
   | { type: 'agentAudioState'; state: 'idle' | 'speaking' }
+  | { type: 'callState'; state: string; message: string }
   | {
       type: 'command';
       action: 'begin' | 'takeover' | 'release' | 'mute' | 'unmute' | 'skip' | 'end';

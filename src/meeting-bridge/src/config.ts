@@ -13,6 +13,14 @@ export interface BridgeConfig {
   tenantId: string | undefined;
   /** Directory holding the browser bundle. */
   publicDir: string;
+  /** ACS connection string (secret), if used instead of Entra. */
+  acsConnectionString: string | undefined;
+  /** ACS endpoint for Entra sign-in (Acs__Endpoint). */
+  acsEndpoint: string | undefined;
+  /** Shared secret for API-to-bridge control calls (Bridge__ApiKey). */
+  bridgeKey: string;
+  /** Chromium executable inside the container; empty locally. */
+  chromiumPath: string | undefined;
 }
 
 /**
@@ -28,6 +36,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BridgeConfig {
       env['SPEECH_ENDPOINT'] ?? 'https://fdy-mcm-scrum-demo.cognitiveservices.azure.com'
     ).replace(/\/$/, ''),
     tenantId: env['AZURE_TENANT_ID'] || undefined,
+    acsConnectionString: env['ACS_CONNECTION_STRING'] || undefined,
+    acsEndpoint: env['Acs__Endpoint'] || undefined,
+    bridgeKey: env['Bridge__ApiKey'] ?? '',
+    chromiumPath: env['CHROMIUM_PATH'] || undefined,
     publicDir: resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public'),
   };
 }

@@ -5,7 +5,10 @@ namespace Mcm.Scrum.Application.Features.Standups;
 /// <summary>Error codes for standup use cases.</summary>
 public static class StandupErrors
 {
-    /// <summary>Gets the error for a roster with nobody active.</summary>
+    /// <summary>Gets the error for joining a Teams meeting without a meeting link.</summary>
+    public static Error JoinUrlRequired { get; } = Error.Invalid("session.join_url_required", "A Teams meeting link is required for a Teams standup.");
+
+    /// <summary>Gets the error for a roster with no active member.</summary>
     public static Error RosterEmpty { get; } =
         Error.Conflict("standup.roster_empty", "The roster has no active members. Sync the roster first.");
 
