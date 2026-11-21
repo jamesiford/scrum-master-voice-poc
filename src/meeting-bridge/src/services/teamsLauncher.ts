@@ -51,6 +51,9 @@ export class TeamsLauncher {
       args: [
         '--autoplay-policy=no-user-gesture-required',
         '--use-fake-ui-for-media-stream',
+        // The ACS calling SDK silently ignores custom audio streams when no microphone
+        // exists (azure-sdk-for-js#29174); a fake device satisfies that check.
+        '--use-fake-device-for-media-stream',
         '--no-sandbox',
       ],
     });

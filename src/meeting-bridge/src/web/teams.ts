@@ -29,9 +29,6 @@ let members: RoomMember[] = [];
 let begun = false;
 let player: AgentPlayer;
 let context: AudioContext;
-// Outgoing audio uses its own 48 kHz context: WebRTC sends 48 kHz, and a 24 kHz track can be dropped silently.
-let outContext: AudioContext;
-let meter: AnalyserNode;
 let localAudio: LocalAudioStream;
 const wired = new Set<string>();
 
@@ -51,7 +48,7 @@ function report(state: string, message: string): void {
 }
 
 /**
- * Matches a Teams display name to a roster member by first name, so "Daniel Park" matches "Daniel Park".
+ * Matches a Teams display name to a roster member by first name, so "Priya Sharma" matches "Priya S.".
  * @param name - The Teams display name.
  * @returns The member, if any.
  */
@@ -139,86 +136,18 @@ function beginWhenReady(c: Call): void {
   }, 1000);
 }
 
-/**
- * Makes sure the agent's virtual microphone is attached to the call and unmuted, then plays a short tone so a presenter can
- * hear straight away that audio works. Headless Chromium can leave the audio context suspended and ACS can join muted.
- * @param c - The call.
- * @param virtualMic - The destination the agent's audio is routed into.
- */
-async function ensureOutgoingAudio(
-  c: Call,
-  virtualMic: MediaStreamAudioDestinationNode,
-): Promise<void> {
-  try {
-    if (context.state !== 'running') await context.resume();
-    if (outContext.state !== 'running') await outContext.resume();
-    // Re-attach after the call connects; attaching only at join time is not always honoured by the SDK.
-    if (c.localAudioStreams.length > 0) await c.stopAudio();
-    await c.startAudio(localAudio);
-    if (c.isMuted) await c.unmute();
-    const track = virtualMic.stream.getAudioTracks()[0];
-    send({
-      type: 'callState',
-      state: 'Audio',
-      message: `Outgoing audio ready (out ${outContext.state}  Hz, track ${track?.readyState ?? 'none'}, muted ${c.isMuted}).`,
-    });
-    const osc = outContext.createOscillator();
-    const gain = outContext.createGain();
-    gain.gain.value = 0.15;
-    osc.frequency.value = 660;
-    osc.connect(gain).connect(virtualMic);
-    osc.start();
-    osc.stop(outContext.currentTime + 0.4);
-  } catch (e) {
-    send({
-      type: 'callState',
-      state: 'Audio',
-      message: `Outgoing audio problem: ${e instanceof Error ? e.message : 'unknown'}`,
-    });
-  }
-}
-
-/**
- * Reports the loudest outgoing sample about once a second while the agent speaks, so the portal shows whether audio leaves
- * this page. A peak above zero here with silence in the meeting means the problem is after the page (the SDK or Teams).
- */
-function watchLevel(): void {
-  const buffer = new Float32Array(meter.fftSize);
-  let peak = 0;
-  let last = 0;
-  setInterval(() => {
-    meter.getFloatTimeDomainData(buffer);
-    for (const s of buffer) peak = Math.max(peak, Math.abs(s));
-    if (peak > 0.01 && Date.now() - last > 4000) {
-      send({
-        type: 'callState',
-        state: 'Audio',
-        message: `Agent audio leaving the page (peak ${peak.toFixed(2)}).`,
-      });
-      last = Date.now();
-    }
-    peak = 0;
-  }, 250);
-}
-
 async function join(): Promise<void> {
   report('Joining', 'Requesting an ACS identity.');
   const credential = new AzureCommunicationTokenCredential(await fetchAcsToken());
   const client = new CallClient();
   const agent = await client.createCallAgent(credential, { displayName });
 
-  outContext = new AudioContext({ sampleRate: 48000 });
-  const virtualMic = outContext.createMediaStreamDestination();
-  const outGain = outContext.createGain();
-  meter = outContext.createAnalyser();
-  outGain.connect(virtualMic);
-  outGain.connect(meter);
-  watchLevel();
+  const virtualMic = context.createMediaStreamDestination();
   player = new AgentPlayer(
-    outContext,
+    context,
     () => send({ type: 'agentAudioState', state: 'idle' }),
     () => undefined,
-    outGain,
+    virtualMic,
   );
   localAudio = new LocalAudioStream(virtualMic.stream);
   await context.audioWorklet.addModule('/static/mic-worklet.js');
@@ -245,7 +174,6 @@ async function join(): Promise<void> {
           'Waiting in the Teams lobby. Admit "MCM Scrum Agent" from the meeting.',
         );
       case 'Connected':
-        void ensureOutgoingAudio(c, virtualMic);
         return report('Connected', 'In the meeting. Waiting for roster members to join.');
       case 'Disconnected':
         return report(
