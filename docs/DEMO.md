@@ -16,13 +16,23 @@
 5. Open Azure DevOps and show the "Approved by ..." comment on the approved item and nothing on the rejected one.
 6. **Reports** tab: sprint summary, monthly report, then ask "How is attendance?" (the same answer works in Teams chat).
 7. **Planning** tab: load per person, carry-over, not-ready items and suggested owners.
+8. **Retrospective**, **Story Writer** (pick a parked topic) and **Models and email** tabs for the stretch features.
 
 ## Real Teams meeting
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "MCM Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
 4. Roster members who join are matched by name (a Teams user called "System Administrator" matches the roster member "Admin"). Anyone who does not join is marked absent. The standup begins 8 seconds after the first match; use **Begin** if it does not.
-5. Anything that goes wrong is shown on the Live tab as a Bridge event (invalid link, lobby denied, removed).
+5. The agent shares the standup board as its screen (flagged-item agenda first, then each speaker's items). Share status appears as Bridge events.
+6. Anything that goes wrong is shown on the Live tab as a Bridge event (invalid link, lobby denied, removed).
+
+### Things worth showing in a live run
+- Ask "Scrum Agent, is that one overdue? What was the due date?" mid-update.
+- Ask "What am I supposed to report on?" on your turn.
+- Have a colleague say "Daniel stepped out, he'll be back in a few minutes": he is skipped and circled back to at the end.
+- Stay silent when called: the agent records present-but-no-response (not absent).
+- Correct yourself ("scratch that, I meant...") and show the removed blocker in the follow-up.
+- Have one person say "I'll give Admin's update": the follow-up still needs Admin's approval.
 
 ## If something fails
 | Symptom | Fix |

@@ -1,6 +1,6 @@
 # MCM Scrum Master voice PoC
 
-Voice-led junior Scrum Master demo. Build spec: [docs/SPEC.md](docs/SPEC.md). Engineering rules: [.github/copilot-instructions.md](.github/copilot-instructions.md).
+Voice-led junior Scrum Master demo. Build spec: [docs/SPEC.md](docs/SPEC.md). What was actually built: [docs/AS-BUILT.md](docs/AS-BUILT.md). Demo runbook: [docs/DEMO.md](docs/DEMO.md). Decisions: [docs/adr](docs/adr). Engineering rules: [.github/copilot-instructions.md](.github/copilot-instructions.md).
 
 ## Run locally
 
