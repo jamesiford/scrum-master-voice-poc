@@ -24,3 +24,16 @@ internal sealed class RecordingTeamsMessenger : ITeamsMessenger
         return Task.CompletedTask;
     }
 }
+
+internal sealed class FakeMeetingBridge : IMeetingBridge
+{
+    public List<Guid> Left { get; } = [];
+
+    public Task<Mcm.Scrum.Domain.Common.Result> JoinAsync(MeetingJoinRequest request, CancellationToken ct) => Task.FromResult(Mcm.Scrum.Domain.Common.Result.Success());
+
+    public Task LeaveAsync(Guid sessionId, CancellationToken ct)
+    {
+        Left.Add(sessionId);
+        return Task.CompletedTask;
+    }
+}

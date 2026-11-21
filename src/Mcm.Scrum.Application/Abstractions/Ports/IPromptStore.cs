@@ -8,4 +8,16 @@ public interface IPromptStore
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The text, or <see langword="null"/> when no such prompt exists.</returns>
     Task<string?> GetAsync(string name, CancellationToken ct);
+
+    /// <summary>Lists the prompt names.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Names without extension.</returns>
+    Task<IReadOnlyList<string>> ListAsync(CancellationToken ct);
+
+    /// <summary>Replaces an existing prompt.</summary>
+    /// <param name="name">Prompt name.</param>
+    /// <param name="text">New text.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns><see langword="true"/> when the prompt exists and was saved.</returns>
+    Task<bool> SaveAsync(string name, string text, CancellationToken ct);
 }

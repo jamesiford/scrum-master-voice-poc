@@ -22,6 +22,10 @@ public sealed class FoundryAgentTests
     private sealed class StubPrompts(string? text) : IPromptStore
     {
         public Task<string?> GetAsync(string name, CancellationToken ct) => Task.FromResult(text);
+
+        public Task<IReadOnlyList<string>> ListAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<string>>([]);
+
+        public Task<bool> SaveAsync(string name, string value, CancellationToken ct) => Task.FromResult(false);
     }
 
     private static readonly MemberBrief Member = new("m1", "Priya", [new BriefItem(new WorkItemId(1), "T", "Task", "Active", 3, [Flag.Stale])], "fallback");

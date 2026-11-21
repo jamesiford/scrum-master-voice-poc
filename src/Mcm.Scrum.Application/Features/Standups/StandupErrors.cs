@@ -5,6 +5,11 @@ namespace Mcm.Scrum.Application.Features.Standups;
 /// <summary>Error codes for standup use cases.</summary>
 public static class StandupErrors
 {
+    /// <summary>Gets the error for steering a standup that is not running here.</summary>
+    /// <param name="id">The session.</param>
+    /// <returns>The error.</returns>
+    public static Error NotLive(Guid id) => Error.Conflict("session.not_live", $"Session '{id}' is not running.");
+
     /// <summary>Gets the error for joining a Teams meeting without a meeting link.</summary>
     public static Error JoinUrlRequired { get; } = Error.Invalid("session.join_url_required", "A Teams meeting link is required for a Teams standup.");
 

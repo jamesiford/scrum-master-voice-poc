@@ -14,6 +14,10 @@ builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Ad
 builder.Services.AddOptions<VoiceGatewayOptions>().Bind(builder.Configuration.GetSection(VoiceGatewayOptions.SectionName)).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<BridgeTokenService>();
 builder.Services.AddTransient<VoiceGateway>();
+builder.Services.AddSingleton<LiveSessionRegistry>();
+builder.Services.AddSingleton<Mcm.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
+builder.Services.AddSingleton<Mcm.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
+builder.Services.AddHostedService<Mcm.Scrum.Api.Scheduling.ScheduleWorker>();
 
 var botConfigured = !string.IsNullOrWhiteSpace(builder.Configuration["Bot:AppId"]);
 if (botConfigured)
@@ -61,6 +65,8 @@ app.MapHealthEndpoints();
 app.MapTeamsEndpoints();
 app.MapSessionsEndpoints();
 app.MapFollowUpsEndpoints();
+app.MapScheduleEndpoints();
+app.MapDemoEndpoints();
 app.MapBridgeEndpoints();
 app.MapFallbackToFile("index.html");
 

@@ -17,6 +17,19 @@ internal sealed class FakeReconcileAgent(ReconcileSuggestion? suggestion) : IRec
 internal sealed class FakePrompts(Dictionary<string, string> prompts) : IPromptStore
 {
     public Task<string?> GetAsync(string name, CancellationToken ct) => Task.FromResult(prompts.GetValueOrDefault(name));
+
+    public Task<IReadOnlyList<string>> ListAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<string>>([.. prompts.Keys]);
+
+    public Task<bool> SaveAsync(string name, string text, CancellationToken ct)
+    {
+        var exists = prompts.ContainsKey(name);
+        if (exists)
+        {
+            prompts[name] = text;
+        }
+
+        return Task.FromResult(exists);
+    }
 }
 
 /// <summary>A prepared standup with two members (m-priya has a stale story 1, m-marcus a blocked bug 12) and the services to run use cases against it.</summary>
@@ -65,6 +78,7 @@ internal sealed class StandupHarness : IAsyncDisposable
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IClock>(new FixedClock(Now));
         services.AddSingleton<ITeamsMessenger>(new RecordingTeamsMessenger());
+        services.AddSingleton<IMeetingBridge>(new FakeMeetingBridge());
         services.AddSingleton<IMemberRepository>(new InMemoryMemberRepository());
         services.AddSingleton<IFollowUpRepository>(new InMemoryFollowUpRepository());
         services.AddSingleton<IReconcileAgent>(new FakeReconcileAgent(suggestion));

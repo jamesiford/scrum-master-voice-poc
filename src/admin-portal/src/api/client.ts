@@ -361,3 +361,161 @@ export async function applyFollowUp(id: string): Promise<void> {
 export function listCards(signal?: AbortSignal): Promise<SentCard[]> {
   return request<SentCard[]>('GET', '/api/cards', undefined, signal);
 }
+
+/** A team's schedule. */
+export interface Schedule {
+  teamId: string;
+  enabled: boolean;
+  days: string[];
+  startTime: string;
+  mode: 'simulated' | 'acs';
+  joinUrl: string | null;
+}
+
+/** Editable schedule sent with `PUT /api/teams/{id}/schedule`. */
+export interface ScheduleInput {
+  enabled: boolean;
+  days: string[];
+  startTime: string;
+  mode: 'simulated' | 'acs';
+  joinUrl: string | null;
+}
+
+/**
+ * Reads a team's schedule.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The schedule; `startTime` is `HH:mm:ss` from the API.
+ */
+export function getSchedule(teamId: string, signal?: AbortSignal): Promise<Schedule> {
+  return request<Schedule>(
+    'GET',
+    `/api/teams/${encodeURIComponent(teamId)}/schedule`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Saves a team's schedule.
+ * @param teamId - Team id.
+ * @param input - New schedule.
+ */
+export async function updateSchedule(teamId: string, input: ScheduleInput): Promise<void> {
+  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}/schedule`, input);
+}
+
+/**
+ * Lists prompt names.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The names.
+ */
+export function listPrompts(teamId: string, signal?: AbortSignal): Promise<string[]> {
+  return request<string[]>(
+    'GET',
+    `/api/teams/${encodeURIComponent(teamId)}/prompts`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Reads a prompt.
+ * @param teamId - Team id.
+ * @param name - Prompt name.
+ * @param signal - Optional abort signal.
+ * @returns The prompt text.
+ */
+export function getPrompt(teamId: string, name: string, signal?: AbortSignal): Promise<string> {
+  return request<string>(
+    'GET',
+    `/api/teams/${encodeURIComponent(teamId)}/prompts/${encodeURIComponent(name)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Saves a prompt; it applies on the next agent turn.
+ * @param teamId - Team id.
+ * @param name - Prompt name.
+ * @param text - New text.
+ */
+export async function savePrompt(teamId: string, name: string, text: string): Promise<void> {
+  await request<unknown>(
+    'PUT',
+    `/api/teams/${encodeURIComponent(teamId)}/prompts/${encodeURIComponent(name)}`,
+    { text },
+  );
+}
+
+/** Live floor and timebox state of a running standup. */
+export interface LiveState {
+  floor: string;
+  currentSpeaker: string | null;
+  agentSpeaking: boolean;
+  remainingSec: number;
+  parkingLot: string[];
+  absent: string[];
+  p50: number;
+  p95: number;
+  running: boolean;
+  ended?: boolean;
+}
+
+/**
+ * Steers a running standup.
+ * @param sessionId - Session id.
+ * @param action - begin, mute, unmute, skip, takeover, release or end.
+ */
+export async function controlSession(sessionId: string, action: string): Promise<void> {
+  await request<unknown>('POST', `/api/sessions/${encodeURIComponent(sessionId)}/control`, {
+    action,
+  });
+}
+
+/**
+ * Starts a standup in a Teams meeting.
+ * @param sessionId - Session id.
+ * @param joinUrl - Teams meeting link.
+ * @param standupMinutes - Timebox.
+ */
+export async function startTeamsSession(
+  sessionId: string,
+  joinUrl: string,
+  standupMinutes: number,
+): Promise<void> {
+  await request<unknown>('POST', `/api/sessions/${encodeURIComponent(sessionId)}/start`, {
+    mode: 'acs',
+    joinUrl,
+    standupMinutes,
+  });
+}
+
+/** Counts of demo records. */
+export interface DemoStatus {
+  sessions: number;
+  followUps: number;
+  cards: number;
+}
+
+/**
+ * Reads how much demo state exists.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The counts.
+ */
+export function getDemoStatus(teamId: string, signal?: AbortSignal): Promise<DemoStatus> {
+  return request<DemoStatus>(
+    'GET',
+    `/api/demo/status?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}
+
+/** Clears sessions, follow-ups and cards. Azure DevOps is not touched. */
+export async function resetDemo(): Promise<void> {
+  await request<unknown>('POST', '/api/demo/reset');
+}

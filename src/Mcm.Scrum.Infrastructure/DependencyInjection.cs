@@ -51,6 +51,8 @@ public static class DependencyInjection
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
         services.AddSingleton<IFollowUpRepository, JsonFileFollowUpRepository>();
+        services.AddSingleton<IScheduleRepository, JsonFileScheduleRepository>();
+        services.AddSingleton<IDemoReset, JsonFileDemoReset>();
         services.AddSingleton<OutboxTeamsMessenger>();
         services.AddSingleton<IConversationStore, JsonFileConversationStore>();
         services.AddSingleton<ITeamsMessenger, TeamsBotMessenger>();

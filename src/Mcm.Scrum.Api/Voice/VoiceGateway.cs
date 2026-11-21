@@ -33,6 +33,7 @@ public sealed class VoiceGateway(
     IScrumTools tools,
     IVoiceSessionFactory voiceFactory,
     IClock clock,
+    LiveSessionRegistry live,
     IOptions<VoiceGatewayOptions> options,
     ILogger<VoiceGateway> logger)
 {
@@ -83,6 +84,8 @@ public sealed class VoiceGateway(
 
     private sealed record BridgeClosed : Msg;
 
+    private sealed record FromControl(string Action) : Msg;
+
     /// <summary>Runs the gateway until the standup ends or the bridge disconnects.</summary>
     /// <param name="bridge">The bridge websocket.</param>
     /// <param name="sessionId">The session.</param>
@@ -101,6 +104,7 @@ public sealed class VoiceGateway(
         }
 
         var readers = new[] { ReadBridgeAsync(), ReadVoiceAsync(), TickAsync() };
+        live.Register(sessionId, a => _inbox.Writer.TryWrite(new FromControl(a)));
         try
         {
             await foreach (var msg in _inbox.Reader.ReadAllAsync(_run))
@@ -118,6 +122,7 @@ public sealed class VoiceGateway(
         }
         finally
         {
+            live.Unregister(sessionId);
             await run.CancelAsync();
             await Task.WhenAll(readers.Select(r => r.ContinueWith(_ => { }, TaskScheduler.Default)));
             await _voice.DisposeAsync();
@@ -311,6 +316,9 @@ public sealed class VoiceGateway(
                 break;
             case ReconcileDone r:
                 await OnReconcileDoneAsync(r);
+                break;
+            case FromControl c:
+                await OnCommandAsync(c.Action, null);
                 break;
             case BridgeClosed:
                 _finished = true;
@@ -738,11 +746,7 @@ public sealed class VoiceGateway(
         _lastUi = now;
         var total = _session.StandupMinutes * 60;
         var remaining = _begun ? Math.Max(0, total - (int)(now - _beganAt).TotalSeconds) : total;
-        await _bridge.SendAsync(
-            new
-            {
-                type = "ui",
-                state = new
+        var state = new
                 {
                     floor = ended ? "Closed" : _floor.State.ToString(),
                     currentSpeaker = _floor.CurrentMemberId,
@@ -753,9 +757,9 @@ public sealed class VoiceGateway(
                     p50 = LatencyStats.Percentile(_latencies, 50),
                     p95 = LatencyStats.Percentile(_latencies, 95),
                     running = _begun,
-                },
-            },
-            _run);
+        };
+        live.Update(_sessionId, JsonSerializer.Serialize(state));
+        await _bridge.SendAsync(new { type = "ui", state }, _run);
     }
 
     private string NameOf(string memberId) =>

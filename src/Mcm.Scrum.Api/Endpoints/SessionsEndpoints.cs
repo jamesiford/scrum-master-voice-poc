@@ -1,5 +1,7 @@
 using Mcm.Scrum.Api.Voice;
 using Mcm.Scrum.Application.Abstractions.Messaging;
+using Mcm.Scrum.Application.Features.Standups.ControlStandup;
+using Mcm.Scrum.Application.Features.Standups.GetLiveState;
 using Mcm.Scrum.Application.Features.Standups.GetSession;
 using Mcm.Scrum.Application.Features.Standups.GetSessionEvents;
 using Mcm.Scrum.Application.Features.Standups.JoinMeeting;
@@ -31,6 +33,29 @@ public static class SessionsEndpoints
 
         group.MapGet("/{id:guid}/events", async (Guid id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetSessionEventsQuery(id), ct)).ToHttpResult());
+
+        group.MapPost("/{id:guid}/control", async (Guid id, ControlBody body, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new ControlStandupCommand(id, body.Action), ct)).ToHttpResult());
+
+        // Server-sent events for the Live console: one state frame per second until the client leaves or the standup ends.
+        group.MapGet("/{id:guid}/live", async (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+        {
+            http.Response.ContentType = "text/event-stream";
+            http.Response.Headers.CacheControl = "no-store";
+            for (var attempts = 0; !ct.IsCancellationRequested; attempts++)
+            {
+                var state = await sender.Send(new GetLiveStateQuery(id), ct);
+                var frame = state.IsSuccess ? state.Value : "{\"ended\":true}";
+                await http.Response.WriteAsync($"data: {frame}\n\n", ct);
+                await http.Response.Body.FlushAsync(ct);
+                if (!state.IsSuccess && attempts > 2)
+                {
+                    break;
+                }
+
+                await Task.Delay(1000, ct);
+            }
+        });
 
         group.MapPost("/{id:guid}/start", async (Guid id, StartBody body, HttpContext http, ISender sender, BridgeTokenService tokens, IConfiguration config, CancellationToken ct) =>
         {
@@ -66,8 +91,12 @@ public static class SessionsEndpoints
     /// <param name="StandupMinutes">Timebox override.</param>
     public sealed record StartBody(string Mode, string? JoinUrl = null, int? StandupMinutes = null);
 
+    /// <summary>Request body for <c>POST /api/sessions/{id}/control</c>.</summary>
+    /// <param name="Action">begin, mute, unmute, skip, takeover, release or end.</param>
+    public sealed record ControlBody(string Action);
+
     /// <summary>Response of the start endpoint.</summary>
     /// <param name="BridgeToken">Short-lived websocket token.</param>
-    /// <param name="RoomUrl">Where to open the Simulated Room.</param>
+    /// <param name="RoomUrl">Where to open the Simulated Room; empty for a Teams meeting.</param>
     public sealed record StartResponse(string BridgeToken, string RoomUrl);
 }
