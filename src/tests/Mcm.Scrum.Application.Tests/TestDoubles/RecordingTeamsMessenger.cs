@@ -6,6 +6,14 @@ internal sealed class RecordingTeamsMessenger : ITeamsMessenger
 {
     public List<TeamsMessage> Sent { get; } = [];
 
+    public List<TeamsMessage> Updated { get; } = [];
+
+    public Task UpdateAsync(TeamsMessage message, CancellationToken ct)
+    {
+        Updated.Add(message);
+        return Task.CompletedTask;
+    }
+
     public Task SendAsync(TeamsMessage message, CancellationToken ct)
     {
         if (!Sent.Any(m => m.DedupeKey == message.DedupeKey))

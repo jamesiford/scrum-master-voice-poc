@@ -35,6 +35,7 @@ public static class DependencyInjection
         AddOptions<DemoOptions>(services, configuration, DemoOptions.SectionName);
         AddOptions<FoundryOptions>(services, configuration, FoundryOptions.SectionName);
         AddOptions<VoiceLiveOptions>(services, configuration, VoiceLiveOptions.SectionName);
+        AddOptions<BotOptions>(services, configuration, BotOptions.SectionName);
         AddOptions<TeamDefaultsOptions>(services, configuration, TeamDefaultsOptions.SectionName);
 
         services.AddSingleton(TimeProvider.System);
@@ -50,7 +51,8 @@ public static class DependencyInjection
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
         services.AddSingleton<IFollowUpRepository, JsonFileFollowUpRepository>();
         services.AddSingleton<OutboxTeamsMessenger>();
-        services.AddSingleton<ITeamsMessenger>(sp => sp.GetRequiredService<OutboxTeamsMessenger>());
+        services.AddSingleton<IConversationStore, JsonFileConversationStore>();
+        services.AddSingleton<ITeamsMessenger, TeamsBotMessenger>();
         services.AddSingleton<ICardOutbox>(sp => sp.GetRequiredService<OutboxTeamsMessenger>());
 
         AddAdoClient(services);

@@ -151,6 +151,7 @@ public sealed class FollowUp : AggregateRoot
         Status = FollowUpStatus.Rejected;
         RejectedBy = rejecter.Trim();
         DecidedAt = now;
+        Raise(new FollowUpRejected(Id, now));
         return Result.Success();
     }
 
@@ -182,6 +183,7 @@ public sealed class FollowUp : AggregateRoot
         Status = FollowUpStatus.Applied;
         AppliedAt = now;
         ApplyError = null;
+        Raise(new FollowUpApplied(Id, now));
     }
 
     /// <summary>Records that writing failed; the follow-up stays approved so the write can be retried.</summary>

@@ -13,6 +13,7 @@ internal static class CardRenderer
         {
             CardKind.PreBrief => "prebrief",
             CardKind.FollowUp => "followup",
+            CardKind.FollowUpResult => "followup-result",
             CardKind.Absent => "absent",
             CardKind.Escalation => "escalation",
             _ => "recap",

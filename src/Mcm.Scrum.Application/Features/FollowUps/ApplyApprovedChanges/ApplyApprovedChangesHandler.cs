@@ -9,7 +9,7 @@ namespace Mcm.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
 /// The single place Azure DevOps is written. The approval guard is <see cref="FollowUp.GetApprovedChanges"/>: it is the
 /// only source of <see cref="ApprovedChange"/>, so the writer cannot be reached for an unapproved follow-up (F7).
 /// </summary>
-internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps, IWorkItemWriter writer, IClock clock) : IRequestHandler<ApplyApprovedChangesCommand, Result>
+internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps, IWorkItemWriter writer, IPublisher publisher, IClock clock) : IRequestHandler<ApplyApprovedChangesCommand, Result>
 {
     public async Task<Result> Handle(ApplyApprovedChangesCommand request, CancellationToken ct)
     {
@@ -43,6 +43,7 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
 
         followUp.MarkApplied(clock.UtcNow);
         await followUps.SaveAsync(followUp, ct);
+        await followUp.PublishEventsAsync(publisher, ct);
         return Result.Success();
     }
 }

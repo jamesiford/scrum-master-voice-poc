@@ -6,7 +6,7 @@ using Mcm.Scrum.Domain.FollowUps;
 namespace Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
 
 /// <summary>Rejects and saves.</summary>
-internal sealed class RejectFollowUpHandler(IFollowUpRepository followUps, IClock clock) : IRequestHandler<RejectFollowUpCommand, Result>
+internal sealed class RejectFollowUpHandler(IFollowUpRepository followUps, IPublisher publisher, IClock clock) : IRequestHandler<RejectFollowUpCommand, Result>
 {
     public async Task<Result> Handle(RejectFollowUpCommand request, CancellationToken ct)
     {
@@ -23,6 +23,7 @@ internal sealed class RejectFollowUpHandler(IFollowUpRepository followUps, ICloc
         }
 
         await followUps.SaveAsync(followUp, ct);
+        await followUp.PublishEventsAsync(publisher, ct);
         return Result.Success();
     }
 }

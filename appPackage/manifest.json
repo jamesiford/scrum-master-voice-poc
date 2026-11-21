@@ -1,0 +1,29 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
+  "developer": {
+    "name": "MCM Scrum PoC",
+    "websiteUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
+    "privacyUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
+    "termsOfUseUrl": "https://github.com/jamesiford/scrum-master-voice-poc"
+  },
+  "name": { "short": "MCM Scrum Agent", "full": "MCM Scrum Agent (PoC)" },
+  "description": {
+    "short": "Junior Scrum Master that posts standup recaps and follow-ups.",
+    "full": "Runs the daily standup, posts the recap, and sends each person a follow-up card. Approving a card writes the agreed update to Azure DevOps."
+  },
+  "icons": { "color": "color.png", "outline": "outline.png" },
+  "accentColor": "#005FB8",
+  "bots": [
+    {
+      "botId": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
+      "scopes": ["personal", "team", "groupChat"],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": []
+}

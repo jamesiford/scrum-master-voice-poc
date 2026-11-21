@@ -13,6 +13,7 @@ namespace Mcm.Scrum.Application.Tests.Features.FollowUps;
 public sealed class ApplyApprovedChangesTests : IAsyncDisposable
 {
     private readonly FakeWriter _writer = new();
+    private readonly RecordingTeamsMessenger _messenger = new();
     private readonly InMemoryFollowUpRepository _repo = new();
     private readonly ServiceProvider _sp;
 
@@ -23,6 +24,8 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
         services.AddApplication();
         services.AddSingleton<IFollowUpRepository>(_repo);
         services.AddSingleton<IWorkItemWriter>(_writer);
+        services.AddSingleton<ITeamsMessenger>(_messenger);
+        services.AddSingleton<IMemberRepository>(new InMemoryMemberRepository());
         services.AddSingleton<IClock>(new FixedClock(StandupHarness.Now));
         _sp = services.BuildServiceProvider();
     }
@@ -94,6 +97,27 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
 
         Assert.True(retry.IsSuccess);
         Assert.Equal(FollowUpStatus.Applied, (await _repo.GetAsync(id, default))!.Status);
+    }
+
+    [Fact]
+    public async Task Approve_ThenApplied_UpdatesCardWithoutActionsAndShowsOutcome()
+    {
+        var id = await AddAsync();
+
+        await Sender.Send(new ApproveFollowUpCommand(id, "Dana"));
+
+        Assert.All(_messenger.Updated, m => Assert.Equal(CardKind.FollowUpResult, m.Kind));
+        Assert.Contains("written to Azure DevOps", _messenger.Updated[^1].Facts[^1].Value, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Reject_UpdatesCardToShowNothingWasWritten()
+    {
+        var id = await AddAsync();
+
+        await Sender.Send(new RejectFollowUpCommand(id, "Dana"));
+
+        Assert.Contains("Nothing was written", Assert.Single(_messenger.Updated).Facts[^1].Value, StringComparison.Ordinal);
     }
 
     public ValueTask DisposeAsync() => _sp.DisposeAsync();

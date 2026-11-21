@@ -1,6 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>27ed9fdf-8b9f-41c2-b7c1-96185ce7b83d</UserSecretsId>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mcm.Scrum.Application\Mcm.Scrum.Application.csproj" />
     <ProjectReference Include="..\Mcm.Scrum.Infrastructure\Mcm.Scrum.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.Agents.Hosting.AspNetCore" />
+    <PackageReference Include="Microsoft.Agents.Authentication.Msal" />
   </ItemGroup>
 </Project>

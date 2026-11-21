@@ -48,6 +48,29 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
     }
 
     /// <inheritdoc />
+    public async Task UpdateAsync(TeamsMessage message, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        await _gate.WaitAsync(ct);
+        try
+        {
+            var cards = await JsonFile.ReadAsync<List<StoredCard>>(_path, () => [], ct);
+            var index = cards.FindIndex(c => c.Message.DedupeKey == message.DedupeKey);
+            if (index < 0)
+            {
+                return;
+            }
+
+            cards[index] = cards[index] with { Message = message, AdaptiveCardJson = CardRenderer.Render(message) };
+            await JsonFile.WriteAsync(_path, cards, ct);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<SentCard>> ListAsync(Guid? sessionId, CancellationToken ct)
     {
         await _gate.WaitAsync(ct);

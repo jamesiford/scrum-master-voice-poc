@@ -15,6 +15,9 @@ public enum CardKind
     /// <summary>Blocker escalation to the Scrum Master.</summary>
     Escalation,
 
+    /// <summary>A follow-up after a decision: same card without the actions.</summary>
+    FollowUpResult,
+
     /// <summary>Recap in the meeting chat and team channel.</summary>
     Recap,
 }
@@ -53,4 +56,13 @@ public interface ITeamsMessenger
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task.</returns>
     Task SendAsync(TeamsMessage message, CancellationToken ct);
+
+    /// <summary>
+    /// Replaces a card that was sent earlier (matched by <see cref="TeamsMessage.DedupeKey"/>), for example to show a decision
+    /// and remove the buttons. Does nothing if that card was never sent.
+    /// </summary>
+    /// <param name="message">The replacement content.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task.</returns>
+    Task UpdateAsync(TeamsMessage message, CancellationToken ct);
 }
