@@ -42,6 +42,7 @@ public sealed class VoiceGateway(
     private readonly Dictionary<string, System.Text.StringBuilder> _utterance = [];
     private readonly Dictionary<string, (string Text, Task<Result<ReconcileResult>> Task)> _speculative = [];
     private readonly Dictionary<string, string?> _pendingQuestion = [];
+    private readonly Dictionary<string, string> _asked = [];
     private readonly List<string> _offTopic = [];
     private readonly List<string> _parking = [];
     private readonly List<int> _latencies = [];
@@ -556,7 +557,7 @@ public sealed class VoiceGateway(
 
             // Precompute (SPEC 10.2): reconcile while the member may still be talking so the result is ready when silence is detected.
             var snapshot = sb.ToString();
-            _speculative[memberId] = (snapshot, Task.Run(() => sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, snapshot), _run), _run));
+            _speculative[memberId] = (snapshot, Task.Run(() => sender.Send(Reconcile(memberId, snapshot), _run), _run));
         }
     }
 
@@ -663,10 +664,19 @@ public sealed class VoiceGateway(
         if (question is not null)
         {
             await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Question, speak.MemberId, question), _run);
+            _asked[speak.MemberId!] = question;
         }
 
         await _voice.CreateResponseAsync(instruction.Value, _run);
         _createSentAt = clock.UtcNow;
+    }
+
+    private ReconcileUpdateQuery Reconcile(string memberId, string text)
+    {
+        lock (_gate)
+        {
+            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered]);
+        }
     }
 
     private string? NotesFor(AgentSpeak speak)
@@ -717,7 +727,7 @@ public sealed class VoiceGateway(
             _speculative.Remove(memberId);
         }
 
-        return await (reused ?? sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text), _run));
+        return await (reused ?? sender.Send(Reconcile(memberId, text), _run));
     }
 
     private async Task AdvanceAsync()

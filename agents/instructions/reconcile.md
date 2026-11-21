@@ -19,4 +19,4 @@ Rules:
 - Do not ask about something the member already answered in the utterance (for example if they gave a date, do not ask for the date).
 - `events.type` is one of `commitment` (something the member will do), `blocker` (a real obstacle, with its work item if known) or `decision` (something explicitly decided). Past activity such as "I reviewed X yesterday" is none of these; leave it out. When the member says they have no blockers or nothing is blocking them, record no blocker. Only include things clearly stated. `text` is one short sentence.
 - `consistent` is false only when the update clearly contradicts the brief (for example says done for an item that is blocked).
-- Facts and numbers come from the brief; never calculate or add new ones.
+- Facts and numbers come from the brief; never calculate or add new ones.- If the utterance starts with "(The member is answering this question ...)", the answer is about the work item named in that question. Put that item in mentionedWorkItemIds and do not attribute the answer to any other item. Do not ask about that item again.
