@@ -747,16 +747,16 @@ public sealed class VoiceGateway(
         var total = _session.StandupMinutes * 60;
         var remaining = _begun ? Math.Max(0, total - (int)(now - _beganAt).TotalSeconds) : total;
         var state = new
-                {
-                    floor = ended ? "Closed" : _floor.State.ToString(),
-                    currentSpeaker = _floor.CurrentMemberId,
-                    agentSpeaking = _floor.AgentHasFloor,
-                    remainingSec = remaining,
-                    parkingLot = _parking,
-                    absent = _absent,
-                    p50 = LatencyStats.Percentile(_latencies, 50),
-                    p95 = LatencyStats.Percentile(_latencies, 95),
-                    running = _begun,
+        {
+            floor = ended ? "Closed" : _floor.State.ToString(),
+            currentSpeaker = _floor.CurrentMemberId,
+            agentSpeaking = _floor.AgentHasFloor,
+            remainingSec = remaining,
+            parkingLot = _parking,
+            absent = _absent,
+            p50 = LatencyStats.Percentile(_latencies, 50),
+            p95 = LatencyStats.Percentile(_latencies, 95),
+            running = _begun,
         };
         live.Update(_sessionId, JsonSerializer.Serialize(state));
         await _bridge.SendAsync(new { type = "ui", state }, _run);

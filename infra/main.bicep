@@ -117,6 +117,8 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
     consistencyPolicy: { defaultConsistencyLevel: 'Session' }
     // PROD: disable key auth entirely and use private endpoints.
     disableLocalAuth: true
+    // Allowed by the SecurityControl=Ignore tag on the resource group; PROD: private endpoint instead.
+    publicNetworkAccess: 'Enabled'
   }
 }
 
