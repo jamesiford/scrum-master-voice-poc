@@ -46,13 +46,14 @@ export class BoardRenderer {
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
     const s = this.state;
+    this.drawPulse();
     ctx.fillStyle = '#e2e8f0';
     ctx.font = '600 34px Segoe UI, Arial, sans-serif';
-    ctx.fillText(s?.speaker ? `${s.speaker}'s items` : 'MCM Scrum Agent standup', 48, 70);
+    ctx.fillText(s?.speaker ? `${s.speaker}'s items` : 'Standup agenda: flagged items', 48, 70);
     ctx.fillStyle = '#94a3b8';
     ctx.font = '20px Segoe UI, Arial, sans-serif';
     if (!s) {
-      ctx.fillText('Waiting for the standup to start...', 48, 110);
+      ctx.fillText('Preparing the sprint board...', 48, 110);
       return;
     }
     ctx.fillText(
@@ -70,6 +71,14 @@ export class BoardRenderer {
     this.drawTeam(s);
   }
 
+  // A static canvas yields no video frames, so Teams shows nothing until something changes. A ticking clock keeps frames flowing.
+  private drawPulse(): void {
+    const { ctx } = this;
+    ctx.fillStyle = '#64748b';
+    ctx.font = '16px Segoe UI, Arial, sans-serif';
+    ctx.fillText(new Date().toLocaleTimeString(), WIDTH - 140, 36);
+  }
+
   private drawItems(s: BoardState): void {
     const { ctx } = this;
     if (s.items.length === 0) {
@@ -82,6 +91,11 @@ export class BoardRenderer {
       const y = 140 + i * 84;
       ctx.fillStyle = item.covered ? '#14532d' : '#1e293b';
       ctx.fillRect(48, y, 860, 72);
+      if (item.id === s.focus) {
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(48, y, 860, 72);
+      }
       ctx.fillStyle = item.covered ? '#4ade80' : item.flags.length ? '#fbbf24' : '#64748b';
       ctx.fillRect(48, y, 8, 72);
       ctx.fillStyle = '#f8fafc';
@@ -90,7 +104,8 @@ export class BoardRenderer {
       ctx.fillStyle = '#94a3b8';
       ctx.font = '18px Segoe UI, Arial, sans-serif';
       const flags = item.flags.length ? ` · ${item.flags.join(', ')}` : '';
-      ctx.fillText(`${item.type} · ${item.state}${flags}`, 72, y + 56);
+      const owner = item.owner && !s.speaker ? ` · ${item.owner}` : '';
+      ctx.fillText(`${item.type} · ${item.state}${flags}${owner}`, 72, y + 56);
     });
   }
 

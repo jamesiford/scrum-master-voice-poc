@@ -48,6 +48,15 @@ public static class CoverageNotes
         return parts.Count == 0 ? "none" : string.Join(", ", parts);
     }
 
+    /// <summary>Speakable label such as "story 5" or "task 14".</summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The label.</returns>
+    public static string Label(BriefItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        return $"{(item.Type.Equals("User Story", StringComparison.OrdinalIgnoreCase) ? "story" : item.Type.ToLowerInvariant())} {item.Id}";
+    }
+
     private static string Word(Flag f) => f switch
     {
         Flag.NoRecentUpdate => "no recent update",

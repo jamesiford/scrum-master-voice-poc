@@ -16,6 +16,8 @@ members:
       - say: "Yesterday I reviewed the settlement schema. Today I'm continuing the settlement file validation. I'm blocked on bug 12. The sandbox gateway keeps timing out, and I need access to the platform team's staging gateway."
       - when: ["unblock", "platform", "access", "who", "help", "needed", "blocked", "bug", "staging", "waiting", "status"]
         say: "The platform team lead said they can grant me staging access today. I'm just waiting for the confirmation."
+      - when: ["schema", "update", "stand", "settlement"]
+        say: "The schema review is waiting on the data team. I'll finish it today."
   - memberId: m-daniel
     voice: en-US-GuyNeural
     turns:

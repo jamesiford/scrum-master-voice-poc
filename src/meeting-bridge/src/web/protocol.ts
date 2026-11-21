@@ -26,8 +26,10 @@ export interface BoardState {
   goal: string;
   daysLeft: number;
   speaker: string | null;
+  focus: number | null;
   items: {
     id: number;
+    owner: string | null;
     title: string;
     type: string;
     state: string;

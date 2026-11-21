@@ -6,6 +6,7 @@ namespace Mcm.Scrum.Domain.Voice;
 /// <param name="ParkAfterOffTopicMs">Off-holder speech needed before the agent parks the topic.</param>
 /// <param name="NoResponseMs">Wait this long for a member to start talking before moving on.</param>
 /// <param name="WarnFraction">Fraction of the timebox at which to warn.</param>
+/// <param name="MaxClarifications">How many clarifying questions one member can be asked, one per uncovered flagged item.</param>
 /// <param name="PauseMs">Silence that counts as a pause in which the agent may interject.</param>
 public sealed record FloorOptions(
     TimeSpan StandupLength,
@@ -13,4 +14,5 @@ public sealed record FloorOptions(
     int ParkAfterOffTopicMs = 60_000,
     int NoResponseMs = 25_000,
     double WarnFraction = 0.8,
-    int PauseMs = 800);
+    int PauseMs = 800,
+    int MaxClarifications = 3);

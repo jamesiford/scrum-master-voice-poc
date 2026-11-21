@@ -7,7 +7,7 @@ namespace Mcm.Scrum.Domain.Voice;
 public sealed class FloorControl(FloorOptions options)
 {
     private static readonly FloorAction[] None = [];
-    private readonly HashSet<string> _clarified = [];
+    private readonly Dictionary<string, int> _clarified = [];
     private DateTimeOffset? _startedAt;
     private DateTimeOffset _listeningSince;
     private DateTimeOffset _lastHolderEnd;
@@ -198,6 +198,13 @@ public sealed class FloorControl(FloorOptions options)
         _lastAnyEnd = s.At;
         if (s.MemberId != CurrentMemberId)
         {
+            if (s.Active && State == FloorState.Reconciling)
+            {
+                // A teammate started talking while the agent prepared its question: the stale result is dropped and the agent waits.
+                _version++;
+                State = FloorState.Listening;
+            }
+
             return None;
         }
 
@@ -263,7 +270,7 @@ public sealed class FloorControl(FloorOptions options)
     private FloorAction[] FinishUpdate()
     {
         _version++;
-        if (!_canClarify || _clarified.Contains(CurrentMemberId!))
+        if (!_canClarify || _clarified.GetValueOrDefault(CurrentMemberId!) >= options.MaxClarifications)
         {
             State = FloorState.Advancing;
             return [new RunReconcile(CurrentMemberId!, _version, Background: true), new AdvanceSpeaker()];
@@ -280,8 +287,9 @@ public sealed class FloorControl(FloorOptions options)
             return None;
         }
 
-        if (r.HasQuestion && _clarified.Add(CurrentMemberId!))
+        if (r.HasQuestion && _clarified.GetValueOrDefault(CurrentMemberId!) < options.MaxClarifications)
         {
+            _clarified[CurrentMemberId!] = _clarified.GetValueOrDefault(CurrentMemberId!) + 1;
             State = FloorState.Clarifying;
             return [new AgentSpeak(SpeakReason.Clarify, CurrentMemberId)];
         }

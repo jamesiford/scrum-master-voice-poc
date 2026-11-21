@@ -8,13 +8,13 @@ public sealed class FloorControlTests
 
     private static DateTimeOffset At(double seconds) => T0.AddMilliseconds(Math.Round(seconds * 1000));
 
-    private static FloorControl Floor(double minutes = 15, int parkMs = 10_000) =>
-        new(new FloorOptions(TimeSpan.FromMinutes(minutes), ParkAfterOffTopicMs: parkMs));
+    private static FloorControl Floor(double minutes = 15, int parkMs = 10_000, int maxClarify = 1) =>
+        new(new FloorOptions(TimeSpan.FromMinutes(minutes), ParkAfterOffTopicMs: parkMs, MaxClarifications: maxClarify));
 
     /// <summary>Opens, greets, and gives the floor to "m1" so tests start in Listening.</summary>
-    private static FloorControl Listening(double minutes = 15, int parkMs = 10_000)
+    private static FloorControl Listening(double minutes = 15, int parkMs = 10_000, int maxClarify = 1)
     {
-        var f = Floor(minutes, parkMs);
+        var f = Floor(minutes, parkMs, maxClarify);
         f.Handle(new StartFloor(T0));
         f.Handle(new AgentSpeechEnded(At(5)));
         f.Handle(new SpeakerSelected("m1", false));
@@ -140,6 +140,36 @@ public sealed class FloorControlTests
         Assert.Equal(new AgentSpeak(SpeakReason.Clarify, "m1"), Assert.Single(ask));
         Assert.Equal(new RunReconcile("m1", ((RunReconcile)second[0]).Version, Background: true), second[0]);
         Assert.Equal(new AdvanceSpeaker(), second[1]);
+    }
+
+    [Fact]
+    public void ReconcileFinished_MoreFlaggedItems_AsksAgainUpToTheLimit()
+    {
+        var f = Listening(maxClarify: 2);
+        f.Handle(new MemberSpoke("m1", 3000, At(12)));
+        var first = f.Handle(new Tick(At(14))).OfType<RunReconcile>().Single();
+        f.Handle(new ReconcileFinished(first.Version, true));
+        f.Handle(new AgentSpeechEnded(At(18)));
+        f.Handle(new MemberSpoke("m1", 2000, At(21)));
+        var second = f.Handle(new Tick(At(23))).OfType<RunReconcile>().Single();
+
+        var ask = f.Handle(new ReconcileFinished(second.Version, true));
+
+        Assert.Equal(new AgentSpeak(SpeakReason.Clarify, "m1"), Assert.Single(ask));
+    }
+
+    [Fact]
+    public void SpeechActive_TeammateStartsWhileReconciling_DropsTheStaleQuestion()
+    {
+        var f = Listening();
+        f.Handle(new MemberSpoke("m1", 3000, At(12)));
+        var reconcile = f.Handle(new Tick(At(14))).OfType<RunReconcile>().Single();
+        f.Handle(new SpeechActive("m2", true, At(14)));
+
+        var late = f.Handle(new ReconcileFinished(reconcile.Version, true));
+
+        Assert.Empty(late);
+        Assert.Equal(FloorState.Listening, f.State);
     }
 
     [Fact]

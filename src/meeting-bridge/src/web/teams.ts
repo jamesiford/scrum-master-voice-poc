@@ -151,6 +151,8 @@ async function shareBoard(c: Call): Promise<void> {
     await c.startScreenSharing(new LocalVideoStream(board.stream()));
   } catch (e) {
     sharing = false;
+    // Sharing can be refused right after connecting; retry until it takes.
+    setTimeout(() => void shareBoard(c), 5000);
     send({
       type: 'callState',
       state: 'Info',

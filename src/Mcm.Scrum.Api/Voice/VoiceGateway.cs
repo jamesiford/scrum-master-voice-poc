@@ -43,6 +43,8 @@ public sealed class VoiceGateway(
     private readonly Dictionary<string, (string Text, Task<Result<ReconcileResult>> Task)> _speculative = [];
     private readonly Dictionary<string, string?> _pendingQuestion = [];
     private readonly Dictionary<string, string> _asked = [];
+    private readonly Dictionary<string, int> _focus = [];
+    private readonly Dictionary<string, int?> _pendingItem = [];
     private readonly List<string> _offTopic = [];
     private readonly List<string> _parking = [];
     private readonly List<int> _latencies = [];
@@ -600,6 +602,7 @@ public sealed class VoiceGateway(
             _noted[done.MemberId] = CoverageNotes.Noted(r.Events.Select(e => (e.Type, e.Text)));
 
             _pendingQuestion[done.MemberId] = r.SuggestedQuestion;
+            _pendingItem[done.MemberId] = r.QuestionItemId;
             hasQuestion = !string.IsNullOrWhiteSpace(r.SuggestedQuestion) || _noted[done.MemberId].Length > 0;
         }
 
@@ -665,6 +668,13 @@ public sealed class VoiceGateway(
         {
             await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Question, speak.MemberId, question), _run);
             _asked[speak.MemberId!] = question;
+            if (_pendingItem.GetValueOrDefault(speak.MemberId!) is { } item)
+            {
+                lock (_gate)
+                {
+                    _focus[speak.MemberId!] = item;
+                }
+            }
         }
 
         await _voice.CreateResponseAsync(instruction.Value, _run);
@@ -675,8 +685,24 @@ public sealed class VoiceGateway(
     {
         lock (_gate)
         {
-            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered]);
+            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null);
         }
+    }
+
+    // Context for "is that one overdue?": the item being discussed and the speaker's other open items, so "that one" resolves in code, not by guess.
+    private string ItemContext(string memberId)
+    {
+        var items = _session.PreBrief?.Members.FirstOrDefault(m => m.MemberId == memberId)?.Items ?? [];
+        int? focus;
+        lock (_gate)
+        {
+            focus = _focus.TryGetValue(memberId, out var f) ? f : null;
+        }
+
+        var current = items.FirstOrDefault(i => i.Id.Value == focus);
+        var head = current is null ? "No single item is being discussed." : $"The item being discussed now is {CoverageNotes.Label(current)}, \"{current.Title}\".";
+        var list = string.Join("; ", items.Select(i => $"{CoverageNotes.Label(i)} \"{i.Title}\" ({i.State}{(i.Flags.Count > 0 ? ", " + string.Join("/", i.Flags) : string.Empty)})"));
+        return $"{head} {NameOf(memberId)}'s open items: {list}.";
     }
 
     private string? NotesFor(AgentSpeak speak)
@@ -684,6 +710,11 @@ public sealed class VoiceGateway(
         if (speak.Reason == SpeakReason.Clarify && speak.MemberId is not null)
         {
             return _noted.GetValueOrDefault(speak.MemberId);
+        }
+
+        if (speak.Reason == SpeakReason.Addressed && speak.MemberId is not null)
+        {
+            return ItemContext(speak.MemberId);
         }
 
         if (speak.Reason != SpeakReason.Recap || _session.PreBrief is not { } brief)
@@ -734,6 +765,12 @@ public sealed class VoiceGateway(
     {
         if (_floor.CurrentMemberId is { } previous)
         {
+            lock (_gate)
+            {
+                _focus.Remove(previous);
+                _asked.Remove(previous);
+            }
+
             await sender.Send(new CompleteSpeakerTurnCommand(_sessionId, previous), _run);
         }
 
@@ -828,9 +865,11 @@ public sealed class VoiceGateway(
             goal = brief.SprintGoal,
             daysLeft = brief.DaysLeft,
             speaker = speaker?.DisplayName,
-            items = (speaker?.Items ?? brief.UnassignedItems).Select(i => new
+            focus = speaker is not null && _focus.TryGetValue(speaker.MemberId, out var fo) ? fo : (int?)null,
+            items = (speaker?.Items ?? brief.Members.SelectMany(m => m.Items).Where(i => i.Flags.Count > 0).ToList()).Select(i => new
             {
                 id = i.Id.Value,
+                owner = brief.Members.FirstOrDefault(m => m.Items.Any(x => x.Id == i.Id))?.DisplayName,
                 title = i.Title,
                 type = i.Type,
                 state = i.State,

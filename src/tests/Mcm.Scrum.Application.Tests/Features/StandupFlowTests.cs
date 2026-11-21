@@ -112,25 +112,35 @@ public sealed class StandupFlowTests
             [new SuggestedEvent(StandupEventType.Commitment, "Finish story 4242", [4242]), new SuggestedEvent(StandupEventType.Commitment, "Finish the retry story", [1, 4242])]);
         await using var h = await StandupHarness.CreateAsync(suggestion);
 
-        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "still on the retry story"))).Value;
+        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "still on story 1"))).Value;
 
         Assert.Equal([1], r.MentionedWorkItemIds);
         Assert.Empty(r.Risks);
-        Assert.Contains("1", r.SuggestedQuestion, StringComparison.Ordinal);
-        Assert.DoesNotContain("4242", r.SuggestedQuestion, StringComparison.Ordinal);
+        Assert.Null(r.SuggestedQuestion);
         var kept = Assert.Single(r.Events);
         Assert.Equal([1], kept.WorkItemIds);
     }
 
     [Fact]
-    public async Task Reconcile_GroundedModelQuestion_IsReturnedAsIs()
+    public async Task Reconcile_MentionedFlaggedItem_IsCoveredByCodeAndNotAskedAgain()
     {
-        var suggestion = new ReconcileSuggestion(true, [1], [], "Story 1 has been Active for three days. Still on track for Thursday?", []);
+        var suggestion = new ReconcileSuggestion(true, [12], [], "Story 1 is stale. Status?", []);
         await using var h = await StandupHarness.CreateAsync(suggestion);
 
-        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "working on retry"))).Value;
+        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "working on story 1"))).Value;
 
-        Assert.Equal("Story 1 has been Active for three days. Still on track for Thursday?", r.SuggestedQuestion);
+        Assert.Equal([1], r.MentionedWorkItemIds);
+        Assert.Null(r.SuggestedQuestion);
+    }
+
+    [Fact]
+    public async Task Reconcile_AnswerWithoutNamingAnItem_IsAttributedToTheAskedItem()
+    {
+        await using var h = await StandupHarness.CreateAsync(null);
+
+        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "yes, it is on track", "Story 1 is stale. Still on track?", FocusItemId: 1))).Value;
+
+        Assert.Equal([1], r.MentionedWorkItemIds);
     }
 
     [Fact]
@@ -138,9 +148,10 @@ public sealed class StandupFlowTests
     {
         await using var h = await StandupHarness.CreateAsync(null);
 
-        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-marcus", "blocked on the gateway"))).Value;
+        var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-marcus", "nothing much to report"))).Value;
 
         Assert.Contains("12", r.SuggestedQuestion, StringComparison.Ordinal);
+        Assert.Equal(12, r.QuestionItemId);
     }
 
     [Theory]
@@ -184,10 +195,10 @@ public sealed class StandupFlowTests
         await using var h = await StandupHarness.CreateAsync(new ReconcileSuggestion(true, [1], [], "Story 1 is stale. Status?", []));
         var tools = h.Get<IScrumTools>();
 
-        var ok = await tools.InvokeAsync(h.SessionId, "reconcile_update", """{"memberId":"m-priya","utterance":"retry story"}""", CancellationToken.None);
+        var ok = await tools.InvokeAsync(h.SessionId, "reconcile_update", """{"memberId":"m-priya","utterance":"story 1"}""", CancellationToken.None);
         var bad = await tools.InvokeAsync(h.SessionId, "delete_everything", "{}", CancellationToken.None);
 
-        Assert.Contains("Story 1 is stale", ok, StringComparison.Ordinal);
+        Assert.Contains("\"mentionedWorkItemIds\":[1]", ok, StringComparison.Ordinal);
         Assert.Contains("error", bad, StringComparison.Ordinal);
         Assert.Contains(tools.Definitions, d => d.Name == "reconcile_update");
     }

@@ -295,9 +295,12 @@ function surfaceSpeechError(line: SpokenLine): void {
 async function sayAsCast(line: SpokenLine): Promise<void> {
   surfaceSpeechError(line);
   const pcm = line.audio ? base64ToBytes(line.audio) : undefined;
+  // Tell the gateway someone is talking, as Teams does, so a side discussion holds back the silence timer.
+  send({ type: 'speaking', memberId: line.memberId, active: true });
   const length = pcm
     ? await playCastLine(context, pcm)
     : Math.max(1500, line.text.split(/\s+/).length * 400);
+  send({ type: 'speaking', memberId: line.memberId, active: false });
   send({ type: 'utterance', memberId: line.memberId, text: line.text, durationMs: length });
 }
 

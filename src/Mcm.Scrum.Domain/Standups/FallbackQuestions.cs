@@ -11,10 +11,7 @@ public static class FallbackQuestions
     public static string For(IReadOnlyList<BriefItem> brief)
     {
         ArgumentNullException.ThrowIfNull(brief);
-        var flagged = brief
-            .Where(i => i.Flags.Count > 0)
-            .OrderBy(i => Rank(i.Flags))
-            .FirstOrDefault();
+        var flagged = MostUrgent(brief);
 
         if (flagged is null)
         {
@@ -33,6 +30,20 @@ public static class FallbackQuestions
             _ => $"Can you give an update on {label}, {flagged.Title}?",
         };
     }
+
+    /// <summary>Picks the most urgent flagged item: blocked, overdue, stale, then the rest.</summary>
+    /// <param name="items">Candidate items.</param>
+    /// <returns>The item, or <see langword="null"/> when none is flagged.</returns>
+    public static BriefItem? MostUrgent(IReadOnlyList<BriefItem> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        return items.Where(i => i.Flags.Count > 0).OrderBy(i => Rank(i.Flags)).FirstOrDefault();
+    }
+
+    /// <summary>Builds the question for one specific flagged item.</summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The question.</returns>
+    public static string ForItem(BriefItem item) => For([item]);
 
     private static int Rank(IReadOnlyList<Flag> flags) => Primary(flags) switch
     {
