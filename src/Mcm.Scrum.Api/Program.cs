@@ -1,5 +1,6 @@
 using Mcm.Scrum.Api.Bot;
 using Mcm.Scrum.Api.Endpoints;
+using Microsoft.Agents.Builder;
 using Microsoft.Agents.Hosting.AspNetCore;
 using Mcm.Scrum.Api.Voice;
 using Mcm.Scrum.Application;
@@ -57,7 +58,9 @@ app.UseStaticFiles();
 if (botConfigured)
 {
     app.UseAgents();
-    app.MapDefaultAgentEndpoints();
+    // Not MapDefaultAgentEndpoints: it also claims GET / with a version string, which hides the portal.
+    app.MapPost("/api/messages", (HttpRequest request, HttpResponse response, IAgentHttpAdapter adapter, IAgent agent, CancellationToken ct) =>
+        adapter.ProcessAsync(request, response, agent, ct)).RequireAuthorization();
 }
 
 app.MapHealthChecks("/healthz");
