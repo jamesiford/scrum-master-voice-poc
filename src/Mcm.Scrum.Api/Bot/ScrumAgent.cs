@@ -2,6 +2,7 @@ using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Abstractions.Ports;
 using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Builder.App;
 using Microsoft.Agents.Builder.App.AdaptiveCards;
@@ -21,16 +22,19 @@ public sealed class ScrumAgent : AgentApplication
 {
     private readonly IServiceScopeFactory _scopes;
     private readonly IConversationStore _conversations;
+    private readonly string _teamId;
 
     /// <summary>Initializes a new instance of the <see cref="ScrumAgent"/> class.</summary>
     /// <param name="options">Agent application options.</param>
     /// <param name="scopes">Creates a scope per card action, because the mediator is scoped and the agent is resolved once at startup.</param>
     /// <param name="conversations">Conversation reference store.</param>
-    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations)
+    /// <param name="configuration">Configuration, for the team this bot serves.</param>
+    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations, IConfiguration configuration)
         : base(options)
     {
         _scopes = scopes;
         _conversations = conversations;
+        _teamId = configuration["Team:Id"] ?? "team-payments";
         OnConversationUpdate("membersAdded", OnMembersAddedAsync);
         OnActivity(ActivityTypes.Message, OnMessageAsync);
         AdaptiveCards.OnActionExecute("approve", (ctx, _, data, ct) => DecideAsync(ctx, data, approve: true, ct));
@@ -46,7 +50,15 @@ public sealed class ScrumAgent : AgentApplication
     private async Task OnMessageAsync(ITurnContext turnContext, ITurnState turnState, CancellationToken ct)
     {
         await RememberAsync(turnContext, ct);
-        await turnContext.SendActivityAsync("Got it. Follow-up and recap cards from the daily standup will appear in this chat.", cancellationToken: ct);
+        var question = turnContext.Activity.Text?.Trim();
+        if (string.IsNullOrWhiteSpace(question))
+        {
+            return;
+        }
+
+        await using var scope = _scopes.CreateAsyncScope();
+        var answer = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new AnswerTeamQuestionQuery(_teamId, question), ct);
+        await turnContext.SendActivityAsync(answer.IsSuccess ? answer.Value : answer.Error!.Message, cancellationToken: ct);
     }
 
     private async Task<AdaptiveCardInvokeResponse> DecideAsync(ITurnContext turnContext, object data, bool approve, CancellationToken ct)

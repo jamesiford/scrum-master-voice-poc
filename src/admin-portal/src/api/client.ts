@@ -519,3 +519,89 @@ export function getDemoStatus(teamId: string, signal?: AbortSignal): Promise<Dem
 export async function resetDemo(): Promise<void> {
   await request<unknown>('POST', '/api/demo/reset');
 }
+
+/** Team KPIs over a window of sprints. */
+export interface KpiSummary {
+  sprints: number;
+  sayDoRatio: number;
+  velocity: number;
+  carryOverItems: number;
+  avgBlockerAgeDays: number;
+  avgCycleTimeDays: number;
+  avgAttendancePct: number;
+  avgFollowUpClosurePct: number;
+  agentRunStandups: number;
+  avgStandupMinutes: number;
+}
+
+/** One finished sprint. */
+export interface SprintHistory {
+  name: string;
+  committedPoints: number;
+  completedPoints: number;
+  carryOverItems: number;
+}
+
+/** KPIs and the sprints behind them. */
+export interface KpiReport {
+  summary: KpiSummary;
+  sprints: SprintHistory[];
+  illustrative: boolean;
+}
+
+/** A written report. */
+export interface ReportDocument {
+  title: string;
+  markdown: string;
+  narrative: string;
+  narrativeFromModel: boolean;
+  illustrative: boolean;
+}
+
+/**
+ * Reads KPIs.
+ * @param teamId - Team id.
+ * @param sprints - Window size, three to six.
+ * @param signal - Optional abort signal.
+ * @returns The KPIs.
+ */
+export function getKpis(teamId: string, sprints: number, signal?: AbortSignal): Promise<KpiReport> {
+  return request<KpiReport>(
+    'GET',
+    `/api/reports/kpis?teamId=${encodeURIComponent(teamId)}&sprints=${sprints}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Writes the sprint summary or monthly report.
+ * @param kind - Which report.
+ * @param teamId - Team id.
+ * @param sprints - Window size for the monthly report.
+ * @param signal - Optional abort signal.
+ * @returns The report.
+ */
+export function getReport(
+  kind: 'sprint' | 'monthly',
+  teamId: string,
+  sprints: number,
+  signal?: AbortSignal,
+): Promise<ReportDocument> {
+  return request<ReportDocument>(
+    'GET',
+    `/api/reports/${kind}?teamId=${encodeURIComponent(teamId)}&sprints=${sprints}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Asks the Reporting agent a question.
+ * @param teamId - Team id.
+ * @param question - The question.
+ * @returns The answer text.
+ */
+export function askAgent(teamId: string, question: string): Promise<string> {
+  return request<string>('POST', '/api/ask', { teamId, question });
+}

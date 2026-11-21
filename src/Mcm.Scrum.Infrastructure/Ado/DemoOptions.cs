@@ -14,4 +14,7 @@ public sealed class DemoOptions
 
     /// <summary>Gets or sets the demo backlog definition, also the source of the demo roster.</summary>
     public string SeedFile { get; set; } = "demo/seed-ado.json";
+
+    /// <summary>Gets or sets the KPI history fixture used when Azure DevOps has fewer than three past sprints (SPEC 9.5).</summary>
+    public string KpiFixture { get; set; } = "demo/kpi-history.json";
 }

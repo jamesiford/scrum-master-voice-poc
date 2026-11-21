@@ -1,0 +1,11 @@
+{
+  "illustrative": true,
+  "sprints": [
+    { "name": "Sprint 1", "start": "2026-08-03", "end": "2026-08-14", "committedPoints": 40, "completedPoints": 32, "carryOverItems": 3, "avgBlockerAgeDays": 3.5, "avgCycleTimeDays": 4.2, "standupAttendancePct": 88, "followUpClosedWithin24hPct": 60, "agentRunStandups": 0, "avgStandupMinutes": 15 },
+    { "name": "Sprint 2", "start": "2026-08-17", "end": "2026-08-28", "committedPoints": 42, "completedPoints": 35, "carryOverItems": 2, "avgBlockerAgeDays": 3.0, "avgCycleTimeDays": 3.9, "standupAttendancePct": 90, "followUpClosedWithin24hPct": 65, "agentRunStandups": 0, "avgStandupMinutes": 14 },
+    { "name": "Sprint 3", "start": "2026-08-31", "end": "2026-09-11", "committedPoints": 38, "completedPoints": 34, "carryOverItems": 2, "avgBlockerAgeDays": 2.5, "avgCycleTimeDays": 3.6, "standupAttendancePct": 92, "followUpClosedWithin24hPct": 72, "agentRunStandups": 1, "avgStandupMinutes": 13 },
+    { "name": "Sprint 4", "start": "2026-09-14", "end": "2026-09-25", "committedPoints": 44, "completedPoints": 40, "carryOverItems": 1, "avgBlockerAgeDays": 2.0, "avgCycleTimeDays": 3.4, "standupAttendancePct": 94, "followUpClosedWithin24hPct": 80, "agentRunStandups": 3, "avgStandupMinutes": 12 },
+    { "name": "Sprint 5", "start": "2026-09-28", "end": "2026-10-09", "committedPoints": 40, "completedPoints": 38, "carryOverItems": 1, "avgBlockerAgeDays": 1.5, "avgCycleTimeDays": 3.1, "standupAttendancePct": 95, "followUpClosedWithin24hPct": 85, "agentRunStandups": 4, "avgStandupMinutes": 11 },
+    { "name": "Sprint 6", "start": "2026-10-12", "end": "2026-10-23", "committedPoints": 42, "completedPoints": 40, "carryOverItems": 0, "avgBlockerAgeDays": 1.0, "avgCycleTimeDays": 2.9, "standupAttendancePct": 96, "followUpClosedWithin24hPct": 90, "agentRunStandups": 5, "avgStandupMinutes": 10 }
+  ]
+}

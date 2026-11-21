@@ -54,7 +54,7 @@ internal sealed class StandupHarness : IAsyncDisposable
     public T Get<T>()
         where T : notnull => _sp.GetRequiredService<T>();
 
-    public static async Task<StandupHarness> CreateAsync(ReconcileSuggestion? suggestion = null, Dictionary<string, string>? prompts = null)
+    public static async Task<StandupHarness> CreateAsync(ReconcileSuggestion? suggestion = null, Dictionary<string, string>? prompts = null, Action<IServiceCollection>? configure = null)
     {
         var story = new BriefItem(new WorkItemId(1), "Payment retry", "User Story", "Active", 3, [Flag.Stale]);
         var bug = new BriefItem(new WorkItemId(12), "Gateway timeouts", "Bug", "Active", 4, [Flag.Blocked]);
@@ -83,6 +83,7 @@ internal sealed class StandupHarness : IAsyncDisposable
         services.AddSingleton<IFollowUpRepository>(new InMemoryFollowUpRepository());
         services.AddSingleton<IReconcileAgent>(new FakeReconcileAgent(suggestion));
         services.AddSingleton<IPromptStore>(new FakePrompts(prompts ?? []));
+        configure?.Invoke(services);
         return new StandupHarness(services.BuildServiceProvider(), sessions, session.Id);
     }
 

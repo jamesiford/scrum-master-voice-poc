@@ -5,11 +5,13 @@ import { LivePage } from './features/live/LivePage';
 import { PromptsPage } from './features/prompts/PromptsPage';
 import { SchedulePage } from './features/schedule/SchedulePage';
 import { HealthBadge } from './features/health/HealthBadge';
+import { ReportsPage } from './features/reports/ReportsPage';
 import { RosterPage } from './features/roster/RosterPage';
 import { SessionsPage } from './features/sessions/SessionsPage';
 import { TeamPage } from './features/team/TeamPage';
 
-type PageId = 'sessions' | 'live' | 'followups' | 'schedule' | 'prompts' | 'team' | 'roster';
+type PageId =
+  'sessions' | 'live' | 'followups' | 'schedule' | 'reports' | 'prompts' | 'team' | 'roster';
 
 /**
  * Portal shell with the M1 pages. Schedule, Prompts, Live console and Reports arrive in later milestones.
@@ -28,6 +30,7 @@ export function App() {
           <Tab value="sessions">Sessions</Tab>
           <Tab value="live">Live</Tab>
           <Tab value="followups">Follow-ups</Tab>
+          <Tab value="reports">Reports</Tab>
           <Tab value="schedule">Schedule</Tab>
           <Tab value="prompts">Prompts</Tab>
           <Tab value="team">Team</Tab>
@@ -38,6 +41,7 @@ export function App() {
         {page === 'sessions' && <SessionsPage />}
         {page === 'live' && <LivePage />}
         {page === 'followups' && <FollowUpsPage />}
+        {page === 'reports' && <ReportsPage />}
         {page === 'schedule' && <SchedulePage />}
         {page === 'prompts' && <PromptsPage />}
         {page === 'team' && <TeamPage />}

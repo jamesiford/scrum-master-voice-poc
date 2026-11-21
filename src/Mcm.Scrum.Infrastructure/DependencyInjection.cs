@@ -110,5 +110,7 @@ public static class DependencyInjection
             .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), CognitiveServicesScope));
         services.AddTransient<IBacklogRiskAgent, FoundryBacklogRiskAgent>();
         services.AddTransient<IReconcileAgent, FoundryReconcileAgent>();
+        services.AddTransient<IReportingAgent, FoundryReportingAgent>();
+        services.AddSingleton<IKpiHistorySource, Reports.FixtureKpiHistorySource>();
     }
 }
