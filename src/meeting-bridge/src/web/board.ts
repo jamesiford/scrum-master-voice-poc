@@ -11,6 +11,7 @@ export class BoardRenderer {
   private readonly canvas = document.createElement('canvas');
   private readonly ctx: CanvasRenderingContext2D;
   private state: BoardState | undefined;
+  private track: (MediaStreamTrack & { requestFrame?: () => void }) | undefined;
 
   /** Creates the renderer and paints the waiting screen. */
   constructor() {
@@ -19,6 +20,10 @@ export class BoardRenderer {
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas 2D is not available.');
     this.ctx = ctx;
+    // A detached canvas may not repaint in headless Chromium, so the capture stream stalls until something forces a frame.
+    this.canvas.style.cssText =
+      'position:fixed;left:0;top:0;width:320px;height:180px;opacity:0.01;pointer-events:none';
+    document.body.appendChild(this.canvas);
     this.draw();
     // A steady repaint keeps the captured stream producing frames even when nothing changes.
     setInterval(() => this.draw(), 1000);
@@ -29,7 +34,10 @@ export class BoardRenderer {
    * @returns A video stream of the board.
    */
   stream(): MediaStream {
-    return this.canvas.captureStream(5);
+    const stream = this.canvas.captureStream(5);
+    this.track = stream.getVideoTracks()[0] as
+      (MediaStreamTrack & { requestFrame?: () => void }) | undefined;
+    return stream;
   }
 
   /**
@@ -42,6 +50,11 @@ export class BoardRenderer {
   }
 
   private draw(): void {
+    this.paint();
+    this.track?.requestFrame?.();
+  }
+
+  private paint(): void {
     const { ctx } = this;
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
