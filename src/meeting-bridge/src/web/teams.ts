@@ -48,13 +48,21 @@ function report(state: string, message: string): void {
 }
 
 /**
- * Matches a Teams display name to a roster member by first name, so "Priya Sharma" matches "Priya S.".
+ * Matches a Teams display name to a roster member by first name, so "Daniel Park" matches "Daniel Park".
  * @param name - The Teams display name.
  * @returns The member, if any.
  */
 function matchMember(name: string | undefined): RoomMember | undefined {
-  const first = (name ?? '').trim().split(/\s+/)[0]?.toLowerCase();
-  return first ? members.find((m) => m.displayName.toLowerCase().startsWith(first)) : undefined;
+  // Any word of the Teams name may match the start of the roster name, or the reverse, so "System Administrator" matches "Admin".
+  const words = (name ?? '')
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length > 1);
+  return members.find((m) => {
+    const roster = m.displayName.toLowerCase();
+    const rosterFirst = roster.split(/\s+/)[0] ?? roster;
+    return words.some((w) => roster.startsWith(w) || w.startsWith(rosterFirst));
+  });
 }
 
 async function fetchAcsToken(): Promise<string> {

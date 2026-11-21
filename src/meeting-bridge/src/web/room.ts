@@ -157,7 +157,7 @@ function fillPresenter(): void {
   const select = $<HTMLSelectElement>('me');
   select.replaceChildren(...members.map((m) => new Option(m.displayName, m.memberId)));
   select.value =
-    members.find((m) => m.memberId === 'm-priya')?.memberId ?? members[0]?.memberId ?? '';
+    members.find((m) => m.memberId === 'm-admin')?.memberId ?? members[0]?.memberId ?? '';
   select.onchange = () => {
     send({ type: 'localSpeaker', memberId: presenter() });
     renderRoster();

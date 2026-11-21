@@ -10,7 +10,7 @@
 
 ## Scripted run (Simulated Room, about 3 minutes)
 1. **Sessions** > **Prepare now** > open the pre-brief (burndown, flags, questions).
-2. **Start in Simulated Room**. Tick **Autopilot** in the room, then press Start, to let the demo cast play the five-person standup.
+2. **Start in Simulated Room**. Tick **Autopilot** in the room, then press Start, to let the demo cast play the three-person standup (Daniel Park, Maya Lin and Admin).
 3. Watch the **Live** tab: floor, current speaker, timebox, parking lot, latency.
 4. When the standup ends: **Follow-ups** tab. Approve one (type your name first), reject another.
 5. Open Azure DevOps and show the "Approved by ..." comment on the approved item and nothing on the rejected one.
@@ -21,7 +21,7 @@
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "MCM Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
-4. Roster members who join are matched by first name. The standup begins 8 seconds after the first match; use **Begin** if it does not.
+4. Roster members who join are matched by name (a Teams user called "System Administrator" matches the roster member "Admin"). Anyone who does not join is marked absent. The standup begins 8 seconds after the first match; use **Begin** if it does not.
 5. Anything that goes wrong is shown on the Live tab as a Bridge event (invalid link, lobby denied, removed).
 
 ## If something fails

@@ -152,7 +152,8 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
             Add("System.Title", item.Title),
             Add("System.AreaPath", _areaPath),
             Add("System.IterationPath", _iterationPath),
-            Add("System.Tags", string.Join("; ", tags)),
+            // "add" on System.Tags only appends, which would leave stale demo-owner-* tags after the roster changes.
+            update ? Replace("System.Tags", string.Join("; ", tags)) : Add("System.Tags", string.Join("; ", tags)),
         };
 
         if (item.Owner is not null)
@@ -208,6 +209,8 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
 
         return map;
     }
+
+    private static object Replace(string field, object value) => new { op = "replace", path = "/fields/" + field, value };
 
     private static object Add(string field, object value) => new { op = "add", path = "/fields/" + field, value };
 
