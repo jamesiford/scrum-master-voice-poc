@@ -67,6 +67,9 @@ public static class DependencyInjection
         AddAdoClient(services);
         AddFoundry(services);
         services.AddSingleton<IVoiceSessionFactory, VoiceLiveSessionFactory>();
+        services.AddOptions<ModelComparisonOptions>().Bind(configuration.GetSection(ModelComparisonOptions.SectionName));
+        services.AddSingleton<IModelCatalog, ConfigModelCatalog>();
+        services.AddSingleton<IEmailSender, OutboxEmailSender>();
         return services;
     }
 
@@ -132,6 +135,7 @@ public static class DependencyInjection
         services.AddTransient<IBacklogRiskAgent, FoundryBacklogRiskAgent>();
         services.AddTransient<IReconcileAgent, FoundryReconcileAgent>();
         services.AddTransient<IReportingAgent, FoundryReportingAgent>();
+        services.AddTransient<IDraftingAgent, FoundryDraftingAgent>();
         services.AddSingleton<IKpiHistorySource, Reports.FixtureKpiHistorySource>();
     }
 }

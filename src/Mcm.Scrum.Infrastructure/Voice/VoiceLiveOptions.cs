@@ -26,4 +26,10 @@ public sealed class VoiceLiveOptions
     /// <summary>Gets or sets the transcription language.</summary>
     [Required]
     public string Language { get; set; } = "en-US";
+
+    /// <summary>Gets or sets the Foundry voice agent name. When set, the Facilitator runs in <c>FoundryAgent</c> mode instead of model-direct (SPEC M8).</summary>
+    public string AgentName { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the Foundry project that hosts <see cref="AgentName"/>.</summary>
+    public string AgentProjectName { get; set; } = string.Empty;
 }

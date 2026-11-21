@@ -1,5 +1,8 @@
 import {
   BarChart3,
+  BookOpenText,
+  Cpu,
+  RotateCcw,
   CalendarClock,
   CheckSquare,
   ClipboardList,
@@ -18,6 +21,9 @@ import { HealthBadge } from './features/health/HealthBadge';
 import { FollowUpsPage } from './features/followups/FollowUpsPage';
 import { LivePage } from './features/live/LivePage';
 import { OverviewPage } from './features/overview/OverviewPage';
+import { ModelsPage } from './features/models/ModelsPage';
+import { RetrospectivePage } from './features/retrospective/RetrospectivePage';
+import { StoriesPage } from './features/stories/StoriesPage';
 import { PlanningPage } from './features/planning/PlanningPage';
 import { PromptsPage } from './features/prompts/PromptsPage';
 import { ReportsPage } from './features/reports/ReportsPage';
@@ -50,6 +56,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { id: 'reports', label: 'Reports', icon: BarChart3 },
       { id: 'planning', label: 'Planning', icon: MessageSquareText },
+      { id: 'retrospective', label: 'Retrospective', icon: RotateCcw },
+      { id: 'stories', label: 'Story Writer', icon: BookOpenText },
+      { id: 'models', label: 'Models and email', icon: Cpu },
     ],
   },
   {
@@ -77,6 +86,12 @@ function Page({ page, go }: { page: PageId; go: (p: PageId) => void }) {
       return <ReportsPage />;
     case 'planning':
       return <PlanningPage />;
+    case 'retrospective':
+      return <RetrospectivePage />;
+    case 'stories':
+      return <StoriesPage />;
+    case 'models':
+      return <ModelsPage />;
     case 'schedule':
       return <SchedulePage />;
     case 'prompts':

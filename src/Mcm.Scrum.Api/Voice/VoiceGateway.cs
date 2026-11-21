@@ -69,6 +69,8 @@ public sealed class VoiceGateway(
     private int _pendingTranscripts;
     private DateTimeOffset _lastStoppedAt;
     private readonly HashSet<string> _offTopicSpeakers = [];
+    private readonly HashSet<int> _covered = [];
+    private string? _lastBoard;
 
     private abstract record Msg;
 
@@ -582,6 +584,10 @@ public sealed class VoiceGateway(
             foreach (var e in r.Events)
             {
                 await sender.Send(new RecordStandupEventCommand(_sessionId, e.Type, done.MemberId, e.Text, e.WorkItemIds), _run);
+                lock (_gate)
+                {
+                    _covered.UnionWith(e.WorkItemIds);
+                }
             }
 
             _pendingQuestion[done.MemberId] = r.SuggestedQuestion;
@@ -760,6 +766,56 @@ public sealed class VoiceGateway(
         };
         live.Update(_sessionId, JsonSerializer.Serialize(state));
         await _bridge.SendAsync(new { type = "ui", state }, _run);
+        await PushBoardAsync(ended);
+    }
+
+    // The Teams page renders this as a shared screen so everyone sees the current speaker's items and what is still uncovered.
+    private async Task PushBoardAsync(bool ended)
+    {
+        if (_session.PreBrief is not { } brief)
+        {
+            return;
+        }
+
+        HashSet<int> covered;
+        lock (_gate)
+        {
+            covered = [.. _covered];
+        }
+
+        var speaker = _floor.CurrentMemberId is { } id ? brief.Members.FirstOrDefault(m => m.MemberId == id) : null;
+        var board = new
+        {
+            type = "board",
+            ended,
+            sprint = brief.IterationPath,
+            goal = brief.SprintGoal,
+            daysLeft = brief.DaysLeft,
+            speaker = speaker?.DisplayName,
+            items = (speaker?.Items ?? brief.UnassignedItems).Select(i => new
+            {
+                id = i.Id.Value,
+                title = i.Title,
+                type = i.Type,
+                state = i.State,
+                flags = i.Flags.Select(f => f.ToString()),
+                covered = covered.Contains(i.Id.Value),
+            }),
+            team = brief.Members.Select(m => new
+            {
+                name = m.DisplayName,
+                total = m.Items.Count,
+                covered = m.Items.Count(i => covered.Contains(i.Id.Value)),
+            }),
+        };
+        var json = JsonSerializer.Serialize(board);
+        if (json == _lastBoard)
+        {
+            return;
+        }
+
+        _lastBoard = json;
+        await _bridge.SendAsync(board, _run);
     }
 
     private string NameOf(string memberId) =>

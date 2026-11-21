@@ -1,0 +1,35 @@
+using Mcm.Scrum.Application.Abstractions.Messaging;
+using Mcm.Scrum.Application.Features.FollowUps.ListEmails;
+using Mcm.Scrum.Application.Features.Models.GetModelComparison;
+using Mcm.Scrum.Application.Features.Retrospectives.GetRetrospective;
+using Mcm.Scrum.Application.Features.Stories.DraftUserStory;
+using Mcm.Scrum.Application.Features.Stories.ListParkedTopics;
+
+namespace Mcm.Scrum.Api.Endpoints;
+
+/// <summary>Stretch endpoints (SPEC M8): retrospective, Story Writer, model comparison and the email outbox. Each route sends one query.</summary>
+public static class InsightsEndpoints
+{
+    /// <summary>Maps <c>/api/retrospective</c>, <c>/api/stories</c>, <c>/api/models</c> and <c>/api/emails</c>.</summary>
+    /// <param name="app">The route builder.</param>
+    /// <returns>The same builder.</returns>
+    public static IEndpointRouteBuilder MapInsightsEndpoints(this IEndpointRouteBuilder app)
+    {
+        app.MapGet("/api/retrospective", async (string teamId, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new GetRetrospectiveQuery(teamId), ct)).ToHttpResult());
+        app.MapGet("/api/stories/topics", async (string teamId, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new ListParkedTopicsQuery(teamId), ct)).ToHttpResult());
+        app.MapPost("/api/stories/draft", async (DraftBody b, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new DraftUserStoryQuery(b.TeamId, b.Topic), ct)).ToHttpResult());
+        app.MapGet("/api/models", async (string teamId, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new GetModelComparisonQuery(teamId), ct)).ToHttpResult());
+        app.MapGet("/api/emails", async (ISender sender, CancellationToken ct) =>
+            (await sender.Send(new ListEmailsQuery(), ct)).ToHttpResult());
+        return app;
+    }
+
+    /// <summary>Request body for <c>POST /api/stories/draft</c>.</summary>
+    /// <param name="TeamId">Team id.</param>
+    /// <param name="Topic">The topic or parked decision.</param>
+    public sealed record DraftBody(string TeamId, string Topic);
+}

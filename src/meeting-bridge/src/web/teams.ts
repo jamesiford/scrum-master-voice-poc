@@ -1,12 +1,14 @@
 import {
   Features,
   LocalAudioStream,
+  LocalVideoStream,
   CallClient,
   type Call,
   type RemoteParticipant,
 } from '@azure/communication-calling';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import { AgentPlayer, SAMPLE_RATE } from './audio.js';
+import { BoardRenderer } from './board.js';
 import type { ClientMessage, RoomMember, ServerMessage } from './protocol.js';
 
 /**
@@ -30,6 +32,8 @@ let begun = false;
 let player: AgentPlayer;
 let context: AudioContext;
 let localAudio: LocalAudioStream;
+let sharing = false;
+const board = new BoardRenderer();
 const wired = new Set<string>();
 
 function status(text: string): void {
@@ -136,6 +140,25 @@ function beginWhenReady(c: Call): void {
   }, 1000);
 }
 
+/**
+ * Shares the standup board as the agent's screen. Best effort: the standup still runs if sharing is not permitted.
+ * @param c - The connected call.
+ */
+async function shareBoard(c: Call): Promise<void> {
+  if (sharing) return;
+  sharing = true;
+  try {
+    await c.startScreenSharing(new LocalVideoStream(board.stream()));
+  } catch (e) {
+    sharing = false;
+    send({
+      type: 'callState',
+      state: 'Info',
+      message: `Could not share the board: ${e instanceof Error ? e.message : 'unknown error'}`,
+    });
+  }
+}
+
 async function join(): Promise<void> {
   report('Joining', 'Requesting an ACS identity.');
   const credential = new AzureCommunicationTokenCredential(await fetchAcsToken());
@@ -174,6 +197,7 @@ async function join(): Promise<void> {
           'Waiting in the Teams lobby. Admit "MCM Scrum Agent" from the meeting.',
         );
       case 'Connected':
+        void shareBoard(c);
         return report('Connected', 'In the meeting. Waiting for roster members to join.');
       case 'Disconnected':
         return report(
@@ -197,6 +221,9 @@ function onMessage(message: ServerMessage): void {
       join().catch((e: unknown) =>
         report('Failed', e instanceof Error ? e.message : 'Could not join the meeting.'),
       );
+      break;
+    case 'board':
+      board.update(message);
       break;
     case 'control':
       if (message.action === 'flush') player.flush();

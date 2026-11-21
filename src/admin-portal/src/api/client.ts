@@ -643,3 +643,93 @@ export function getPlanning(teamId: string, signal?: AbortSignal): Promise<Plann
     signal,
   );
 }
+
+/** A drafted user story (draft only; never written to Azure DevOps without approval). */
+export interface StoryDraft {
+  title: string;
+  story: string;
+  acceptanceCriteria: string[];
+  fromModel: boolean;
+}
+
+/** One row of the realtime model comparison. */
+export interface ModelRow {
+  name: string;
+  isCurrent: boolean;
+  costPerStandupUsd: number;
+  measuredP50Ms: number | null;
+  measuredP95Ms: number | null;
+  notes: string;
+}
+
+/** A follow-up email recorded in the outbox. */
+export interface SentEmail {
+  to: string;
+  subject: string;
+  body: string;
+  followUpId: string | null;
+}
+
+/**
+ * Drafts a start-stop-continue retrospective.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The retrospective document.
+ */
+export function getRetrospective(teamId: string, signal?: AbortSignal): Promise<ReportDocument> {
+  return request<ReportDocument>(
+    'GET',
+    `/api/retrospective?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Lists topics parked in recent standups.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The topics.
+ */
+export function getParkedTopics(teamId: string, signal?: AbortSignal): Promise<string[]> {
+  return request<string[]>(
+    'GET',
+    `/api/stories/topics?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Drafts a user story from a topic.
+ * @param teamId - Team id.
+ * @param topic - The topic or parked decision.
+ * @returns The draft.
+ */
+export function draftStory(teamId: string, topic: string): Promise<StoryDraft> {
+  return request<StoryDraft>('POST', '/api/stories/draft', { teamId, topic });
+}
+
+/**
+ * Compares realtime models on estimated cost and measured latency.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The rows.
+ */
+export function getModelComparison(teamId: string, signal?: AbortSignal): Promise<ModelRow[]> {
+  return request<ModelRow[]>(
+    'GET',
+    `/api/models?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Lists follow-up emails sent so far.
+ * @param signal - Optional abort signal.
+ * @returns The emails.
+ */
+export function getEmails(signal?: AbortSignal): Promise<SentEmail[]> {
+  return request<SentEmail[]>('GET', '/api/emails', undefined, signal);
+}

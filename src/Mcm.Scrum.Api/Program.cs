@@ -72,6 +72,7 @@ app.MapScheduleEndpoints();
 app.MapDemoEndpoints();
 app.MapReportsEndpoints();
 app.MapPlanningEndpoints();
+app.MapInsightsEndpoints();
 app.MapBridgeEndpoints();
 app.MapFallbackToFile("index.html");
 

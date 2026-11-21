@@ -41,6 +41,14 @@ public sealed class VoiceLiveSessionFactory(TokenCredential credential, IOptions
         var host = string.IsNullOrWhiteSpace(options.Endpoint)
             ? "wss://" + new Uri(foundry.Value.ProjectEndpoint).Host + "/voice-live/realtime"
             : options.Endpoint;
+        // FoundryAgent mode: bind the session to a Foundry voice agent instead of a model deployment.
+        // VERIFY: https://learn.microsoft.com/azure/ai-services/speech-service/voice-live-agents-quickstart (agent-name and agent-project-name query parameters)
+        if (!string.IsNullOrWhiteSpace(options.AgentName))
+        {
+            var project = Uri.EscapeDataString(options.AgentProjectName);
+            return new Uri($"{host}?api-version={Uri.EscapeDataString(options.ApiVersion)}&agent-name={Uri.EscapeDataString(options.AgentName)}&agent-project-name={project}");
+        }
+
         var model = Uri.EscapeDataString(options.Model);
         return new Uri($"{host}?api-version={Uri.EscapeDataString(options.ApiVersion)}&model={model}");
     }

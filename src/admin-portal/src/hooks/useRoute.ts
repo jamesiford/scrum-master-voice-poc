@@ -8,6 +8,9 @@ export type PageId =
   | 'followups'
   | 'reports'
   | 'planning'
+  | 'retrospective'
+  | 'stories'
+  | 'models'
   | 'schedule'
   | 'prompts'
   | 'team'
@@ -20,6 +23,9 @@ const pages: PageId[] = [
   'followups',
   'reports',
   'planning',
+  'retrospective',
+  'stories',
+  'models',
   'schedule',
   'prompts',
   'team',

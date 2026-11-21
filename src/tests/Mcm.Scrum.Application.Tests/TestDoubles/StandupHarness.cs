@@ -83,6 +83,7 @@ internal sealed class StandupHarness : IAsyncDisposable
         services.AddSingleton<IFollowUpRepository>(new InMemoryFollowUpRepository());
         services.AddSingleton<IReconcileAgent>(new FakeReconcileAgent(suggestion));
         services.AddSingleton<IPromptStore>(new FakePrompts(prompts ?? []));
+        services.AddSingleton<IEmailSender>(new FakeEmailSender());
         configure?.Invoke(services);
         return new StandupHarness(services.BuildServiceProvider(), sessions, session.Id);
     }

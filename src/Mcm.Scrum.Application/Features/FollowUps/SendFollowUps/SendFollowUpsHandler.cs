@@ -18,6 +18,7 @@ internal sealed class SendFollowUpsHandler(
     IMemberRepository members,
     IFollowUpRepository followUps,
     ITeamsMessenger messenger,
+    IEmailSender emails,
     IClock clock) : IRequestHandler<SendFollowUpsCommand, Result<int>>
 {
     public async Task<Result<int>> Handle(SendFollowUpsCommand request, CancellationToken ct)
@@ -47,9 +48,21 @@ internal sealed class SendFollowUpsHandler(
             followUp.MarkSent();
             await followUps.SaveAsync(followUp, ct);
             await messenger.SendAsync(ToMessage(followUp, roster), ct);
+            await EmailAsync(followUp, roster, ct);
         }
 
         return Result<int>.Success(planned.Count);
+    }
+
+    // Email is an extra channel for the same follow-up (F3 stretch); the Teams card stays the approval surface.
+    private async Task EmailAsync(FollowUp f, Dictionary<string, Member> roster, CancellationToken ct)
+    {
+        if (!emails.Enabled || f.MemberId is null || !roster.TryGetValue(f.MemberId, out var m) || string.IsNullOrWhiteSpace(m.AdoUniqueName))
+        {
+            return;
+        }
+
+        await emails.SendAsync(new EmailMessage(m.AdoUniqueName, $"Standup follow-up for {m.DisplayName}", f.Message, f.Id), ct);
     }
 
     private static TeamsMessage ToMessage(FollowUp f, Dictionary<string, Member> roster)

@@ -19,8 +19,27 @@ export interface UiState {
   running: boolean;
 }
 
+/** What the shared screen shows: the current speaker's items and what has been covered. */
+export interface BoardState {
+  ended: boolean;
+  sprint: string;
+  goal: string;
+  daysLeft: number;
+  speaker: string | null;
+  items: {
+    id: number;
+    title: string;
+    type: string;
+    state: string;
+    flags: string[];
+    covered: boolean;
+  }[];
+  team: { name: string; total: number; covered: number }[];
+}
+
 /** Gateway to room. */
 export type ServerMessage =
+  | ({ type: 'board' } & BoardState)
   | {
       type: 'hello';
       sessionId: string;
