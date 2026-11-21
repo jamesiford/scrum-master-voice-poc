@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: mcm-scrum-agent
+services:
+  api:
+    project: ./src/Mcm.Scrum.Api
+    host: containerapp
+    language: dotnet
+    docker:
+      path: ../../Dockerfile.api
+      context: ../..
+      remoteBuild: true
+  bridge:
+    project: ./src/meeting-bridge
+    host: containerapp
+    language: ts
+    docker:
+      path: ../../Dockerfile.bridge
+      context: ../..
+      remoteBuild: true
+hooks:
+  postdeploy:
+    windows:
+      shell: pwsh
+      run: ./infra/hooks/postdeploy.ps1
+      interactive: false
+    posix:
+      shell: pwsh
+      run: ./infra/hooks/postdeploy.ps1
+      interactive: false

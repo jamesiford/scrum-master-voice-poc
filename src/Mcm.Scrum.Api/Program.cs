@@ -47,6 +47,9 @@ if (!string.IsNullOrWhiteSpace(tunnelSuffix))
 }
 
 app.UseWebSockets();
+// The portal build is copied to wwwroot in the container (M7); locally Vite serves it.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 if (botConfigured)
 {
     app.UseAgents();
@@ -59,6 +62,7 @@ app.MapTeamsEndpoints();
 app.MapSessionsEndpoints();
 app.MapFollowUpsEndpoints();
 app.MapBridgeEndpoints();
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

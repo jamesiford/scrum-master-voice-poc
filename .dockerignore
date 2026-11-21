@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+.git/
+.azure/
+.vs/
+data/
+appPackage/*.zip
+src/meeting-bridge/public/*.js
+src/meeting-bridge/public/*.map
