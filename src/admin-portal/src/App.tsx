@@ -2,6 +2,7 @@ import { Tab, TabList, Title3 } from '@fluentui/react-components';
 import { useState } from 'react';
 import { FollowUpsPage } from './features/followups/FollowUpsPage';
 import { LivePage } from './features/live/LivePage';
+import { PlanningPage } from './features/planning/PlanningPage';
 import { PromptsPage } from './features/prompts/PromptsPage';
 import { SchedulePage } from './features/schedule/SchedulePage';
 import { HealthBadge } from './features/health/HealthBadge';
@@ -11,7 +12,15 @@ import { SessionsPage } from './features/sessions/SessionsPage';
 import { TeamPage } from './features/team/TeamPage';
 
 type PageId =
-  'sessions' | 'live' | 'followups' | 'schedule' | 'reports' | 'prompts' | 'team' | 'roster';
+  | 'sessions'
+  | 'live'
+  | 'followups'
+  | 'schedule'
+  | 'reports'
+  | 'planning'
+  | 'prompts'
+  | 'team'
+  | 'roster';
 
 /**
  * Portal shell with the M1 pages. Schedule, Prompts, Live console and Reports arrive in later milestones.
@@ -31,6 +40,7 @@ export function App() {
           <Tab value="live">Live</Tab>
           <Tab value="followups">Follow-ups</Tab>
           <Tab value="reports">Reports</Tab>
+          <Tab value="planning">Planning</Tab>
           <Tab value="schedule">Schedule</Tab>
           <Tab value="prompts">Prompts</Tab>
           <Tab value="team">Team</Tab>
@@ -42,6 +52,7 @@ export function App() {
         {page === 'live' && <LivePage />}
         {page === 'followups' && <FollowUpsPage />}
         {page === 'reports' && <ReportsPage />}
+        {page === 'planning' && <PlanningPage />}
         {page === 'schedule' && <SchedulePage />}
         {page === 'prompts' && <PromptsPage />}
         {page === 'team' && <TeamPage />}

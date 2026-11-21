@@ -605,3 +605,41 @@ export function getReport(
 export function askAgent(teamId: string, question: string): Promise<string> {
   return request<string>('POST', '/api/ask', { teamId, question });
 }
+
+/** One member's open load. */
+export interface MemberLoad {
+  memberId: string;
+  displayName: string;
+  openItems: number;
+  openPoints: number;
+  remainingHours: number;
+}
+
+/** Sprint planning prep. */
+export interface PlanningPrep {
+  loads: MemberLoad[];
+  carryOver: {
+    workItemId: number;
+    title: string;
+    state: string;
+    points: number | null;
+    ownerName: string | null;
+  }[];
+  notReady: { workItemId: number; title: string; reasons: string[] }[];
+  suggestions: { workItemId: number; title: string; displayName: string; reason: string }[];
+}
+
+/**
+ * Reads the sprint planning prep.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The prep.
+ */
+export function getPlanning(teamId: string, signal?: AbortSignal): Promise<PlanningPrep> {
+  return request<PlanningPrep>(
+    'GET',
+    `/api/planning?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}

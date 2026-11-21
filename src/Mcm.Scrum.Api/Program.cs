@@ -68,6 +68,7 @@ app.MapFollowUpsEndpoints();
 app.MapScheduleEndpoints();
 app.MapDemoEndpoints();
 app.MapReportsEndpoints();
+app.MapPlanningEndpoints();
 app.MapBridgeEndpoints();
 app.MapFallbackToFile("index.html");
 
