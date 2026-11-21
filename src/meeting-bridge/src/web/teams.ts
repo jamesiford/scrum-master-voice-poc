@@ -128,6 +128,42 @@ function beginWhenReady(c: Call): void {
   }, 1000);
 }
 
+/**
+ * Makes sure the agent's virtual microphone is attached to the call and unmuted, then plays a short tone so a presenter can
+ * hear straight away that audio works. Headless Chromium can leave the audio context suspended and ACS can join muted.
+ * @param c - The call.
+ * @param virtualMic - The destination the agent's audio is routed into.
+ */
+async function ensureOutgoingAudio(
+  c: Call,
+  virtualMic: MediaStreamAudioDestinationNode,
+): Promise<void> {
+  try {
+    if (context.state !== 'running') await context.resume();
+    if (c.localAudioStreams.length === 0) await c.startAudio(localAudio);
+    if (c.isMuted) await c.unmute();
+    const track = virtualMic.stream.getAudioTracks()[0];
+    send({
+      type: 'callState',
+      state: 'Audio',
+      message: `Outgoing audio ready (context ${context.state}, track ${track?.readyState ?? 'none'}, muted ${c.isMuted}).`,
+    });
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    gain.gain.value = 0.15;
+    osc.frequency.value = 660;
+    osc.connect(gain).connect(virtualMic);
+    osc.start();
+    osc.stop(context.currentTime + 0.4);
+  } catch (e) {
+    send({
+      type: 'callState',
+      state: 'Audio',
+      message: `Outgoing audio problem: ${e instanceof Error ? e.message : 'unknown'}`,
+    });
+  }
+}
+
 async function join(): Promise<void> {
   report('Joining', 'Requesting an ACS identity.');
   const credential = new AzureCommunicationTokenCredential(await fetchAcsToken());
@@ -166,6 +202,7 @@ async function join(): Promise<void> {
           'Waiting in the Teams lobby. Admit "MCM Scrum Agent" from the meeting.',
         );
       case 'Connected':
+        void ensureOutgoingAudio(c, virtualMic);
         return report('Connected', 'In the meeting. Waiting for roster members to join.');
       case 'Disconnected':
         return report(
