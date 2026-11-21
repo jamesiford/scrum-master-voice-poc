@@ -6,7 +6,7 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 /// <summary>Reads and writes one JSON file atomically enough for a single-process PoC.</summary>
 internal static class JsonFile
 {
-    private static readonly JsonSerializerOptions Options = new()
+    internal static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = true,
         Converters = { new JsonStringEnumConverter() },
@@ -20,12 +20,12 @@ internal static class JsonFile
         }
 
         await using var stream = File.OpenRead(path);
-        return await JsonSerializer.DeserializeAsync<T>(stream, Options, ct) ?? empty();
+        return await JsonSerializer.DeserializeAsync<T>(stream, SerializerOptions, ct) ?? empty();
     }
 
     public static async Task WriteAsync<T>(string path, T value, CancellationToken ct)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
-        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(value, Options), ct);
+        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(value, SerializerOptions), ct);
     }
 }

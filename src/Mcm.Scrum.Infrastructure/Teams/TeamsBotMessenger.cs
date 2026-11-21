@@ -27,31 +27,33 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
     private readonly BotOptions _bot;
     private readonly ILogger<TeamsBotMessenger> _logger;
     private readonly string _activitiesPath;
+    private readonly ICollectionStore _store;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="TeamsBotMessenger"/> class.</summary>
     /// <param name="outbox">The offline outbox.</param>
     /// <param name="conversations">Stored conversation references.</param>
     /// <param name="bot">Bot options.</param>
-    /// <param name="store">Store options.</param>
+    /// <param name="store">The collection store.</param>
     /// <param name="logger">Logger.</param>
     /// <param name="adapter">The Agents SDK adapter; absent when the bot is not configured.</param>
     public TeamsBotMessenger(
         OutboxTeamsMessenger outbox,
         IConversationStore conversations,
         IOptions<BotOptions> bot,
-        IOptions<StoreOptions> store,
+        ICollectionStore store,
         ILogger<TeamsBotMessenger> logger,
         IChannelAdapter? adapter = null)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(store);
+        _store = store;
         _outbox = outbox;
         _conversations = conversations;
         _adapter = adapter;
         _bot = bot.Value;
         _logger = logger;
-        _activitiesPath = Path.Combine(store.Value.DataPath, "bot-activities.json");
+        _activitiesPath = "bot-activities.json";
     }
 
     /// <inheritdoc />
@@ -156,7 +158,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            return await JsonFile.ReadAsync<List<SentActivity>>(_activitiesPath, () => [], ct);
+            return await _store.ReadAsync<List<SentActivity>>(_activitiesPath, () => [], ct);
         }
         finally
         {
@@ -169,9 +171,9 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<List<SentActivity>>(_activitiesPath, () => [], ct);
+            var all = await _store.ReadAsync<List<SentActivity>>(_activitiesPath, () => [], ct);
             all.Add(new SentActivity(dedupeKey, conversationKey, activityId));
-            await JsonFile.WriteAsync(_activitiesPath, all, ct);
+            await _store.WriteAsync(_activitiesPath, all, ct);
         }
         finally
         {

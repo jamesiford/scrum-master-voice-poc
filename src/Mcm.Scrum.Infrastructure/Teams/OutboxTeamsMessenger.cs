@@ -12,16 +12,18 @@ namespace Mcm.Scrum.Infrastructure.Teams;
 public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly IClock _clock;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="OutboxTeamsMessenger"/> class.</summary>
-    /// <param name="options">Store options.</param>
+    /// <param name="store">The collection store.</param>
     /// <param name="clock">Clock.</param>
-    public OutboxTeamsMessenger(IOptions<StoreOptions> options, IClock clock)
+    public OutboxTeamsMessenger(ICollectionStore store, IClock clock)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        _path = Path.Combine(options.Value.DataPath, "cards.json");
+        ArgumentNullException.ThrowIfNull(store);
+        _store = store;
+        _path = "cards.json";
         _clock = clock;
     }
 
@@ -32,14 +34,14 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
         await _gate.WaitAsync(ct);
         try
         {
-            var cards = await JsonFile.ReadAsync<List<StoredCard>>(_path, () => [], ct);
+            var cards = await _store.ReadAsync<List<StoredCard>>(_path, () => [], ct);
             if (cards.Any(c => c.Message.DedupeKey == message.DedupeKey))
             {
                 return;
             }
 
             cards.Add(new StoredCard(Guid.NewGuid(), _clock.UtcNow, message, CardRenderer.Render(message)));
-            await JsonFile.WriteAsync(_path, cards, ct);
+            await _store.WriteAsync(_path, cards, ct);
         }
         finally
         {
@@ -54,7 +56,7 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
         await _gate.WaitAsync(ct);
         try
         {
-            var cards = await JsonFile.ReadAsync<List<StoredCard>>(_path, () => [], ct);
+            var cards = await _store.ReadAsync<List<StoredCard>>(_path, () => [], ct);
             var index = cards.FindIndex(c => c.Message.DedupeKey == message.DedupeKey);
             if (index < 0)
             {
@@ -62,7 +64,7 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
             }
 
             cards[index] = cards[index] with { Message = message, AdaptiveCardJson = CardRenderer.Render(message) };
-            await JsonFile.WriteAsync(_path, cards, ct);
+            await _store.WriteAsync(_path, cards, ct);
         }
         finally
         {
@@ -76,7 +78,7 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
         await _gate.WaitAsync(ct);
         try
         {
-            var cards = await JsonFile.ReadAsync<List<StoredCard>>(_path, () => [], ct);
+            var cards = await _store.ReadAsync<List<StoredCard>>(_path, () => [], ct);
             return cards
                 .Where(c => sessionId is null || c.Message.SessionId == sessionId)
                 .OrderByDescending(c => c.SentAt)

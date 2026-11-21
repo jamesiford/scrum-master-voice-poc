@@ -8,14 +8,16 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 public sealed class JsonFileConversationStore : IConversationStore, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="JsonFileConversationStore"/> class.</summary>
-    /// <param name="options">Store options.</param>
-    public JsonFileConversationStore(IOptions<StoreOptions> options)
+    /// <param name="store">The collection store.</param>
+    public JsonFileConversationStore(ICollectionStore store)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        _path = Path.Combine(options.Value.DataPath, "conversations.json");
+        ArgumentNullException.ThrowIfNull(store);
+        _store = store;
+        _path = "conversations.json";
     }
 
     /// <inheritdoc />
@@ -24,9 +26,9 @@ public sealed class JsonFileConversationStore : IConversationStore, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<Dictionary<string, string>>(_path, () => [], ct);
+            var all = await _store.ReadAsync<Dictionary<string, string>>(_path, () => [], ct);
             all[key] = referenceJson;
-            await JsonFile.WriteAsync(_path, all, ct);
+            await _store.WriteAsync(_path, all, ct);
         }
         finally
         {
@@ -40,7 +42,7 @@ public sealed class JsonFileConversationStore : IConversationStore, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            return (await JsonFile.ReadAsync<Dictionary<string, string>>(_path, () => [], ct)).ToList();
+            return (await _store.ReadAsync<Dictionary<string, string>>(_path, () => [], ct)).ToList();
         }
         finally
         {

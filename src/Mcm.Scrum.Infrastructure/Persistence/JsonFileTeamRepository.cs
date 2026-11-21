@@ -10,6 +10,7 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly Team _default;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -17,12 +18,13 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
     /// <param name="store">Store options.</param>
     /// <param name="defaults">Default team settings.</param>
     /// <param name="ado">Azure DevOps options (organisation URL).</param>
-    public JsonFileTeamRepository(IOptions<StoreOptions> store, IOptions<TeamDefaultsOptions> defaults, IOptions<AdoOptions> ado)
+    public JsonFileTeamRepository(ICollectionStore store, IOptions<TeamDefaultsOptions> defaults, IOptions<AdoOptions> ado)
     {
         ArgumentNullException.ThrowIfNull(store);
+        _store = store;
         ArgumentNullException.ThrowIfNull(defaults);
         ArgumentNullException.ThrowIfNull(ado);
-        _path = Path.Combine(store.Value.DataPath, "teams.json");
+        _path = "teams.json";
         var d = defaults.Value;
         _default = new Team(
             d.Id,
@@ -40,7 +42,7 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<Dictionary<string, Team>>(_path, () => [], ct);
+            var all = await _store.ReadAsync<Dictionary<string, Team>>(_path, () => [], ct);
             return all.TryGetValue(id, out var team) ? team : id == _default.Id ? _default : null;
         }
         finally
@@ -56,9 +58,9 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<Dictionary<string, Team>>(_path, () => [], ct);
+            var all = await _store.ReadAsync<Dictionary<string, Team>>(_path, () => [], ct);
             all[team.Id] = team;
-            await JsonFile.WriteAsync(_path, all, ct);
+            await _store.WriteAsync(_path, all, ct);
         }
         finally
         {

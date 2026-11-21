@@ -46,7 +46,7 @@ public static class DependencyInjection
         services.AddSingleton<IPromptStore, FilePromptStore>();
         services.AddSingleton<IRosterSource, SeedFileRosterSource>();
 
-        // Store__Mode=Cosmos is added with the Cosmos repositories; Json is the only mode so far.
+        AddCollectionStore(services, configuration);
         services.AddSingleton<ISessionRepository, JsonFileSessionRepository>();
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
@@ -68,6 +68,27 @@ public static class DependencyInjection
         AddFoundry(services);
         services.AddSingleton<IVoiceSessionFactory, VoiceLiveSessionFactory>();
         return services;
+    }
+
+    private static void AddCollectionStore(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<CosmosOptions>().Bind(configuration.GetSection(CosmosOptions.SectionName));
+        if (!string.Equals(configuration["Store:Mode"], "Cosmos", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<ICollectionStore, FileCollectionStore>();
+            return;
+        }
+
+        services.AddSingleton(sp =>
+        {
+            var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
+            var client = new Microsoft.Azure.Cosmos.CosmosClient(
+                cosmos.Endpoint,
+                sp.GetRequiredService<TokenCredential>(),
+                new Microsoft.Azure.Cosmos.CosmosClientOptions { UseSystemTextJsonSerializerWithOptions = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web) });
+            return client.GetContainer(cosmos.Database, cosmos.Container);
+        });
+        services.AddSingleton<ICollectionStore>(sp => new CosmosCollectionStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.Container>()));
     }
 
     private static void AddOptions<T>(IServiceCollection services, IConfiguration configuration, string section)

@@ -1,5 +1,5 @@
 // M7: deploys the PoC into the existing resource group, reusing the Foundry resource, Log Analytics and Application Insights.
-// PROD: add Cosmos (Store__Mode=Cosmos), Azure Communication Services, private networking and a federated credential for the bot.
+// PROD: private networking, no key-based ACS connection string (use Entra), and a federated credential for the bot.
 targetScope = 'resourceGroup'
 
 @description('azd environment name.')
@@ -105,6 +105,44 @@ resource aiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
+  name: 'cosmos-mcm-scrum-${token}'
+  location: location
+  tags: tags
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    capabilities: [ { name: 'EnableServerless' } ]
+    locations: [ { locationName: location, failoverPriority: 0 } ]
+    consistencyPolicy: { defaultConsistencyLevel: 'Session' }
+    // PROD: disable key auth entirely and use private endpoints.
+    disableLocalAuth: true
+  }
+}
+
+resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
+  parent: cosmos
+  name: 'mcmscrum'
+  properties: { resource: { id: 'mcmscrum' } }
+}
+
+resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: cosmosDb
+  name: 'collections'
+  properties: { resource: { id: 'collections', partitionKey: { paths: [ '/id' ], kind: 'Hash' } } }
+}
+
+// Cosmos DB Built-in Data Contributor.
+resource cosmosRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+  parent: cosmos
+  name: guid(cosmos.id, identity.id, 'data-contributor')
+  properties: {
+    roleDefinitionId: '${cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002'
+    principalId: identity.properties.principalId
+    scope: cosmos.id
+  }
+}
+
 resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'cae-mcm-scrum-${token}'
   location: location
@@ -159,6 +197,8 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bot__TunnelHostSuffix', value: '' }
             { name: 'Connections__ServiceConnection__Settings__ClientId', value: botAppId }
             { name: 'Connections__ServiceConnection__Settings__ClientSecret', secretRef: 'bot-secret' }
+            { name: 'Store__Mode', value: 'Cosmos' }
+            { name: 'Cosmos__Endpoint', value: cosmos.properties.documentEndpoint }
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
@@ -170,7 +210,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
       scale: { minReplicas: 1, maxReplicas: 1 }
     }
   }
-  dependsOn: [ acrPull ]
+  dependsOn: [ acrPull, cosmosRole ]
 }
 
 resource bridge 'Microsoft.App/containerApps@2024-03-01' = {

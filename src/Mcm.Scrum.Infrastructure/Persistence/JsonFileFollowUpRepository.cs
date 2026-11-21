@@ -9,14 +9,16 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 public sealed class JsonFileFollowUpRepository : IFollowUpRepository, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="JsonFileFollowUpRepository"/> class.</summary>
-    /// <param name="options">Store options.</param>
-    public JsonFileFollowUpRepository(IOptions<StoreOptions> options)
+    /// <param name="store">The collection store.</param>
+    public JsonFileFollowUpRepository(ICollectionStore store)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        _path = Path.Combine(options.Value.DataPath, "followups.json");
+        ArgumentNullException.ThrowIfNull(store);
+        _store = store;
+        _path = "followups.json";
     }
 
     /// <inheritdoc />
@@ -38,10 +40,10 @@ public sealed class JsonFileFollowUpRepository : IFollowUpRepository, IDisposabl
         await _gate.WaitAsync(ct);
         try
         {
-            var records = await JsonFile.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct);
+            var records = await _store.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct);
             records.RemoveAll(r => r.Id == followUp.Id);
             records.Add(followUp.ToSnapshot());
-            await JsonFile.WriteAsync(_path, records, ct);
+            await _store.WriteAsync(_path, records, ct);
         }
         finally
         {
@@ -57,7 +59,7 @@ public sealed class JsonFileFollowUpRepository : IFollowUpRepository, IDisposabl
         await _gate.WaitAsync(ct);
         try
         {
-            return (await JsonFile.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct))
+            return (await _store.ReadAsync<List<FollowUpSnapshot>>(_path, () => [], ct))
                 .Select(FollowUp.Restore)
                 .OrderByDescending(f => f.CreatedAt)
                 .ToList();

@@ -1,25 +1,18 @@
 using Mcm.Scrum.Application.Abstractions.Ports;
-using Microsoft.Extensions.Options;
 
 namespace Mcm.Scrum.Infrastructure.Persistence;
 
-/// <summary>Deletes the demo JSON files. Teams, roster, schedule and Teams conversations are kept so the demo can be re-run at once.</summary>
-public sealed class JsonFileDemoReset(IOptions<StoreOptions> options) : IDemoReset
+/// <summary>Deletes the demo collections. Teams, roster, schedule and Teams conversations are kept so the demo can be re-run at once.</summary>
+public sealed class JsonFileDemoReset(ICollectionStore store) : IDemoReset
 {
-    private static readonly string[] Files = ["sessions.json", "followups.json", "cards.json", "bot-activities.json"];
+    private static readonly string[] Collections = ["sessions.json", "followups.json", "cards.json", "bot-activities.json"];
 
     /// <inheritdoc />
-    public Task ResetAsync(CancellationToken ct)
+    public async Task ResetAsync(CancellationToken ct)
     {
-        foreach (var file in Files)
+        foreach (var name in Collections)
         {
-            var path = Path.Combine(options.Value.DataPath, file);
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            await store.DeleteAsync(name, ct);
         }
-
-        return Task.CompletedTask;
     }
 }

@@ -9,7 +9,7 @@ public sealed class JsonFileSessionRepositoryTests : SessionRepositoryContract, 
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "mcm-scrum-tests", Guid.NewGuid().ToString("N"));
 
     protected override ISessionRepository CreateRepository() =>
-        new JsonFileSessionRepository(Options.Create(new StoreOptions { DataPath = _dir }));
+        new JsonFileSessionRepository(new FileCollectionStore(Options.Create(new StoreOptions { DataPath = _dir })));
 
     public void Dispose()
     {

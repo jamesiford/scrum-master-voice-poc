@@ -9,14 +9,16 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 public sealed class JsonFileMemberRepository : IMemberRepository, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="JsonFileMemberRepository"/> class.</summary>
-    /// <param name="options">Store options.</param>
-    public JsonFileMemberRepository(IOptions<StoreOptions> options)
+    /// <param name="store">The collection store.</param>
+    public JsonFileMemberRepository(ICollectionStore store)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        _path = Path.Combine(options.Value.DataPath, "members.json");
+        ArgumentNullException.ThrowIfNull(store);
+        _store = store;
+        _path = "members.json";
     }
 
     /// <inheritdoc />
@@ -25,7 +27,7 @@ public sealed class JsonFileMemberRepository : IMemberRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<Dictionary<string, List<Member>>>(_path, () => [], ct);
+            var all = await _store.ReadAsync<Dictionary<string, List<Member>>>(_path, () => [], ct);
             return all.TryGetValue(teamId, out var members) ? members.OrderBy(m => m.SpeakingOrder).ToList() : [];
         }
         finally
@@ -41,9 +43,9 @@ public sealed class JsonFileMemberRepository : IMemberRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var all = await JsonFile.ReadAsync<Dictionary<string, List<Member>>>(_path, () => [], ct);
+            var all = await _store.ReadAsync<Dictionary<string, List<Member>>>(_path, () => [], ct);
             all[teamId] = [.. members];
-            await JsonFile.WriteAsync(_path, all, ct);
+            await _store.WriteAsync(_path, all, ct);
         }
         finally
         {

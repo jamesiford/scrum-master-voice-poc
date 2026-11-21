@@ -9,14 +9,16 @@ namespace Mcm.Scrum.Infrastructure.Persistence;
 public sealed class JsonFileSessionRepository : ISessionRepository, IDisposable
 {
     private readonly string _path;
+    private readonly ICollectionStore _store;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     /// <summary>Initializes a new instance of the <see cref="JsonFileSessionRepository"/> class.</summary>
-    /// <param name="options">Store options.</param>
-    public JsonFileSessionRepository(IOptions<StoreOptions> options)
+    /// <param name="store">The collection store.</param>
+    public JsonFileSessionRepository(ICollectionStore store)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        _path = Path.Combine(options.Value.DataPath, "sessions.json");
+        ArgumentNullException.ThrowIfNull(store);
+        _store = store;
+        _path = "sessions.json";
     }
 
     /// <inheritdoc />
@@ -29,7 +31,7 @@ public sealed class JsonFileSessionRepository : ISessionRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            return (await JsonFile.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct))
+            return (await _store.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct))
                 .Select(StandupSession.Restore)
                 .OrderByDescending(s => s.CreatedAt)
                 .ToList();
@@ -47,10 +49,10 @@ public sealed class JsonFileSessionRepository : ISessionRepository, IDisposable
         await _gate.WaitAsync(ct);
         try
         {
-            var records = await JsonFile.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct);
+            var records = await _store.ReadAsync<List<StandupSessionSnapshot>>(_path, () => [], ct);
             records.RemoveAll(r => r.Id == session.Id);
             records.Add(session.ToSnapshot());
-            await JsonFile.WriteAsync(_path, records, ct);
+            await _store.WriteAsync(_path, records, ct);
         }
         finally
         {
