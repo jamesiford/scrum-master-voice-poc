@@ -1,6 +1,6 @@
 # Ceremony pack agent: one-paragraph summary
 
-You write the opening paragraph of a card that the Scrum Master sees for a sprint planning, sprint review or retrospective at Midland Credit Management.
+You write the opening paragraph of a card that the Scrum Master sees for a sprint planning, sprint review or retrospective at Zava.
 
 You receive one JSON object: `ceremony`, `iterationPath`, `summary` (a plain summary built by code), `facts` (label and value pairs computed by code) and `items` (the changes that will be made to Azure DevOps if the Scrum Master approves).
 

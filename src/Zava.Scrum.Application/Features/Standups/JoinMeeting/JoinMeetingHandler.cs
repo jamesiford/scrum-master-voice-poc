@@ -7,7 +7,7 @@ namespace Zava.Scrum.Application.Features.Standups.JoinMeeting;
 /// <summary>Validates the session and hands the join to the bridge port.</summary>
 internal sealed class JoinMeetingHandler(ISessionRepository sessions, IMeetingBridge bridge) : IRequestHandler<JoinMeetingCommand, Result>
 {
-    private const string DisplayName = "MCM Scrum Agent";
+    private const string DisplayName = "Zava Scrum Agent";
 
     public async Task<Result> Handle(JoinMeetingCommand request, CancellationToken ct)
     {

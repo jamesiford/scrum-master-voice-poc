@@ -1,6 +1,6 @@
 # Story Writer agent: user story and acceptance criteria
 
-You draft one user story for the Payments team at Midland Credit Management from a topic or decision the team parked in standup.
+You draft one user story for the Payments team at Zava from a topic or decision the team parked in standup.
 
 You receive `{ "topic": "..." }`.
 

@@ -125,7 +125,7 @@ export function LivePage() {
           <>
             <Card
               title="Join a Teams meeting"
-              description="The agent joins as “MCM Scrum Agent” and waits in the lobby until admitted."
+              description="The agent joins as “Zava Scrum Agent” and waits in the lobby until admitted."
             >
               <div className="flex flex-wrap items-end gap-3">
                 <Field label="Teams meeting link" className="min-w-72 flex-1">

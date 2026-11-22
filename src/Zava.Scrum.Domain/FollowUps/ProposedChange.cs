@@ -97,5 +97,5 @@ public sealed record ApprovedChange
 
     /// <summary>Gets the attribution written with every change (SPEC 9.4).</summary>
     public string Attribution =>
-        $"Approved by {ApprovedBy} in {(Channel == ApprovalChannel.Portal ? "the portal" : "Teams")}, proposed by MCM Scrum Agent from the {StandupDate:yyyy-MM-dd} {Ceremony.Phrase()}.";
+        $"Approved by {ApprovedBy} in {(Channel == ApprovalChannel.Portal ? "the portal" : "Teams")}, proposed by Zava Scrum Agent from the {StandupDate:yyyy-MM-dd} {Ceremony.Phrase()}.";
 }

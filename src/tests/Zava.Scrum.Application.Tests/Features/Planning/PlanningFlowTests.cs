@@ -134,7 +134,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         var assigned = _writer.Written.Where(w => w.Op == ChangeOp.Assign).ToList();
         Assert.Equal(pack.Proposal.Selected.Count(s => s.OwnerSuggested), assigned.Count);
         Assert.All(assigned, a => Assert.NotNull(a.OwnerKey));
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in Teams, proposed by MCM Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in Teams, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
         var stored = (await _packs.GetAsync(pack.Id, default))!.Data;
         Assert.Equal((PlanningPackStatus.Approved, "Sam", (Guid?)result.Value), (stored.Status, stored.DecidedBy, stored.FollowUpId));
         var followUp = (await _followUps.GetAsync(result.Value, default))!;
@@ -153,7 +153,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [1, 10], ApprovalChannel.Portal));
 
         Assert.Equal([1, 10], _writer.Written.Where(w => w.Op == ChangeOp.SetIteration).Select(w => w.WorkItemId));
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by MCM Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
     }
 
     [Fact]

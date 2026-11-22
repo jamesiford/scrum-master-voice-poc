@@ -16,7 +16,7 @@ export function SignInGate({ children }: { children: ReactNode }) {
   return (
     <main className="grid min-h-full place-items-center p-6">
       <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8 text-center shadow-card">
-        <h1 className="text-xl font-semibold">MCM Scrum Agent</h1>
+        <h1 className="text-xl font-semibold">Zava Scrum Agent</h1>
         <p className="mt-2 text-sm text-muted">
           Sign in to manage standups, follow-ups and reports.
         </p>

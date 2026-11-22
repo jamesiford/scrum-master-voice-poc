@@ -6,7 +6,7 @@ namespace Zava.Scrum.Infrastructure.Tests.Persistence;
 
 public sealed class JsonFileSessionRepositoryTests : SessionRepositoryContract, IDisposable
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "mcm-scrum-tests", Guid.NewGuid().ToString("N"));
+    private readonly string _dir = Path.Combine(Path.GetTempPath(), "zava-scrum-tests", Guid.NewGuid().ToString("N"));
 
     protected override ISessionRepository CreateRepository() =>
         new JsonFileSessionRepository(new FileCollectionStore(Options.Create(new StoreOptions { DataPath = _dir })));

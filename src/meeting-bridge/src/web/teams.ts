@@ -22,7 +22,7 @@ const sessionId = location.pathname.split('/').filter(Boolean).pop() ?? '';
 const token = params.get('token') ?? '';
 const apiBase = params.get('api') ?? '';
 const joinUrl = params.get('join') ?? '';
-const displayName = params.get('name') ?? 'MCM Scrum Agent';
+const displayName = params.get('name') ?? 'Zava Scrum Agent';
 const beginDelayMs = Number(params.get('beginDelayMs') ?? 8000);
 
 let socket: WebSocket;
@@ -212,7 +212,7 @@ async function join(): Promise<void> {
       case 'InLobby':
         return report(
           'Lobby',
-          'Waiting in the Teams lobby. Admit "MCM Scrum Agent" from the meeting.',
+          'Waiting in the Teams lobby. Admit "Zava Scrum Agent" from the meeting.',
         );
       case 'Connected':
         void shareBoard(c);

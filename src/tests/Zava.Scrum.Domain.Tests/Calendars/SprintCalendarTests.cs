@@ -123,7 +123,7 @@ public sealed class IcsFormatterTests
         Assert.Contains("DTSTART:20261207T173000Z\r\n", ics, StringComparison.Ordinal);
         Assert.Contains("DTEND:20261207T174500Z\r\n", ics, StringComparison.Ordinal);
         Assert.Contains("SUMMARY:Sprint 43: Daily standup\\, team\r\n", ics, StringComparison.Ordinal);
-        Assert.Contains("UID:Standup:2026-12-07@mcm-scrum-agent", ics, StringComparison.Ordinal);
+        Assert.Contains("UID:Standup:2026-12-07@zava-scrum-agent", ics, StringComparison.Ordinal);
         Assert.EndsWith("END:VCALENDAR\r\n", ics, StringComparison.Ordinal);
     }
 }

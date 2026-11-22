@@ -179,7 +179,7 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
 
         var written = Assert.Single(_writer.Written);
         Assert.Equal(ChangeOp.CreateWorkItem, written.Op);
-        Assert.Equal("Approved by Sam in the portal, proposed by MCM Scrum Agent from the 2026-01-08 retrospective.", written.Attribution);
+        Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 retrospective.", written.Attribution);
     }
 
     [Fact]

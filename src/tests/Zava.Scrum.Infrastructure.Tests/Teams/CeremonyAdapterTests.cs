@@ -76,7 +76,7 @@ public sealed class CeremonyAdapterTests
         Assert.Equal(HttpMethod.Patch, spy.Method);
         Assert.Contains("_apis/wit/workitems/7", spy.Url, StringComparison.Ordinal);
         Assert.Equal(["System.IterationPath", "System.History"], spy.Paths());
-        Assert.Contains("Approved by Dana in the portal, proposed by MCM Scrum Agent from the 2026-01-08 sprint planning.", spy.Body, StringComparison.Ordinal);
+        Assert.Contains("Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", spy.Body, StringComparison.Ordinal);
     }
 
     [Fact]

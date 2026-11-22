@@ -65,7 +65,7 @@ public sealed class ApprovalGuardKindsTests
         var f = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), "m1", FollowUpKind.Followup, "m", [new ProposedChange(1, ChangeOp.Comment, "x", "y")], new DateOnly(2026, 1, 8), Now);
         f.Approve("Dana", Now);
 
-        Assert.Equal("Approved by Dana in Teams, proposed by MCM Scrum Agent from the 2026-01-08 standup.", f.GetApprovedChanges().Value[0].Attribution);
+        Assert.Equal("Approved by Dana in Teams, proposed by Zava Scrum Agent from the 2026-01-08 standup.", f.GetApprovedChanges().Value[0].Attribution);
     }
 
     [Theory]
@@ -77,7 +77,7 @@ public sealed class ApprovalGuardKindsTests
         var f = New(ChangeOp.Assign, ceremony);
         f.Approve("Dana", Now, ApprovalChannel.Portal);
 
-        Assert.Equal($"Approved by Dana in the portal, proposed by MCM Scrum Agent from the 2026-01-08 {phrase}.", f.GetApprovedChanges().Value[0].Attribution);
+        Assert.Equal($"Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 {phrase}.", f.GetApprovedChanges().Value[0].Attribution);
     }
 
     [Fact]

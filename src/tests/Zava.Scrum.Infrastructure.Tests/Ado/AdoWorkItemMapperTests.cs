@@ -24,7 +24,7 @@ public sealed class AdoWorkItemMapperTests
     [Fact]
     public void Map_AgeTagWithHonorOn_ShiftsStateChangeBackThatManyDays()
     {
-        var item = AdoWorkItemMapper.Map(Item(Base + """, "System.Tags": "mcm-demo; demo-age-3" """), new DemoOptions { HonorAgeTags = true });
+        var item = AdoWorkItemMapper.Map(Item(Base + """, "System.Tags": "zava-demo; demo-age-3" """), new DemoOptions { HonorAgeTags = true });
 
         Assert.Equal(new DateTimeOffset(2026, 1, 5, 10, 0, 0, TimeSpan.Zero), item.StateChangedAt);
         Assert.Equal(new DateTimeOffset(2026, 1, 8, 10, 0, 0, TimeSpan.Zero), item.ChangedAt);

@@ -37,7 +37,7 @@ public sealed class FoundryChat(IFoundryAgentFactory agents, IOptions<FoundryOpt
         timeout.CancelAfter(TimeSpan.FromSeconds(options.Value.TimeoutSeconds));
         try
         {
-            var agent = agents.Create("mcm-scrum-agent", system);
+            var agent = agents.Create("zava-scrum-agent", system);
             var run = new ChatClientAgentRunOptions(new ChatOptions { ResponseFormat = ChatResponseFormat.Json, MaxOutputTokens = MaxOutputTokens });
             // The Responses API rejects JSON mode unless the input (not only the instructions) mentions JSON.
             var response = await agent.RunAsync(user + JsonReminder, session: null, run, timeout.Token);

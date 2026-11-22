@@ -60,7 +60,7 @@ public sealed partial class ScrumAgent : AgentApplication
     {
         await RememberAsync(turnContext, ct);
         await CaptureRecapChannelAsync(turnContext, ct);
-        await turnContext.SendActivityAsync("Hi, I am the MCM Scrum Agent. After each standup I will post follow-ups here for you to approve or reject.", cancellationToken: ct);
+        await turnContext.SendActivityAsync("Hi, I am the Zava Scrum Agent. After each standup I will post follow-ups here for you to approve or reject.", cancellationToken: ct);
     }
 
     // Installed in a team channel: that channel becomes the recap channel (M9-R5). Personal and group chats do not.

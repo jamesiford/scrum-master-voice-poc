@@ -102,7 +102,7 @@ public sealed class CreateCeremonyPackTests : IAsyncDisposable
         await Sender.Send(new ApproveFollowUpCommand(id, "Sam", ApprovalChannel.Portal));
 
         Assert.Single(_writer.Written);
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by MCM Scrum Agent from the 2026-01-08 sprint review.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint review.", w.Attribution));
         Assert.Equal(FollowUpStatus.Applied, (await _followUps.GetAsync(id, default))!.Status);
     }
 
