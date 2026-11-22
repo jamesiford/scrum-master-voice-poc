@@ -1,6 +1,6 @@
-# MCM Scrum Master voice PoC
+# Zava Scrum Master voice PoC
 
-A demo-first proof of concept of a voice-led "junior Scrum Master" for Midland Credit Management. It joins a Teams standup by voice, grounds questions in Azure DevOps, shares a live standup board, posts follow-up cards, and writes to Azure DevOps only after a person approves.
+A demo-first proof of concept of a voice-led "junior Scrum Master" for Zava. It joins a Teams standup by voice, grounds questions in Azure DevOps, shares a live standup board, posts follow-up cards, and writes to Azure DevOps only after a person approves.
 
 ## Licence
 
@@ -21,17 +21,17 @@ az login --tenant <tenant-id>
 dotnet run --project tools/SeedAdo -- --tenant <tenant-id> --org https://dev.azure.com/<your-organisation>   # seed the sandbox; safe to repeat
 npm install --prefix src/meeting-bridge
 npm install --prefix src/admin-portal
-dotnet run --project src/Mcm.Scrum.AppHost --launch-profile http
+dotnet run --project src/Zava.Scrum.AppHost --launch-profile http
 ```
 
 Real values are not stored in the repository. Set them once as user secrets (Azure access uses `DefaultAzureCredential`):
 
 ```
-dotnet user-secrets set "Foundry:ProjectEndpoint" "https://<foundry>.services.ai.azure.com/api/projects/<project>" --project src/Mcm.Scrum.Api
-dotnet user-secrets set "Ado:Org" "https://dev.azure.com/<your-organisation>" --project src/Mcm.Scrum.Api
-dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Mcm.Scrum.Api
-dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Mcm.Scrum.AppHost
-dotnet user-secrets set "Speech:Endpoint" "https://<foundry>.cognitiveservices.azure.com" --project src/Mcm.Scrum.AppHost
+dotnet user-secrets set "Foundry:ProjectEndpoint" "https://<foundry>.services.ai.azure.com/api/projects/<project>" --project src/Zava.Scrum.Api
+dotnet user-secrets set "Ado:Org" "https://dev.azure.com/<your-organisation>" --project src/Zava.Scrum.Api
+dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Zava.Scrum.Api
+dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Zava.Scrum.AppHost
+dotnet user-secrets set "Speech:Endpoint" "https://<foundry>.cognitiveservices.azure.com" --project src/Zava.Scrum.AppHost
 # Optional: Team:ScrumMasters (comma-separated display names allowed to run the "prepare sprint planning" chat command)
 # Teams only (secrets): Bot:AppId, Connections:ServiceConnection:Settings:{ClientId,ClientSecret,TenantId,AuthorityEndpoint}, Acs:ConnectionString, Bridge:ApiKey
 ```
@@ -41,9 +41,9 @@ The Aspire dashboard (http://localhost:15888) lists the portal, bridge and API U
 Checks:
 
 ```
-dotnet build McmScrum.slnx
-dotnet test McmScrum.slnx
-dotnet format McmScrum.slnx --verify-no-changes
+dotnet build ZavaScrum.slnx
+dotnet test ZavaScrum.slnx
+dotnet format ZavaScrum.slnx --verify-no-changes
 npm run lint --prefix src/meeting-bridge
 npm run lint --prefix src/admin-portal
 npm run e2e --prefix src/meeting-bridge   # needs the stack running

@@ -1,10 +1,10 @@
-# MCM AI Scrum Master Agent: Requirements Audit
+# Zava AI Scrum Master Agent: Requirements Audit
 
 > **Question:** does the PoC (repo `jamesiford/scrum-master-voice-poc`, `main` at `36d25ad`) do what Rajeev asked for, in the areas the PoC covers?
 >
 > **Sources:**
 >
-> - **T:** the Teams transcript of *MCM // AI Agent for Scrum operations*, November 13, 2026, 2:00 PM PT (38 minutes).
+> - **T:** the Teams transcript of *Zava // AI Agent for Scrum operations*, November 13, 2026, 2:00 PM PT (38 minutes).
 > - **E:** the email thread *looking for AI guidance*, November 16 to 20, 2026, including Rajeev's inline **[RM]** replies.
 > - **D:** Rajeev's attachment *Scrum Master Activities.docx* (the 13-item "AI Scrum Agent" list).
 >
@@ -76,7 +76,7 @@ Status: ✅ meets · 🟡 partial · ❌ gap · ⏭ out of PoC scope (production
 | R16 | **Azure DevOps only** at this point; not Pega, AWS or MuleSoft (E, [RM]) | Azure DevOps REST only | ✅ | None |
 | R17 | Review the backlog, *"looking at the… next sprint"* (T; D) | Planning page and pack (M9a): readiness gaps, carry-over first, then ready items in backlog order up to the velocity range; Approve plan moves the kept items to the next iteration (the seed creates `Sprint 43`) | ✅ | The velocity history is an illustrative fixture |
 | R18 | Identify overdue or stalled items: *"dates are coming but percentage is 50%"* (T; D) | Overdue, Stale, Blocked, No recent update, Unassigned, and `AtRiskRule` (due within `Flags:AtRiskDays`, remaining work over `Flags:AtRiskRemainingPct` of the estimate, or still New; M9-R4) | ✅ | Re-run `SeedAdo` so the seeded at-risk task exists |
-| R19 | Many teams are low-code (Pega, Genesys, MuleSoft) (T) | Seeder assumes the Agile process (User Story, Bug, Task) | 🟡 | Ask MCM for their process template and work item types |
+| R19 | Many teams are low-code (Pega, Genesys, MuleSoft) (T) | Seeder assumes the Agile process (User Story, Bug, Task) | 🟡 | Ask Zava for their process template and work item types |
 
 ### 2.4 Ceremonies beyond the standup
 
@@ -85,7 +85,7 @@ Status: ✅ meets · 🟡 partial · ❌ gap · ⏭ out of PoC scope (production
 | R20 | Four or five pre-scheduled ceremonies: standup, planning, review, retrospective (T) | Standup and **retrospective** voice-led (retro checked in the Simulated Room only); planning is a portal pack with approval-gated write-back; review is a pack (API only) | 🟡 | Voice-led planning and review are not built; retro in a Teams meeting not checked |
 | R21 | **Schedule** ceremonies; *"it can schedule team meetings"* (T; D; E "Calender") | Scheduler auto-starts configured standups; **Propose calendar** (M9d, ADR 0013) plans the sprint's meetings and, once approved, creates them as Teams meetings through Graph | 🟡 | Run the Graph calls once in the demo tenant; the scheduler joins standups only |
 | R22 | Sprint planning: SM *"organising it… conducting that meeting"*, coaching the team *"don't over promise… not under commit"* (T) | Planning flags over- **and** under-commitment against the velocity range (M9a), and overloaded members | ✅ | The history is illustrative |
-| R23 | Sprint review: *"what went well, what could be done better… missing points"* (T) | Our catalogue calls this the retrospective | ❓ | Gap 6: confirm with Rajeev whether MCM's "review" is a retrospective, and whether there is a stakeholder demo review at all |
+| R23 | Sprint review: *"what went well, what could be done better… missing points"* (T) | Our catalogue calls this the retrospective | ❓ | Gap 6: confirm with Rajeev whether Zava's "review" is a retrospective, and whether there is a stakeholder demo review at all |
 | R24 | Between ceremonies: *"daily stand up or escalation meeting"* (T) | Not defined | ❌ | Add "Escalation meeting" to the catalogue (an ad hoc call on a blocked item); out of demo scope until confirmed |
 | R25 | Prepare the retrospective (D) | The agent runs the retrospective by voice (went well / do better / missing, start-stop-continue sorting, up to three actions with owners) and approved actions become `CreateWorkItem` tasks (M9b, ADR 0012; checked in the Simulated Room) | ✅ | Run it in a Teams meeting |
 
@@ -118,7 +118,7 @@ Keep these, but don't lead with them:
 
 - **Microsoft's other tracks.** Tyler's summary sets up two sessions, Microsoft 365 Copilot with Copilot Studio and GitHub Copilot, and Nate offered the Copilot Scrum Assistant template (E). Rajeev then asked whether we understood he wants a **voice agent** (E, Nov 19). Tyler confirmed and proposed a broader technical call for the week of November 30 (E, Nov 20). **This PoC is the direct answer to that question.** Put it first in that call, and position the Copilot template as an assistant for the human Scrum Master, not the agent itself.
 - **Scope Rajeev set:** Azure DevOps, Teams, Calendar and Outlook only (E). Don't show GitHub repo integration as part of this agent.
-- **Inputs still owed by MCM:** the recorded standup (*"I will ask team to prepare one and share"*, E), the KPI list, and the process template. The *Activities and Responsibilities* attachment is the 13-item list only, not the "8 or 10 steps" he described (T).
+- **Inputs still owed by Zava:** the recorded standup (*"I will ask team to prepare one and share"*, E), the KPI list, and the process template. The *Activities and Responsibilities* attachment is the 13-item list only, not the "8 or 10 steps" he described (T).
 
 ## 5. Build list to close the gaps (ordered for the demo)
 

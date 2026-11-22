@@ -3,7 +3,7 @@
 These instructions apply to every Copilot session in this repository. The build spec is `docs/SPEC.md`. Read the relevant section before writing code, and implement one milestone (SPEC section 16) at a time.
 
 ## What we are building and why
-- A **demo-first proof of concept** of a voice-led "junior Scrum Master" for Midland Credit Management (MCM). It runs a daily standup by voice (Azure Voice Live), grounds questions in Azure DevOps, posts a recap and per-person follow-ups in Teams, writes approved changes back to Azure DevOps, and has a small React admin portal.
+- A **demo-first proof of concept** of a voice-led "junior Scrum Master" for Zava. It runs a daily standup by voice (Azure Voice Live), grounds questions in Azure DevOps, posts a recap and per-person follow-ups in Teams, writes approved changes back to Azure DevOps, and has a small React admin portal.
 - **Ceremonies are defined in `docs/CEREMONIES.md`; new ceremony work reuses the three patterns there** (P1 live facilitation by voice, P2 prep pack, P3 close the loop with approval).
 - Which document wins when they disagree: code, then `docs/AS-BUILT.md`, then the ADRs, then `docs/SPEC.md` (history and intent). See `docs/adr/0009-documentation-baseline.md` and `docs/DOC-DRIFT.md`.
 - **Success = the demo storyboard in SPEC section 2 works reliably and can be reset and re-run.** Scope is demo-first; code quality is not. Build only what the milestones ask for, but build it to the engineering standards below so the PoC code can grow into the production system.
@@ -11,10 +11,10 @@ These instructions apply to every Copilot session in this repository. The build 
 
 ## Stack (do not substitute)
 - Backend: C# / .NET 10, ASP.NET Core minimal APIs, nullable enabled, records for DTOs, commands and queries.
-- Solution shape: Clean Architecture, four projects: `Mcm.Scrum.Domain`, `Mcm.Scrum.Application`, `Mcm.Scrum.Infrastructure`, `Mcm.Scrum.Api` (the single deployable host). See SPEC 6 and 6.1.
-- Mediator: **hand-rolled**, in `Mcm.Scrum.Application/Abstractions/Messaging` (SPEC 6.1.3). Do not add MediatR, Mediator (source-generated), Wolverine, Brighter or any other mediator or messaging package.
+- Solution shape: Clean Architecture, four projects: `Zava.Scrum.Domain`, `Zava.Scrum.Application`, `Zava.Scrum.Infrastructure`, `Zava.Scrum.Api` (the single deployable host). See SPEC 6 and 6.1.
+- Mediator: **hand-rolled**, in `Zava.Scrum.Application/Abstractions/Messaging` (SPEC 6.1.3). Do not add MediatR, Mediator (source-generated), Wolverine, Brighter or any other mediator or messaging package.
 - Validation: FluentValidation. Architecture tests: NetArchTest.Rules 1.3.2.
-- Local run: Aspire AppHost (`src/Mcm.Scrum.AppHost`, Aspire 13.x; there is no `Makefile`). Central package versions are in `Directory.Packages.props`; `global.json` pins .NET SDK 10.0.100.
+- Local run: Aspire AppHost (`src/Zava.Scrum.AppHost`, Aspire 13.x; there is no `Makefile`). Central package versions are in `Directory.Packages.props`; `global.json` pins .NET SDK 10.0.100.
 - Agents: Microsoft Agent Framework chat-client agents (`Microsoft.Agents.AI.Foundry`, `AIProjectClient.AsAIAgent`) over the Foundry v2 SDK (`Azure.AI.Projects` 2.x) with `DefaultAzureCredential`, behind the agent ports (`FoundryChat`, `FoundryAgentFactory` and the `Foundry*Agent` adapters; ADR 0009b). Code-defined agents only: no server-side agent resources. Every adapter returns `null` on any model failure and the caller falls back to code. `// PROD: Foundry hosted agents with Entra Agent ID`. Do not use Semantic Kernel planners or the classic Assistants API.
 - Voice: Azure Voice Live over `ClientWebSocket`. Teams: Microsoft 365 Agents SDK for .NET 1.9 (not Bot Framework v4); the app manifest declares a bot only, so Microsoft 365 Copilot is not built.
 - Bridge: Node.js 22+ (`engines`) + TypeScript (strict, ESM), `playwright-core` for headless Chromium, ACS Calling SDK. Portal: React 19 + Vite + TypeScript + Tailwind CSS v4 + lucide-react + MSAL.js; Container Apps Easy Auth protects the deployed apps.
@@ -31,11 +31,11 @@ These instructions apply to every Copilot session in this repository. The build 
 
 ### Clean Architecture: the dependency rule
 Dependencies point inwards only: `Api -> Infrastructure -> Application -> Domain`, and `Api -> Application`.
-- **Domain** (`Mcm.Scrum.Domain`): entities, value objects, enums, domain events, domain services and pure rules (flag rules, KPI maths, the floor-control state machine, follow-up approval invariants). No references to any other project or to ASP.NET, Azure, HTTP, JSON, MAF, Voice Live or ADO packages. No I/O, no `DateTime.UtcNow` (take an `IClock` or a timestamp parameter).
-- **Application** (`Mcm.Scrum.Application`): use cases as commands and queries with their handlers, validators, DTOs and **ports** (interfaces) for everything outside the process: `IWorkItemReader`, `IWorkItemWriter`, `ITeamsMessenger`, `IVoiceSessionFactory`, `IBacklogRiskAgent`, `IReconcileAgent`, `IReportingAgent`, `IDraftingAgent`, `IPromptStore`, `IEmailSender`, `IIterationReader`, `IBacklogReader`, `IPlanningPackRepository`, `IModelCatalog`, repositories, `IClock`. References Domain only (plus FluentValidation and `Microsoft.Extensions.*.Abstractions`).
-- **Infrastructure** (`Mcm.Scrum.Infrastructure`): adapters that implement the ports: Azure DevOps REST client and writer, repositories over `ICollectionStore` (JSON files or Cosmos), Voice Live session factory, Foundry chat agents, Teams messengers (Agents SDK proactive messaging and an outbox), prompt store, clock. One `AddInfrastructure(IServiceCollection, IConfiguration)` extension registers them.
-- **Api** (`Mcm.Scrum.Api`): the composition root and thin presentation adapters: minimal API endpoints, the bot activity handler, the bridge WebSocket endpoint, the scheduler `BackgroundService`, SSE. Adapters translate input into a command or query, call `ISender`, and translate the result back. **No business logic in endpoints, the bot handler, the WebSocket loop or the scheduler.**
-- The dependency rule is enforced by architecture tests in `Mcm.Scrum.ArchitectureTests` (SPEC 19). A PR that breaks them is not done.
+- **Domain** (`Zava.Scrum.Domain`): entities, value objects, enums, domain events, domain services and pure rules (flag rules, KPI maths, the floor-control state machine, follow-up approval invariants). No references to any other project or to ASP.NET, Azure, HTTP, JSON, MAF, Voice Live or ADO packages. No I/O, no `DateTime.UtcNow` (take an `IClock` or a timestamp parameter).
+- **Application** (`Zava.Scrum.Application`): use cases as commands and queries with their handlers, validators, DTOs and **ports** (interfaces) for everything outside the process: `IWorkItemReader`, `IWorkItemWriter`, `ITeamsMessenger`, `IVoiceSessionFactory`, `IBacklogRiskAgent`, `IReconcileAgent`, `IReportingAgent`, `IDraftingAgent`, `IPromptStore`, `IEmailSender`, `IIterationReader`, `IBacklogReader`, `IPlanningPackRepository`, `IModelCatalog`, repositories, `IClock`. References Domain only (plus FluentValidation and `Microsoft.Extensions.*.Abstractions`).
+- **Infrastructure** (`Zava.Scrum.Infrastructure`): adapters that implement the ports: Azure DevOps REST client and writer, repositories over `ICollectionStore` (JSON files or Cosmos), Voice Live session factory, Foundry chat agents, Teams messengers (Agents SDK proactive messaging and an outbox), prompt store, clock. One `AddInfrastructure(IServiceCollection, IConfiguration)` extension registers them.
+- **Api** (`Zava.Scrum.Api`): the composition root and thin presentation adapters: minimal API endpoints, the bot activity handler, the bridge WebSocket endpoint, the scheduler `BackgroundService`, SSE. Adapters translate input into a command or query, call `ISender`, and translate the result back. **No business logic in endpoints, the bot handler, the WebSocket loop or the scheduler.**
+- The dependency rule is enforced by architecture tests in `Zava.Scrum.ArchitectureTests` (SPEC 19). A PR that breaks them is not done.
 
 ### CQRS with the hand-rolled mediator
 - Every use case is either a **command** (changes state, returns `Result` or `Result<TId>`, never a read model) or a **query** (no side effects, returns a read DTO). Never both.
@@ -74,7 +74,7 @@ Dependencies point inwards only: `Api -> Infrastructure -> Application -> Domain
 - TSDoc on every exported function, class, type and React component in the bridge and portal.
 - **Comments explain why, not what**: business rules ("ADO writes require an approver: customer requirement F7"), protocol quirks, latency trade-offs, and the reason for any non-obvious choice. Reference the SPEC section or requirement id (F1-F10) where relevant. Remove commented-out code.
 - Marker comments are standard and searchable: `// PROD: <what changes in production>`, `// VERIFY: <doc url>`, `// DEMO: <shortcut that exists only for the demo>`. Never leave bare `TODO`s; use one of these or open an issue.
-- Each project except `Mcm.Scrum.AppHost` and `src/tests` has a short `README.md`: purpose, what it may reference, how to run its tests. `docs/adr/NNNN-<title>.md` records any deviation from the SPEC or these standards (one page: context, decision, consequences).
+- Each project except `Zava.Scrum.AppHost` and `src/tests` has a short `README.md`: purpose, what it may reference, how to run its tests. `docs/adr/NNNN-<title>.md` records any deviation from the SPEC or these standards (one page: context, decision, consequences).
 - Keep `docs/SPEC.md` section 6.1.4 (use-case catalogue) and section 14 (API) in sync with the code in the same PR.
 
 ## Demo reliability (treat as features)
@@ -82,7 +82,7 @@ Dependencies point inwards only: `Api -> Infrastructure -> Application -> Domain
 - The **demo cast** (scripted TTS participants) must let one presenter run a full three-person standup (Daniel Park, Maya Lin, Admin).
 - Provide `/api/demo/reset` (a `ResetDemoCommand`) and make the seeder idempotent so the demo can be re-run in under five minutes.
 - Surface failures plainly in the portal (for example "Waiting in Teams lobby", "Voice Live disconnected - retrying") instead of failing silently.
-- `LoggingBehavior` and the voice gateway log one structured line per agent turn with `sessionId`, `memberId`, state transition and latency in ms. (Basic OpenTelemetry to Application Insights is wired in `Mcm.Scrum.Api/Telemetry`; see Known gaps for what it does not cover.)
+- `LoggingBehavior` and the voice gateway log one structured line per agent turn with `sessionId`, `memberId`, state transition and latency in ms. (Basic OpenTelemetry to Application Insights is wired in `Zava.Scrum.Api/Telemetry`; see Known gaps for what it does not cover.)
 
 ## Voice specifics
 - The voice gateway owns the floor (SPEC 11.3). The facilitator speaks only when the state machine allows it; cancel unsolicited responses with `response.cancel`.

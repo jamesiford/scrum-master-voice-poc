@@ -3,11 +3,11 @@
 ## Before the demo (5 minutes)
 Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secrets (`Azure:TenantId`, `Ado:Org`) or the azd environment (`AZURE_TENANT_ID`, `ADO_ORG_URL`); see README.
 1. `az login --tenant <tenant-id>`.
-2. Open the portal (local: `dotnet run --project src\Mcm.Scrum.AppHost --launch-profile http`, Aspire dashboard at http://localhost:15888; Azure: the API URL printed by `azd up`).
+2. Open the portal (local: `dotnet run --project src\Zava.Scrum.AppHost --launch-profile http`, Aspire dashboard at http://localhost:15888; Azure: the API URL printed by `azd up`).
 3. **Live console** tab > **Reset demo** (clears sessions, follow-ups and cards; Azure DevOps is not touched).
 4. **Team** tab > check the sprint goal. **Roster** tab > **Sync roster**.
 5. Optional: re-seed Azure DevOps with `dotnet run --project tools\SeedAdo -- --tenant <tenant-id> --org https://dev.azure.com/<your-organisation>` (idempotent; `--org` can be replaced by the `Ado__Org` environment variable).
-6. Teams: the app package `appPackage/mcm-scrum-agent.zip` is sideloaded and you have messaged the bot once, so it can send you cards.
+6. Teams: the app package `appPackage/zava-scrum-agent.zip` is sideloaded and you have messaged the bot once, so it can send you cards.
 
 ## Scripted run (Simulated Room, about 3 minutes)
 1. **Sessions** > **Prepare now** > open the pre-brief with **View** (burndown, flags, questions).
@@ -22,7 +22,7 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 ## Real Teams meeting
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live console** tab > pick a prepared session > paste the link > **Start in Teams**.
-3. Admit "MCM Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
+3. Admit "Zava Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
 4. Roster members who join are matched by name (a Teams user called "System Administrator" matches the roster member "Admin"). Anyone who does not join is marked absent. The standup begins 8 seconds after the first match; use **Begin** if it does not.
 5. The agent shares the standup board as its screen (flagged-item agenda first, then each speaker's items). Share status appears as Bridge events.
 6. Anything that goes wrong is shown on the Live console tab as a Bridge event (invalid link, lobby denied, removed).
@@ -52,7 +52,7 @@ Needs `az login`, the stack running and, for packs, a reachable Azure DevOps pro
 3. **Unblock loop:** run a standup (Simulated Room), say a blocker ("I am blocked on the gateway timeouts"), and answer "Who can help unblock this?" with a teammate's name. After **End standup**, **Follow-ups** shows an unblock request for that teammate (and the outbox shows an email when `Features:EmailFollowUps` is on).
 4. **Carry-over:** run the standup again after a day (or a second standup): the pre-brief lists the still-blocked item with its unblocker, and the agent opens with "Yesterday you said you'd finish ...". A commitment still open two standups later raises a Scrum Master escalation.
 5. **Review and retrospective packs** (no portal button yet):
-   `curl -X POST http://localhost:5080/api/ceremonies/SprintReview/pack -H "Content-Type: application/json" -d "{\"teamId\":\"team-payments\"}"` (also `Retrospective`). The card appears in **Follow-ups** > **Show card outbox** and in Teams. Type your name in **Approving as** and press **Approve and write**: comments are added to the completed stories, or the retro action tasks are created, each with "Approved by {name} in the portal, proposed by MCM Scrum Agent from the {date} {ceremony}."
+   `curl -X POST http://localhost:5080/api/ceremonies/SprintReview/pack -H "Content-Type: application/json" -d "{\"teamId\":\"team-payments\"}"` (also `Retrospective`). The card appears in **Follow-ups** > **Show card outbox** and in Teams. Type your name in **Approving as** and press **Approve and write**: comments are added to the completed stories, or the retro action tasks are created, each with "Approved by {name} in the portal, proposed by Zava Scrum Agent from the {date} {ceremony}."
 6. **Recap routing:** add the bot to a team channel and it becomes the recap channel (`PUT /api/teams/team-payments/recap-channel` sets it by hand). The recap then goes to that channel and the meeting chat instead of every conversation.
 7. **Graph email (optional):** set `Features:EmailFollowUps=true`, `Email:Mode=Graph` and `Email:Sender=<agent mailbox>`; absent, no-response and unblock members receive an email as well as the card.
 
@@ -64,7 +64,7 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 3. Press **Prepare pack**. The page shows the draft goal, the velocity range, capacity bars per person, the proposed selection (carry-over first, then ready backlog items in order, suggested owners marked), **Not planned** with a reason on each excluded item (no story points, no acceptance criteria, too large, beyond capacity, not started), and a warning when the plan is over- or under-committed.
 4. The card **Sprint planning: Sprint 43** arrives in **Follow-ups** > **Show card outbox** and in Teams, with **Approve plan** and **Reject**.
 5. **Reject** first (type your name in **Approving as**): nothing changes in Azure DevOps. **Prepare pack** again.
-6. Untick one item if you like, type your name and press **Approve plan** (or press **Approve plan** on the Teams card). The page shows "Plan written to Azure DevOps" with links to the work items. In Azure DevOps the kept items are in `Sprint 43`, the unowned ones have the suggested owner (a `demo-owner-*` tag in the sandbox) and each has an "Approved by {name} in the portal (or Teams), proposed by MCM Scrum Agent from the {date} sprint planning." comment.
+6. Untick one item if you like, type your name and press **Approve plan** (or press **Approve plan** on the Teams card). The page shows "Plan written to Azure DevOps" with links to the work items. In Azure DevOps the kept items are in `Sprint 43`, the unowned ones have the suggested owner (a `demo-owner-*` tag in the sandbox) and each has an "Approved by {name} in the portal (or Teams), proposed by Zava Scrum Agent from the {date} sprint planning." comment.
 7. Chat: in Teams, a Scrum Master (a name in `Team:ScrumMasters`) can type "prepare sprint planning" to the bot; anyone else is told only the Scrum Master can.
 8. Re-run `SeedAdo` to put the items back for the next run.
 
@@ -76,7 +76,7 @@ Needs the stack running, a seeded sandbox and an Azure Speech resource for the c
 3. Press **Start in Simulated Room**. The room opens in a new tab: press **Start standup** after ticking the autopilot box (or open the room link with `&autopilot=1`, as the e2e does). The cast (`demo/cast/payments-retro.yaml`) plays three people: Daniel steps away and is circled back to, Maya gives one unclear note so the agent asks "Is that something to start, stop or keep doing?", and Daniel corrects himself inside one answer.
 4. Watch the board in the Teams meeting's shared screen (three columns that fill live, then the actions), or the **Live console** for the floor and timer. After the round the agent reads the themes back, asks for an action from each person and confirms the owner, then closes with a recap.
 5. The Scrum Master gets a **Retrospective actions** card (**Follow-ups** > **Show card outbox**, and in Teams) and a summary in the recap channel. Press **Reject** on a copy of the card first if you want to show that nothing is created.
-6. Type your name in **Follow-ups** and press **Approve**. In Azure DevOps there are Tasks tagged `retro-action` in `Sprint 43`, one per action, with a `demo-owner-*` tag for the owner and an "Approved by {name} in the portal, proposed by MCM Scrum Agent from the {date} retrospective." first comment.
+6. Type your name in **Follow-ups** and press **Approve**. In Azure DevOps there are Tasks tagged `retro-action` in `Sprint 43`, one per action, with a `demo-owner-*` tag for the owner and an "Approved by {name} in the portal, proposed by Zava Scrum Agent from the {date} retrospective." first comment.
 7. In a Teams meeting: **Retrospective** tab > **Prepare retro**, paste the meeting link and press **Start in Teams** (not checked live yet; the standup run is the reference). `Retro:Minutes` sets the timebox and `Retro:Format` the questions.
 8. Delete the created tasks and re-run `SeedAdo` before the next run. Automated: `npm run e2e:retro --prefix src/meeting-bridge` with the API and bridge running.
 

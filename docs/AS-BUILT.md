@@ -1,4 +1,4 @@
-# MCM Scrum Master voice PoC: as built
+# Zava Scrum Master voice PoC: as built
 
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
 
@@ -98,7 +98,7 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 Built after the reconciliation (ADR 0010). Behaviour is in code and covered by unit tests; none of it has been run in a live Teams meeting.
 
 - **Ceremony kind.** `CeremonyKind` on the session (default `DailyScrum`, so saved sessions load unchanged). The class is still `StandupSession`.
-- **Change kinds.** `ChangeOp` is `Comment`, `State`, `Tag`, `SetIteration`, `Assign`, `CreateWorkItem`. The attribution is "Approved by {name} in {Teams|the portal}, proposed by MCM Scrum Agent from the {date} {ceremony}."; the standup text is unchanged. `ApprovalGuardKindsTests` refuses every new kind unless approved.
+- **Change kinds.** `ChangeOp` is `Comment`, `State`, `Tag`, `SetIteration`, `Assign`, `CreateWorkItem`. The attribution is "Approved by {name} in {Teams|the portal}, proposed by Zava Scrum Agent from the {date} {ceremony}."; the standup text is unchanged. `ApprovalGuardKindsTests` refuses every new kind unless approved.
 - **Ceremony packs.** `POST /api/ceremonies/{SprintReview|Retrospective}/pack` creates a session of that kind and one Scrum Master follow-up with **Approve all** and **Reject** (no per-item checkboxes). Figures come from `ReviewPackBuilder` and `RetroPackBuilder`; the model only rephrases the summary and is ignored if it names an unknown item or a number the pack did not compute. There is no portal button for these two packs. Sprint planning is separate (next section).
 - **R1 Graph email.** `Email:Mode=Graph` and `Email:Sender` select `GraphEmailSender`; the email is also recorded in the outbox and a Graph failure is logged, not thrown.
 - **R2 unblock loop.** A recorded blocker makes the next turn ask who can help (`turn-unblocker.md`); `UnblockerResolver` matches the answer to one roster member in code; the member gets an `Unblock` card and email; the next pre-brief lists still-blocked items with the unblocker and the agent asks them in their turn. Blocked items escalate to the Scrum Master after `Flags:EscalateBlockerAfterDays` whether or not they were raised again.

@@ -8,77 +8,77 @@ Generated while reconciling the documents with `main` at `36d25ad`. **The code w
 
 | Use case | Exists | Application file | Exposed by | Test |
 |---|---|---|---|---|
-| `UpdateTeamSettingsCommand` | yes | `src/Mcm.Scrum.Application/Features/Teams/UpdateTeamSettings/UpdateTeamSettingsCommand.cs` | PUT /api/teams/{id} | No |
-| `SyncRosterCommand` | yes | `src/Mcm.Scrum.Application/Features/Teams/SyncRoster/SyncRosterCommand.cs` | POST /api/teams/{id}/members/sync | Yes: SyncRosterHandlerTests.cs |
-| `UpdateScheduleCommand` | yes | `src/Mcm.Scrum.Application/Features/Schedules/UpdateSchedule/UpdateScheduleCommand.cs` | PUT /api/teams/{teamId}/schedule | No (ScheduleEvaluator is tested in Domain.Tests) |
-| `UpdatePromptCommand` | yes | `src/Mcm.Scrum.Application/Features/Prompts/UpdatePrompt/UpdatePromptCommand.cs` | PUT /api/teams/{teamId}/prompts/{name} | No (FilePromptStoreTests.cs covers the store, not the command) |
-| `GetTeamQuery` | yes | `src/Mcm.Scrum.Application/Features/Teams/GetTeam/GetTeamQuery.cs` | GET /api/teams/{id} | No |
-| `GetRosterQuery` | yes | `src/Mcm.Scrum.Application/Features/Teams/GetRoster/GetRosterQuery.cs` | GET /api/teams/{id}/members | No |
-| `GetScheduleQuery` | yes | `src/Mcm.Scrum.Application/Features/Schedules/GetSchedule/GetScheduleQuery.cs` | GET /api/teams/{teamId}/schedule | No |
-| `GetPromptQuery` | yes | `src/Mcm.Scrum.Application/Features/Prompts/GetPrompt/GetPromptQuery.cs` | GET /api/teams/{teamId}/prompts/{name} | No |
-| `ListPromptsQuery` | yes | `src/Mcm.Scrum.Application/Features/Prompts/ListPrompts/ListPromptsQuery.cs` | GET /api/teams/{teamId}/prompts | No |
-| `PrepareStandupCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/PrepareStandup/PrepareStandupCommand.cs` | POST /api/sessions/prepare; RunScheduleTickHandler | Yes: PrepareStandupHandlerTests.cs |
-| `StartStandupCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/StartStandup/StartStandupCommand.cs` | POST /api/sessions/{id}/start; RunScheduleTickHandler | Yes: StandupFlowTests.cs |
-| `JoinMeetingCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/JoinMeeting/JoinMeetingCommand.cs` | POST /api/sessions/{id}/start (mode acs); RunScheduleTickHandler | No |
-| `ControlStandupCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/ControlStandup/ControlStandupCommand.cs` | POST /api/sessions/{id}/control | No |
-| `RecordStandupEventCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/RecordStandupEvent/RecordStandupEventCommand.cs` | Voice gateway; tool record_event | Yes: StandupFlowTests.cs, EndStandupFollowUpsTests.cs |
-| `RetractStandupEventCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/RetractStandupEvent/RetractStandupEventCommand.cs` | Voice gateway (corrections) | No (the domain method StandupSession.Retract is tested in StandupAgendaTests.cs) |
-| `MarkAbsentCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/MarkAbsent/MarkAbsentCommand.cs` | Voice gateway; tool mark_absent | Yes: StandupFlowTests.cs |
-| `ParkTopicCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/ParkTopic/ParkTopicCommand.cs` | Voice gateway; tool park_topic | Yes: StandupFlowTests.cs |
-| `EndStandupCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/EndStandup/EndStandupCommand.cs` | Voice gateway; tool end_standup | Yes: EndStandupFollowUpsTests.cs |
-| `GetNextSpeakerQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetNextSpeaker/GetNextSpeakerQuery.cs` | Voice gateway; tool get_next_speaker | Yes: StandupFlowTests.cs |
-| `GetMemberBriefQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetMemberBrief/GetMemberBriefQuery.cs` | Tool get_member_brief | No |
-| `ReconcileUpdateQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/ReconcileUpdate/ReconcileUpdateQuery.cs` | Voice gateway; tool reconcile_update | Yes: StandupFlowTests.cs |
-| `GetTimeRemainingQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetTimeRemaining/GetTimeRemainingQuery.cs` | Tool get_time_remaining | Yes: StandupFlowTests.cs |
-| `GetWorkItemDetailsQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetWorkItemDetails/GetWorkItemDetailsQuery.cs` | Tool get_work_item_details | No |
-| `ListSessionsQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/ListSessions/ListSessionsQuery.cs` | GET /api/sessions?teamId= | No |
-| `GetSessionQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetSession/GetSessionQuery.cs` | GET /api/sessions/{id}; voice gateway | No |
-| `GetSessionEventsQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetSessionEvents/GetSessionEventsQuery.cs` | GET /api/sessions/{id}/events | No |
-| `GetLiveStateQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetLiveState/GetLiveStateQuery.cs` | GET /api/sessions/{id}/live (SSE) | No |
-| `RunScheduleTickCommand` | yes | `src/Mcm.Scrum.Application/Features/Schedules/RunScheduleTick/RunScheduleTickCommand.cs` | ScheduleWorker (background service) | No (ScheduleEvaluator is tested in Domain.Tests) |
-| `ProposeAdoChangeCommand` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/ProposeAdoChange/ProposeAdoChangeCommand.cs` | POST /api/followups/propose | No |
-| `SendFollowUpsCommand` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/SendFollowUps/SendFollowUpsCommand.cs` | POST /api/sessions/{id}/followups; SendFollowUpsOnStandupEnded | Yes, indirectly: EndStandupFollowUpsTests.cs |
-| `ApproveFollowUpCommand` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/ApproveFollowUp/ApproveFollowUpCommand.cs` | POST /api/followups/{id}/approve; Teams card action approve | Yes: ApplyApprovedChangesTests.cs |
-| `RejectFollowUpCommand` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/RejectFollowUp/RejectFollowUpCommand.cs` | POST /api/followups/{id}/reject; Teams card action reject | Yes: ApplyApprovedChangesTests.cs |
-| `ApplyApprovedChangesCommand` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/ApplyApprovedChanges/ApplyApprovedChangesCommand.cs` | POST /api/followups/{id}/apply; ApplyOnFollowUpApproved | Yes: ApplyApprovedChangesTests.cs |
-| `ListFollowUpsQuery` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/ListFollowUps/ListFollowUpsQuery.cs` | GET /api/followups?teamId=&status= | No |
-| `GetFollowUpQuery` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/GetFollowUp/GetFollowUpQuery.cs` | GET /api/followups/{id} | No |
-| `ListEmailsQuery` | yes | `src/Mcm.Scrum.Application/Features/FollowUps/ListEmails/ListEmailsQuery.cs` | GET /api/emails | No |
-| `GetKpisQuery` | yes | `src/Mcm.Scrum.Application/Features/Reports/GetKpis/GetKpisQuery.cs` | GET /api/reports/kpis | No (KpiCalculator is tested in Domain.Tests) |
-| `GetSprintReportQuery` | yes | `src/Mcm.Scrum.Application/Features/Reports/GetSprintReport/GetSprintReportQuery.cs` | GET /api/reports/sprint | Yes: ReportTests.cs |
-| `GetMonthlyReportQuery` | yes | `src/Mcm.Scrum.Application/Features/Reports/GetMonthlyReport/GetMonthlyReportQuery.cs` | GET /api/reports/monthly | No |
-| `AnswerTeamQuestionQuery` | yes | `src/Mcm.Scrum.Application/Features/Reports/AnswerTeamQuestion/AnswerTeamQuestionQuery.cs` | POST /api/ask; Teams chat (ScrumAgent) | Yes: ReportTests.cs |
-| `GetPlanningPrepQuery` | yes | `src/Mcm.Scrum.Application/Features/Planning/GetPlanningPrep/GetPlanningPrepQuery.cs` | GET /api/planning | No (PlanningPlanner is tested in Domain.Tests) |
-| `GetRetrospectiveQuery` | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/GetRetrospective/GetRetrospectiveQuery.cs` | GET /api/retrospective | No |
-| `DraftUserStoryQuery` | yes | `src/Mcm.Scrum.Application/Features/Stories/DraftUserStory/DraftUserStoryQuery.cs` | POST /api/stories/draft | Yes: DraftUserStoryTests.cs |
-| `ListParkedTopicsQuery` | yes | `src/Mcm.Scrum.Application/Features/Stories/ListParkedTopics/ListParkedTopicsQuery.cs` | GET /api/stories/topics | No |
-| `GetModelComparisonQuery` | yes | `src/Mcm.Scrum.Application/Features/Models/GetModelComparison/GetModelComparisonQuery.cs` | GET /api/models | No (ModelCostEstimator is tested in Domain.Tests) |
-| `ResetDemoCommand` | yes | `src/Mcm.Scrum.Application/Features/Demo/ResetDemo/ResetDemoCommand.cs` | POST /api/demo/reset | No |
-| `GetDemoStatusQuery` | yes | `src/Mcm.Scrum.Application/Features/Demo/GetDemoStatus/GetDemoStatusQuery.cs` | GET /api/demo/status?teamId= | No |
-| `GetHealthQuery` | yes | `src/Mcm.Scrum.Application/Features/Health/GetHealth/GetHealthQuery.cs` | GET /api/health | Yes: GetHealthHandlerTests.cs |
-| `CompleteSpeakerTurnCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/CompleteSpeakerTurn/CompleteSpeakerTurnCommand.cs` | Voice gateway | No |
-| `RecordAgentLatencyCommand` | yes | `src/Mcm.Scrum.Application/Features/Standups/RecordAgentLatency/RecordAgentLatencyCommand.cs` | Voice gateway | No |
-| `GetFacilitatorInstructionsQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetFacilitatorInstructions/GetFacilitatorInstructionsQuery.cs` | Voice gateway (session setup) | No |
-| `GetTurnInstructionQuery` | yes | `src/Mcm.Scrum.Application/Features/Standups/GetTurnInstruction/GetTurnInstructionQuery.cs` | Voice gateway | Yes: StandupFlowTests.cs |
-| `ListCardsQuery` | yes | `src/Mcm.Scrum.Application/Features/Teams/ListCards/ListCardsQuery.cs` | GET /api/cards | No |
-| `PreparePlanningCommand` (M9a) | yes | `src/Mcm.Scrum.Application/Features/Planning/PreparePlanning/PreparePlanningCommand.cs` | POST /api/planning/prepare; Teams chat "prepare sprint planning" | Yes: PlanningFlowTests.cs |
-| `GetPlanningPackQuery` (M9a) | yes | `src/Mcm.Scrum.Application/Features/Planning/GetPlanningPack/GetPlanningPackQuery.cs` | GET /api/planning/pack | Yes: PlanningFlowTests.cs |
-| `ApprovePlanCommand` (M9a) | yes | `src/Mcm.Scrum.Application/Features/Planning/ApprovePlan/ApprovePlanCommand.cs` | POST /api/planning/packs/{id}/approve; Teams card action approve-plan | Yes: PlanningFlowTests.cs |
-| `RejectPlanCommand` (M9a) | yes | `src/Mcm.Scrum.Application/Features/Planning/RejectPlan/RejectPlanCommand.cs` | POST /api/planning/packs/{id}/reject; Teams card action reject-plan | Yes: PlanningFlowTests.cs |
-| `UpdateMemberAvailabilityCommand` (M9a) | yes | `src/Mcm.Scrum.Application/Features/Teams/UpdateMemberAvailability/UpdateMemberAvailabilityCommand.cs` | PUT /api/teams/{id}/members/{memberId}/availability | Yes: PlanningFlowTests.cs |
-| `PrepareRetrospectiveCommand` (M9b) | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/PrepareRetrospective/PrepareRetrospectiveCommand.cs` | POST /api/retrospective/prepare | Yes: RetrospectiveFlowTests.cs |
-| `ReconcileRetroUpdateQuery` (M9b) | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/ReconcileRetroUpdate/ReconcileRetroUpdateQuery.cs` | Voice gateway (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
-| `NameRetroThemesCommand` (M9b) | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/NameRetroThemes/NameRetroThemesCommand.cs` | Voice gateway (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
-| `CreateRetroOutcomeCommand` (M9b) | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/CreateRetroOutcome/CreateRetroOutcomeCommand.cs` | `RetrospectiveEnded` -> `FinishOnRetrospectiveEnded` | Yes: RetrospectiveFlowTests.cs |
-| `GetRetroBoardQuery` (M9b) | yes | `src/Mcm.Scrum.Application/Features/Retrospectives/GetRetroBoard/GetRetroBoardQuery.cs` | Voice gateway board push (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
-| `GetSprintCalendarQuery` (M9d) | yes | `src/Mcm.Scrum.Application/Features/Calendars/GetSprintCalendar/GetSprintCalendarQuery.cs` | GET /api/calendar; GET /api/calendar/{iteration}.ics | Yes: SprintCalendarFlowTests.cs |
-| `ListSprintCalendarsQuery` (M9d) | yes | `src/Mcm.Scrum.Application/Features/Calendars/ListSprintCalendars/ListSprintCalendarsQuery.cs` | GET /api/calendar/proposals | No (a projection of the repository) |
-| `ProposeSprintCalendarCommand` (M9d) | yes | `src/Mcm.Scrum.Application/Features/Calendars/ProposeSprintCalendar/ProposeSprintCalendarCommand.cs` | POST /api/calendar/propose | Yes: SprintCalendarFlowTests.cs |
-| `ApproveSprintCalendarCommand` (M9d) | yes | `src/Mcm.Scrum.Application/Features/Calendars/ApproveSprintCalendar/ApproveSprintCalendarCommand.cs` | POST /api/calendar/proposals/{id}/approve; Teams card action approve-calendar | Yes: SprintCalendarFlowTests.cs |
-| `RejectSprintCalendarCommand` (M9d) | yes | `src/Mcm.Scrum.Application/Features/Calendars/RejectSprintCalendar/RejectSprintCalendarCommand.cs` | POST /api/calendar/proposals/{id}/reject; Teams card action reject-calendar | Yes: SprintCalendarFlowTests.cs |
-| `CreateCeremonyPackCommand` (M9) | yes | `src/Mcm.Scrum.Application/Features/Ceremonies/CreateCeremonyPack/CreateCeremonyPackCommand.cs` | POST /api/ceremonies/{kind}/pack | Yes: CreateCeremonyPackTests.cs |
-| `ResolveUnblockerCommand` (M9) | yes | `src/Mcm.Scrum.Application/Features/Standups/ResolveUnblocker/ResolveUnblockerCommand.cs` | Voice gateway (answer to "Who can help unblock this?") | Yes: UnblockAndRecapTests.cs |
-| `SetRecapChannelCommand` (M9) | yes | `src/Mcm.Scrum.Application/Features/Teams/SetRecapChannel/SetRecapChannelCommand.cs` | PUT /api/teams/{id}/recap-channel; Teams bot when added in a channel | Yes: UnblockAndRecapTests.cs |
+| `UpdateTeamSettingsCommand` | yes | `src/Zava.Scrum.Application/Features/Teams/UpdateTeamSettings/UpdateTeamSettingsCommand.cs` | PUT /api/teams/{id} | No |
+| `SyncRosterCommand` | yes | `src/Zava.Scrum.Application/Features/Teams/SyncRoster/SyncRosterCommand.cs` | POST /api/teams/{id}/members/sync | Yes: SyncRosterHandlerTests.cs |
+| `UpdateScheduleCommand` | yes | `src/Zava.Scrum.Application/Features/Schedules/UpdateSchedule/UpdateScheduleCommand.cs` | PUT /api/teams/{teamId}/schedule | No (ScheduleEvaluator is tested in Domain.Tests) |
+| `UpdatePromptCommand` | yes | `src/Zava.Scrum.Application/Features/Prompts/UpdatePrompt/UpdatePromptCommand.cs` | PUT /api/teams/{teamId}/prompts/{name} | No (FilePromptStoreTests.cs covers the store, not the command) |
+| `GetTeamQuery` | yes | `src/Zava.Scrum.Application/Features/Teams/GetTeam/GetTeamQuery.cs` | GET /api/teams/{id} | No |
+| `GetRosterQuery` | yes | `src/Zava.Scrum.Application/Features/Teams/GetRoster/GetRosterQuery.cs` | GET /api/teams/{id}/members | No |
+| `GetScheduleQuery` | yes | `src/Zava.Scrum.Application/Features/Schedules/GetSchedule/GetScheduleQuery.cs` | GET /api/teams/{teamId}/schedule | No |
+| `GetPromptQuery` | yes | `src/Zava.Scrum.Application/Features/Prompts/GetPrompt/GetPromptQuery.cs` | GET /api/teams/{teamId}/prompts/{name} | No |
+| `ListPromptsQuery` | yes | `src/Zava.Scrum.Application/Features/Prompts/ListPrompts/ListPromptsQuery.cs` | GET /api/teams/{teamId}/prompts | No |
+| `PrepareStandupCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/PrepareStandup/PrepareStandupCommand.cs` | POST /api/sessions/prepare; RunScheduleTickHandler | Yes: PrepareStandupHandlerTests.cs |
+| `StartStandupCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/StartStandup/StartStandupCommand.cs` | POST /api/sessions/{id}/start; RunScheduleTickHandler | Yes: StandupFlowTests.cs |
+| `JoinMeetingCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/JoinMeeting/JoinMeetingCommand.cs` | POST /api/sessions/{id}/start (mode acs); RunScheduleTickHandler | No |
+| `ControlStandupCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/ControlStandup/ControlStandupCommand.cs` | POST /api/sessions/{id}/control | No |
+| `RecordStandupEventCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/RecordStandupEvent/RecordStandupEventCommand.cs` | Voice gateway; tool record_event | Yes: StandupFlowTests.cs, EndStandupFollowUpsTests.cs |
+| `RetractStandupEventCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/RetractStandupEvent/RetractStandupEventCommand.cs` | Voice gateway (corrections) | No (the domain method StandupSession.Retract is tested in StandupAgendaTests.cs) |
+| `MarkAbsentCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/MarkAbsent/MarkAbsentCommand.cs` | Voice gateway; tool mark_absent | Yes: StandupFlowTests.cs |
+| `ParkTopicCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/ParkTopic/ParkTopicCommand.cs` | Voice gateway; tool park_topic | Yes: StandupFlowTests.cs |
+| `EndStandupCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/EndStandup/EndStandupCommand.cs` | Voice gateway; tool end_standup | Yes: EndStandupFollowUpsTests.cs |
+| `GetNextSpeakerQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetNextSpeaker/GetNextSpeakerQuery.cs` | Voice gateway; tool get_next_speaker | Yes: StandupFlowTests.cs |
+| `GetMemberBriefQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetMemberBrief/GetMemberBriefQuery.cs` | Tool get_member_brief | No |
+| `ReconcileUpdateQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/ReconcileUpdate/ReconcileUpdateQuery.cs` | Voice gateway; tool reconcile_update | Yes: StandupFlowTests.cs |
+| `GetTimeRemainingQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetTimeRemaining/GetTimeRemainingQuery.cs` | Tool get_time_remaining | Yes: StandupFlowTests.cs |
+| `GetWorkItemDetailsQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetWorkItemDetails/GetWorkItemDetailsQuery.cs` | Tool get_work_item_details | No |
+| `ListSessionsQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/ListSessions/ListSessionsQuery.cs` | GET /api/sessions?teamId= | No |
+| `GetSessionQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetSession/GetSessionQuery.cs` | GET /api/sessions/{id}; voice gateway | No |
+| `GetSessionEventsQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetSessionEvents/GetSessionEventsQuery.cs` | GET /api/sessions/{id}/events | No |
+| `GetLiveStateQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetLiveState/GetLiveStateQuery.cs` | GET /api/sessions/{id}/live (SSE) | No |
+| `RunScheduleTickCommand` | yes | `src/Zava.Scrum.Application/Features/Schedules/RunScheduleTick/RunScheduleTickCommand.cs` | ScheduleWorker (background service) | No (ScheduleEvaluator is tested in Domain.Tests) |
+| `ProposeAdoChangeCommand` | yes | `src/Zava.Scrum.Application/Features/FollowUps/ProposeAdoChange/ProposeAdoChangeCommand.cs` | POST /api/followups/propose | No |
+| `SendFollowUpsCommand` | yes | `src/Zava.Scrum.Application/Features/FollowUps/SendFollowUps/SendFollowUpsCommand.cs` | POST /api/sessions/{id}/followups; SendFollowUpsOnStandupEnded | Yes, indirectly: EndStandupFollowUpsTests.cs |
+| `ApproveFollowUpCommand` | yes | `src/Zava.Scrum.Application/Features/FollowUps/ApproveFollowUp/ApproveFollowUpCommand.cs` | POST /api/followups/{id}/approve; Teams card action approve | Yes: ApplyApprovedChangesTests.cs |
+| `RejectFollowUpCommand` | yes | `src/Zava.Scrum.Application/Features/FollowUps/RejectFollowUp/RejectFollowUpCommand.cs` | POST /api/followups/{id}/reject; Teams card action reject | Yes: ApplyApprovedChangesTests.cs |
+| `ApplyApprovedChangesCommand` | yes | `src/Zava.Scrum.Application/Features/FollowUps/ApplyApprovedChanges/ApplyApprovedChangesCommand.cs` | POST /api/followups/{id}/apply; ApplyOnFollowUpApproved | Yes: ApplyApprovedChangesTests.cs |
+| `ListFollowUpsQuery` | yes | `src/Zava.Scrum.Application/Features/FollowUps/ListFollowUps/ListFollowUpsQuery.cs` | GET /api/followups?teamId=&status= | No |
+| `GetFollowUpQuery` | yes | `src/Zava.Scrum.Application/Features/FollowUps/GetFollowUp/GetFollowUpQuery.cs` | GET /api/followups/{id} | No |
+| `ListEmailsQuery` | yes | `src/Zava.Scrum.Application/Features/FollowUps/ListEmails/ListEmailsQuery.cs` | GET /api/emails | No |
+| `GetKpisQuery` | yes | `src/Zava.Scrum.Application/Features/Reports/GetKpis/GetKpisQuery.cs` | GET /api/reports/kpis | No (KpiCalculator is tested in Domain.Tests) |
+| `GetSprintReportQuery` | yes | `src/Zava.Scrum.Application/Features/Reports/GetSprintReport/GetSprintReportQuery.cs` | GET /api/reports/sprint | Yes: ReportTests.cs |
+| `GetMonthlyReportQuery` | yes | `src/Zava.Scrum.Application/Features/Reports/GetMonthlyReport/GetMonthlyReportQuery.cs` | GET /api/reports/monthly | No |
+| `AnswerTeamQuestionQuery` | yes | `src/Zava.Scrum.Application/Features/Reports/AnswerTeamQuestion/AnswerTeamQuestionQuery.cs` | POST /api/ask; Teams chat (ScrumAgent) | Yes: ReportTests.cs |
+| `GetPlanningPrepQuery` | yes | `src/Zava.Scrum.Application/Features/Planning/GetPlanningPrep/GetPlanningPrepQuery.cs` | GET /api/planning | No (PlanningPlanner is tested in Domain.Tests) |
+| `GetRetrospectiveQuery` | yes | `src/Zava.Scrum.Application/Features/Retrospectives/GetRetrospective/GetRetrospectiveQuery.cs` | GET /api/retrospective | No |
+| `DraftUserStoryQuery` | yes | `src/Zava.Scrum.Application/Features/Stories/DraftUserStory/DraftUserStoryQuery.cs` | POST /api/stories/draft | Yes: DraftUserStoryTests.cs |
+| `ListParkedTopicsQuery` | yes | `src/Zava.Scrum.Application/Features/Stories/ListParkedTopics/ListParkedTopicsQuery.cs` | GET /api/stories/topics | No |
+| `GetModelComparisonQuery` | yes | `src/Zava.Scrum.Application/Features/Models/GetModelComparison/GetModelComparisonQuery.cs` | GET /api/models | No (ModelCostEstimator is tested in Domain.Tests) |
+| `ResetDemoCommand` | yes | `src/Zava.Scrum.Application/Features/Demo/ResetDemo/ResetDemoCommand.cs` | POST /api/demo/reset | No |
+| `GetDemoStatusQuery` | yes | `src/Zava.Scrum.Application/Features/Demo/GetDemoStatus/GetDemoStatusQuery.cs` | GET /api/demo/status?teamId= | No |
+| `GetHealthQuery` | yes | `src/Zava.Scrum.Application/Features/Health/GetHealth/GetHealthQuery.cs` | GET /api/health | Yes: GetHealthHandlerTests.cs |
+| `CompleteSpeakerTurnCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/CompleteSpeakerTurn/CompleteSpeakerTurnCommand.cs` | Voice gateway | No |
+| `RecordAgentLatencyCommand` | yes | `src/Zava.Scrum.Application/Features/Standups/RecordAgentLatency/RecordAgentLatencyCommand.cs` | Voice gateway | No |
+| `GetFacilitatorInstructionsQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetFacilitatorInstructions/GetFacilitatorInstructionsQuery.cs` | Voice gateway (session setup) | No |
+| `GetTurnInstructionQuery` | yes | `src/Zava.Scrum.Application/Features/Standups/GetTurnInstruction/GetTurnInstructionQuery.cs` | Voice gateway | Yes: StandupFlowTests.cs |
+| `ListCardsQuery` | yes | `src/Zava.Scrum.Application/Features/Teams/ListCards/ListCardsQuery.cs` | GET /api/cards | No |
+| `PreparePlanningCommand` (M9a) | yes | `src/Zava.Scrum.Application/Features/Planning/PreparePlanning/PreparePlanningCommand.cs` | POST /api/planning/prepare; Teams chat "prepare sprint planning" | Yes: PlanningFlowTests.cs |
+| `GetPlanningPackQuery` (M9a) | yes | `src/Zava.Scrum.Application/Features/Planning/GetPlanningPack/GetPlanningPackQuery.cs` | GET /api/planning/pack | Yes: PlanningFlowTests.cs |
+| `ApprovePlanCommand` (M9a) | yes | `src/Zava.Scrum.Application/Features/Planning/ApprovePlan/ApprovePlanCommand.cs` | POST /api/planning/packs/{id}/approve; Teams card action approve-plan | Yes: PlanningFlowTests.cs |
+| `RejectPlanCommand` (M9a) | yes | `src/Zava.Scrum.Application/Features/Planning/RejectPlan/RejectPlanCommand.cs` | POST /api/planning/packs/{id}/reject; Teams card action reject-plan | Yes: PlanningFlowTests.cs |
+| `UpdateMemberAvailabilityCommand` (M9a) | yes | `src/Zava.Scrum.Application/Features/Teams/UpdateMemberAvailability/UpdateMemberAvailabilityCommand.cs` | PUT /api/teams/{id}/members/{memberId}/availability | Yes: PlanningFlowTests.cs |
+| `PrepareRetrospectiveCommand` (M9b) | yes | `src/Zava.Scrum.Application/Features/Retrospectives/PrepareRetrospective/PrepareRetrospectiveCommand.cs` | POST /api/retrospective/prepare | Yes: RetrospectiveFlowTests.cs |
+| `ReconcileRetroUpdateQuery` (M9b) | yes | `src/Zava.Scrum.Application/Features/Retrospectives/ReconcileRetroUpdate/ReconcileRetroUpdateQuery.cs` | Voice gateway (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
+| `NameRetroThemesCommand` (M9b) | yes | `src/Zava.Scrum.Application/Features/Retrospectives/NameRetroThemes/NameRetroThemesCommand.cs` | Voice gateway (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
+| `CreateRetroOutcomeCommand` (M9b) | yes | `src/Zava.Scrum.Application/Features/Retrospectives/CreateRetroOutcome/CreateRetroOutcomeCommand.cs` | `RetrospectiveEnded` -> `FinishOnRetrospectiveEnded` | Yes: RetrospectiveFlowTests.cs |
+| `GetRetroBoardQuery` (M9b) | yes | `src/Zava.Scrum.Application/Features/Retrospectives/GetRetroBoard/GetRetroBoardQuery.cs` | Voice gateway board push (not an endpoint) | Yes: RetrospectiveFlowTests.cs |
+| `GetSprintCalendarQuery` (M9d) | yes | `src/Zava.Scrum.Application/Features/Calendars/GetSprintCalendar/GetSprintCalendarQuery.cs` | GET /api/calendar; GET /api/calendar/{iteration}.ics | Yes: SprintCalendarFlowTests.cs |
+| `ListSprintCalendarsQuery` (M9d) | yes | `src/Zava.Scrum.Application/Features/Calendars/ListSprintCalendars/ListSprintCalendarsQuery.cs` | GET /api/calendar/proposals | No (a projection of the repository) |
+| `ProposeSprintCalendarCommand` (M9d) | yes | `src/Zava.Scrum.Application/Features/Calendars/ProposeSprintCalendar/ProposeSprintCalendarCommand.cs` | POST /api/calendar/propose | Yes: SprintCalendarFlowTests.cs |
+| `ApproveSprintCalendarCommand` (M9d) | yes | `src/Zava.Scrum.Application/Features/Calendars/ApproveSprintCalendar/ApproveSprintCalendarCommand.cs` | POST /api/calendar/proposals/{id}/approve; Teams card action approve-calendar | Yes: SprintCalendarFlowTests.cs |
+| `RejectSprintCalendarCommand` (M9d) | yes | `src/Zava.Scrum.Application/Features/Calendars/RejectSprintCalendar/RejectSprintCalendarCommand.cs` | POST /api/calendar/proposals/{id}/reject; Teams card action reject-calendar | Yes: SprintCalendarFlowTests.cs |
+| `CreateCeremonyPackCommand` (M9) | yes | `src/Zava.Scrum.Application/Features/Ceremonies/CreateCeremonyPack/CreateCeremonyPackCommand.cs` | POST /api/ceremonies/{kind}/pack | Yes: CreateCeremonyPackTests.cs |
+| `ResolveUnblockerCommand` (M9) | yes | `src/Zava.Scrum.Application/Features/Standups/ResolveUnblocker/ResolveUnblockerCommand.cs` | Voice gateway (answer to "Who can help unblock this?") | Yes: UnblockAndRecapTests.cs |
+| `SetRecapChannelCommand` (M9) | yes | `src/Zava.Scrum.Application/Features/Teams/SetRecapChannel/SetRecapChannelCommand.cs` | PUT /api/teams/{id}/recap-channel; Teams bot when added in a channel | Yes: UnblockAndRecapTests.cs |
 
 ### A2. Names the old SPEC listed that do not exist
 
@@ -102,7 +102,7 @@ Generated while reconciling the documents with `main` at `36d25ad`. **The code w
 
 ## B. Routes (SPEC 14)
 
-Every row of the SPEC 14 table was rewritten in this PR from `src/Mcm.Scrum.Api/Endpoints/*.cs` and `Program.cs`. Rows that were missing from the old SPEC 14 are marked **new**.
+Every row of the SPEC 14 table was rewritten in this PR from `src/Zava.Scrum.Api/Endpoints/*.cs` and `Program.cs`. Rows that were missing from the old SPEC 14 are marked **new**.
 
 | Method | Route | Endpoint file | Sends |
 |---|---|---|---|

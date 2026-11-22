@@ -1,4 +1,4 @@
-# MCM AI Scrum Master Agent: Ceremony Catalogue
+# Zava AI Scrum Master Agent: Ceremony Catalogue
 
 > **Purpose:** the single definition of every Scrum ceremony and recurring activity the agent is expected to cover. For each one it says what the agent does before, during and after, what it reads and writes in Azure DevOps, what is built in the PoC today, how it is demonstrated, and what production adds.
 >
@@ -29,7 +29,7 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 
 **Status key:** **Built** = in the PoC and demonstrated · **Partial** = some of it is built · **Planned (M9)** = in the next PoC milestone (see the M9 prompt) · **Production** = in the Production Specification only.
 
-**Timeboxes** follow the Scrum Guide maximums for a one-month sprint, scaled for MCM's two-week sprints. The two-week figures are assumptions used for capacity planning in the Production Specification (60 / 45 / 45 minutes for planning, review and retrospective) and must be confirmed with Rajeev.
+**Timeboxes** follow the Scrum Guide maximums for a one-month sprint, scaled for Zava's two-week sprints. The two-week figures are assumptions used for capacity planning in the Production Specification (60 / 45 / 45 minutes for planning, review and retrospective) and must be confirmed with Rajeev.
 
 ---
 
@@ -59,7 +59,7 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 
 | Aspect | Definition |
 |---|---|
-| **Purpose** | Inspect progress toward the sprint goal and adapt the plan for the next day. For MCM: make sure every person's items are covered, surface blockers early, and remove the Scrum Master's note-taking and chasing |
+| **Purpose** | Inspect progress toward the sprint goal and adapt the plan for the next day. For Zava: make sure every person's items are covered, surface blockers early, and remove the Scrum Master's note-taking and chasing |
 | **When** | Every working day at the team's time, in a recurring Teams meeting. The scheduler prepares at T-10 minutes and starts at T-1 minute |
 | **Who** | Developers (required), human Scrum Master (present; can take over at any time), Product Owner (optional) |
 | **Timebox** | 15 minutes. Warning at 80 percent; recap and close at the limit |
@@ -92,10 +92,10 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 | **Writes** | Iteration path, assigned to, comment; all approval-gated |
 | **Outputs** | Planning pack, agreed sprint goal, planned scope, risks, approved assignments |
 | **KPIs fed** | Committed points, planned versus capacity, readiness rate |
-| **PoC status** | **Built (M9a), not voice-led:** the Planning page and `POST /api/planning/prepare` build a plan in code: capacity from the velocity range (illustrative fixture) split by member and scaled by editable availability; carry-over first, then ready backlog items in order; not-ready items listed with why; suggested owners; over- and under-commitment flags; a model-phrased draft goal with a code fallback. **Approve plan** (portal or Teams card; chat "prepare sprint planning" for the Scrum Master) writes `SetIteration` and `Assign` through the approval guard, each with an "Approved by {name} in {Teams or the portal}, proposed by MCM Scrum Agent from the {date} sprint planning" comment; **Reject** writes nothing. Checked live against the sandbox except the Teams card actions and the chat command. Not built: the proposed selection does not fit per-person capacity (it warns), child tasks do not move with their story, calendar capacity, voice co-facilitation |
+| **PoC status** | **Built (M9a), not voice-led:** the Planning page and `POST /api/planning/prepare` build a plan in code: capacity from the velocity range (illustrative fixture) split by member and scaled by editable availability; carry-over first, then ready backlog items in order; not-ready items listed with why; suggested owners; over- and under-commitment flags; a model-phrased draft goal with a code fallback. **Approve plan** (portal or Teams card; chat "prepare sprint planning" for the Scrum Master) writes `SetIteration` and `Assign` through the approval guard, each with an "Approved by {name} in {Teams or the portal}, proposed by Zava Scrum Agent from the {date} sprint planning" comment; **Reject** writes nothing. Checked live against the sandbox except the Teams card actions and the chat command. Not built: the proposed selection does not fit per-person capacity (it warns), child tasks do not move with their story, calendar capacity, voice co-facilitation |
 | **Demo** | Reset, **Prepare pack**, the card arrives, **Approve plan**: the selected items are in Sprint 43 with the suggested owners and an "Approved by" comment; a rejected plan writes nothing (see `DEMO.md`, "Sprint planning (M9a)") |
 | **Production adds** | Calendar-aware capacity (out-of-office from Microsoft 365), voice co-facilitation, Fabric history |
-| **Open with Rajeev** | Does MCM record capacity in Azure DevOps; who approves the plan (Scrum Master, Product Owner or both); story points or hours |
+| **Open with Rajeev** | Does Zava record capacity in Azure DevOps; who approves the plan (Scrum Master, Product Owner or both); story points or hours |
 
 ### C3. Sprint Review
 
@@ -116,7 +116,7 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 | **PoC status** | **Partial (M9, built):** `POST /api/ceremonies/SprintReview/pack` computes points delivered against committed and the completed stories and bugs in code, and sends one Scrum Master card. After approval a comment is added to each completed item. Not built: stakeholder feedback to draft backlog items, the goal-met judgement, voice or agenda co-facilitation |
 | **Demo** | Review pack card, approve, comments on the completed stories in Azure DevOps |
 | **Production adds** | Voice co-facilitation, stakeholder distribution lists, Power BI view |
-| **Open with Rajeev** | Who attends reviews at MCM; does MCM run reviews per team or combined |
+| **Open with Rajeev** | Who attends reviews at Zava; does Zava run reviews per team or combined |
 
 ### C4. Sprint Retrospective
 

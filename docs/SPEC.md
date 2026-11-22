@@ -1,8 +1,8 @@
-# MCM AI Scrum Master Agent: PoC Build Specification
+# Zava AI Scrum Master Agent: PoC Build Specification
 
 > **Purpose:** a self-contained, demo-first build spec to hand to GitHub Copilot (coding agent, Copilot app or agent mode in VS Code) to generate a working proof of concept.
 >
-> **Companions:** *MCM AI Scrum Master Agent - Solution Architecture* (the why and the options) and *MCM AI Scrum Master Agent - Production Specification* (how the real system is built and run).
+> **Companions:** *Zava AI Scrum Master Agent - Solution Architecture* (the why and the options) and *Zava AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
 > **Owner:** James Ford (Microsoft). **Version 0.6 (as built, M9 ceremony and carry-over features)**, November 22, 2026. Status: updated to describe what was actually built. **The code wins** where this document and the code disagree; `DOC-DRIFT.md` lists every difference found and how it was resolved. Companions: `AS-BUILT.md`, `CEREMONIES.md` and the decision records (`adr/0001` to `0011`).
 
@@ -11,7 +11,7 @@
 Built after the v0.5 reconciliation; the detail is in ADR 0010 and `AS-BUILT.md` section 11.
 
 - **Ceremony kind.** `CeremonyKind` (`DailyScrum`, `SprintPlanning`, `SprintReview`, `Retrospective`) on the session aggregate (still named `StandupSession`; ADR 0009 records the naming debt). Sessions saved before this load as `DailyScrum`.
-- **More change kinds.** `ChangeOp` adds `SetIteration`, `Assign` and `CreateWorkItem`. The attribution now names the approval channel and the ceremony ("Approved by {name} in {Teams|the portal}, proposed by MCM Scrum Agent from the {date} {ceremony}.").
+- **More change kinds.** `ChangeOp` adds `SetIteration`, `Assign` and `CreateWorkItem`. The attribution now names the approval channel and the ceremony ("Approved by {name} in {Teams|the portal}, proposed by Zava Scrum Agent from the {date} {ceremony}.").
 - **Ceremony packs** (`POST /api/ceremonies/{kind}/pack`): review and retrospective packs computed in Domain code, sent to the Scrum Master as one follow-up with **Approve all** and **Reject**. **M9a:** sprint planning has its own pack with capacity, selection, a draft goal and **Approve plan** (section 10.6).
 - **R1 Graph email** (`Email:Mode=Graph`), **R2 unblock loop**, **R3 commitment carry-over**, **R4 `AtRiskRule`**, **R5 recap routing** to a recap channel and the meeting chat.
 
@@ -34,7 +34,7 @@ The PoC is built and deployed to Azure (M0 to M8, except Work IQ). This version 
 
 ### What changed in v0.2
 
-v0.1 mixed PoC and production concerns. v0.2 is rewritten around one question: **can an AI agent run MCM's daily standup by voice, grounded in Azure DevOps, and close the loop with follow-ups?** Specifically:
+v0.1 mixed PoC and production concerns. v0.2 is rewritten around one question: **can an AI agent run Zava's daily standup by voice, grounded in Azure DevOps, and close the loop with follow-ups?** Specifically:
 
 - **Demo first.** A demo storyboard (section 2) is now the north star, and the milestones are reordered so the voice standup works by M2 instead of M3, after a demo data seeder and the pre-brief.
 - **Smaller footprint.** Three deployables instead of six. The orchestrator, voice gateway, bot, scheduler and Scrum tools now run in one .NET service. API Management, Service Bus, the Functions-hosted MCP server, Foundry IQ, private networking and app roles move to the production specification.
@@ -48,13 +48,13 @@ v0.1 mixed PoC and production concerns. v0.2 is rewritten around one question: *
   - the monthly three-to-six sprint report;
   - Microsoft 365 Copilot packaging;
   - a requirements traceability matrix;
-  - a list of what is needed from MCM before each milestone.
+  - a list of what is needed from Zava before each milestone.
 
 ---
 
 ## 0. How to use this spec with GitHub Copilot
 
-1. Create an empty repo `mcm-scrum-agent` (GitHub or Azure Repos; the GitHub Copilot app works with Azure Repos in preview).
+1. Create an empty repo `zava-scrum-agent` (GitHub or Azure Repos; the GitHub Copilot app works with Azure Repos in preview).
 2. Commit this file as `docs/SPEC.md` and the companion `copilot-instructions.md` as `.github/copilot-instructions.md`.
 3. Create one issue per milestone in section 16 (M0 to M8). Paste the milestone block into the issue and assign it to Copilot, or prompt agent mode:
    `Implement milestone M<n> from docs/SPEC.md. Follow .github/copilot-instructions.md. Stop when the milestone's demo check passes and summarise what you built and how to run it.`
@@ -123,7 +123,7 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 | F9 | Write user stories and acceptance criteria | **Draft only:** Story Writer page (model draft, or a template when no model is available); never written to Azure DevOps | M8 |
 | F10 | Admin portal for teams, rosters, cadence and prompts | **Full** | 13, M5 |
 | N5 | About one second voice latency | Target 1 s; **measured 2 to 3 s** (p50, US test). Shown in the portal | 11.2 |
-| N6 | English with Indian, Costa Rican and US accents | Tested with MCM voices if available | 11 |
+| N6 | English with Indian, Costa Rican and US accents | Tested with Zava voices if available | 11 |
 | N7 | No Azure DevOps writes without approval | **Enforced in code** | 10.3 |
 | N1 to N4 | Identity, monitoring, licensing, Workday | Production specification | n/a |
 
@@ -131,13 +131,13 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 
 ## 4. PoC architecture
 
-![PoC architecture](MCM-Scrum-Agent-PoC-Architecture.png)
+![PoC architecture](Zava-Scrum-Agent-PoC-Architecture.png)
 
 Three deployables:
 
-1. **`Mcm.Scrum.Api`** (.NET 10): the orchestrator workflows, voice gateway WebSocket, Microsoft 365 Agents SDK bot endpoint, scheduler (hosted `BackgroundService`), Scrum tools (in process) and the portal API.
+1. **`Zava.Scrum.Api`** (.NET 10): the orchestrator workflows, voice gateway WebSocket, Microsoft 365 Agents SDK bot endpoint, scheduler (hosted `BackgroundService`), Scrum tools (in process) and the portal API.
 2. **`meeting-bridge`** (Node.js + TypeScript): the Simulated Room page and the ACS Teams interop bridge.
-3. **`admin-portal`** (React static site): served by `Mcm.Scrum.Api` from `wwwroot` in Azure, or by Vite locally.
+3. **`admin-portal`** (React static site): served by `Zava.Scrum.Api` from `wwwroot` in Azure, or by Vite locally.
 
 External dependencies:
 
@@ -196,45 +196,45 @@ External dependencies:
 ## 6. Repository layout
 
 ```
-mcm-scrum-agent/
+zava-scrum-agent/
 ├─ azure.yaml                      # azd: services api, bridge
 ├─ infra/main.bicep                # ACA env + 2 apps, ACR, Cosmos, ACS, identity, Easy Auth; reuses the Foundry, Log Analytics and App Insights resources. The Azure Bot is created outside Bicep; infra/hooks/postdeploy.ps1 wires it
 ├─ Directory.Build.props           # nullable, warnings as errors, analyzers, XML docs
 ├─ Directory.Packages.props        # central package versions
 ├─ .editorconfig
 ├─ src/
-│  ├─ Mcm.Scrum.AppHost/           # Aspire: runs api, bridge, portal locally
-│  ├─ Mcm.Scrum.Domain/            # no dependencies
+│  ├─ Zava.Scrum.AppHost/           # Aspire: runs api, bridge, portal locally
+│  ├─ Zava.Scrum.Domain/            # no dependencies
 │  │  ├─ Teams/ Members/ Standups/ FollowUps/ Schedules/ Planning/ Work/   # aggregates, value objects, events, rules
 │  │  ├─ Flags/                    # IFlagRule + one class per rule
 │  │  ├─ Kpis/                     # KpiCalculator (burndown, carry-over, blocker age)
 │  │  ├─ Voice/FloorControl.cs     # pure state machine
 │  │  └─ Common/                   # Entity, AggregateRoot, IDomainEvent, Result, Error
-│  ├─ Mcm.Scrum.Application/
+│  ├─ Zava.Scrum.Application/
 │  │  ├─ Abstractions/Messaging/   # hand-rolled mediator: ICommand, IQuery, ISender, IPublisher, Mediator
 │  │  ├─ Abstractions/Ports/       # IWorkItemReader/Writer, ITeamsMessenger, IVoiceSessionFactory, agents, repos, IClock
 │  │  ├─ Behaviors/                # LoggingBehavior, ValidationBehavior, ExceptionMappingBehavior
 │  │  ├─ Features/<Area>/<UseCase>/  # Command|Query, Handler, Validator, DTO (catalogue in 6.1.4)
 │  │  ├─ Tools/ScrumTools.cs       # IScrumTools: Voice Live tools -> commands/queries
 │  │  └─ DependencyInjection.cs    # AddApplication()
-│  ├─ Mcm.Scrum.Infrastructure/
+│  ├─ Zava.Scrum.Infrastructure/
 │  │  ├─ Ado/                      # AdoRestClient, WIQL, AdoFields constants, Analytics
 │  │  ├─ Agents/                   # Agent Framework agents behind ports (BacklogRisk, Reconcile, Reporting, Drafting), FoundryChat, FoundryAgentFactory, FilePromptStore
 │  │  ├─ Voice/                    # VoiceLiveSessionFactory, VoiceLiveSession, model catalogue
 │  │  ├─ Teams/                    # TeamsBotMessenger, OutboxTeamsMessenger, CardRenderer, HttpMeetingBridge, OutboxEmailSender
 │  │  ├─ Persistence/              # JsonFile* repositories over ICollectionStore (FileCollectionStore, CosmosCollectionStore)
 │  │  └─ DependencyInjection.cs    # AddInfrastructure()
-│  ├─ Mcm.Scrum.Api/
+│  ├─ Zava.Scrum.Api/
 │  │  ├─ Endpoints/                # <Feature>Endpoints.cs, ResultExtensions.ToHttpResult()
 │  │  ├─ Bot/                      # Agents SDK activity handler (adapter only)
 │  │  ├─ Voice/                    # VoiceGateway loop, BridgeConnection, token service, live registry
 │  │  ├─ Scheduling/               # ScheduleWorker BackgroundService
 │  │  └─ Program.cs                # composition root
 │  ├─ tests/
-│  │  ├─ Mcm.Scrum.Domain.Tests/
-│  │  ├─ Mcm.Scrum.Application.Tests/      # handlers with fakes in TestDoubles/, mediator tests
-│  │  ├─ Mcm.Scrum.Infrastructure.Tests/   # session repository contract (JSON file only), ADO mapping, agents, card rendering
-│  │  └─ Mcm.Scrum.ArchitectureTests/
+│  │  ├─ Zava.Scrum.Domain.Tests/
+│  │  ├─ Zava.Scrum.Application.Tests/      # handlers with fakes in TestDoubles/, mediator tests
+│  │  ├─ Zava.Scrum.Infrastructure.Tests/   # session repository contract (JSON file only), ADO mapping, agents, card rendering
+│  │  └─ Zava.Scrum.ArchitectureTests/
 │  ├─ meeting-bridge/               # Node/TS: src/domain, src/services, src/routes (/room, ACS bridge, cast player)
 │  └─ admin-portal/                # React + Tailwind CSS v4: src/features/*, src/ui, src/api (typed client), src/hooks
 ├─ agents/instructions/*.md        # facilitator, backlog-risk, reconcile, reporting, retrospective, story-writer and turn-* prompts
@@ -257,10 +257,10 @@ The PoC is demo-first in **scope**, not in **code quality**. It is built to the 
 
 | Project | Holds | May reference | Must not reference |
 |---|---|---|---|
-| `Mcm.Scrum.Domain` | Aggregates (`Team`, `Member`, `StandupSession`, `FollowUp`, `Schedule`), value objects (`WorkItemId`, `SprintRef`, `Flag`), domain events, pure rules: `IFlagRule` implementations, `KpiCalculator`, `FloorControl` state machine, approval invariants | nothing (BCL only) | any other project; ASP.NET, Azure, HTTP, JSON, MAF, Voice Live, ADO packages |
-| `Mcm.Scrum.Application` | Commands, queries, handlers, validators, DTOs; ports (`IWorkItemReader`, `IWorkItemWriter`, `ITeamsMessenger`, `IVoiceSessionFactory`, `IBacklogRiskAgent`, `IReconcileAgent`, `IReportingAgent`, `IDraftingAgent`, `IPromptStore`, `IEmailSender`, `IModelCatalog`, repositories, `IClock`); `IScrumTools`; the hand-rolled mediator and pipeline behaviours; `Result`/`Error` | Domain, FluentValidation, `Microsoft.Extensions.*.Abstractions` | Infrastructure, Api, any SDK |
-| `Mcm.Scrum.Infrastructure` | Adapters implementing the ports: `AdoRestClient`, `AdoWorkItemWriter`, the `JsonFile*` repositories over `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`), `VoiceLiveSessionFactory`, Foundry chat agents, `TeamsBotMessenger` and `OutboxTeamsMessenger`, `FilePromptStore`, `SystemClock`; `AddInfrastructure()` | Application, Domain, Azure/MAF/Agents SDK packages | Api |
-| `Mcm.Scrum.Api` | Composition root; minimal API endpoints per feature; bot activity handler; bridge WebSocket endpoint and voice gateway loop; scheduler `BackgroundService`; SSE; `ToHttpResult()` mapping | all of the above | (business logic of any kind) |
+| `Zava.Scrum.Domain` | Aggregates (`Team`, `Member`, `StandupSession`, `FollowUp`, `Schedule`), value objects (`WorkItemId`, `SprintRef`, `Flag`), domain events, pure rules: `IFlagRule` implementations, `KpiCalculator`, `FloorControl` state machine, approval invariants | nothing (BCL only) | any other project; ASP.NET, Azure, HTTP, JSON, MAF, Voice Live, ADO packages |
+| `Zava.Scrum.Application` | Commands, queries, handlers, validators, DTOs; ports (`IWorkItemReader`, `IWorkItemWriter`, `ITeamsMessenger`, `IVoiceSessionFactory`, `IBacklogRiskAgent`, `IReconcileAgent`, `IReportingAgent`, `IDraftingAgent`, `IPromptStore`, `IEmailSender`, `IModelCatalog`, repositories, `IClock`); `IScrumTools`; the hand-rolled mediator and pipeline behaviours; `Result`/`Error` | Domain, FluentValidation, `Microsoft.Extensions.*.Abstractions` | Infrastructure, Api, any SDK |
+| `Zava.Scrum.Infrastructure` | Adapters implementing the ports: `AdoRestClient`, `AdoWorkItemWriter`, the `JsonFile*` repositories over `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`), `VoiceLiveSessionFactory`, Foundry chat agents, `TeamsBotMessenger` and `OutboxTeamsMessenger`, `FilePromptStore`, `SystemClock`; `AddInfrastructure()` | Application, Domain, Azure/MAF/Agents SDK packages | Api |
+| `Zava.Scrum.Api` | Composition root; minimal API endpoints per feature; bot activity handler; bridge WebSocket endpoint and voice gateway loop; scheduler `BackgroundService`; SSE; `ToHttpResult()` mapping | all of the above | (business logic of any kind) |
 
 Presentation adapters (endpoints, bot handler, WebSocket loop, scheduler, Voice Live tool dispatch) translate input into a command or query, call `ISender`, and translate the `Result` back. The audio hot path (forwarding PCM frames between the bridge and Voice Live) is the one deliberate exception: it bypasses the mediator for latency, but every *decision* it needs (floor control, tool calls) goes through Domain or a query.
 
@@ -284,7 +284,7 @@ Result<T>  ──►  adapter maps to HTTP / card update / tool result / spoken 
 
 #### 6.1.3 Hand-rolled mediator (contract)
 
-The mediator is a small piece of our own code in `Mcm.Scrum.Application/Abstractions/Messaging`. No third-party mediator package is used. Target size: under ~200 lines plus tests.
+The mediator is a small piece of our own code in `Zava.Scrum.Application/Abstractions/Messaging`. No third-party mediator package is used. Target size: under ~200 lines plus tests.
 
 ```csharp
 /// <summary>Marker for a request that changes state. Returns a <see cref="Result"/>.</summary>
@@ -350,18 +350,18 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 | Standard | How it shows up in this repo | Checked by |
 |---|---|---|
-| Clean Architecture | Four projects, dependency rule in 6.1.1 | `Mcm.Scrum.ArchitectureTests` (NetArchTest.Rules) |
+| Clean Architecture | Four projects, dependency rule in 6.1.1 | `Zava.Scrum.ArchitectureTests` (NetArchTest.Rules) |
 | CQRS + mediator | One folder per use case; commands return `Result`, queries return DTOs; behaviours for logging, validation and errors | Architecture tests (naming, handler visibility, no handler-to-handler calls), mediator unit tests |
 | SOLID | Role-specific ports, `IFlagRule` strategies, behaviour methods on aggregates, constructor injection only | Code review, architecture tests (Domain has no outward references) |
 | DRY | Single sources for config keys, prompts, ADO field names, card templates, error codes, bridge message types; extract on the third repeat | Code review. There is no bridge-protocol sync test (the protocol is mirrored in `protocol.ts` and `VoiceGateway.cs`) |
-| Well documented | XML docs on all Domain and Application members and public Infrastructure/Api types; TSDoc on exported TypeScript; ADRs for deviations | `GenerateDocumentationFile` + `TreatWarningsAsErrors` (CS1591). TSDoc is by convention: ESLint runs `typescript-eslint` strict without `jsdoc` rules. Each project has a short `README.md` except `Mcm.Scrum.AppHost` and `src/tests` |
+| Well documented | XML docs on all Domain and Application members and public Infrastructure/Api types; TSDoc on exported TypeScript; ADRs for deviations | `GenerateDocumentationFile` + `TreatWarningsAsErrors` (CS1591). TSDoc is by convention: ESLint runs `typescript-eslint` strict without `jsdoc` rules. Each project has a short `README.md` except `Zava.Scrum.AppHost` and `src/tests` |
 | Well organised | Folder = namespace, one type per file, feature folders, central package management, `.editorconfig` | `dotnet format --verify-no-changes`, ESLint + Prettier |
 | Well commented | Comments explain why, cite SPEC section or requirement id; `// PROD:`, `// VERIFY:`, `// DEMO:` markers; no bare TODOs or commented-out code | ESLint `no-warning-comments` bans `TODO` and `FIXME` in TypeScript; C# relies on code review |
 
 
 #### 6.1.6 Domain rules added during the build
 
-Pure Domain rules added during the build (all unit tested in `Mcm.Scrum.Domain.Tests` except where noted); the matching use cases are in 6.1.4 (see ADRs 0004 to 0008):
+Pure Domain rules added during the build (all unit tested in `Zava.Scrum.Domain.Tests` except where noted); the matching use cases are in 6.1.4 (see ADRs 0004 to 0008):
 
 - `ItemMentions` (links speech to work items), `UtteranceClassifier` and `ItemQuestionDetector` (what an utterance is trying to do), `CoverageNotes` and `ReportingPriorities` (what to say about uncovered items), `FallbackQuestions`.
 - Deferral, circle-back and retraction in `StandupSession`; `DeferCurrent`, `DeferSpeaker` and `Deferring` in `FloorControl`.
@@ -371,7 +371,7 @@ Pure Domain rules added during the build (all unit tested in `Mcm.Scrum.Domain.T
 
 ## 7. Components
 
-### 7.1 `Mcm.Scrum.Api`
+### 7.1 `Zava.Scrum.Api`
 - **Use cases** are commands and queries dispatched through the hand-rolled mediator (section 6.1). The former workflow names map to them: `PrepareStandupCommand`, `StartStandupCommand`/`EndStandupCommand`, `SendFollowUpsCommand`, `ApplyApprovedChangesCommand`, `GetSprintReportQuery`, `GetMonthlyReportQuery`. The handler stays the unit of work. `// PROD: multi-step agent reasoning may use a Microsoft Agent Framework workflow behind a port.`
 - The bullets below are **Api-layer adapters**: they map input to a command or query and contain no business logic.
 - **Voice gateway:** WebSocket `/ws/bridge/{sessionId}` (protocol in section 8), one Voice Live session per standup, floor control (section 11.3), tool dispatch to in-process tools.
@@ -405,7 +405,7 @@ members:
       - say: "I'm blocked on bug 4602. I need database access from the platform team."
 ```
 
-- **`acs`**: Playwright launches headless Chromium on an internal page using the ACS Calling Web SDK. The page joins the Teams meeting by `joinUrl` as "MCM Scrum Agent", captures incoming meeting audio and dominant-speaker events, and plays agent audio as its microphone stream (**VERIFY** the raw-audio APIs in the sample). It reports participants and lobby state. **As built:** the page also (a) shares a canvas-drawn standup board as the agent's screen (`call.startScreenSharing`, supervised and retried, status shown as Bridge events), (b) reports each participant's live speaking state so the gateway can attribute mixed audio to a member, and (c) matches Teams names to the roster by any word of the name ("System Administrator" matches "Admin"). Chromium is launched with `--use-fake-device-for-media-stream`, without which the ACS SDK ignores custom audio when no microphone exists.
+- **`acs`**: Playwright launches headless Chromium on an internal page using the ACS Calling Web SDK. The page joins the Teams meeting by `joinUrl` as "Zava Scrum Agent", captures incoming meeting audio and dominant-speaker events, and plays agent audio as its microphone stream (**VERIFY** the raw-audio APIs in the sample). It reports participants and lobby state. **As built:** the page also (a) shares a canvas-drawn standup board as the agent's screen (`call.startScreenSharing`, supervised and retried, status shown as Bridge events), (b) reports each participant's live speaking state so the gateway can attribute mixed audio to a member, and (c) matches Teams names to the roster by any word of the name ("System Administrator" matches "Admin"). Chromium is launched with `--use-fake-device-for-media-stream`, without which the ACS SDK ignores custom audio when no microphone exists.
 
 ### 7.4 `admin-portal`
 Section 13.
@@ -510,7 +510,7 @@ WHERE [System.TeamProject] = @project
 
 **As built:** the daily standup's `FollowUpPlanner` proposes **comments only**. `SetIteration` and `Assign` are proposed by the sprint plan (section 10.6) and `CreateWorkItem` by the retrospective pack (section 10.5). State and Tag changes can be proposed only through `POST /api/followups/propose`, which the portal does not call.
 
-Each write adds the attribution "Approved by {name} in {Teams|the portal}, proposed by MCM Scrum Agent from the {date} {ceremony}." (`ApprovedChange.Attribution`). The channel is the card action (Teams) or the portal endpoint (`ApproveFollowUpCommand.Channel`); the ceremony is the follow-up's `Ceremony` ("standup" for the daily scrum, so the standup text is unchanged). A write needs an approved follow-up: `FollowUp.GetApprovedChanges` returns an error unless the status is `Approved`, `AdoWorkItemWriter` accepts only an `ApprovedChange`, and `ApprovalGuardKindsTests` and `ApplyApprovedChangesTests` cover the refusal for every kind. This check lives in code, not in a prompt.
+Each write adds the attribution "Approved by {name} in {Teams|the portal}, proposed by Zava Scrum Agent from the {date} {ceremony}." (`ApprovedChange.Attribution`). The channel is the card action (Teams) or the portal endpoint (`ApproveFollowUpCommand.Channel`); the ceremony is the follow-up's `Ceremony` ("standup" for the daily scrum, so the standup text is unchanged). A write needs an approved follow-up: `FollowUp.GetApprovedChanges` returns an error unless the status is `Approved`, `AdoWorkItemWriter` accepts only an `ApprovedChange`, and `ApprovalGuardKindsTests` and `ApplyApprovedChangesTests` cover the refusal for every kind. This check lives in code, not in a prompt.
 
 ### 9.5 KPI history
 `get_kpis(teamId, sprints)` reads iteration history from Azure DevOps Analytics OData (`WorkItemSnapshot` / `Iterations`) when at least three past sprints exist. Otherwise it reads `demo/kpi-history.json`, and the portal labels the data "illustrative".
@@ -525,7 +525,7 @@ The prompts live in `agents/instructions/*.md` and are rendered with team values
 Tools: those in section 7.2 that a facilitator needs. Starter `facilitator.md`:
 
 ```
-You are the MCM Scrum Agent, a friendly, concise junior Scrum Master running the daily standup for team {teamName}.
+You are the Zava Scrum Agent, a friendly, concise junior Scrum Master running the daily standup for team {teamName}.
 A human Scrum Master ({humanSmName}) is present. If they speak to you or redirect, defer to them immediately.
 Flow:
 1. Open in one or two sentences: greet the team and state the sprint goal "{sprintGoal}" and days left ({daysLeft}).
@@ -695,13 +695,13 @@ Any state -> Paused (portal mute)
 
 Implement it as a pure, table-tested class with no I/O.
 
-![Standup flow as built](MCM-Scrum-Agent-PoC-Standup-Flow-As-Built.png)
+![Standup flow as built](Zava-Scrum-Agent-PoC-Standup-Flow-As-Built.png)
 
 ---
 
 ## 12. Teams and Microsoft 365 Copilot
 
-- One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/mcm-scrum-agent.zip` for the demo users.
+- One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/zava-scrum-agent.zip` for the demo users.
 - Proactive messages use conversation references captured when a user messages the bot or it is added (`ScrumAgent` stores them). The portal does not show who has the app installed. `TeamsBotMessenger` sends every card to **every stored conversation** and updates the card in place (ADR 0005). `// PROD: route to the meeting chat, the team channel and the Scrum Master by Entra object id.`
 
 **Cards** (`CardKind`: `PreBrief`, `FollowUp`, `Absent`, `Escalation`, `FollowUpResult`, `Recap`, `Unblock`, `PlanningPack`, `RetroActions`, `ReviewPack`):
@@ -738,11 +738,11 @@ Implement it as a pure, table-tested class with no I/O.
 | Reports | Sprint summary and monthly report; KPI charts with the "illustrative" label when fixture-backed |
 | Overview, Planning, Retrospective, Story Writer, Models and email | **As built (M8):** the four-step flow overview; load, carry-over, readiness gaps and suggested owners; start-stop-continue draft; user story draft from a parked topic; realtime model cost and latency comparison and the email outbox |
 
-**As built:** the portal has 13 pages in a sidebar layout (light and dark), is protected by Container Apps Easy Auth, and Prompts edits are stored in Cosmos so they survive restarts. Sign-in uses MSAL against MCM's or the demo tenant; any signed-in user may edit in the PoC.
+**As built:** the portal has 13 pages in a sidebar layout (light and dark), is protected by Container Apps Easy Auth, and Prompts edits are stored in Cosmos so they survive restarts. Sign-in uses MSAL against Zava's or the demo tenant; any signed-in user may edit in the PoC.
 
 ---
 
-## 14. API (Mcm.Scrum.Api)
+## 14. API (Zava.Scrum.Api)
 
 | Method | Route | Endpoint file | Sends |
 |---|---|---|---|
@@ -801,7 +801,7 @@ Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends on
 
 ## 15. Data model
 
-**As built:** one Cosmos database `mcmscrum` with one container `collections` (partition key `/id`). Each named collection is one JSON document behind `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`; ADR 0006). `// PROD: one item per record, partitioned by team.`
+**As built:** one Cosmos database `zavascrum` with one container `collections` (partition key `/id`). Each named collection is one JSON document behind `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`; ADR 0006). `// PROD: one item per record, partitioned by team.`
 
 | Collection document | Contents |
 |---|---|
@@ -846,7 +846,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 **Status as built:** M0 to M7 complete and deployed. M8 complete except the Work IQ listener. The M4 Teams join was run in real meetings (audio both ways, lobby, roster matching, speaking events). The **shared board** (screen share) is built and supervised, but its behaviour in a live meeting is still being validated (see `AS-BUILT.md` 3.2); no log or test in the repository shows it verified. Known gaps: Teams app installation from the admin center failed with a tenant/admin-portal error (per-user sideloading is the workaround); voice latency p50 is about 2 to 3 seconds against the 1 second target.
 
 **M0 Skeleton and local run.**
-- Build: the solution and Aspire AppHost with the four Clean Architecture projects and test projects (section 6); `Directory.Build.props`, `Directory.Packages.props` and `.editorconfig`; the hand-rolled mediator with `LoggingBehavior`, `ValidationBehavior` and `ExceptionMappingBehavior`, `Result`/`Error` and `ToHttpResult()`, with unit tests; architecture tests for the dependency rule; `Mcm.Scrum.Api` with health checks and the JSON-file repository; the bridge serving an empty `/room` page; the portal shell with sign-in; the configuration layout from section 17.
+- Build: the solution and Aspire AppHost with the four Clean Architecture projects and test projects (section 6); `Directory.Build.props`, `Directory.Packages.props` and `.editorconfig`; the hand-rolled mediator with `LoggingBehavior`, `ValidationBehavior` and `ExceptionMappingBehavior`, `Result`/`Error` and `ToHttpResult()`, with unit tests; architecture tests for the dependency rule; `Zava.Scrum.Api` with health checks and the JSON-file repository; the bridge serving an empty `/room` page; the portal shell with sign-in; the configuration layout from section 17.
 - Demo check: one command starts all three locally and the portal shows "API healthy" (served through a `GetHealthQuery` to prove the pipeline end to end); `dotnet build` has zero warnings and `dotnet test` is green, including architecture tests.
 
 **M1 Demo data and pre-brief.**
@@ -878,7 +878,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M4 Real Teams meeting via ACS.**
 - Build: ACS interop in the bridge (join by URL, lobby states, two-way audio, participants and dominant speaker); speaker attribution; error handling with a clear portal message.
-- Demo check: storyboard scene 8 in a Teams meeting in the demo tenant (then MCM's), with the agent admitted from the lobby or by policy.
+- Demo check: storyboard scene 8 in a Teams meeting in the demo tenant (then Zava's), with the agent admitted from the lobby or by policy.
 
 **M5 Admin portal and scheduling.**
 - Build: the Schedule, Prompts and Live console pages; scheduler auto-prepare at T-10 and auto-start at T-1; take over and end controls; `/api/demo/reset`.
@@ -910,7 +910,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M9d status as built (sprint calendar).** Built: `SprintCalendarPlanner`, `IcsFormatter`, the `SprintCalendar` aggregate, `GetSprintCalendarQuery`, `ListSprintCalendarsQuery`, `ProposeSprintCalendarCommand`, `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand`, `ICalendarWriter` with `GraphCalendarWriter`, the card and its Teams actions, join URLs on the schedule, `GET /api/calendar/{iteration}.ics`, and the Schedule page card. Checked live against the demo tenant: approving created 12 Teams meetings (one per planned meeting) in `admin@`'s calendar, each with a Teams join URL and the three roster members invited, at the right UTC time for 09:30 Pacific; approving again was refused (`calendar.already_decided`); the join URLs were stored on the schedule; and with the schedule armed the scheduler prepared the session, started it with the calendar's join URL (no pasted link), and the agent reached the real meeting and waited in the Teams lobby. **Not checked:** the invites' appearance in each recipient's Outlook UI, the Teams card actions, and an Exchange application access policy (creating it needs an interactive Exchange Online sign-in, so the app is currently not scoped to one mailbox). Demo check: `docs/DEMO.md`, "Sprint calendar (M9d)".
 
-**M9b status as built (retrospective by voice).** Built: `CeremonyKind` handled by the gateway (`hello.kind`); `ICeremonyAgenda` with `StandupAgenda` (no behaviour change) and `RetroAgenda`; `FloorState.Announcing`; `RetroItemClassifier`, `RetroInterpreter`, `ThemeGrouper`, `RetroSummary`, `RetroOutcomePlanner`; `PrepareRetrospectiveCommand`, `ReconcileRetroUpdateQuery`, `NameRetroThemesCommand`, `CreateRetroOutcomeCommand`, `GetRetroBoardQuery`; the retro turn prompts; the retro board; `demo/cast/payments-retro.yaml`; the Retrospective page (**Prepare retro**, **Start in Simulated Room**, **Start in Teams**) and the kind column on Sessions. Checked against the live sandbox: `npm run e2e:retro` passes in about 5 minutes, and approving the follow-up created three Tasks in Sprint 43 tagged `retro-action` with owner tags and the "Approved by ... in the portal, proposed by MCM Scrum Agent from the ... retrospective." first comment. **Not checked live:** a retrospective in a Teams meeting, the Teams card actions, and **Reject** against the sandbox (unit tested: it writes nothing). Demo check: `docs/DEMO.md`, "Retrospective by voice (M9b)".
+**M9b status as built (retrospective by voice).** Built: `CeremonyKind` handled by the gateway (`hello.kind`); `ICeremonyAgenda` with `StandupAgenda` (no behaviour change) and `RetroAgenda`; `FloorState.Announcing`; `RetroItemClassifier`, `RetroInterpreter`, `ThemeGrouper`, `RetroSummary`, `RetroOutcomePlanner`; `PrepareRetrospectiveCommand`, `ReconcileRetroUpdateQuery`, `NameRetroThemesCommand`, `CreateRetroOutcomeCommand`, `GetRetroBoardQuery`; the retro turn prompts; the retro board; `demo/cast/payments-retro.yaml`; the Retrospective page (**Prepare retro**, **Start in Simulated Room**, **Start in Teams**) and the kind column on Sessions. Checked against the live sandbox: `npm run e2e:retro` passes in about 5 minutes, and approving the follow-up created three Tasks in Sprint 43 tagged `retro-action` with owner tags and the "Approved by ... in the portal, proposed by Zava Scrum Agent from the ... retrospective." first comment. **Not checked live:** a retrospective in a Teams meeting, the Teams card actions, and **Reject** against the sandbox (unit tested: it writes nothing). Demo check: `docs/DEMO.md`, "Retrospective by voice (M9b)".
 
 **M9 status as built (ceremony kinds, ceremony packs and carry-over).** Built: `CeremonyKind`; `SetIteration`, `Assign` and `CreateWorkItem` changes with the generalised attribution; planning, review and retrospective packs with cards; R1 Graph email (unverified against a live mailbox); R2 unblock loop; R3 commitment carry-over; R4 `AtRiskRule` (one at-risk task seeded: "Prepare reconciliation report for audit"); R5 recap routing. **Not built:** per-item checkboxes on pack cards (the card approves the whole follow-up); a portal page for packs (use the API route); a live-meeting run of the new voice turns (the unblock and carry-over turns are unit tested at the use-case level, not exercised against a live Voice Live session). Demo check: `docs/DEMO.md`, "M9 features".
 
@@ -922,7 +922,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 Every key the code binds or reads (checked against the options classes, `IConfiguration` reads, `src/meeting-bridge/src/config.ts`, `infra/main.bicep` and `appsettings.json`). **Secrets** are marked and must never be committed; locally they go in .NET user secrets (API) or the environment (bridge), in Azure in Container Apps secrets. Environment variables use `__` for `:`.
 
-**API (`Mcm.Scrum.Api`)**
+**API (`Zava.Scrum.Api`)**
 
 | Key | Meaning | Default or note |
 |---|---|---|
@@ -935,7 +935,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Team:Id`, `Team:Name`, `Team:TimeZone`, `Team:Project`, `Team:AdoTeam`, `Team:AreaPath`, `Team:SprintGoal` | Default team seeded into the store | `team-payments`, `America/Los_Angeles` |
 | `Demo:HonorAgeTags`, `Demo:HonorOwnerTags`, `Demo:SeedFile`, `Demo:KpiFixture` | Demo behaviour and fixtures | `true`, `true`, `demo/seed-ado.json`, `demo/kpi-history.json` |
 | `Store:Mode` (`Json` or `Cosmos`), `Store:DataPath` | Persistence | `Json`, `data` |
-| `Cosmos:Endpoint`, `Cosmos:Database`, `Cosmos:Container` | Cosmos (Entra only, no keys) | `mcmscrum`, `collections` |
+| `Cosmos:Endpoint`, `Cosmos:Database`, `Cosmos:Container` | Cosmos (Entra only, no keys) | `zavascrum`, `collections` |
 | `Bridge:RoomBaseUrl`, `Bridge:BaseUrl`, `Bridge:ApiPublicUrl`, `Bridge:ApiKey` (**secret**) | Room URL, bridge control URL, public API URL, shared secret for API-to-bridge calls | `RoomBaseUrl` defaults to `http://localhost:5090` |
 | `Bot:AppId`, `Bot:TenantId`, `Bot:TunnelHostSuffix` | Teams bot (an empty `Bot:AppId` turns the bot off); dev-tunnel guard | `.devtunnels.ms` locally, empty in Azure |
 | `Connections:ServiceConnection:Settings:ClientId`, `:ClientSecret` (**secret**), `:TenantId`, `:AuthorityEndpoint`, `:AuthType`, `:Scopes`; `ConnectionsMap` | Microsoft 365 Agents SDK connection | `AuthType` `ClientSecret` |
@@ -965,7 +965,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `CHROMIUM_PATH`, `PLAYWRIGHT_BROWSERS_PATH` | Browser location in the container (locally the bridge uses Microsoft Edge) |
 | `E2E_API` | End-to-end test only: API base URL |
 
-**Removed from the earlier list because the code does not read them:** `Bridge__DisplayName` (the display name is `MCM Scrum Agent` unless the call page URL has `name=`), `Bot__AuthType`, `Features__WorkIqTranscripts`, `Acs__Endpoint` on the API, `Demo__CastFile` on the API. `API_URL` is set by Aspire and Bicep but the bridge does not read it.
+**Removed from the earlier list because the code does not read them:** `Bridge__DisplayName` (the display name is `Zava Scrum Agent` unless the call page URL has `name=`), `Bot__AuthType`, `Features__WorkIqTranscripts`, `Acs__Endpoint` on the API, `Demo__CastFile` on the API. `API_URL` is set by Aspire and Bicep but the bridge does not read it.
 
 Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secrets (local) or Container Apps secrets (Azure), never in the repo.
 
@@ -991,7 +991,7 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 - Domain unit tests for the flag rules, KPI maths, the floor-control state machine (table-driven) and the follow-up approval invariants.
 - Application handler tests with hand-written fakes for the ports, including the guard on Azure DevOps writes in `ApplyApprovedChangesCommandHandler`.
 - Mediator tests: dispatch, behaviour order, validation short-circuit, exception mapping, notification fan-out, missing or duplicate handler detection.
-- Architecture tests (`Mcm.Scrum.ArchitectureTests`): Domain references nothing; Application does not reference Infrastructure or Api; Infrastructure does not reference Api; handlers are `internal sealed` and end in `Handler`; commands end in `Command` and queries in `Query`; no handler depends on `ISender` (no handler-to-handler calls).
+- Architecture tests (`Zava.Scrum.ArchitectureTests`): Domain references nothing; Application does not reference Infrastructure or Api; Infrastructure does not reference Api; handlers are `internal sealed` and end in `Handler`; commands end in `Command` and queries in `Query`; no handler depends on `ISender` (no handler-to-handler calls).
 - **As built:** a repository contract exists for `ISessionRepository` only (`SessionRepositoryContract`), and it runs against the JSON-file implementation only. There is no Cosmos run and no contract for the other repositories. This is a known gap.
 - One Playwright test that runs a scripted standup in the Simulated Room using the demo cast, and asserts that the session completes with events, an absent mark and follow-ups created.
 - **As built** (see `AS-BUILT.md` 9 for the current counts): Added: utterance classification, item linking, deferral and circle-back, retraction, reporting priorities, no-response follow-ups. The Playwright Simulated Room test passes (6 checks) and a scripted "messy standup" exercised every reactive path against the real gateway. The Cosmos repository contract test is not yet automated.
@@ -999,7 +999,7 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 
 ---
 
-## 20. What we need from MCM (and when)
+## 20. What we need from Zava (and when)
 
 | Needed | By | Fallback if not available |
 |---|---|---|
@@ -1009,7 +1009,7 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 | Teams app sideloading for pilot users; a channel for recaps | M3 | Demo tenant |
 | Teams meeting policy for ACS joiners: lobby admit or bypass, and the bot-detection setting | M4 | Human Scrum Master admits the agent from the lobby; or run in the demo tenant |
 | Azure subscription and region | M7 | Microsoft-hosted demo subscription |
-| Consent and notice wording for transcription | Before any MCM-live demo | Demo with Microsoft participants only |
+| Consent and notice wording for transcription | Before any Zava-live demo | Demo with Microsoft participants only |
 
 ---
 

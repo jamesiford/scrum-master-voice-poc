@@ -1,7 +1,7 @@
 # 0010. Ceremony kinds, ceremony packs and carry-over (M9)
 
 ## Context
-The PoC ran one ceremony, the daily scrum. MCM also wants planning, review and retrospective support, and the standup should remember what happened yesterday (commitments, blockers and who can help) instead of starting cold. The rules that make the demo safe must not move: no Azure DevOps write without an approved follow-up (F7), numbers come from code, ids come from the sprint.
+The PoC ran one ceremony, the daily scrum. Zava also wants planning, review and retrospective support, and the standup should remember what happened yesterday (commitments, blockers and who can help) instead of starting cold. The rules that make the demo safe must not move: no Azure DevOps write without an approved follow-up (F7), numbers come from code, ids come from the sprint.
 
 ## Decision
 - **Reuse, do not fork.** A ceremony pack is a `FollowUp` that belongs to the Scrum Master (`ForScrumMaster`) and to a `CeremonyKind`. It goes through the same repository, card renderer, outbox, approval commands, `FollowUp.GetApprovedChanges` guard and `IWorkItemWriter` as a standup follow-up. No new deployable, no new writer.
