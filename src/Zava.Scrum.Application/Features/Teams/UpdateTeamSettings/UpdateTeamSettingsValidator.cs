@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Teams.UpdateTeamSettings;
+namespace Zava.Scrum.Application.Features.Teams.UpdateTeamSettings;
 
 /// <summary>Validates <see cref="UpdateTeamSettingsCommand"/>.</summary>
 internal sealed class UpdateTeamSettingsValidator : AbstractValidator<UpdateTeamSettingsCommand>

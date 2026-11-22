@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Schedules.RunScheduleTick;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Schedules.RunScheduleTick;
 
-namespace Mcm.Scrum.Api.Scheduling;
+namespace Zava.Scrum.Api.Scheduling;
 
 /// <summary>Sends <see cref="RunScheduleTickCommand"/> every 15 seconds. All rules are in the command and the Domain evaluator.</summary>
 public sealed class ScheduleWorker(IServiceScopeFactory scopes, ILogger<ScheduleWorker> logger) : BackgroundService

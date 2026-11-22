@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Schedules;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores schedules in a JSON file.</summary>
 /// <remarks>PROD: Cosmos behind the same port.</remarks>

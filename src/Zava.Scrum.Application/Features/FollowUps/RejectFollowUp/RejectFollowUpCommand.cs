@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
+namespace Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
 
 /// <summary>Rejects a follow-up. Nothing is written to Azure DevOps.</summary>
 /// <param name="FollowUpId">The follow-up.</param>

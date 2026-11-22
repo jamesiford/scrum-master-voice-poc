@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 using Microsoft.Extensions.Logging;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>
 /// Backlog and Risk agent: phrases questions and a summary for a pre-brief built in code (SPEC 10.2).

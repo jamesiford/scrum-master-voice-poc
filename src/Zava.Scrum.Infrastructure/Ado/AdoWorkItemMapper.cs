@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Maps Azure DevOps work item JSON to <see cref="WorkItem"/>. Pure, so it is unit tested without HTTP.</summary>
 internal static class AdoWorkItemMapper

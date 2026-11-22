@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Kpis;
+namespace Zava.Scrum.Domain.Kpis;
 
 /// <summary>Computes <see cref="Burndown"/> from a sprint snapshot.</summary>
 public static class BurndownCalculator

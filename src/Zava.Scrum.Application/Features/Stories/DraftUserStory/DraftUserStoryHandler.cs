@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Stories.DraftUserStory;
+namespace Zava.Scrum.Application.Features.Stories.DraftUserStory;
 
 /// <summary>Asks the Story Writer prompt for a draft and falls back to a plain template when no model is available.</summary>
 internal sealed class DraftUserStoryHandler(IDraftingAgent agent) : IRequestHandler<DraftUserStoryQuery, Result<StoryDraft>>

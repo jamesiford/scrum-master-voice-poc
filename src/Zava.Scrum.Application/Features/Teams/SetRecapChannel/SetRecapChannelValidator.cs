@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Teams.SetRecapChannel;
+namespace Zava.Scrum.Application.Features.Teams.SetRecapChannel;
 
 /// <summary>Validates <see cref="SetRecapChannelCommand"/>.</summary>
 internal sealed class SetRecapChannelValidator : AbstractValidator<SetRecapChannelCommand>

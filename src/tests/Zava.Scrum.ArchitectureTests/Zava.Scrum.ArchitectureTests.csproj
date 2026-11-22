@@ -8,10 +8,10 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NetArchTest.Rules" />
-    <ProjectReference Include="..\..\Mcm.Scrum.Domain\Mcm.Scrum.Domain.csproj" />
-    <ProjectReference Include="..\..\Mcm.Scrum.Application\Mcm.Scrum.Application.csproj" />
-    <ProjectReference Include="..\..\Mcm.Scrum.Infrastructure\Mcm.Scrum.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Mcm.Scrum.Api\Mcm.Scrum.Api.csproj" />
+    <ProjectReference Include="..\..\Zava.Scrum.Domain\Zava.Scrum.Domain.csproj" />
+    <ProjectReference Include="..\..\Zava.Scrum.Application\Zava.Scrum.Application.csproj" />
+    <ProjectReference Include="..\..\Zava.Scrum.Infrastructure\Zava.Scrum.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Zava.Scrum.Api\Zava.Scrum.Api.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

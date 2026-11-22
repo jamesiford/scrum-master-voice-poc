@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Read-only Backlog and Risk agent (SPEC 10.2): phrases questions and a summary for a pre-brief built in code.</summary>
 public interface IBacklogRiskAgent

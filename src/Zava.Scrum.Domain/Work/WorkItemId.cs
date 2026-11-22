@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Work;
+namespace Zava.Scrum.Domain.Work;
 
 /// <summary>Azure DevOps work item id.</summary>
 /// <param name="Value">The numeric id.</param>

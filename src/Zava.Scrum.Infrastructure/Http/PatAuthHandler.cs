@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Mcm.Scrum.Infrastructure.Http;
+namespace Zava.Scrum.Infrastructure.Http;
 
 /// <summary>Adds Basic auth for an Azure DevOps personal access token (fallback when Entra is not possible, SPEC 9.1).</summary>
 /// <param name="pat">The token, from user secrets or a Container Apps secret.</param>

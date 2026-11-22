@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Publishes the events an aggregate raised, after it was saved.</summary>
 public static class AggregateRootExtensions

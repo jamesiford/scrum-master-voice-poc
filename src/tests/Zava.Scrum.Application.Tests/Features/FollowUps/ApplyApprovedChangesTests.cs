@@ -1,14 +1,14 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
-using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
+using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.FollowUps;
+namespace Zava.Scrum.Application.Tests.Features.FollowUps;
 
 public sealed class ApplyApprovedChangesTests : IAsyncDisposable
 {

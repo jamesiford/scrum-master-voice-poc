@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>Life-cycle of a proposed sprint calendar.</summary>
 public enum SprintCalendarStatus

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>
 /// Turns what happened in a standup into follow-ups: one per member with something to confirm, one per absent member,

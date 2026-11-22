@@ -1,11 +1,11 @@
 using FluentValidation;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Behaviors;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Behaviors;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Mcm.Scrum.Application.Tests.Messaging;
+namespace Zava.Scrum.Application.Tests.Messaging;
 
 public sealed class MediatorTests
 {

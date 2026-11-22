@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>One member's capacity for the next sprint and what is planned on them.</summary>
 /// <param name="MemberId">Member id.</param>

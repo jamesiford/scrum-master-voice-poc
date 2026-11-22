@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Teams.Notifications;
+namespace Zava.Scrum.Application.Features.Teams.Notifications;
 
 /// <summary>Sends the pre-brief card to the Scrum Master when a standup is prepared.</summary>
 internal sealed class SendPreBriefCardOnStandupPrepared(ISessionRepository sessions, ITeamsMessenger messenger) : INotificationHandler<StandupPrepared>

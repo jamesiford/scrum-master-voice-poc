@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Domain.Tests.Voice;
+namespace Zava.Scrum.Domain.Tests.Voice;
 
 public sealed class ModelCostEstimatorTests
 {

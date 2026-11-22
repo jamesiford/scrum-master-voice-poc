@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores sprint calendars in a JSON collection (<c>sprint-calendars.json</c>).</summary>
 /// <remarks>PROD: one item per calendar in Cosmos, partitioned by team, behind the same port.</remarks>

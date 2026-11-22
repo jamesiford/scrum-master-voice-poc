@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Ceremony pack endpoint (M9). One route, one command.</summary>
 public static class CeremoniesEndpoints

@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests;
+namespace Zava.Scrum.Domain.Tests;
 
 internal static class TestData
 {

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Teams;
+namespace Zava.Scrum.Domain.Teams;
 
 /// <summary>Tunable thresholds for flag rules and escalation.</summary>
 /// <param name="StaleDays">An in-progress item older than this many days in its state is stale.</param>

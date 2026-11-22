@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Features.Standups;
+namespace Zava.Scrum.Application.Features.Standups;
 
 /// <summary>Name helpers for speech.</summary>
 public static class Names

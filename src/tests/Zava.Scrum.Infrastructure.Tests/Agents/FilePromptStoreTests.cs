@@ -1,8 +1,8 @@
-using Mcm.Scrum.Infrastructure.Agents;
-using Mcm.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Infrastructure.Agents;
+using Zava.Scrum.Infrastructure.Persistence;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Tests.Agents;
+namespace Zava.Scrum.Infrastructure.Tests.Agents;
 
 public sealed class FilePromptStoreTests : IDisposable
 {

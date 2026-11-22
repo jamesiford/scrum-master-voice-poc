@@ -3,7 +3,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>
 /// Runs one prompt through a Microsoft Agent Framework chat-client agent on the Foundry project and returns the model's JSON text.

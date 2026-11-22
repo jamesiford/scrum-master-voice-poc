@@ -1,12 +1,12 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.NameRetroThemes;
+namespace Zava.Scrum.Application.Features.Retrospectives.NameRetroThemes;
 
 /// <summary>Stores one <see cref="StandupEventType.Theme"/> event per group, in the same order <see cref="ThemeGrouper"/> returns them.</summary>
 internal sealed class NameRetroThemesHandler(ISessionRepository sessions, IDraftingAgent agent, IClock clock) : IRequestHandler<NameRetroThemesCommand, Result>

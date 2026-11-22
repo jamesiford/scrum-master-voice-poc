@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 
 /// <summary>Compares a member's spoken update with their brief. A query: it records nothing; the caller records returned events.</summary>
 /// <param name="SessionId">Session id.</param>

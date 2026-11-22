@@ -1,11 +1,11 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Teams;
 using Microsoft.Extensions.Options;
-using Mcm.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Infrastructure.Ado;
 
-namespace Mcm.Scrum.Infrastructure.Demo;
+namespace Zava.Scrum.Infrastructure.Demo;
 
 /// <summary>Reads the demo cast from <c>demo/seed-ado.json</c>.</summary>
 /// <remarks>

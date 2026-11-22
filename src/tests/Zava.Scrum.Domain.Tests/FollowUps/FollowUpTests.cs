@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Domain.Tests.FollowUps;
+namespace Zava.Scrum.Domain.Tests.FollowUps;
 
 public sealed class FollowUpTests
 {

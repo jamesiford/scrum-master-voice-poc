@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>Formats meetings as an iCalendar file: the fallback when Microsoft Graph is not configured, so the Scrum Master can import them by hand.</summary>
 public static class IcsFormatter

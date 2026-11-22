@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>Not done and nobody owns it.</summary>
 public sealed class UnassignedRule : IFlagRule

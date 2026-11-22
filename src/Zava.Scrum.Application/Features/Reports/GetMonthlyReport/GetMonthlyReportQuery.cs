@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Reports.GetMonthlyReport;
+namespace Zava.Scrum.Application.Features.Reports.GetMonthlyReport;
 
 /// <summary>Writes the monthly report over three to six sprints.</summary>
 /// <param name="TeamId">Team id.</param>

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ProposeAdoChange;
+namespace Zava.Scrum.Application.Features.FollowUps.ProposeAdoChange;
 
 /// <summary>Validates <see cref="ProposeAdoChangeCommand"/>.</summary>
 internal sealed class ProposeAdoChangeValidator : AbstractValidator<ProposeAdoChangeCommand>

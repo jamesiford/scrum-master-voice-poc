@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.FollowUps;
+namespace Zava.Scrum.Application.Features.FollowUps;
 
 /// <summary>
 /// Builds the Teams card for a follow-up. One place for titles, card kinds and the change rows, so the first card and the

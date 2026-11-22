@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.Notifications;
+namespace Zava.Scrum.Application.Features.Retrospectives.Notifications;
 
 /// <summary>When a retrospective ends, hangs up the bridge's call and creates the follow-up. Both steps are idempotent.</summary>
 internal sealed class FinishOnRetrospectiveEnded(IMeetingBridge bridge, ISender sender) : INotificationHandler<RetrospectiveEnded>

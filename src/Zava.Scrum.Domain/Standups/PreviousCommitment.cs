@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Something a member said they would do in an earlier standup, and that is still open (M9-R3).</summary>
 /// <param name="WorkItemId">The item (always from the current sprint).</param>

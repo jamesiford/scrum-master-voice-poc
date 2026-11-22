@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ProposeAdoChange;
+namespace Zava.Scrum.Application.Features.FollowUps.ProposeAdoChange;
 
 /// <summary>Drops work item ids outside the sprint (rule 2), then stores a pending follow-up.</summary>
 internal sealed class ProposeAdoChangeHandler(ISessionRepository sessions, IFollowUpRepository followUps, IClock clock) : IRequestHandler<ProposeAdoChangeCommand, Result<Guid>>

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Flags;
+namespace Zava.Scrum.Domain.Tests.Flags;
 
 public sealed class FlagRuleTests
 {

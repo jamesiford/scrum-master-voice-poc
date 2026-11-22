@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Calendars;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Calendars;
 
-namespace Mcm.Scrum.Application.Features.Calendars.GetSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.GetSprintCalendar;
 
 /// <summary>Computes the sprint's calendar from its iteration dates and the team's settings, and formats it as an <c>.ics</c> file. A query: nothing is stored or sent.</summary>
 /// <param name="TeamId">The team.</param>

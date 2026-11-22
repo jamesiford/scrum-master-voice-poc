@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>Meeting lengths and whether the team holds a sprint review.</summary>
 /// <param name="PlanningMinutes">Sprint planning length.</param>

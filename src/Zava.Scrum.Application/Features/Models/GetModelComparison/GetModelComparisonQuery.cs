@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Models.GetModelComparison;
+namespace Zava.Scrum.Application.Features.Models.GetModelComparison;
 
 /// <summary>One row of the realtime model comparison.</summary>
 /// <param name="Name">Model name.</param>

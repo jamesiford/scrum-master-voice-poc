@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Everything the bridge needs to join a Teams meeting.</summary>
 /// <param name="SessionId">The standup.</param>

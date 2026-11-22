@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Application.Tests.TestDoubles;
+namespace Zava.Scrum.Application.Tests.TestDoubles;
 
 internal sealed class RecordingTeamsMessenger : ITeamsMessenger
 {
@@ -29,7 +29,7 @@ internal sealed class FakeMeetingBridge : IMeetingBridge
 {
     public List<Guid> Left { get; } = [];
 
-    public Task<Mcm.Scrum.Domain.Common.Result> JoinAsync(MeetingJoinRequest request, CancellationToken ct) => Task.FromResult(Mcm.Scrum.Domain.Common.Result.Success());
+    public Task<Zava.Scrum.Domain.Common.Result> JoinAsync(MeetingJoinRequest request, CancellationToken ct) => Task.FromResult(Zava.Scrum.Domain.Common.Result.Success());
 
     public Task LeaveAsync(Guid sessionId, CancellationToken ct)
     {

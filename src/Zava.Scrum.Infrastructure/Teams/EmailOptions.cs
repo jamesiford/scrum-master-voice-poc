@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Binds <c>Email__*</c>: how follow-up emails are delivered (M9-R1). <c>Features:EmailFollowUps</c> still switches the feature on or off.</summary>
 public sealed class EmailOptions

@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json.Nodes;
 
-namespace Mcm.Scrum.Tools.SeedAdo;
+namespace Zava.Scrum.Tools.SeedAdo;
 
 /// <summary>
 /// Creates the demo team, area, current sprint and work items in a sandbox project. Idempotent: items are found by their

@@ -1,15 +1,15 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
-using Mcm.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.RejectSprintCalendar;
-using Mcm.Scrum.Application.Features.Planning.ApprovePlan;
-using Mcm.Scrum.Application.Features.Planning.PreparePlanning;
-using Mcm.Scrum.Application.Features.Planning.RejectPlan;
-using Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
-using Mcm.Scrum.Application.Features.Teams.SetRecapChannel;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.RejectSprintCalendar;
+using Zava.Scrum.Application.Features.Planning.ApprovePlan;
+using Zava.Scrum.Application.Features.Planning.PreparePlanning;
+using Zava.Scrum.Application.Features.Planning.RejectPlan;
+using Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
+using Zava.Scrum.Application.Features.Teams.SetRecapChannel;
+using Zava.Scrum.Domain.FollowUps;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Builder.App;
 using Microsoft.Agents.Builder.App.AdaptiveCards;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Api.Bot;
+namespace Zava.Scrum.Api.Bot;
 
 /// <summary>
 /// The Teams bot (SPEC 12): a thin presentation adapter. It remembers the conversation so cards can be sent proactively,

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>An item the plan does not select, with why.</summary>
 /// <param name="WorkItemId">Work item id.</param>

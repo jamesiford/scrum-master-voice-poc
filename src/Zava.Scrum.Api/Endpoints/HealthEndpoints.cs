@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Health.GetHealth;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Health.GetHealth;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Health endpoints.</summary>
 public static class HealthEndpoints

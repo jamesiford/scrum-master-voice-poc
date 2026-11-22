@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.ResolveUnblocker;
+namespace Zava.Scrum.Application.Features.Standups.ResolveUnblocker;
 
 /// <summary>Matches the answer to a roster member in code, then stores the match on the blocker event.</summary>
 internal sealed class ResolveUnblockerHandler(ISessionRepository sessions) : IRequestHandler<ResolveUnblockerCommand, Result<string?>>

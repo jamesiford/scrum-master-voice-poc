@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
+namespace Zava.Scrum.Application.Features.Standups.GetTimeRemaining;
 
 /// <summary>Time left.</summary>
 /// <param name="RemainingSeconds">Seconds left, never negative.</param>

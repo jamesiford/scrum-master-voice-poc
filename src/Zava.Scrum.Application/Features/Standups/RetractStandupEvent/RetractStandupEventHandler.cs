@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.RetractStandupEvent;
+namespace Zava.Scrum.Application.Features.Standups.RetractStandupEvent;
 
 /// <summary>Retracts the event on the session.</summary>
 internal sealed class RetractStandupEventHandler(ISessionRepository sessions) : IRequestHandler<RetractStandupEventCommand, Result>

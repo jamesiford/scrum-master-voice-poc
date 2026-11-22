@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Mcm.Scrum.Domain\Mcm.Scrum.Domain.csproj" />
+    <ProjectReference Include="..\Zava.Scrum.Domain\Zava.Scrum.Domain.csproj" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Mcm.Scrum.Application.Tests" />
-    <InternalsVisibleTo Include="Mcm.Scrum.ArchitectureTests" />
+    <InternalsVisibleTo Include="Zava.Scrum.Application.Tests" />
+    <InternalsVisibleTo Include="Zava.Scrum.ArchitectureTests" />
   </ItemGroup>
 </Project>

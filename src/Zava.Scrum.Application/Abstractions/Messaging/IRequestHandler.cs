@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Handles exactly one request type.</summary>
 /// <typeparam name="TRequest">The request type.</typeparam>

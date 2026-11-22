@@ -3,7 +3,7 @@ using Azure.Core;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>
 /// Builds code-defined Responses agents over the Foundry project (Azure.AI.Projects 2.x). No server-side agent resource is created:
@@ -17,7 +17,7 @@ namespace Mcm.Scrum.Infrastructure.Agents;
 public sealed class FoundryAgentFactory : IFoundryAgentFactory
 {
     /// <summary>The OpenTelemetry source name of agent calls; subscribe to it in the telemetry setup.</summary>
-    public const string TelemetrySource = "Mcm.Scrum.Agents";
+    public const string TelemetrySource = "Zava.Scrum.Agents";
 
     private readonly Lazy<AIProjectClient> _client;
     private readonly string _model;

@@ -1,10 +1,10 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Mcm.Scrum.Application.Behaviors;
-using Mcm.Scrum.Infrastructure.Agents;
+using Zava.Scrum.Application.Behaviors;
+using Zava.Scrum.Infrastructure.Agents;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-namespace Mcm.Scrum.Api.Telemetry;
+namespace Zava.Scrum.Api.Telemetry;
 
 /// <summary>Basic OpenTelemetry to Application Insights: requests, outgoing HTTP, use-case spans and Agent Framework model calls.</summary>
 public static class TelemetryExtensions

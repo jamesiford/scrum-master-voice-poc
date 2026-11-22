@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>One theme: a shared keyword and the notes that contain it.</summary>
 /// <param name="Keyword">The shared word (lower case).</param>

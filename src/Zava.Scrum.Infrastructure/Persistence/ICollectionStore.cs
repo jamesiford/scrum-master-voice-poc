@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>
 /// Stores one JSON document per named collection. The JSON-file and Cosmos repositories share it, so every repository behaves

@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Calendars;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="SprintCalendar"/>. Every implementation must pass the shared contract test (SOLID: L).</summary>
 public interface ISprintCalendarRepository

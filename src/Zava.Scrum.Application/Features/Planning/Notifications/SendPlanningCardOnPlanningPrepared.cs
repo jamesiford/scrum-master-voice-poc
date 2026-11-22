@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Planning.Notifications;
+namespace Zava.Scrum.Application.Features.Planning.Notifications;
 
 /// <summary>Sends the planning card to the Scrum Master when a pack is prepared (outbox and Teams).</summary>
 internal sealed class SendPlanningCardOnPlanningPrepared(IPlanningPackRepository packs, ITeamsMessenger messenger) : INotificationHandler<PlanningPrepared>

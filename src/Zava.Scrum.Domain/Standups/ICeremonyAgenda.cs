@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// Decides what the floor does next in a ceremony. The standup and the retrospective use the same floor control and gateway; only the

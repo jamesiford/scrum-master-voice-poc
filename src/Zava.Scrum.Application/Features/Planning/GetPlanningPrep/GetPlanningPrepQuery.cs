@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Planning.GetPlanningPrep;
+namespace Zava.Scrum.Application.Features.Planning.GetPlanningPrep;
 
 /// <summary>Reads the sprint planning prep: load per member, carry-over, readiness gaps and owner suggestions.</summary>
 /// <param name="TeamId">Team id.</param>

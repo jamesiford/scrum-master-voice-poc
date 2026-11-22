@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// The daily standup's order: members in speaking order, skipping anyone deferred, then the deferred members so nobody is forgotten

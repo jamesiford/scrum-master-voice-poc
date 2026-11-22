@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>Error codes for sprint planning.</summary>
 public static class PlanningErrors

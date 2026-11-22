@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Standups.ControlStandup;
+namespace Zava.Scrum.Application.Features.Standups.ControlStandup;
 
 /// <summary>Validates <see cref="ControlStandupCommand"/>.</summary>
 internal sealed class ControlStandupValidator : AbstractValidator<ControlStandupCommand>

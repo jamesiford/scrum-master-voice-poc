@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Sends a command or query through the pipeline to its single handler.</summary>
 public interface ISender

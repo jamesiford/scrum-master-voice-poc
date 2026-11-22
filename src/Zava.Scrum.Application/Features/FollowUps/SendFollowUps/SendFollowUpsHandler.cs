@@ -1,13 +1,13 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.SendFollowUps;
+namespace Zava.Scrum.Application.Features.FollowUps.SendFollowUps;
 
 /// <summary>
 /// Plans follow-ups with the pure <see cref="FollowUpPlanner"/> and sends one card each. Escalation is a follow-up kind

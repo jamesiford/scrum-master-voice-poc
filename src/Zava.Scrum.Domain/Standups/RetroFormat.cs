@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>The retrospective format (<c>Retro:Format</c>).</summary>
 public enum RetroFormat

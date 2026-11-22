@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Teams.Notifications;
+namespace Zava.Scrum.Application.Features.Teams.Notifications;
 
 /// <summary>
 /// Posts the recap card when a standup ends. Facts come from recorded events, not from a model (rule 3). It is routed to the team's

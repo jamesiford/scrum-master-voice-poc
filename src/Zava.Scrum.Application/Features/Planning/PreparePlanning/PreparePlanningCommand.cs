@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Planning.PreparePlanning;
+namespace Zava.Scrum.Application.Features.Planning.PreparePlanning;
 
 /// <summary>
 /// Prepares the sprint planning pack: capacity from the velocity history, carry-over first, then ready backlog items in order, with

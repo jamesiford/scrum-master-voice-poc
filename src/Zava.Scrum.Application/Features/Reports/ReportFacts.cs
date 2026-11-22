@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Reports;
+namespace Zava.Scrum.Application.Features.Reports;
 
 /// <summary>Builds the facts JSON given to the Reporting agent. Everything in it was computed in code (rule 3).</summary>
 public static class ReportFacts

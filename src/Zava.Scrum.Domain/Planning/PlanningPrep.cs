@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>An open item that is not ready to be planned or committed, with the reasons (Definition of Ready).</summary>
 /// <param name="WorkItemId">The item.</param>

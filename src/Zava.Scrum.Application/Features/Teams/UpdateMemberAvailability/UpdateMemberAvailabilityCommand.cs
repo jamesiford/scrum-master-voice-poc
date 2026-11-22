@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
+namespace Zava.Scrum.Application.Features.Teams.UpdateMemberAvailability;
 
 /// <summary>Sets how much of a normal sprint a member is available for; sprint planning scales their capacity by it.</summary>
 /// <param name="TeamId">Team id.</param>

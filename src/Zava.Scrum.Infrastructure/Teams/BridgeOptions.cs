@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Binds <c>Bridge__*</c> configuration (SPEC 17).</summary>
 public sealed class BridgeOptions

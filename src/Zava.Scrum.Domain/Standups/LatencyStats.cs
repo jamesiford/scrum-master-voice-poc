@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Latency maths for the demo metric: end of speech to first agent audio.</summary>
 public static class LatencyStats

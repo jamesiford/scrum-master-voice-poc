@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
+namespace Zava.Scrum.Application.Features.Standups.GetNextSpeaker;
 
 /// <summary>Reads the next speaker from the session.</summary>
 internal sealed class GetNextSpeakerHandler(ISessionRepository sessions) : IRequestHandler<GetNextSpeakerQuery, Result<NextSpeakerDto>>

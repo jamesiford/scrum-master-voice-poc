@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace Mcm.Scrum.Application.Behaviors;
+namespace Zava.Scrum.Application.Behaviors;
 
 /// <summary>Outermost behaviour: one structured log line per request with latency in ms (demo metric).</summary>
 /// <typeparam name="TRequest">The request type.</typeparam>

@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
+namespace Zava.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
 
 /// <summary>Builds the follow-up and the channel summary from the recorded events. Every figure is counted in code (rule 3).</summary>
 internal sealed class CreateRetroOutcomeHandler(

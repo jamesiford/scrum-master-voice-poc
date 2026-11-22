@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Stories.ListParkedTopics;
+namespace Zava.Scrum.Application.Features.Stories.ListParkedTopics;
 
 /// <summary>Collects distinct parking-lot events from the team's sessions.</summary>
 internal sealed class ListParkedTopicsHandler(ISessionRepository sessions) : IRequestHandler<ListParkedTopicsQuery, Result<IReadOnlyList<string>>>

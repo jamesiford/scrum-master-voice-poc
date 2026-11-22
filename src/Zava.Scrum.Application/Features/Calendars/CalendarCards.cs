@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
 
-namespace Mcm.Scrum.Application.Features.Calendars;
+namespace Zava.Scrum.Application.Features.Calendars;
 
 /// <summary>
 /// Builds the Teams card for a proposed sprint calendar and the card that replaces it after a decision. One place for the wording (DRY).

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>A meeting to create in the agent's calendar.</summary>
 /// <param name="TransactionId">Stable id so creating the same meeting twice makes one (Graph <c>transactionId</c>).</param>

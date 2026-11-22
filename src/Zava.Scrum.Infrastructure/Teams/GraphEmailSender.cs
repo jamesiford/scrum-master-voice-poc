@@ -1,9 +1,9 @@
 using System.Net.Http.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>
 /// Sends follow-up emails from the agent's mailbox with Microsoft Graph <c>sendMail</c> (M9-R1). Every email is also recorded in the

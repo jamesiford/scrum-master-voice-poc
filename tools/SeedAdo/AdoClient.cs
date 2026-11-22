@@ -7,7 +7,7 @@ using System.Text.Json.Nodes;
 using Azure.Core;
 using Azure.Identity;
 
-namespace Mcm.Scrum.Tools.SeedAdo;
+namespace Zava.Scrum.Tools.SeedAdo;
 
 /// <summary>Thin Azure DevOps REST client for the seeder: Entra token via DefaultAzureCredential, JSON in and out.</summary>
 internal sealed class AdoClient : IDisposable

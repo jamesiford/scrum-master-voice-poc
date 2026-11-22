@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
+namespace Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
 
 /// <summary>Rejects and saves.</summary>
 internal sealed class RejectFollowUpHandler(IFollowUpRepository followUps, IPublisher publisher, IClock clock) : IRequestHandler<RejectFollowUpCommand, Result>

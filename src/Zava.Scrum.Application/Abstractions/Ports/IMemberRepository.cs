@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Members;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for a team's roster.</summary>
 public interface IMemberRepository

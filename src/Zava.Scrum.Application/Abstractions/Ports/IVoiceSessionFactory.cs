@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Opens realtime voice sessions (Azure Voice Live).</summary>
 public interface IVoiceSessionFactory

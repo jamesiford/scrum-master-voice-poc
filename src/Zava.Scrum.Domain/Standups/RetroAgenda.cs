@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// The retrospective's order: Opening, then a Round (each present member once, with the standup's step-away, silence and circle-back rules),

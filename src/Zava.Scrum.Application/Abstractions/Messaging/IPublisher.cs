@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Publishes a domain event to zero or more handlers.</summary>
 public interface IPublisher

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Everything persisted about a <see cref="StandupSession"/>. Used to save and restore the aggregate.</summary>
 /// <param name="Id">Session id.</param>

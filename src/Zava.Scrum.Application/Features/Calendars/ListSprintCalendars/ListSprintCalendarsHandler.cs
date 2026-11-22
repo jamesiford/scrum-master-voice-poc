@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Calendars.ListSprintCalendars;
+namespace Zava.Scrum.Application.Features.Calendars.ListSprintCalendars;
 
 /// <summary>Reads the stored calendars.</summary>
 internal sealed class ListSprintCalendarsHandler(ISprintCalendarRepository calendars) : IRequestHandler<ListSprintCalendarsQuery, Result<IReadOnlyList<SprintCalendarData>>>

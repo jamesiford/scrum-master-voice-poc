@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>Outcome of an operation without a value. Expected failures use this, not exceptions.</summary>
 public class Result : IResultFactory<Result>

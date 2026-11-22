@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.MarkAbsent;
+namespace Zava.Scrum.Application.Features.Standups.MarkAbsent;
 
 /// <summary>Marks a briefed member absent.</summary>
 internal sealed class MarkAbsentHandler(ISessionRepository sessions, IClock clock) : IRequestHandler<MarkAbsentCommand, Result>

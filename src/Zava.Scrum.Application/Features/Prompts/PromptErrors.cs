@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Prompts;
+namespace Zava.Scrum.Application.Features.Prompts;
 
 /// <summary>Error codes for prompt use cases.</summary>
 public static class PromptErrors

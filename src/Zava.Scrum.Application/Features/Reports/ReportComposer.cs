@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Text;
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Application.Features.Reports;
+namespace Zava.Scrum.Application.Features.Reports;
 
 /// <summary>Builds report text. Numbers are formatted here from <see cref="KpiSummary"/>; the model only adds the narrative.</summary>
 public static class ReportComposer

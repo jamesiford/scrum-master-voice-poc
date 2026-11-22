@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Teams;
+namespace Zava.Scrum.Domain.Teams;
 
 /// <summary>Where a team's work lives in Azure DevOps.</summary>
 /// <param name="Org">Organisation URL.</param>

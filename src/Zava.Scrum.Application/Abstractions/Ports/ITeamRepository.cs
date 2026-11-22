@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Teams;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="Team"/> settings.</summary>
 public interface ITeamRepository

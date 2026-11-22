@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Reads and writes one JSON file atomically enough for a single-process PoC.</summary>
 internal static class JsonFile

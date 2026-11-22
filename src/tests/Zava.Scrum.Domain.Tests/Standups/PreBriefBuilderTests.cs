@@ -1,10 +1,10 @@
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Standups;
+namespace Zava.Scrum.Domain.Tests.Standups;
 
 public sealed class PreBriefBuilderTests
 {

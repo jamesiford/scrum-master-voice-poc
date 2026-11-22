@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>One flag rule. Add a rule by adding a class; do not edit a switch (SOLID: O).</summary>
 public interface IFlagRule

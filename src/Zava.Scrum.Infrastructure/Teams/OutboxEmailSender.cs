@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Records emails in the collection store instead of sending them.</summary>
 /// <remarks>DEMO: the outbox is the "sent" evidence. PROD: Azure Communication Services Email (needs a verified sender domain) or Graph <c>sendMail</c>.</remarks>

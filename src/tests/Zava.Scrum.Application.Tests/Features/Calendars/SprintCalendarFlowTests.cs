@@ -1,19 +1,19 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.GetSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.RejectSprintCalendar;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Schedules;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.GetSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.RejectSprintCalendar;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Schedules;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.Calendars;
+namespace Zava.Scrum.Application.Tests.Features.Calendars;
 
 public sealed class SprintCalendarFlowTests : IAsyncDisposable
 {
@@ -195,7 +195,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
     public async Task UpdateSchedule_AcsWithoutALink_NeedsAnApprovedCalendar()
     {
         await StartAsync();
-        var save = new Mcm.Scrum.Application.Features.Schedules.UpdateSchedule.UpdateScheduleCommand("t1", true, ["Monday"], "09:30", "acs", null);
+        var save = new Zava.Scrum.Application.Features.Schedules.UpdateSchedule.UpdateScheduleCommand("t1", true, ["Monday"], "09:30", "acs", null);
 
         Assert.Equal("schedule.join_url_required", (await Sender.Send(save)).Error!.Code);
 

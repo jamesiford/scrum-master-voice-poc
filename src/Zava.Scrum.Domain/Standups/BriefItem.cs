@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>An open work item as shown in the pre-brief.</summary>
 /// <param name="Id">Work item id (always from the current sprint).</param>

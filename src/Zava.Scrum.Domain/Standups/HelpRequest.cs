@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>A blocked teammate's item that this member was named as able to help with (M9-R2).</summary>
 /// <param name="WorkItemId">The blocked item.</param>

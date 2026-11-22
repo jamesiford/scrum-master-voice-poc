@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.MarkAbsent;
+namespace Zava.Scrum.Application.Features.Standups.MarkAbsent;
 
 /// <summary>Marks a member absent today.</summary>
 /// <param name="SessionId">Session id.</param>

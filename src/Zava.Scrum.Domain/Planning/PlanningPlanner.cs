@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>
 /// Sprint planning (SPEC M8, CEREMONIES C2). <see cref="Plan"/> is the advice page: load, carry-over, readiness and owner suggestions.

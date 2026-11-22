@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Prompts.UpdatePrompt;
+namespace Zava.Scrum.Application.Features.Prompts.UpdatePrompt;
 
 /// <summary>Validates <see cref="UpdatePromptCommand"/>.</summary>
 internal sealed class UpdatePromptValidator : AbstractValidator<UpdatePromptCommand>

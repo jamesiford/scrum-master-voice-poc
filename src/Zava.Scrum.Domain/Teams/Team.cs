@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Teams;
+namespace Zava.Scrum.Domain.Teams;
 
 /// <summary>Team settings (SPEC 15, <c>teams</c> container).</summary>
 /// <param name="Id">Team id.</param>

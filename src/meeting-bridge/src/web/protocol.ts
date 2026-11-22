@@ -1,4 +1,4 @@
-/** Messages between the Simulated Room and the voice gateway (SPEC 8). Mirrors `Mcm.Scrum.Api/Voice/VoiceGateway.cs`. */
+/** Messages between the Simulated Room and the voice gateway (SPEC 8). Mirrors `Zava.Scrum.Api/Voice/VoiceGateway.cs`. */
 
 /** A roster member sent in `hello`. */
 export interface RoomMember {

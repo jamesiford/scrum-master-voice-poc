@@ -1,8 +1,8 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Reads the product backlog that is not in the current sprint. Kept apart from <see cref="IWorkItemReader"/> because only sprint planning needs it (SOLID: I).</summary>
 public interface IBacklogReader

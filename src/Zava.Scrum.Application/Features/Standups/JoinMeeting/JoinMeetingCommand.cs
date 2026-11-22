@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.JoinMeeting;
+namespace Zava.Scrum.Application.Features.Standups.JoinMeeting;
 
 /// <summary>Asks the bridge to put the agent in the session's Teams meeting. The session must already be started with a join URL.</summary>
 /// <param name="SessionId">The standup.</param>

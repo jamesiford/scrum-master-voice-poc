@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+namespace Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 
 /// <summary>Approves a follow-up. Its approval is what permits Azure DevOps writes (F7).</summary>
 /// <param name="FollowUpId">The follow-up.</param>

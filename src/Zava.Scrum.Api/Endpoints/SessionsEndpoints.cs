@@ -1,16 +1,16 @@
-using Mcm.Scrum.Api.Voice;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Standups.ControlStandup;
-using Mcm.Scrum.Application.Features.Standups.GetLiveState;
-using Mcm.Scrum.Application.Features.Standups.GetSession;
-using Mcm.Scrum.Application.Features.Standups.GetSessionEvents;
-using Mcm.Scrum.Application.Features.Standups.JoinMeeting;
-using Mcm.Scrum.Application.Features.Standups.ListSessions;
-using Mcm.Scrum.Application.Features.Standups.PrepareStandup;
-using Mcm.Scrum.Application.Features.Standups.StartStandup;
+using Zava.Scrum.Api.Voice;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Standups.ControlStandup;
+using Zava.Scrum.Application.Features.Standups.GetLiveState;
+using Zava.Scrum.Application.Features.Standups.GetSession;
+using Zava.Scrum.Application.Features.Standups.GetSessionEvents;
+using Zava.Scrum.Application.Features.Standups.JoinMeeting;
+using Zava.Scrum.Application.Features.Standups.ListSessions;
+using Zava.Scrum.Application.Features.Standups.PrepareStandup;
+using Zava.Scrum.Application.Features.Standups.StartStandup;
 using Microsoft.Extensions.Configuration;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Standup session endpoints (SPEC 14). Each route sends exactly one command or query.</summary>
 public static class SessionsEndpoints

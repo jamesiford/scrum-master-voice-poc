@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Mcm.Scrum.Tools.SeedAdo;
+using Zava.Scrum.Tools.SeedAdo;
 
 // Usage: dotnet run --project tools/SeedAdo -- [--org https://dev.azure.com/<org>] [--file demo/seed-ado.json]
 // Auth: DefaultAzureCredential (az login). Never pass or store a PAT here.

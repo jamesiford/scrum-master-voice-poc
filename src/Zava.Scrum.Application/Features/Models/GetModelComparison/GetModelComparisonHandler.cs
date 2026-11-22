@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Features.Models.GetModelComparison;
+namespace Zava.Scrum.Application.Features.Models.GetModelComparison;
 
 /// <summary>Combines catalogue prices with measured latency from the team's sessions.</summary>
 internal sealed class GetModelComparisonHandler(IModelCatalog catalog, ITeamRepository teams, ISessionRepository sessions)

@@ -1,21 +1,21 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Application.Features.Standups.CompleteSpeakerTurn;
-using Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
-using Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
-using Mcm.Scrum.Application.Features.Standups.GetTurnInstruction;
-using Mcm.Scrum.Application.Features.Standups.MarkAbsent;
-using Mcm.Scrum.Application.Features.Standups.ParkTopic;
-using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
-using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
-using Mcm.Scrum.Application.Features.Standups.StartStandup;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Application.Tools;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Application.Features.Standups.CompleteSpeakerTurn;
+using Zava.Scrum.Application.Features.Standups.GetNextSpeaker;
+using Zava.Scrum.Application.Features.Standups.GetTimeRemaining;
+using Zava.Scrum.Application.Features.Standups.GetTurnInstruction;
+using Zava.Scrum.Application.Features.Standups.MarkAbsent;
+using Zava.Scrum.Application.Features.Standups.ParkTopic;
+using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
+using Zava.Scrum.Application.Features.Standups.StartStandup;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Application.Tools;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Tests.Features;
+namespace Zava.Scrum.Application.Tests.Features;
 
 public sealed class StandupFlowTests
 {

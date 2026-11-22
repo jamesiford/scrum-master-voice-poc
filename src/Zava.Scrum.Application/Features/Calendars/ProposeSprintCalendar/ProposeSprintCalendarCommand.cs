@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
 
 /// <summary>Stores a proposed sprint calendar and sends the "Proposed sprint calendar" card to the Scrum Master. Nothing is created in any calendar.</summary>
 /// <param name="TeamId">The team.</param>

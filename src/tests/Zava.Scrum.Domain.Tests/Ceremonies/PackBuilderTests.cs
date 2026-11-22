@@ -1,10 +1,10 @@
-using Mcm.Scrum.Domain.Ceremonies;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Ceremonies;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Ceremonies;
+namespace Zava.Scrum.Domain.Tests.Ceremonies;
 
 public sealed class PackBuilderTests
 {

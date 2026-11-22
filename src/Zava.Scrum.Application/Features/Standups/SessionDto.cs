@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups;
+namespace Zava.Scrum.Application.Features.Standups;
 
 /// <summary>Session detail including the pre-brief, events and latency.</summary>
 /// <param name="Id">Session id.</param>

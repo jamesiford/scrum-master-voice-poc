@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Demo;
-using Mcm.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Demo;
+using Zava.Scrum.Infrastructure.Persistence;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>
 /// Loads prompts from <c>agents/instructions/{name}.md</c>, re-read on every call so edits apply without a rebuild.

@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.NameRetroThemes;
+namespace Zava.Scrum.Application.Features.Retrospectives.NameRetroThemes;
 
 /// <summary>
 /// Groups the retrospective's notes by shared keywords in code and asks a model only to name the groups (code fallback: the shared keyword).

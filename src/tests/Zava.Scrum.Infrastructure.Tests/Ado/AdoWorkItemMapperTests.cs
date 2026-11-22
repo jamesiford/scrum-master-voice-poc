@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Mcm.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Infrastructure.Ado;
 
-namespace Mcm.Scrum.Infrastructure.Tests.Ado;
+namespace Zava.Scrum.Infrastructure.Tests.Ado;
 
 public sealed class AdoWorkItemMapperTests
 {

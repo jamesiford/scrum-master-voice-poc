@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>Raised when a planning pack is prepared. A handler sends its card to the Scrum Master.</summary>
 /// <param name="PackId">The pack.</param>

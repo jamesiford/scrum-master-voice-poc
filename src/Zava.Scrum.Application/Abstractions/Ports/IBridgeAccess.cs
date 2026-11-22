@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Credentials and address the meeting bridge needs to reach this API's websocket.</summary>
 public interface IBridgeAccess

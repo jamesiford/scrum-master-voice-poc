@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>The fields of a work item that an approved <see cref="ChangeOp.CreateWorkItem"/> creates.</summary>
 /// <param name="Type">Work item type, for example <c>Task</c>.</param>

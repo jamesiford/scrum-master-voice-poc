@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-namespace Mcm.Scrum.Application.Features.Prompts.ListPrompts;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+namespace Zava.Scrum.Application.Features.Prompts.ListPrompts;
 
 /// <summary>Reads prompt names.</summary>
 internal sealed class ListPromptsHandler(IPromptStore prompts) : IRequestHandler<ListPromptsQuery, Result<IReadOnlyList<string>>>

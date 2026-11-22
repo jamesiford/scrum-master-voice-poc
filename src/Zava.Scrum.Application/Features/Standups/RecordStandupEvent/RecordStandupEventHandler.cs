@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
+namespace Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 
 /// <summary>Appends the event to the session, keeping only work item ids that exist in the sprint.</summary>
 internal sealed class RecordStandupEventHandler(ISessionRepository sessions, IClock clock)

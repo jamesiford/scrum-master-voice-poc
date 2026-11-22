@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>An event the model suggests recording from an update.</summary>
 /// <param name="Type">commitment, blocker or decision.</param>

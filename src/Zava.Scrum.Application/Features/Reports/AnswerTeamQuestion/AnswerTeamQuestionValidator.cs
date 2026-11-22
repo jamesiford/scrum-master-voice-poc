@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
+namespace Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
 
 /// <summary>Validates <see cref="AnswerTeamQuestionQuery"/>.</summary>
 internal sealed class AnswerTeamQuestionValidator : AbstractValidator<AnswerTeamQuestionQuery>

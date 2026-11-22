@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-namespace Mcm.Scrum.Application.Features.Demo.ResetDemo;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+namespace Zava.Scrum.Application.Features.Demo.ResetDemo;
 
 /// <summary>Resets demo state, and clears today's run marks so a scheduled standup can fire again.</summary>
 internal sealed class ResetDemoHandler(IDemoReset reset, IScheduleRepository schedules) : IRequestHandler<ResetDemoCommand, Result>

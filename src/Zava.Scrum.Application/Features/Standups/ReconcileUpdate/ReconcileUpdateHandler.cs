@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 
 /// <summary>
 /// Asks the model for phrasing and events, then drops every work item id and every question or event text that

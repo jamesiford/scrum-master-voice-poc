@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>
 /// Writes approved changes to Azure DevOps (SPEC 9.4). It accepts only <see cref="ApprovedChange"/>, which only an approved

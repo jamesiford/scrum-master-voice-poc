@@ -1,13 +1,13 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Ceremonies;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Ceremonies;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
+namespace Zava.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
 
 /// <summary>
 /// Builds the session the voice gateway runs the retrospective on. The opening is the same factual draft the Retrospective page shows

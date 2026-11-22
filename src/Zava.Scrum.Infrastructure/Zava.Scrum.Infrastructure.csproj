@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Mcm.Scrum.Application\Mcm.Scrum.Application.csproj" />
-    <ProjectReference Include="..\Mcm.Scrum.Domain\Mcm.Scrum.Domain.csproj" />
+    <ProjectReference Include="..\Zava.Scrum.Application\Zava.Scrum.Application.csproj" />
+    <ProjectReference Include="..\Zava.Scrum.Domain\Zava.Scrum.Domain.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Azure.Identity" />
@@ -22,6 +22,6 @@
     <EmbeddedResource Include="Teams\Cards\*.json" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Mcm.Scrum.Infrastructure.Tests" />
+    <InternalsVisibleTo Include="Zava.Scrum.Infrastructure.Tests" />
   </ItemGroup>
 </Project>

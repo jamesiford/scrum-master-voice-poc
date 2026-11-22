@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>Outcome of an operation that returns a value.</summary>
 /// <typeparam name="T">The value type.</typeparam>

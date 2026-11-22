@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Tools;
+namespace Zava.Scrum.Application.Tools;
 
 /// <summary>The facilitator's tools (SPEC 7.2). Each tool sends one command or query and holds no logic of its own.</summary>
 public interface IScrumTools

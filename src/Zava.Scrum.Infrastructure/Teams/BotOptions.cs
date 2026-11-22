@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Binds <c>Bot__*</c> configuration (SPEC 17). Proactive Teams delivery is off until <see cref="AppId"/> is set.</summary>
 public sealed class BotOptions

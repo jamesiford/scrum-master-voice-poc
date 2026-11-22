@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Domain.Tests.Schedules;
+namespace Zava.Scrum.Domain.Tests.Schedules;
 
 public sealed class ScheduleEvaluatorTests
 {

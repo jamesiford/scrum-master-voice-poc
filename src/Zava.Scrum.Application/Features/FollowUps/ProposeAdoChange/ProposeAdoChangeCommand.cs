@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ProposeAdoChange;
+namespace Zava.Scrum.Application.Features.FollowUps.ProposeAdoChange;
 
 /// <summary>Creates a pending follow-up with one proposed change. Nothing is written until it is approved.</summary>
 /// <param name="SessionId">The standup it came from.</param>

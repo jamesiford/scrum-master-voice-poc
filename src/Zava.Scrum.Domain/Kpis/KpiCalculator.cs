@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Kpis;
+namespace Zava.Scrum.Domain.Kpis;
 
 /// <summary>KPI maths (SPEC 10.4). Pure, so the numbers can be checked by hand against the fixture.</summary>
 public static class KpiCalculator

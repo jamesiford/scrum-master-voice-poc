@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>The cards the agent sends (SPEC 12).</summary>
 public enum CardKind

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
+namespace Zava.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
 
 /// <summary>
 /// Builds the pack for a ceremony (planning, review or retrospective) and sends it to the Scrum Master as a follow-up with

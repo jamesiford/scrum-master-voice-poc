@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Domain.Tests.Kpis;
+namespace Zava.Scrum.Domain.Tests.Kpis;
 
 public sealed class KpiCalculatorTests
 {

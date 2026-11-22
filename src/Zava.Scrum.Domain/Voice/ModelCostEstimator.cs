@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>A realtime model candidate with list prices.</summary>
 /// <param name="Name">Deployment or model name.</param>

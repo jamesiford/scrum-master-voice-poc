@@ -1,8 +1,8 @@
 using System.Reflection;
 using System.Text.Json.Nodes;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Renders a <see cref="TeamsMessage"/> into Adaptive Card JSON from the templates in <c>Teams/Cards</c> (SPEC 12).</summary>
 internal static class CardRenderer

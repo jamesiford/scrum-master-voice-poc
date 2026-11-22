@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.Azure.Cosmos;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Collections as items in one Cosmos container (<c>Store__Mode=Cosmos</c>). The JSON text is stored in a single property so the same converters apply as for files.</summary>
 public sealed class CosmosCollectionStore(Container container) : ICollectionStore

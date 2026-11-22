@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Features.Standups;
+namespace Zava.Scrum.Application.Features.Standups;
 
 /// <summary>Fills <c>{placeholder}</c> tokens in a prompt template.</summary>
 public static class PromptTemplate

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Cross-cutting step wrapped around every request, in registration order (first registered is outermost).</summary>
 /// <typeparam name="TRequest">The request type.</typeparam>

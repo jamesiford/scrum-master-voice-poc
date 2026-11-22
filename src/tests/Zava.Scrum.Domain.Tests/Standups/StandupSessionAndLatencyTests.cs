@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.Tests.Standups;
+namespace Zava.Scrum.Domain.Tests.Standups;
 
 public sealed class StandupSessionAndLatencyTests
 {

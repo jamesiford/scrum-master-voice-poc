@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.JoinMeeting;
+namespace Zava.Scrum.Application.Features.Standups.JoinMeeting;
 
 /// <summary>Validates the session and hands the join to the bridge port.</summary>
 internal sealed class JoinMeetingHandler(ISessionRepository sessions, IMeetingBridge bridge) : IRequestHandler<JoinMeetingCommand, Result>

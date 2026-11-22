@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>Which ceremony a calendar meeting is.</summary>
 public enum MeetingKind

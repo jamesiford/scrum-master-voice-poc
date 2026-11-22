@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.FollowUps.ListEmails;
-using Mcm.Scrum.Application.Features.Models.GetModelComparison;
-using Mcm.Scrum.Application.Features.Retrospectives.GetRetrospective;
-using Mcm.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
-using Mcm.Scrum.Application.Features.Stories.DraftUserStory;
-using Mcm.Scrum.Application.Features.Stories.ListParkedTopics;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.FollowUps.ListEmails;
+using Zava.Scrum.Application.Features.Models.GetModelComparison;
+using Zava.Scrum.Application.Features.Retrospectives.GetRetrospective;
+using Zava.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
+using Zava.Scrum.Application.Features.Stories.DraftUserStory;
+using Zava.Scrum.Application.Features.Stories.ListParkedTopics;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Stretch endpoints (SPEC M8): retrospective, Story Writer, model comparison and the email outbox. Each route sends one query.</summary>
 public static class InsightsEndpoints

@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Schedules;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Schedules;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Features.Calendars;
+namespace Zava.Scrum.Application.Features.Calendars;
 
 /// <summary>The plan for one iteration.</summary>
 /// <param name="Team">The team.</param>

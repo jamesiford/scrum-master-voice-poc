@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>One thing the floor does next in a ceremony.</summary>
 public abstract record AgendaStep;

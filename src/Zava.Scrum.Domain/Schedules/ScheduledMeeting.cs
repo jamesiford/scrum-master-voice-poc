@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Schedules;
+namespace Zava.Scrum.Domain.Schedules;
 
 /// <summary>A standup meeting created in the agent's calendar.</summary>
 /// <param name="Date">The standup date (team-local).</param>

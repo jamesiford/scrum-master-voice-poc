@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Tools;
+namespace Zava.Scrum.Application.Tools;
 
 /// <summary>A tool the facilitator model may call (SPEC 7.2).</summary>
 /// <param name="Name">Tool name, for example <c>reconcile_update</c>.</param>

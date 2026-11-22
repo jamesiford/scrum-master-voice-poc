@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>A condition worth asking about in the standup (SPEC 9.3).</summary>
 public enum Flag

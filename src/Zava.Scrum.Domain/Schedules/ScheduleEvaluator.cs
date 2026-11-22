@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Schedules;
+namespace Zava.Scrum.Domain.Schedules;
 
 /// <summary>Pure scheduling rule: prepare at T-10, start at T-1, give up 30 minutes after the start (SPEC M5).</summary>
 public static class ScheduleEvaluator

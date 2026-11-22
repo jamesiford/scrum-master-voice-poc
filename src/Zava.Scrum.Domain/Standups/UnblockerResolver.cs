@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// Resolves "Maya can help" to a roster member in code (M9-R2). The model never picks the member, so an invented or ambiguous

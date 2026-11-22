@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>Runs a named prompt against the Foundry chat deployment and returns its JSON reply.</summary>
 public sealed class FoundryDraftingAgent(FoundryChat chat, IPromptStore prompts) : IDraftingAgent

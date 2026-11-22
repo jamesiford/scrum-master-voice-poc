@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Drafts text with a model from a named prompt. Draft only: nothing it returns is written anywhere without approval.</summary>
 public interface IDraftingAgent

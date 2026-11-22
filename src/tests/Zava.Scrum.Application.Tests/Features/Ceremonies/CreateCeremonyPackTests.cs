@@ -1,19 +1,19 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
-using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
-using Mcm.Scrum.Application.Features.Standups.ListSessions;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
+using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Zava.Scrum.Application.Features.Standups.ListSessions;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.Ceremonies;
+namespace Zava.Scrum.Application.Tests.Features.Ceremonies;
 
 public sealed class CreateCeremonyPackTests : IAsyncDisposable
 {

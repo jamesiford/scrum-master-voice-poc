@@ -9,7 +9,7 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
-    <ProjectReference Include="..\..\Mcm.Scrum.Application\Mcm.Scrum.Application.csproj" />
+    <ProjectReference Include="..\..\Zava.Scrum.Application\Zava.Scrum.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Teams;
 
-namespace Mcm.Scrum.Application.Features.Teams.GetTeam;
+namespace Zava.Scrum.Application.Features.Teams.GetTeam;
 
 /// <summary>Reads a team's settings.</summary>
 /// <param name="TeamId">Team id.</param>

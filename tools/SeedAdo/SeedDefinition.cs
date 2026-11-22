@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Mcm.Scrum.Tools.SeedAdo;
+namespace Zava.Scrum.Tools.SeedAdo;
 
 /// <summary>The demo backlog definition in <c>demo/seed-ado.json</c>.</summary>
 internal sealed record SeedDefinition(

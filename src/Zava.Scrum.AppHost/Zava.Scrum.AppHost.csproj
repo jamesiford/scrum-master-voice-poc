@@ -8,6 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.JavaScript" />
-    <ProjectReference Include="..\Mcm.Scrum.Api\Mcm.Scrum.Api.csproj" />
+    <ProjectReference Include="..\Zava.Scrum.Api\Zava.Scrum.Api.csproj" />
   </ItemGroup>
 </Project>

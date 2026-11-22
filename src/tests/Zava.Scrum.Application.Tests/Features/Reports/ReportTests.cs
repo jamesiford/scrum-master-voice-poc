@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
-using Mcm.Scrum.Application.Features.Reports.GetSprintReport;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
+using Zava.Scrum.Application.Features.Reports.GetSprintReport;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Kpis;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.Reports;
+namespace Zava.Scrum.Application.Tests.Features.Reports;
 
 public sealed class ReportTests
 {

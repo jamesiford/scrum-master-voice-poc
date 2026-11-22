@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Planning;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Planning.ApprovePlan;
+namespace Zava.Scrum.Application.Features.Planning.ApprovePlan;
 
 /// <summary>
 /// Turns the approved selection into a Scrum Master follow-up and approves it, so the write goes through the same guard as every other

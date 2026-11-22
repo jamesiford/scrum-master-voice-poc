@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Binds <c>Team__*</c>: the team that exists before anyone edits it. DEMO: one team; PROD: teams are created in the portal.</summary>
 public sealed class TeamDefaultsOptions

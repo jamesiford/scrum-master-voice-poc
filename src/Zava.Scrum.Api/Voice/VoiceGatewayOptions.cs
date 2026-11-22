@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Api.Voice;
+namespace Zava.Scrum.Api.Voice;
 
 /// <summary>Binds <c>Voice__*</c>: floor-control timings (SPEC 11.3).</summary>
 public sealed class VoiceGatewayOptions

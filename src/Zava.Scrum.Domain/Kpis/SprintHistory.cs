@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Kpis;
+namespace Zava.Scrum.Domain.Kpis;
 
 /// <summary>What happened in one finished sprint (SPEC 9.5, 10.4).</summary>
 /// <param name="Name">Sprint name.</param>

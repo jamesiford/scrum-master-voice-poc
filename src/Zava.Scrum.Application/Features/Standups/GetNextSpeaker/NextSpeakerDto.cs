@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
+namespace Zava.Scrum.Application.Features.Standups.GetNextSpeaker;
 
 /// <summary>The next speaker. <see cref="MemberId"/> is <see langword="null"/> when everyone has had a turn.</summary>
 /// <param name="MemberId">Member id.</param>

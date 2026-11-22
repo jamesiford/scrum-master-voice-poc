@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Lifecycle of a <see cref="StandupSession"/>.</summary>
 public enum StandupStatus

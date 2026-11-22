@@ -2,7 +2,7 @@
 name: mcm-scrum-agent
 services:
   api:
-    project: ./src/Mcm.Scrum.Api
+    project: ./src/Zava.Scrum.Api
     host: containerapp
     language: dotnet
     docker:

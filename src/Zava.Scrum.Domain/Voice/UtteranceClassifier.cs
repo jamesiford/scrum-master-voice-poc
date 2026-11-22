@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>What an utterance is trying to do, judged in the context of whose turn it is.</summary>
 public enum UtteranceIntent

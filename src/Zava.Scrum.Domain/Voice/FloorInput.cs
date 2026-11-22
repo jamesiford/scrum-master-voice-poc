@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Something that happened that <see cref="FloorControl"/> must react to.</summary>
 public abstract record FloorInput;

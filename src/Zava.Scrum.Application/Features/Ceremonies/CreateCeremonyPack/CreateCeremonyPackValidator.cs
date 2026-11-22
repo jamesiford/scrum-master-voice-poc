@@ -1,7 +1,7 @@
 using FluentValidation;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
+namespace Zava.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
 
 /// <summary>Validates <see cref="CreateCeremonyPackCommand"/>.</summary>
 internal sealed class CreateCeremonyPackValidator : AbstractValidator<CreateCeremonyPackCommand>

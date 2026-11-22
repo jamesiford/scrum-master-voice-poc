@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups;
-using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups;
+using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
+namespace Zava.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
 
 /// <summary>Runs <see cref="RetroInterpreter"/> for the phase the retrospective is in.</summary>
 internal sealed class ReconcileRetroUpdateHandler(ISessionRepository sessions) : IRequestHandler<ReconcileRetroUpdateQuery, Result<ReconcileResult>>

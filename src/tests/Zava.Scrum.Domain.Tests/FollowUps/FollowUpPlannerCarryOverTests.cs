@@ -1,10 +1,10 @@
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.FollowUps;
+namespace Zava.Scrum.Domain.Tests.FollowUps;
 
 public sealed class FollowUpPlannerCarryOverTests
 {

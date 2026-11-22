@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>In progress and in the same state for more than the team's stale days.</summary>
 public sealed class StaleRule : IFlagRule

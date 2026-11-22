@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Planning.GetPlanningPack;
+namespace Zava.Scrum.Application.Features.Planning.GetPlanningPack;
 
 /// <summary>Reads a planning pack. Without a pack id it reads the team's latest.</summary>
 /// <param name="TeamId">Team id (used when <paramref name="PackId"/> is empty).</param>

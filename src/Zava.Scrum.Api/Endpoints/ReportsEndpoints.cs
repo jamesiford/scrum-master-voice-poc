@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
-using Mcm.Scrum.Application.Features.Reports.GetKpis;
-using Mcm.Scrum.Application.Features.Reports.GetMonthlyReport;
-using Mcm.Scrum.Application.Features.Reports.GetSprintReport;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
+using Zava.Scrum.Application.Features.Reports.GetKpis;
+using Zava.Scrum.Application.Features.Reports.GetMonthlyReport;
+using Zava.Scrum.Application.Features.Reports.GetSprintReport;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Report and Q&amp;A endpoints (SPEC 14). Each route sends exactly one query.</summary>
 public static class ReportsEndpoints

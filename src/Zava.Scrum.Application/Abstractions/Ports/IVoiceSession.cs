@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>One realtime voice conversation.</summary>
 public interface IVoiceSession : IAsyncDisposable

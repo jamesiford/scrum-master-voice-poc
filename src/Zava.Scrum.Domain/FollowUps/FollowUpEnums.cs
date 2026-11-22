@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>What a follow-up is for (SPEC 15).</summary>
 public enum FollowUpKind

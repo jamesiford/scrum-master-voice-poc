@@ -1,15 +1,15 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
-using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.GetFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.ListFollowUps;
-using Mcm.Scrum.Application.Features.FollowUps.ProposeAdoChange;
-using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.SendFollowUps;
-using Mcm.Scrum.Application.Features.Teams.ListCards;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
+using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.GetFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.ListFollowUps;
+using Zava.Scrum.Application.Features.FollowUps.ProposeAdoChange;
+using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.SendFollowUps;
+using Zava.Scrum.Application.Features.Teams.ListCards;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Follow-up and card endpoints (SPEC 14). Each route sends exactly one command or query.</summary>
 public static class FollowUpsEndpoints

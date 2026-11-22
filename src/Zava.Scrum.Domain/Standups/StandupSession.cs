@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>One daily standup: pre-brief, attendance, speaking progress, events and latency.</summary>
 public sealed class StandupSession : AggregateRoot

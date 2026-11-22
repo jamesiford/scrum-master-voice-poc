@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>Registers the mediator and scans an assembly for handlers. Reflection happens only here, at startup.</summary>
 public static class MediatorServiceCollectionExtensions

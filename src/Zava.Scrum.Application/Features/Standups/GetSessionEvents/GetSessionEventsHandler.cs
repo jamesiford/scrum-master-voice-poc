@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetSessionEvents;
+namespace Zava.Scrum.Application.Features.Standups.GetSessionEvents;
 
 /// <summary>Loads events.</summary>
 internal sealed class GetSessionEventsHandler(ISessionRepository sessions)

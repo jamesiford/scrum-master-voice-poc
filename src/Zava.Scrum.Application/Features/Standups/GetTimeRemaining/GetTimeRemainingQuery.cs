@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
+namespace Zava.Scrum.Application.Features.Standups.GetTimeRemaining;
 
 /// <summary>Time left in the standup's timebox.</summary>
 /// <param name="SessionId">Session id.</param>

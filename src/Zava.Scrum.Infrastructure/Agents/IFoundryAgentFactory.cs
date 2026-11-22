@@ -1,6 +1,6 @@
 using Microsoft.Agents.AI;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>
 /// Creates the Microsoft Agent Framework agent that runs one prompt. A seam so the production factory talks to Foundry while tests

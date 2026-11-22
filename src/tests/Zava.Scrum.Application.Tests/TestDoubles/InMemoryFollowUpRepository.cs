@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Tests.TestDoubles;
+namespace Zava.Scrum.Application.Tests.TestDoubles;
 
 internal sealed class InMemoryFollowUpRepository : IFollowUpRepository
 {

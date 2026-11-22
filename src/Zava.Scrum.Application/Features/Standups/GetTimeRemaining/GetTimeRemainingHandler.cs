@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
+namespace Zava.Scrum.Application.Features.Standups.GetTimeRemaining;
 
 /// <summary>Computes the time left from the start time and the timebox.</summary>
 internal sealed class GetTimeRemainingHandler(ISessionRepository sessions, IClock clock)

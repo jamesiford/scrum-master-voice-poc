@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Chooses which stored Teams conversations a card is sent to (M9-R5). Pure, so it is unit tested without Teams.</summary>
 public static class CardRouting

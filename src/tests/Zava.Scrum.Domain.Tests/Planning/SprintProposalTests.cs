@@ -1,10 +1,10 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Planning;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Planning;
+namespace Zava.Scrum.Domain.Tests.Planning;
 
 public sealed class SprintProposalTests
 {

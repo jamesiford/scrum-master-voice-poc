@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Api.Voice;
+namespace Zava.Scrum.Api.Voice;
 
 /// <summary>Tracks the standups running on this instance so the portal can watch and steer them (SPEC M5).</summary>
 /// <remarks>PROD: with more than one API replica, route control through Service Bus or sticky routing to the owning instance.</remarks>

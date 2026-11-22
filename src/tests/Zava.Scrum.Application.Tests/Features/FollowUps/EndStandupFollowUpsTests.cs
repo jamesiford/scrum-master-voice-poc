@@ -1,13 +1,13 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Standups.EndStandup;
-using Mcm.Scrum.Application.Features.Standups.MarkAbsent;
-using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Standups.EndStandup;
+using Zava.Scrum.Application.Features.Standups.MarkAbsent;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.FollowUps;
+namespace Zava.Scrum.Application.Tests.Features.FollowUps;
 
 public sealed class EndStandupFollowUpsTests
 {

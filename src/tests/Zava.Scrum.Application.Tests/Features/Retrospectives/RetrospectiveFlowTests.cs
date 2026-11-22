@@ -1,25 +1,25 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
-using Mcm.Scrum.Application.Features.FollowUps.RejectFollowUp;
-using Mcm.Scrum.Application.Features.Retrospectives.GetRetroBoard;
-using Mcm.Scrum.Application.Features.Retrospectives.NameRetroThemes;
-using Mcm.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
-using Mcm.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
-using Mcm.Scrum.Application.Features.Standups.EndStandup;
-using Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
-using Mcm.Scrum.Application.Features.Standups.ListSessions;
-using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Voice;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
+using Zava.Scrum.Application.Features.Retrospectives.GetRetroBoard;
+using Zava.Scrum.Application.Features.Retrospectives.NameRetroThemes;
+using Zava.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
+using Zava.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
+using Zava.Scrum.Application.Features.Standups.EndStandup;
+using Zava.Scrum.Application.Features.Standups.GetNextSpeaker;
+using Zava.Scrum.Application.Features.Standups.ListSessions;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.Retrospectives;
+namespace Zava.Scrum.Application.Tests.Features.Retrospectives;
 
 public sealed class RetrospectiveFlowTests : IAsyncDisposable
 {
@@ -45,7 +45,7 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
         services.AddApplication();
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(members);
-        services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(Mcm.Scrum.Domain.Common.Result<SprintSnapshot>.Success(sprint)));
+        services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(Zava.Scrum.Domain.Common.Result<SprintSnapshot>.Success(sprint)));
         services.AddSingleton<IIterationReader>(new FakeIterationReader("P\\Sprint 2"));
         services.AddSingleton<ISessionRepository>(_sessions);
         services.AddSingleton<IFollowUpRepository>(_followUps);
@@ -59,7 +59,7 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
         return (await Sender.Send(new PrepareRetrospectiveCommand("t1"))).Value;
     }
 
-    private Task<Mcm.Scrum.Domain.Common.Result> Record(Guid id, StandupEventType type, string member, string text, RetroCategory? category = null, string? owner = null) =>
+    private Task<Zava.Scrum.Domain.Common.Result> Record(Guid id, StandupEventType type, string member, string text, RetroCategory? category = null, string? owner = null) =>
         Sender.Send(new RecordStandupEventCommand(id, type, member, text, null, category, owner));
 
     [Fact]

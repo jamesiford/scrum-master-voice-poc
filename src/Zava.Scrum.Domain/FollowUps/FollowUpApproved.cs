@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>Raised when a person approves a follow-up. A handler applies its changes to Azure DevOps.</summary>
 /// <param name="FollowUpId">The follow-up.</param>

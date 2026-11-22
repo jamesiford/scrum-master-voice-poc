@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups;
+namespace Zava.Scrum.Application.Features.Standups;
 
 /// <summary>Error codes for standup use cases.</summary>
 public static class StandupErrors

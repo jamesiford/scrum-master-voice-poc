@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Reports;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Reports;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.GetRetrospective;
+namespace Zava.Scrum.Application.Features.Retrospectives.GetRetrospective;
 
 /// <summary>Drafts a start-stop-continue retrospective from the sprint and its standups (SPEC M8). Read only.</summary>
 /// <param name="TeamId">Team id.</param>

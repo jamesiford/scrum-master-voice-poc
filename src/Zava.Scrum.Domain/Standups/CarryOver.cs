@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>What earlier standups leave behind for the next pre-brief.</summary>
 /// <param name="Commitments">Open commitments per member id.</param>

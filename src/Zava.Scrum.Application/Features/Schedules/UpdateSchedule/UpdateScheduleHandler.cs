@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Application.Features.Schedules.UpdateSchedule;
+namespace Zava.Scrum.Application.Features.Schedules.UpdateSchedule;
 
 /// <summary>Saves the schedule and keeps the per-day run state, so editing does not re-trigger today's standup.</summary>
 internal sealed class UpdateScheduleHandler(IScheduleRepository schedules, ITeamRepository teams) : IRequestHandler<UpdateScheduleCommand, Result>

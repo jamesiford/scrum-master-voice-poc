@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores Teams conversation references in a JSON file.</summary>
 /// <remarks>PROD: Cosmos, keyed by user or channel, behind the same port.</remarks>

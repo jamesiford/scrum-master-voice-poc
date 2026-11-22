@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>One meeting in a proposed sprint calendar.</summary>
 /// <param name="Key">Stable key, <c>{kind}:{yyyy-MM-dd}</c>; it makes creating the meeting idempotent.</param>

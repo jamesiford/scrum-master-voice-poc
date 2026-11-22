@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// Enforces rule 2: never invent work item ids. Any id-like reference in model text that is not

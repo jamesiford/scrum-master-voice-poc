@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>Everything persisted about a <see cref="FollowUp"/>.</summary>
 /// <param name="Id">Follow-up id.</param>

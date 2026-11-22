@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.StartStandup;
+namespace Zava.Scrum.Application.Features.Standups.StartStandup;
 
 /// <summary>Marks a prepared session live and fixes the timebox for this run.</summary>
 /// <param name="SessionId">Session id.</param>

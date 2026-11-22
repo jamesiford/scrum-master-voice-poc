@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Members;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Members;
 
-namespace Mcm.Scrum.Application.Features.Teams.GetRoster;
+namespace Zava.Scrum.Application.Features.Teams.GetRoster;
 
 /// <summary>Lists the roster after checking the team exists.</summary>
 internal sealed class GetRosterHandler(ITeamRepository teams, IMemberRepository members)

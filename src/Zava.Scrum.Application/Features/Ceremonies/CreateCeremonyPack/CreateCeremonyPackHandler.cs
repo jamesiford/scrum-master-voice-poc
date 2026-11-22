@@ -1,15 +1,15 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Ceremonies;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Ceremonies;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
+namespace Zava.Scrum.Application.Features.Ceremonies.CreateCeremonyPack;
 
 /// <summary>
 /// Computes the pack in Domain code, lets the model rephrase only the summary (rule 3), and reuses the follow-up, card and

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// Sorts what a member says in a retrospective into start, stop or continue with plain rules, never a model, so the board

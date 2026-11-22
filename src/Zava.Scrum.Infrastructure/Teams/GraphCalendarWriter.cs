@@ -1,12 +1,12 @@
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>
 /// Creates Teams online meetings in the agent's demo-tenant calendar with Microsoft Graph and invites the roster (M9d). Each meeting is one

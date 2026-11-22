@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Demo;
+namespace Zava.Scrum.Infrastructure.Demo;
 
 /// <summary>Finds repo files (seed data, prompts) by walking up from the working directory, so the API runs from any project folder.</summary>
 public static class RepositoryFileLocator

@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>Reconcile agent: compares a spoken update with a member's brief and returns structured output (SPEC 10.2).</summary>
 public sealed class FoundryReconcileAgent(FoundryChat chat, IPromptStore prompts) : IReconcileAgent

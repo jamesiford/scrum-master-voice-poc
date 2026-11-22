@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Kpis;
+namespace Zava.Scrum.Domain.Kpis;
 
 /// <summary>Sprint burndown figures.</summary>
 /// <param name="CommittedPoints">All points in the sprint.</param>

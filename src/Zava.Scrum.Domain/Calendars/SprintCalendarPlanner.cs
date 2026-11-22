@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Calendars;
+namespace Zava.Scrum.Domain.Calendars;
 
 /// <summary>
 /// Proposes a sprint's meetings from its dates and the team's settings (CEREMONIES O2). Pure: dates are dates (Azure DevOps iteration

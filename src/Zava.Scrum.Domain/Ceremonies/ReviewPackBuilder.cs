@@ -1,9 +1,9 @@
 using System.Globalization;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Ceremonies;
+namespace Zava.Scrum.Domain.Ceremonies;
 
 /// <summary>Builds the sprint review pack: what was completed, the points delivered against the commitment, and a note on each finished item.</summary>
 public static class ReviewPackBuilder

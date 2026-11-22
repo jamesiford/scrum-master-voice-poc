@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Teams.ListCards;
+namespace Zava.Scrum.Application.Features.Teams.ListCards;
 
 /// <summary>Reads the card outbox.</summary>
 internal sealed class ListCardsHandler(ICardOutbox outbox) : IRequestHandler<ListCardsQuery, Result<IReadOnlyList<SentCard>>>

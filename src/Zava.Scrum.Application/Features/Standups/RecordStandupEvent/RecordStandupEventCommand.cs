@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
+namespace Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 
 /// <summary>Records one event. Work item ids that are not in the pre-brief are dropped (rule 2).</summary>
 /// <param name="SessionId">Session id.</param>

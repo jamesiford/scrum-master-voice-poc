@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Which column a retrospective note belongs to. The format only changes the column titles (see <see cref="RetroFormats"/>).</summary>
 public enum RetroCategory

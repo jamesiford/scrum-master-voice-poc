@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Work;
+namespace Zava.Scrum.Domain.Work;
 
 /// <summary>A sprint work item as read from Azure DevOps, already normalised (SPEC 9.3).</summary>
 /// <param name="Id">Work item id.</param>

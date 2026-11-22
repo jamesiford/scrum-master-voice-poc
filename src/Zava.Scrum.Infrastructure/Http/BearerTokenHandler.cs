@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using Azure.Core;
 
-namespace Mcm.Scrum.Infrastructure.Http;
+namespace Zava.Scrum.Infrastructure.Http;
 
 /// <summary>Adds an Entra bearer token from a <see cref="TokenCredential"/> (DefaultAzureCredential everywhere, no keys).</summary>
 /// <param name="credential">The credential.</param>

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Members;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Members;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores every team's roster in one JSON file keyed by team id.</summary>
 /// <remarks>PROD: <c>CosmosMemberRepository</c> behind the same port.</remarks>

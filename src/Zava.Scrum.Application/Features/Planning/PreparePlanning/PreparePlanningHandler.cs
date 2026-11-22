@@ -1,12 +1,12 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Planning;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Planning.PreparePlanning;
+namespace Zava.Scrum.Application.Features.Planning.PreparePlanning;
 
 /// <summary>
 /// Computes the proposal in Domain code, lets a model phrase only the draft goal, and stores the pack. A goal that names an item outside the

@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Prompts.GetPrompt;
-using Mcm.Scrum.Application.Features.Prompts.ListPrompts;
-using Mcm.Scrum.Application.Features.Prompts.UpdatePrompt;
-using Mcm.Scrum.Application.Features.Schedules.GetSchedule;
-using Mcm.Scrum.Application.Features.Schedules.UpdateSchedule;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Prompts.GetPrompt;
+using Zava.Scrum.Application.Features.Prompts.ListPrompts;
+using Zava.Scrum.Application.Features.Prompts.UpdatePrompt;
+using Zava.Scrum.Application.Features.Schedules.GetSchedule;
+using Zava.Scrum.Application.Features.Schedules.UpdateSchedule;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Schedule and prompt endpoints (SPEC 14). Each route sends exactly one command or query.</summary>
 public static class ScheduleEndpoints

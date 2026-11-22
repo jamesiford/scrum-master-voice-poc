@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Planning;
+namespace Zava.Scrum.Application.Features.Planning;
 
 /// <summary>
 /// Builds the Teams card for a planning pack and the card that replaces it after a decision. One place for the wording, so the first card

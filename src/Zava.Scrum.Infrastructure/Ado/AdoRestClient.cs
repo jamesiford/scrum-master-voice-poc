@@ -1,14 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Reads sprint data from Azure DevOps over REST (SPEC 9.3). Read-only; writes arrive in M3 behind the approval guard.</summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/azure/devops/integrate/previous-apis/work-item-tracking (api-version 7.1).</remarks>

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.CompleteSpeakerTurn;
+namespace Zava.Scrum.Application.Features.Standups.CompleteSpeakerTurn;
 
 /// <summary>Completes a turn.</summary>
 internal sealed class CompleteSpeakerTurnHandler(ISessionRepository sessions) : IRequestHandler<CompleteSpeakerTurnCommand, Result>

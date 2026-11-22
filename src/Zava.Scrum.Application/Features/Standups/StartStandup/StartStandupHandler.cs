@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.StartStandup;
+namespace Zava.Scrum.Application.Features.Standups.StartStandup;
 
 /// <summary>Starts the session once; the team's standup length is the default timebox.</summary>
 internal sealed class StartStandupHandler(ISessionRepository sessions, ITeamRepository teams, IRetroSettings retro, IClock clock)

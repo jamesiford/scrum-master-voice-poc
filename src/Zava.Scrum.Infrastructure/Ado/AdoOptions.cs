@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Binds <c>Ado__*</c> configuration (SPEC 17).</summary>
 public sealed class AdoOptions

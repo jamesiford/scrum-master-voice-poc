@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.ControlStandup;
+namespace Zava.Scrum.Application.Features.Standups.ControlStandup;
 
 /// <summary>Steers a running standup from the portal: mute, unmute, skip, takeover, release or end.</summary>
 /// <param name="SessionId">The standup.</param>

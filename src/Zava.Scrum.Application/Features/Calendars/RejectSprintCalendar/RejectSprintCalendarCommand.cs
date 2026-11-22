@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Calendars.RejectSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.RejectSprintCalendar;
 
 /// <summary>Rejects a proposed sprint calendar. Nothing was created, so nothing is undone.</summary>
 /// <param name="CalendarId">The calendar.</param>

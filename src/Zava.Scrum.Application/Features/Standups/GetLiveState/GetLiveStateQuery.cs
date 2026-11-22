@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetLiveState;
+namespace Zava.Scrum.Application.Features.Standups.GetLiveState;
 
 /// <summary>Reads the running floor and timebox state as JSON, for the Live console.</summary>
 /// <param name="SessionId">The standup.</param>

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.Planning.ApprovePlan;
+namespace Zava.Scrum.Application.Features.Planning.ApprovePlan;
 
 /// <summary>
 /// Approves a sprint plan. The kept selection becomes a Scrum Master follow-up (move to the next iteration, assign suggested owners),

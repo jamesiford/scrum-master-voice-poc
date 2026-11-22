@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Turns a retrospective's agreed actions into proposed Azure DevOps tasks. Nothing is written until the Scrum Master approves (F7).</summary>
 public static class RetroOutcomePlanner

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.Logging;
 
-namespace Mcm.Scrum.Application.Behaviors;
+namespace Zava.Scrum.Application.Behaviors;
 
 /// <summary>Innermost behaviour: maps unexpected exceptions to <see cref="Error.Unexpected"/> and logs them once.</summary>
 /// <typeparam name="TRequest">The request type.</typeparam>

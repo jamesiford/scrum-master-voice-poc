@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Teams;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Teams;
 
-namespace Mcm.Scrum.Infrastructure.Tests;
+namespace Zava.Scrum.Infrastructure.Tests;
 
 public sealed class GraphCalendarWriterTests
 {

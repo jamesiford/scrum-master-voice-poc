@@ -1,16 +1,16 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.FollowUps.SendFollowUps;
-using Mcm.Scrum.Application.Features.Standups.EndStandup;
-using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
-using Mcm.Scrum.Application.Features.Standups.ResolveUnblocker;
-using Mcm.Scrum.Application.Features.Teams.SetRecapChannel;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.FollowUps.SendFollowUps;
+using Zava.Scrum.Application.Features.Standups.EndStandup;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
+using Zava.Scrum.Application.Features.Standups.ResolveUnblocker;
+using Zava.Scrum.Application.Features.Teams.SetRecapChannel;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features;
+namespace Zava.Scrum.Application.Tests.Features;
 
 public sealed class UnblockAndRecapTests
 {
@@ -80,7 +80,7 @@ public sealed class UnblockAndRecapTests
     {
         var (h, email) = await CreateAsync();
         await using var _ = h;
-        await h.Sender.Send(new Mcm.Scrum.Application.Features.Standups.MarkAbsent.MarkAbsentCommand(h.SessionId, "m-marcus"));
+        await h.Sender.Send(new Zava.Scrum.Application.Features.Standups.MarkAbsent.MarkAbsentCommand(h.SessionId, "m-marcus"));
 
         await h.Sender.Send(new EndStandupCommand(h.SessionId));
 
@@ -110,7 +110,7 @@ public sealed class UnblockAndRecapTests
 
         var result = await h.Sender.Send(new SetRecapChannelCommand("nope", "19:x"));
 
-        Assert.Equal(Mcm.Scrum.Domain.Common.ErrorType.NotFound, result.Error!.Type);
+        Assert.Equal(Zava.Scrum.Domain.Common.ErrorType.NotFound, result.Error!.Type);
     }
 
     [Fact]

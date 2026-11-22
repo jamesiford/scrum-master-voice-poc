@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>Past its due date and not done.</summary>
 public sealed class OverdueRule : IFlagRule

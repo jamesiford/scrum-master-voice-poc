@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>Binds <c>Foundry__*</c> configuration (SPEC 17). Leave <see cref="ProjectEndpoint"/> empty to run on deterministic questions only.</summary>
 public sealed class FoundryOptions

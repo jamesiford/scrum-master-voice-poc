@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Schedules.UpdateSchedule;
+namespace Zava.Scrum.Application.Features.Schedules.UpdateSchedule;
 
 /// <summary>Validates <see cref="UpdateScheduleCommand"/>.</summary>
 internal sealed class UpdateScheduleValidator : AbstractValidator<UpdateScheduleCommand>

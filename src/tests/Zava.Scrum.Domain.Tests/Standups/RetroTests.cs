@@ -1,10 +1,10 @@
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Voice;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Standups;
+namespace Zava.Scrum.Domain.Tests.Standups;
 
 public sealed class RetroItemClassifierTests
 {
@@ -153,7 +153,7 @@ public sealed class RetroAgendaTests
     private static StandupSession Retro(CeremonyKind kind = CeremonyKind.Retrospective)
     {
         MemberBrief[] members = [new("m1", "Daniel Park", [], "q"), new("m2", "Maya Lin", [], "q"), new("m3", "Admin", [], "q")];
-        var brief = new PreBrief("t1", "p", "g", 3, new Mcm.Scrum.Domain.Kpis.Burndown(10, 4, 6, 3, false), members, [], [], "s");
+        var brief = new PreBrief("t1", "p", "g", 3, new Zava.Scrum.Domain.Kpis.Burndown(10, 4, 6, 3, false), members, [], [], "s");
         var s = StandupSession.Prepare(Guid.NewGuid(), "t1", Now, brief, kind);
         s.Start("simulated", null, 15, Now);
         return s;
@@ -285,7 +285,7 @@ public sealed class RetroOutcomeTests
     public void Plan_ActionsBecomeTaggedTasksInTheNextSprintWithOwners()
     {
         MemberBrief[] members = [new("m1", "Daniel Park", [], "q"), new("m2", "Maya Lin", [], "q")];
-        var brief = new PreBrief("t1", "p", "g", 3, new Mcm.Scrum.Domain.Kpis.Burndown(10, 4, 6, 3, false), members, [], [], "s");
+        var brief = new PreBrief("t1", "p", "g", 3, new Zava.Scrum.Domain.Kpis.Burndown(10, 4, 6, 3, false), members, [], [], "s");
         var s = StandupSession.Prepare(Guid.NewGuid(), "t1", Now, brief, CeremonyKind.Retrospective);
         s.RecordEvent(StandupEventType.RetroItem, "m1", [], "Deployments take too long", Now, RetroCategory.Stop);
         s.RecordEvent(StandupEventType.ActionItem, "m1", [], "Automate the deployment checklist", Now, ownerMemberId: "m2");

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Azure DevOps field reference names. One source of truth (DRY); an Agile project is assumed, see SPEC 9.3 for the field map.</summary>
 public static class AdoFields

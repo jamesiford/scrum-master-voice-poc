@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-namespace Mcm.Scrum.Application.Features.Standups.GetLiveState;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+namespace Zava.Scrum.Application.Features.Standups.GetLiveState;
 
 /// <summary>Reads the live state.</summary>
 internal sealed class GetLiveStateHandler(ILiveSessions live) : IRequestHandler<GetLiveStateQuery, Result<string>>

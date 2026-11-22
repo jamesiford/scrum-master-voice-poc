@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Ceremonies;
+namespace Zava.Scrum.Domain.Ceremonies;
 
 /// <summary>One computed number or fact shown on a ceremony card.</summary>
 /// <param name="Label">What it is.</param>

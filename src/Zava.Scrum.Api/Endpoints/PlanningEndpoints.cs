@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Planning.ApprovePlan;
-using Mcm.Scrum.Application.Features.Planning.GetPlanningPack;
-using Mcm.Scrum.Application.Features.Planning.GetPlanningPrep;
-using Mcm.Scrum.Application.Features.Planning.PreparePlanning;
-using Mcm.Scrum.Application.Features.Planning.RejectPlan;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Planning.ApprovePlan;
+using Zava.Scrum.Application.Features.Planning.GetPlanningPack;
+using Zava.Scrum.Application.Features.Planning.GetPlanningPrep;
+using Zava.Scrum.Application.Features.Planning.PreparePlanning;
+using Zava.Scrum.Application.Features.Planning.RejectPlan;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Sprint planning endpoints (SPEC M8, M9a). Each route sends one command or query.</summary>
 public static class PlanningEndpoints

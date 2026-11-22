@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Ado;
+namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Binds <c>Demo__*</c> configuration (SPEC 17) plus demo file locations.</summary>
 public sealed class DemoOptions

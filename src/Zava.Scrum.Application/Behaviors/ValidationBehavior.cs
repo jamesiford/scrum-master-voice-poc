@@ -1,8 +1,8 @@
 using FluentValidation;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Behaviors;
+namespace Zava.Scrum.Application.Behaviors;
 
 /// <summary>Runs FluentValidation validators and short-circuits with an invalid <see cref="Result"/>.</summary>
 /// <typeparam name="TRequest">The request type.</typeparam>

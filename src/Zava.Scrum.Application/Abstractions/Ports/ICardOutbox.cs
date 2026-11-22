@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>A card that was sent, with the Adaptive Card JSON a real Teams client would render.</summary>
 /// <param name="Id">Outbox id.</param>

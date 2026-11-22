@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Application.Features.Schedules.GetSchedule;
+namespace Zava.Scrum.Application.Features.Schedules.GetSchedule;
 
 /// <summary>Reads the schedule.</summary>
 internal sealed class GetScheduleHandler(IScheduleRepository schedules) : IRequestHandler<GetScheduleQuery, Result<Schedule>>

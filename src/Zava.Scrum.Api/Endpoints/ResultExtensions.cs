@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Maps <see cref="Result"/> to HTTP in one place so endpoints never hand-write status codes.</summary>
 public static class ResultExtensions

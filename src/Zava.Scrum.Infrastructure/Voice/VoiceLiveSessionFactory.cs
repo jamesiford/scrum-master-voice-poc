@@ -2,11 +2,11 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json.Nodes;
 using Azure.Core;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 using Microsoft.Extensions.Options;
-using Mcm.Scrum.Infrastructure.Agents;
+using Zava.Scrum.Infrastructure.Agents;
 
-namespace Mcm.Scrum.Infrastructure.Voice;
+namespace Zava.Scrum.Infrastructure.Voice;
 
 /// <summary>Opens Azure Voice Live sessions with an Entra token (no keys) and sends the session configuration.</summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/azure/ai-services/speech-service/voice-live-how-to (scope https://ai.azure.com/.default).</remarks>

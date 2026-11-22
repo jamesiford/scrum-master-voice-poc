@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Which ceremony a session runs. The aggregate is still named <c>StandupSession</c> (naming debt, ADR 0009).</summary>
 public enum CeremonyKind

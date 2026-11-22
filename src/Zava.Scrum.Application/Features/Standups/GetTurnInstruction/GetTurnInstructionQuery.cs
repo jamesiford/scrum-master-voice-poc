@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetTurnInstruction;
+namespace Zava.Scrum.Application.Features.Standups.GetTurnInstruction;
 
 /// <summary>Renders the instruction for one agent turn from the prompt files in <c>agents/instructions</c>.</summary>
 /// <param name="SessionId">Session id.</param>

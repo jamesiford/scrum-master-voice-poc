@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Voice;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Voice;
+namespace Zava.Scrum.Infrastructure.Voice;
 
 /// <summary>Candidate realtime models for the comparison page, bound from <c>ModelComparison:Models</c>.</summary>
 public sealed class ModelComparisonOptions

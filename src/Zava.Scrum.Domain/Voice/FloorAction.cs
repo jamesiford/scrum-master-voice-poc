@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Something the gateway must do. The gateway only executes these; it decides nothing.</summary>
 public abstract record FloorAction;

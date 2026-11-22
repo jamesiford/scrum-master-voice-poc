@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Persistence;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>
 /// Renders cards and stores them in a JSON outbox the portal can show. It is the offline stand-in for Teams delivery.

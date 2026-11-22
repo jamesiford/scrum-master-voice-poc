@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Infrastructure.Tests.Persistence;
+namespace Zava.Scrum.Infrastructure.Tests.Persistence;
 
 /// <summary>Shared contract every <see cref="ISessionRepository"/> implementation must pass (SOLID: L).</summary>
 public abstract class SessionRepositoryContract

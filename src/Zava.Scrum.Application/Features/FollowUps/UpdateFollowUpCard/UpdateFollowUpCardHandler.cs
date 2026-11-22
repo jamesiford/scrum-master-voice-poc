@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.UpdateFollowUpCard;
+namespace Zava.Scrum.Application.Features.FollowUps.UpdateFollowUpCard;
 
 /// <summary>
 /// Replaces the follow-up card with its outcome once it is approved, rejected or applied, so the buttons disappear and the

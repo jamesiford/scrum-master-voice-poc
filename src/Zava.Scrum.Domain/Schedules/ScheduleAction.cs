@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Schedules;
+namespace Zava.Scrum.Domain.Schedules;
 
 /// <summary>What the scheduler should do now.</summary>
 public enum ScheduleAction

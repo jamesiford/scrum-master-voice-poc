@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.GetSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.ListSprintCalendars;
-using Mcm.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
-using Mcm.Scrum.Application.Features.Calendars.RejectSprintCalendar;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.GetSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.ListSprintCalendars;
+using Zava.Scrum.Application.Features.Calendars.ProposeSprintCalendar;
+using Zava.Scrum.Application.Features.Calendars.RejectSprintCalendar;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Sprint calendar endpoints (M9d). Each route sends one command or query.</summary>
 public static class CalendarEndpoints

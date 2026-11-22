@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
+namespace Zava.Scrum.Application.Features.Retrospectives.CreateRetroOutcome;
 
 /// <summary>
 /// Turns an ended retrospective into a Scrum Master follow-up with one <c>CreateWorkItem</c> change per action, and posts the summary.

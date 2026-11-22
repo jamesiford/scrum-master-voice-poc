@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Application.Features.Reports.GetSprintReport;
+namespace Zava.Scrum.Application.Features.Reports.GetSprintReport;
 
 /// <summary>Builds the sprint summary. The model phrases only the narrative; the tables come from code.</summary>
 internal sealed class GetSprintReportHandler(IKpiHistorySource history, ISessionRepository sessions, IFollowUpRepository followUps, IReportingAgent agent) : IRequestHandler<GetSprintReportQuery, Result<ReportDocument>>

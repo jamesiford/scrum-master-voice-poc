@@ -1,11 +1,11 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Infrastructure.Ado;
-using Mcm.Scrum.Infrastructure.Demo;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Infrastructure.Demo;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Reports;
+namespace Zava.Scrum.Infrastructure.Reports;
 
 /// <summary>Reads sprint history from <c>demo/kpi-history.json</c> and labels it illustrative (SPEC 9.5).</summary>
 /// <remarks>PROD: read Azure DevOps Analytics (<c>WorkItemSnapshot</c>, <c>Iterations</c>) when the project has at least three past sprints. The demo project is new, so the fixture is used.</remarks>

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>One member's slice of the pre-brief.</summary>
 /// <param name="MemberId">Member id.</param>

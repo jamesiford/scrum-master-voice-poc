@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Planning.ApprovePlan;
+namespace Zava.Scrum.Application.Features.Planning.ApprovePlan;
 
 /// <summary>Validates <see cref="ApprovePlanCommand"/>.</summary>
 internal sealed class ApprovePlanValidator : AbstractValidator<ApprovePlanCommand>

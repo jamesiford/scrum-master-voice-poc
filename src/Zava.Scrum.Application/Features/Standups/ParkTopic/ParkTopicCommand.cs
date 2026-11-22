@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.ParkTopic;
+namespace Zava.Scrum.Application.Features.Standups.ParkTopic;
 
 /// <summary>Takes a topic offline and records it in the parking lot.</summary>
 /// <param name="SessionId">Session id.</param>

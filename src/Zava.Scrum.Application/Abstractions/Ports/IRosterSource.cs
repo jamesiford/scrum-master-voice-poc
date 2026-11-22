@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Teams;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Where a team's roster comes from.</summary>
 public interface IRosterSource

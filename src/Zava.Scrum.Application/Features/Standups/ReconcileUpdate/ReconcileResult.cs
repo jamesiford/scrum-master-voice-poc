@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 
 /// <summary>An event worth recording, with grounded work item ids.</summary>
 /// <param name="Type">Kind.</param>

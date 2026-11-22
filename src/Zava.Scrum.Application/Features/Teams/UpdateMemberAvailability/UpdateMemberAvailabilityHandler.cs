@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
+namespace Zava.Scrum.Application.Features.Teams.UpdateMemberAvailability;
 
 /// <summary>Replaces the member's availability in the stored roster.</summary>
 internal sealed class UpdateMemberAvailabilityHandler(ITeamRepository teams, IMemberRepository members) : IRequestHandler<UpdateMemberAvailabilityCommand, Result>

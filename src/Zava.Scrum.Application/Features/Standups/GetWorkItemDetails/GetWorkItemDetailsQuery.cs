@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetWorkItemDetails;
+namespace Zava.Scrum.Application.Features.Standups.GetWorkItemDetails;
 
 /// <summary>The facts a teammate may ask about during standup, all computed in code.</summary>
 /// <param name="Id">Work item id.</param>

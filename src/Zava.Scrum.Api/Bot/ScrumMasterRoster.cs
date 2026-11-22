@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Api.Bot;
+namespace Zava.Scrum.Api.Bot;
 
 /// <summary>
 /// Decides who counts as the Scrum Master for chat commands. The names come from <c>Team:ScrumMasters</c> (a list or a comma-separated string).

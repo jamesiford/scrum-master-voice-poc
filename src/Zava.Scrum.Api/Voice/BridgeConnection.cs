@@ -2,7 +2,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
-namespace Mcm.Scrum.Api.Voice;
+namespace Zava.Scrum.Api.Voice;
 
 /// <summary>The websocket to one bridge. Serialises sends because audio and JSON frames come from different tasks.</summary>
 public sealed class BridgeConnection(WebSocket socket) : IDisposable

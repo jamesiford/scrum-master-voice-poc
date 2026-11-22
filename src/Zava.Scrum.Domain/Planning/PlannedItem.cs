@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>An item the plan proposes for the next sprint.</summary>
 /// <param name="WorkItemId">Work item id (always from Azure DevOps).</param>

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Collections as JSON files under <c>Store:DataPath</c>.</summary>
 public sealed class FileCollectionStore(IOptions<StoreOptions> options) : ICollectionStore

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetFacilitatorInstructions;
+namespace Zava.Scrum.Application.Features.Standups.GetFacilitatorInstructions;
 
 /// <summary>Loads and renders the facilitator prompt.</summary>
 internal sealed class GetFacilitatorInstructionsHandler(ISessionRepository sessions, ITeamRepository teams, IPromptStore prompts)

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>Where a planned item comes from.</summary>
 public enum PlanningSource

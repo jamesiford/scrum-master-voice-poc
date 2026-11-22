@@ -1,16 +1,16 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/Mcm.Scrum.Api/Mcm.Scrum.Api.csproj" />
-    <Project Path="src/Mcm.Scrum.AppHost/Mcm.Scrum.AppHost.csproj" />
-    <Project Path="src/Mcm.Scrum.Application/Mcm.Scrum.Application.csproj" />
-    <Project Path="src/Mcm.Scrum.Domain/Mcm.Scrum.Domain.csproj" />
-    <Project Path="src/Mcm.Scrum.Infrastructure/Mcm.Scrum.Infrastructure.csproj" />
+    <Project Path="src/Zava.Scrum.Api/Zava.Scrum.Api.csproj" />
+    <Project Path="src/Zava.Scrum.AppHost/Zava.Scrum.AppHost.csproj" />
+    <Project Path="src/Zava.Scrum.Application/Zava.Scrum.Application.csproj" />
+    <Project Path="src/Zava.Scrum.Domain/Zava.Scrum.Domain.csproj" />
+    <Project Path="src/Zava.Scrum.Infrastructure/Zava.Scrum.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/tests/">
-    <Project Path="src/tests/Mcm.Scrum.Application.Tests/Mcm.Scrum.Application.Tests.csproj" />
-    <Project Path="src/tests/Mcm.Scrum.ArchitectureTests/Mcm.Scrum.ArchitectureTests.csproj" />
-    <Project Path="src/tests/Mcm.Scrum.Domain.Tests/Mcm.Scrum.Domain.Tests.csproj" />
-    <Project Path="src/tests/Mcm.Scrum.Infrastructure.Tests/Mcm.Scrum.Infrastructure.Tests.csproj" />
+    <Project Path="src/tests/Zava.Scrum.Application.Tests/Zava.Scrum.Application.Tests.csproj" />
+    <Project Path="src/tests/Zava.Scrum.ArchitectureTests/Zava.Scrum.ArchitectureTests.csproj" />
+    <Project Path="src/tests/Zava.Scrum.Domain.Tests/Zava.Scrum.Domain.Tests.csproj" />
+    <Project Path="src/tests/Zava.Scrum.Infrastructure.Tests/Zava.Scrum.Infrastructure.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/SeedAdo/SeedAdo.csproj" />

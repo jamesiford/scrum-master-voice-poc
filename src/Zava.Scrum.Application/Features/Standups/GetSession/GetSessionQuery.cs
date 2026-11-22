@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetSession;
+namespace Zava.Scrum.Application.Features.Standups.GetSession;
 
 /// <summary>Reads one session with its pre-brief.</summary>
 /// <param name="SessionId">Session id.</param>

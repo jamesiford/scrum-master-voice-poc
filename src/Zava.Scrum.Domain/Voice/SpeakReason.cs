@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Why the agent is speaking. Each reason has its own turn instruction.</summary>
 public enum SpeakReason

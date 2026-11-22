@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Binds <c>Cosmos__*</c> configuration (SPEC 17). Used when <c>Store__Mode=Cosmos</c>.</summary>
 public sealed class CosmosOptions

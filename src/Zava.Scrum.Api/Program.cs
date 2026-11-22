@@ -1,11 +1,11 @@
-using Mcm.Scrum.Api.Bot;
-using Mcm.Scrum.Api.Endpoints;
-using Mcm.Scrum.Api.Telemetry;
+using Zava.Scrum.Api.Bot;
+using Zava.Scrum.Api.Endpoints;
+using Zava.Scrum.Api.Telemetry;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Hosting.AspNetCore;
-using Mcm.Scrum.Api.Voice;
-using Mcm.Scrum.Application;
-using Mcm.Scrum.Infrastructure;
+using Zava.Scrum.Api.Voice;
+using Zava.Scrum.Application;
+using Zava.Scrum.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +19,9 @@ builder.Services.AddSingleton<BridgeTokenService>();
 builder.Services.AddSingleton<ScrumMasterRoster>();
 builder.Services.AddTransient<VoiceGateway>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
-builder.Services.AddSingleton<Mcm.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
-builder.Services.AddSingleton<Mcm.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
-builder.Services.AddHostedService<Mcm.Scrum.Api.Scheduling.ScheduleWorker>();
+builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
+builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
+builder.Services.AddHostedService<Zava.Scrum.Api.Scheduling.ScheduleWorker>();
 
 var botConfigured = !string.IsNullOrWhiteSpace(builder.Configuration["Bot:AppId"]);
 if (botConfigured)

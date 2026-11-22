@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Calendars.RejectSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.RejectSprintCalendar;
 
 /// <summary>Rejects the calendar and replaces its card with the outcome.</summary>
 internal sealed class RejectSprintCalendarHandler(ISprintCalendarRepository calendars, ITeamsMessenger messenger, IClock clock) : IRequestHandler<RejectSprintCalendarCommand, Result>

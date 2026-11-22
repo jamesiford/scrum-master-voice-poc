@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Model-written phrasing for a pre-brief. Facts are never part of it.</summary>
 /// <param name="Summary">Two-sentence team summary.</param>

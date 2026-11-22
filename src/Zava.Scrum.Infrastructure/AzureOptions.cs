@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Infrastructure;
+namespace Zava.Scrum.Infrastructure;
 
 /// <summary>Binds <c>Azure__*</c>: pins which tenant <c>DefaultAzureCredential</c> signs in to, so a machine with several signed-in accounts picks the demo tenant.</summary>
 public sealed class AzureOptions

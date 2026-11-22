@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores sessions in a single JSON file. Good enough for the PoC and the Simulated Room.</summary>
 /// <remarks>PROD: replaced by <c>CosmosSessionRepository</c> (Store__Mode=Cosmos) behind the same port.</remarks>

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Reads agent instructions by name. Prompts live in <c>agents/instructions/*.md</c> so they can be tuned without a rebuild (rule 5).</summary>
 public interface IPromptStore

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>Where a planning pack is in its life.</summary>
 public enum PlanningPackStatus

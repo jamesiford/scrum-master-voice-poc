@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Infrastructure.Ado;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores team settings in a JSON file; before the first save it serves the configured default team.</summary>
 /// <remarks>PROD: <c>CosmosTeamRepository</c> behind the same port.</remarks>

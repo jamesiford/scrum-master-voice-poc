@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>
 /// Writes approved changes to the work tracker. It accepts only <see cref="ApprovedChange"/>, which exists only for an approved

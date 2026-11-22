@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.FollowUps;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores follow-ups in a JSON file.</summary>
 /// <remarks>PROD: <c>CosmosFollowUpRepository</c> behind the same port.</remarks>

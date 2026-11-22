@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ListFollowUps;
+namespace Zava.Scrum.Application.Features.FollowUps.ListFollowUps;
 
 /// <summary>Reads follow-ups.</summary>
 internal sealed class ListFollowUpsHandler(IFollowUpRepository followUps) : IRequestHandler<ListFollowUpsQuery, Result<IReadOnlyList<FollowUpSnapshot>>>

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mcm.Scrum.Api.Bot;
+namespace Zava.Scrum.Api.Bot;
 
 /// <summary>Validates inbound Bot Service and Entra tokens on <c>/api/messages</c>. The dev tunnel is public, so this is always on.</summary>
 internal static class BotAuthentication

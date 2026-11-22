@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Teams;
+namespace Zava.Scrum.Application.Features.Teams;
 
 /// <summary>Error codes for team and roster use cases.</summary>
 public static class TeamErrors

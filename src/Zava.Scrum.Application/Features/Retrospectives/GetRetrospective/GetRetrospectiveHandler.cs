@@ -1,13 +1,13 @@
 using System.Text;
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Reports;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Reports;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.GetRetrospective;
+namespace Zava.Scrum.Application.Features.Retrospectives.GetRetrospective;
 
 /// <summary>Builds the retrospective skeleton in code and lets the model phrase a short summary above it.</summary>
 internal sealed class GetRetrospectiveHandler(

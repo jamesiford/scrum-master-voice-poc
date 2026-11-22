@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Health.GetHealth;
+namespace Zava.Scrum.Application.Features.Health.GetHealth;
 
 /// <summary>Answers <see cref="GetHealthQuery"/> by reading the session store, proving the store port is wired.</summary>
 internal sealed class GetHealthHandler(ISessionRepository sessions, IClock clock)

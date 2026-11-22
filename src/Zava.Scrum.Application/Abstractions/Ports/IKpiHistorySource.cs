@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Finished sprints for KPI reporting, with a flag for whether the data is real or fixture-backed.</summary>
 /// <param name="Sprints">Finished sprints, any order.</param>

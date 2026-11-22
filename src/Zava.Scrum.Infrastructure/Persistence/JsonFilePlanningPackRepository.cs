@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Stores planning packs in a JSON collection (<c>planning-packs.json</c>).</summary>
 /// <remarks>PROD: one item per pack in Cosmos, partitioned by team, behind the same port.</remarks>

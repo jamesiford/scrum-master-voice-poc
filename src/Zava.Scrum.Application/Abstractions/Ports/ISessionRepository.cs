@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="StandupSession"/>. Every implementation must pass the shared contract test (SOLID: L).</summary>
 public interface ISessionRepository

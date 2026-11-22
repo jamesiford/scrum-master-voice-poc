@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Raised when a standup has been prepared. A handler sends the pre-brief card.</summary>
 /// <param name="SessionId">The session.</param>

@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Stories.DraftUserStory;
-using Mcm.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Stories.DraftUserStory;
+using Zava.Scrum.Application.Tests.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features;
+namespace Zava.Scrum.Application.Tests.Features;
 
 public sealed class DraftUserStoryTests
 {

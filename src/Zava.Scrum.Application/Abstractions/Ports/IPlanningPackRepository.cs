@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="PlanningPack"/>. Every implementation must pass the shared contract test (SOLID: L).</summary>
 public interface IPlanningPackRepository

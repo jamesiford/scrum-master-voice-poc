@@ -1,10 +1,10 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
 
 /// <summary>
 /// Creates only the meetings <see cref="SprintCalendar.Approve"/> returns, so nothing reaches anyone's calendar without a named approver. A failure

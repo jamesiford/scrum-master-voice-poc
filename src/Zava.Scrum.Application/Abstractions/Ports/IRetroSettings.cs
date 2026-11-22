@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Settings for a retrospective run by voice (<c>Retro:*</c>). A port so the handlers do not read configuration (SOLID: D).</summary>
 public interface IRetroSettings

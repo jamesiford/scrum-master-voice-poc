@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="Schedule"/>.</summary>
 public interface IScheduleRepository

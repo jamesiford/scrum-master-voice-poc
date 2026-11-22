@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Where the standup conversation is (SPEC 11.3).</summary>
 public enum FloorState

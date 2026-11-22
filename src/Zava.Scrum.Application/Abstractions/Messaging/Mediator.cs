@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Mcm.Scrum.Application.Abstractions.Messaging;
+namespace Zava.Scrum.Application.Abstractions.Messaging;
 
 /// <summary>
 /// Hand-rolled mediator (SPEC 6.1.3). Closed-generic wrappers are built once per type and cached,

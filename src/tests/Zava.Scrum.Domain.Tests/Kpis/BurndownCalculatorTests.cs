@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Kpis;
+namespace Zava.Scrum.Domain.Tests.Kpis;
 
 public sealed class BurndownCalculatorTests
 {

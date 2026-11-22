@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ListFollowUps;
+namespace Zava.Scrum.Application.Features.FollowUps.ListFollowUps;
 
 /// <summary>Lists follow-ups for a team.</summary>
 /// <param name="TeamId">Team id.</param>

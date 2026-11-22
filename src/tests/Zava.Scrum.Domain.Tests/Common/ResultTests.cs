@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Domain.Tests.Common;
+namespace Zava.Scrum.Domain.Tests.Common;
 
 public sealed class ResultTests
 {

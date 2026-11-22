@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Kinds of session events (SPEC 15, <c>events</c> container).</summary>
 public enum StandupEventType

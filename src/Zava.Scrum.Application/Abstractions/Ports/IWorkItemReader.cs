@@ -1,8 +1,8 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Reads the current sprint from the work tracker (Azure DevOps). Read-only by design (writes use <c>IWorkItemWriter</c>, M3).</summary>
 public interface IWorkItemReader

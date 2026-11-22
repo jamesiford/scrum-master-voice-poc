@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mcm.Scrum.Infrastructure.Voice;
+namespace Zava.Scrum.Infrastructure.Voice;
 
 /// <summary>Binds <c>VoiceLive__*</c> configuration (SPEC 17).</summary>
 public sealed class VoiceLiveOptions

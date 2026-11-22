@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Schedules.UpdateSchedule;
+namespace Zava.Scrum.Application.Features.Schedules.UpdateSchedule;
 
 /// <summary>Saves a team's schedule.</summary>
 /// <param name="TeamId">Team id.</param>

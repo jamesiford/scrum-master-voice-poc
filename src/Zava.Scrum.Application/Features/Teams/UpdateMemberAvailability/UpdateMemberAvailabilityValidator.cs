@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
+namespace Zava.Scrum.Application.Features.Teams.UpdateMemberAvailability;
 
 /// <summary>Validates <see cref="UpdateMemberAvailabilityCommand"/>.</summary>
 internal sealed class UpdateMemberAvailabilityValidator : AbstractValidator<UpdateMemberAvailabilityCommand>

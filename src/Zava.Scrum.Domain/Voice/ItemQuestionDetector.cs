@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Recognises a teammate asking the agent about a work item without saying its name.</summary>
 public static partial class ItemQuestionDetector

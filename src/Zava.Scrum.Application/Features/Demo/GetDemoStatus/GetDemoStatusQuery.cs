@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Demo.GetDemoStatus;
+namespace Zava.Scrum.Application.Features.Demo.GetDemoStatus;
 
 /// <summary>How much demo state exists.</summary>
 /// <param name="TeamId">Team id.</param>

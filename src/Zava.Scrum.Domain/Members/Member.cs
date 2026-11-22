@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Members;
+namespace Zava.Scrum.Domain.Members;
 
 /// <summary>A roster member (SPEC 15, <c>members</c> container).</summary>
 /// <param name="Id">Member id.</param>

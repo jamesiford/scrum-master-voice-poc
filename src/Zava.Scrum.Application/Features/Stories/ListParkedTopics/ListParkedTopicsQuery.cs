@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Stories.ListParkedTopics;
+namespace Zava.Scrum.Application.Features.Stories.ListParkedTopics;
 
 /// <summary>Lists topics parked in recent standups, the natural inputs for the Story Writer.</summary>
 /// <param name="TeamId">Team id.</param>

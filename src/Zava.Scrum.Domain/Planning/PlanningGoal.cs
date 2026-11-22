@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>The draft sprint goal: a deterministic fallback, and the check that a model-phrased goal invents nothing (rule 3).</summary>
 public static partial class PlanningGoal

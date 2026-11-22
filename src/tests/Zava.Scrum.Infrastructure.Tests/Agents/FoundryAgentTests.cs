@@ -1,15 +1,15 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
-using Mcm.Scrum.Infrastructure.Agents;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
+using Zava.Scrum.Infrastructure.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Tests.Agents;
+namespace Zava.Scrum.Infrastructure.Tests.Agents;
 
 public sealed class FoundryAgentTests
 {

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Column titles and the spoken prompt for each <see cref="RetroFormat"/>. One source for the board, the cards and the agent.</summary>
 public static class RetroFormats

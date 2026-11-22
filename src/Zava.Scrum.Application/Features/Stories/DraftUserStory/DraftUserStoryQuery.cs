@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Stories.DraftUserStory;
+namespace Zava.Scrum.Application.Features.Stories.DraftUserStory;
 
 /// <summary>A drafted user story. Draft only: it is never written to Azure DevOps without an approved follow-up (F7).</summary>
 /// <param name="Title">Story title.</param>

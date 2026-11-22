@@ -1,21 +1,21 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Planning.ApprovePlan;
-using Mcm.Scrum.Application.Features.Planning.GetPlanningPack;
-using Mcm.Scrum.Application.Features.Planning.PreparePlanning;
-using Mcm.Scrum.Application.Features.Planning.RejectPlan;
-using Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Planning;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Planning.ApprovePlan;
+using Zava.Scrum.Application.Features.Planning.GetPlanningPack;
+using Zava.Scrum.Application.Features.Planning.PreparePlanning;
+using Zava.Scrum.Application.Features.Planning.RejectPlan;
+using Zava.Scrum.Application.Features.Teams.UpdateMemberAvailability;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features.Planning;
+namespace Zava.Scrum.Application.Tests.Features.Planning;
 
 public sealed class PlanningFlowTests : IAsyncDisposable
 {

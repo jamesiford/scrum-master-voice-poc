@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
+namespace Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
 
 /// <summary>
 /// Approves a proposed sprint calendar: creates each meeting as a Teams meeting in the agent's calendar (<c>ICalendarWriter</c>), invites the roster,

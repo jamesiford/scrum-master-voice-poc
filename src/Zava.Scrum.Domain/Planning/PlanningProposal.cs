@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>What the planner proposes: the selection, what was left out and how it compares with capacity. Every figure is computed in code (rule 3).</summary>
 /// <param name="Velocity">Velocity range the capacity is based on.</param>

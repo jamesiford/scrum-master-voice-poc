@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>A start-stop-continue draft for a retrospective (SPEC M8).</summary>
 /// <param name="Start">Things to start doing.</param>

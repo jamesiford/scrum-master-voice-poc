@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Reports.GetSprintReport;
+namespace Zava.Scrum.Application.Features.Reports.GetSprintReport;
 
 /// <summary>Writes the sprint summary: the latest three sprints' KPIs, the current sprint position and a short narrative.</summary>
 /// <param name="TeamId">Team id.</param>

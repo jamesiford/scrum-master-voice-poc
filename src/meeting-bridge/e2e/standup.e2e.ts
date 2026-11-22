@@ -7,7 +7,7 @@ import { chromium, type Browser, type Page } from 'playwright-core';
  * The presenter's lines come from the demo cast and are streamed as microphone audio, so Azure Voice Live speech-to-text,
  * floor control, grounded questions, the parking lot, the absent member and the recap all run for real.
  *
- * Needs the stack running (`dotnet run --project src/Mcm.Scrum.AppHost --launch-profile http`, or the API on :5080 and the
+ * Needs the stack running (`dotnet run --project src/Zava.Scrum.AppHost --launch-profile http`, or the API on :5080 and the
  * bridge on :5090), `az login`, a seeded sandbox (`tools/SeedAdo`) and Microsoft Edge. Run with `npm run e2e`.
  */
 

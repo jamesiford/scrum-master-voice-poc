@@ -1,15 +1,15 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.Agents.Authentication;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Persistence;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Core.Models;
 using Microsoft.Agents.Core.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>
 /// Sends cards to Teams proactively through the Microsoft 365 Agents SDK, and always keeps the outbox copy so the portal

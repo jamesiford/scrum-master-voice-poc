@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Teams.GetRoster;
-using Mcm.Scrum.Application.Features.Teams.GetTeam;
-using Mcm.Scrum.Application.Features.Teams.SetRecapChannel;
-using Mcm.Scrum.Application.Features.Teams.SyncRoster;
-using Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
-using Mcm.Scrum.Application.Features.Teams.UpdateTeamSettings;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Teams.GetRoster;
+using Zava.Scrum.Application.Features.Teams.GetTeam;
+using Zava.Scrum.Application.Features.Teams.SetRecapChannel;
+using Zava.Scrum.Application.Features.Teams.SyncRoster;
+using Zava.Scrum.Application.Features.Teams.UpdateMemberAvailability;
+using Zava.Scrum.Application.Features.Teams.UpdateTeamSettings;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Team settings and roster endpoints (SPEC 14). Each route sends exactly one command or query.</summary>
 public static class TeamsEndpoints

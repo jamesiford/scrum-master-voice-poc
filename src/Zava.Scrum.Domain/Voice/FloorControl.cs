@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>
 /// The pure floor-control state machine (SPEC 11.3): who may speak and when. No I/O and no clock; time arrives on inputs.

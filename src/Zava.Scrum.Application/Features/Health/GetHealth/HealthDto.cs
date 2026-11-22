@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Features.Health.GetHealth;
+namespace Zava.Scrum.Application.Features.Health.GetHealth;
 
 /// <summary>Health read model shown as "API healthy" in the portal.</summary>
 /// <param name="Status">Always <c>healthy</c> on success.</param>

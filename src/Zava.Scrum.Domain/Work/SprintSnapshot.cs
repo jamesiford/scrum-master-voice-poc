@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Work;
+namespace Zava.Scrum.Domain.Work;
 
 /// <summary>The current sprint and its work items.</summary>
 /// <param name="IterationPath">Azure DevOps iteration path.</param>

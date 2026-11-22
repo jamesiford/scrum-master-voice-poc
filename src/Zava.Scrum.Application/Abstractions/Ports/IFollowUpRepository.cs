@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.FollowUps;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Persistence for <see cref="FollowUp"/>. Every implementation must pass the shared contract test (SOLID: L).</summary>
 public interface IFollowUpRepository

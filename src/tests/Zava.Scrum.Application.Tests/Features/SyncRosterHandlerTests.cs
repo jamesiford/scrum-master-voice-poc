@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Teams.SyncRoster;
-using Mcm.Scrum.Application.Tests.TestDoubles;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Teams.SyncRoster;
+using Zava.Scrum.Application.Tests.TestDoubles;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Teams;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.Features;
+namespace Zava.Scrum.Application.Tests.Features;
 
 public sealed class SyncRosterHandlerTests
 {

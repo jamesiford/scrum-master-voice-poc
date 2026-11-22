@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Api.Voice;
+namespace Zava.Scrum.Api.Voice;
 
 /// <summary>Gives the application layer the bridge token and public address without exposing the token service (SPEC 8).</summary>
 public sealed class BridgeAccess(BridgeTokenService tokens, IConfiguration configuration) : IBridgeAccess

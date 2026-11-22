@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Kpis;
+namespace Zava.Scrum.Domain.Kpis;
 
 /// <summary>Team KPIs over a window of sprints, all computed in code (rule 3).</summary>
 /// <param name="Sprints">How many sprints are included.</param>

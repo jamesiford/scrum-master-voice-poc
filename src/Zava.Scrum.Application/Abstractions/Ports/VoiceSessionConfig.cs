@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Tools;
+using Zava.Scrum.Application.Tools;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Settings for one Voice Live session.</summary>
 /// <param name="Instructions">The rendered facilitator prompt.</param>

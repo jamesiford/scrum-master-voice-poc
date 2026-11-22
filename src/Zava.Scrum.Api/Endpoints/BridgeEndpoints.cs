@@ -1,6 +1,6 @@
-using Mcm.Scrum.Api.Voice;
+using Zava.Scrum.Api.Voice;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>The bridge websocket (SPEC 8). A thin adapter: it authenticates the token and hands the socket to the voice gateway.</summary>
 public static class BridgeEndpoints

@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>One note on the retrospective board.</summary>
 /// <param name="Id">The event id.</param>

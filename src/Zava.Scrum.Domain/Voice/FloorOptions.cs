@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Voice;
+namespace Zava.Scrum.Domain.Voice;
 
 /// <summary>Tunable floor-control timings (SPEC 11.3).</summary>
 /// <param name="StandupLength">Total timebox.</param>

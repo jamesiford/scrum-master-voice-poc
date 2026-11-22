@@ -1,7 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Fixed ports keep the demo links stable: the API start endpoint returns a room URL on the bridge port (Bridge__RoomBaseUrl).
-var api = builder.AddProject<Projects.Mcm_Scrum_Api>("api")
+var api = builder.AddProject<Projects.Zava_Scrum_Api>("api")
     .WithHttpHealthCheck("/healthz");
 
 builder.AddNodeApp("bridge", "../meeting-bridge", "src/index.ts")

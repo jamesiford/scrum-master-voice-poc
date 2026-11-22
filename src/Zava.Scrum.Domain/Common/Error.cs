@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>An expected failure carried by a <see cref="Result"/>.</summary>
 /// <param name="Code">Stable machine-readable code, for example <c>health.store_unavailable</c>.</param>

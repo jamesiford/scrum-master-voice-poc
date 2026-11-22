@@ -1,12 +1,12 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Application.Features.Standups.JoinMeeting;
-using Mcm.Scrum.Application.Features.Standups.PrepareStandup;
-using Mcm.Scrum.Application.Features.Standups.StartStandup;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Application.Features.Standups.JoinMeeting;
+using Zava.Scrum.Application.Features.Standups.PrepareStandup;
+using Zava.Scrum.Application.Features.Standups.StartStandup;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Application.Features.Schedules.RunScheduleTick;
+namespace Zava.Scrum.Application.Features.Schedules.RunScheduleTick;
 
 /// <summary>
 /// A process manager: asks the pure <see cref="ScheduleEvaluator"/> what is due and sends the existing commands for it.

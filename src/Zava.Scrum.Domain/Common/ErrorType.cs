@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>Classifies an <see cref="Error"/> so adapters can map it to a transport status without parsing codes.</summary>
 public enum ErrorType

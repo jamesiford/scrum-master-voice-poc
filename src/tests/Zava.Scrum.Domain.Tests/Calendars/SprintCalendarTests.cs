@@ -1,8 +1,8 @@
-using Mcm.Scrum.Domain.Calendars;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Schedules;
+using Zava.Scrum.Domain.Calendars;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Schedules;
 
-namespace Mcm.Scrum.Domain.Tests.Calendars;
+namespace Zava.Scrum.Domain.Tests.Calendars;
 
 public sealed class SprintCalendarPlannerTests
 {

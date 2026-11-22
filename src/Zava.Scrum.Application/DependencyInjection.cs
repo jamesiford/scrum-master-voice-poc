@@ -1,9 +1,9 @@
 using FluentValidation;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Behaviors;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application;
+namespace Zava.Scrum.Application;
 
 /// <summary>Registers the Application layer.</summary>
 public static class DependencyInjection

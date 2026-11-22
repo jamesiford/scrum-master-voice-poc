@@ -1,18 +1,18 @@
 using Azure.Core;
 using Azure.Identity;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Infrastructure.Ado;
-using Mcm.Scrum.Infrastructure.Agents;
-using Mcm.Scrum.Infrastructure.Demo;
-using Mcm.Scrum.Infrastructure.Http;
-using Mcm.Scrum.Infrastructure.Persistence;
-using Mcm.Scrum.Infrastructure.Teams;
-using Mcm.Scrum.Infrastructure.Voice;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Infrastructure.Agents;
+using Zava.Scrum.Infrastructure.Demo;
+using Zava.Scrum.Infrastructure.Http;
+using Zava.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Infrastructure.Teams;
+using Zava.Scrum.Infrastructure.Voice;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure;
+namespace Zava.Scrum.Infrastructure;
 
 /// <summary>Registers the adapters that implement Application ports.</summary>
 public static class DependencyInjection

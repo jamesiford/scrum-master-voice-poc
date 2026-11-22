@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mcm.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Teams;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Binds <c>Flags__*</c>: the default flag and escalation thresholds a team starts with. The portal can change them per team.</summary>
 public sealed class FlagsOptions

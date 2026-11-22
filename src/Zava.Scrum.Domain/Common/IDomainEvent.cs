@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>A fact that happened in the domain, dispatched after the aggregate is saved.</summary>
 public interface IDomainEvent

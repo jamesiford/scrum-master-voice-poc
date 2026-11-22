@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ApproveFollowUp;
+namespace Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 
 /// <summary>Validates <see cref="ApproveFollowUpCommand"/>.</summary>
 internal sealed class ApproveFollowUpValidator : AbstractValidator<ApproveFollowUpCommand>

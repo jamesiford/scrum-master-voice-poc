@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Persistence;
+namespace Zava.Scrum.Infrastructure.Persistence;
 
 /// <summary>Deletes the demo collections. Teams, roster, schedule and Teams conversations are kept so the demo can be re-run at once.</summary>
 public sealed class JsonFileDemoReset(ICollectionStore store) : IDemoReset

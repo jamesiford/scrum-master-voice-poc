@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Planning;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Planning;
 
-namespace Mcm.Scrum.Application.Features.Planning.GetPlanningPack;
+namespace Zava.Scrum.Application.Features.Planning.GetPlanningPack;
 
 /// <summary>Loads the requested or latest pack.</summary>
 internal sealed class GetPlanningPackHandler(IPlanningPackRepository packs) : IRequestHandler<GetPlanningPackQuery, Result<PlanningPackData>>

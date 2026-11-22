@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.PrepareStandup;
+namespace Zava.Scrum.Application.Features.Standups.PrepareStandup;
 
 /// <summary>Reads the sprint, builds the pre-brief and creates a prepared session. Returns the session id.</summary>
 /// <param name="TeamId">Team id.</param>

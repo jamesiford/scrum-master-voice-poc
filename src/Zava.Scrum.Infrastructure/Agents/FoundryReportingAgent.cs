@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Agents;
+namespace Zava.Scrum.Infrastructure.Agents;
 
 /// <summary>Reporting agent (SPEC 10.4): phrases narratives and answers questions over facts computed in code.</summary>
 public sealed class FoundryReportingAgent(FoundryChat chat, IPromptStore prompts) : IReportingAgent

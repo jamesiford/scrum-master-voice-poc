@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
+namespace Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 
 /// <summary>Validates <see cref="RecordStandupEventCommand"/>.</summary>
 internal sealed class RecordStandupEventValidator : AbstractValidator<RecordStandupEventCommand>

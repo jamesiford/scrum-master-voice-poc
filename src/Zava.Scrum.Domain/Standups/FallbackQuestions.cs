@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Flags;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Deterministic questions built from flags. Used when the model is unavailable or returns an ungrounded id.</summary>
 public static class FallbackQuestions

@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
+namespace Zava.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
 
 /// <summary>
 /// The retrospective's counterpart of <c>ReconcileUpdateQuery</c>: sorts what a member said into notes or an action item and returns the one

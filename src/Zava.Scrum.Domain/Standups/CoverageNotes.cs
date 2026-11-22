@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Flags;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>
 /// Plain-language facts for the agent's turns: what was just noted and which flagged items nobody has covered. Built in code so

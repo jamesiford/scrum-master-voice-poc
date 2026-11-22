@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Application.Features.Reports;
+namespace Zava.Scrum.Application.Features.Reports;
 
 /// <summary>KPIs over a window, with the sprints behind them.</summary>
 /// <param name="Summary">The KPIs.</param>

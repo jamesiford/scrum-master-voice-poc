@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.ListSessions;
+namespace Zava.Scrum.Application.Features.Standups.ListSessions;
 
 /// <summary>Projects stored standup sessions to list rows. Planning and review sessions only carry their pack and are not listed; a retrospective run by voice (it has a roster brief) is.</summary>
 internal sealed class ListSessionsHandler(ISessionRepository sessions)

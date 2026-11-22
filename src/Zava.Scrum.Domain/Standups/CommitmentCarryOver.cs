@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Flags;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Works out commitments and unblockers carried over from earlier standups. Pure; sessions are passed in (M9-R2, M9-R3).</summary>
 public static class CommitmentCarryOver

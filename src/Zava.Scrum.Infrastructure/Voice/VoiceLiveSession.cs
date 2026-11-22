@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Voice;
+namespace Zava.Scrum.Infrastructure.Voice;
 
 /// <summary>One Voice Live websocket conversation. Translates between the realtime event protocol and <see cref="VoiceEvent"/>.</summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/azure/ai-services/speech-service/voice-live-how-to (event names follow the Azure OpenAI Realtime API).</remarks>

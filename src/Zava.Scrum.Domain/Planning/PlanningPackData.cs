@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Planning;
+namespace Zava.Scrum.Domain.Planning;
 
 /// <summary>Everything persisted about a <see cref="PlanningPack"/>.</summary>
 /// <param name="Id">Pack id.</param>

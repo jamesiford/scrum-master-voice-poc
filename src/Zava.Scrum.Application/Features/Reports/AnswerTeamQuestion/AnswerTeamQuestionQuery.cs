@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Reports.AnswerTeamQuestion;
+namespace Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
 
 /// <summary>Answers a question from Teams or Copilot chat using KPIs, the current pre-brief and the last standup.</summary>
 /// <param name="TeamId">Team id.</param>

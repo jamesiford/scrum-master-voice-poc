@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Flags;
+namespace Zava.Scrum.Domain.Flags;
 
 /// <summary>Runs every registered <see cref="IFlagRule"/> against an item. Numbers and flags come from code, never a model (rule 3).</summary>
 /// <param name="rules">The rules to run.</param>

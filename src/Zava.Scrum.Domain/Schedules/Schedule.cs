@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Schedules;
+namespace Zava.Scrum.Domain.Schedules;
 
 /// <summary>When a team's standup runs and how it starts (SPEC 15, <c>schedules</c> container).</summary>
 /// <param name="TeamId">Team id.</param>

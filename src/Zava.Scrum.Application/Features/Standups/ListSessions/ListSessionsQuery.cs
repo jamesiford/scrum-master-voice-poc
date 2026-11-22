@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.ListSessions;
+namespace Zava.Scrum.Application.Features.Standups.ListSessions;
 
 /// <summary>Lists a team's sessions, newest first.</summary>
 /// <param name="TeamId">Team id.</param>

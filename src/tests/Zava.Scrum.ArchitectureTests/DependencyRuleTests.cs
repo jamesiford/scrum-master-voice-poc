@@ -1,20 +1,20 @@
 using System.Reflection;
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 using NetArchTest.Rules;
 
-namespace Mcm.Scrum.ArchitectureTests;
+namespace Zava.Scrum.ArchitectureTests;
 
 /// <summary>Enforces the Clean Architecture dependency rule and CQRS naming conventions (SPEC 6.1, 19).</summary>
 public sealed class DependencyRuleTests
 {
-    private const string Domain = "Mcm.Scrum.Domain";
-    private const string Application = "Mcm.Scrum.Application";
-    private const string Infrastructure = "Mcm.Scrum.Infrastructure";
-    private const string Api = "Mcm.Scrum.Api";
+    private const string Domain = "Zava.Scrum.Domain";
+    private const string Application = "Zava.Scrum.Application";
+    private const string Infrastructure = "Zava.Scrum.Infrastructure";
+    private const string Api = "Zava.Scrum.Api";
 
-    private static readonly Assembly DomainAssembly = typeof(Mcm.Scrum.Domain.Common.Result).Assembly;
+    private static readonly Assembly DomainAssembly = typeof(Zava.Scrum.Domain.Common.Result).Assembly;
     private static readonly Assembly ApplicationAssembly = typeof(IRequest<>).Assembly;
-    private static readonly Assembly InfrastructureAssembly = typeof(Mcm.Scrum.Infrastructure.SystemClock).Assembly;
+    private static readonly Assembly InfrastructureAssembly = typeof(Zava.Scrum.Infrastructure.SystemClock).Assembly;
 
     [Fact]
     public void Domain_HasNoDependencyOnOtherLayersOrFrameworks()

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Mcm.Scrum.Api.Voice;
+namespace Zava.Scrum.Api.Voice;
 
 /// <summary>Issues and checks the short-lived token that lets a bridge connect to one session's websocket (SPEC 8).</summary>
 /// <remarks>PROD: signed with a key from Key Vault shared by all API instances; here the key is per process.</remarks>

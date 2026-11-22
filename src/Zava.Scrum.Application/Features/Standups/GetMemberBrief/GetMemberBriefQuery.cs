@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetMemberBrief;
+namespace Zava.Scrum.Application.Features.Standups.GetMemberBrief;
 
 /// <summary>Reads one member's brief from the session's pre-brief.</summary>
 /// <param name="SessionId">Session id.</param>

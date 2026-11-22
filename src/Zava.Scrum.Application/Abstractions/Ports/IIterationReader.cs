@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Reads iteration paths from the work tracker. Kept apart from <see cref="IWorkItemReader"/> because only ceremony packs need it (SOLID: I).</summary>
 public interface IIterationReader

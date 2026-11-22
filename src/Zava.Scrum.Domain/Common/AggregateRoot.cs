@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>Base class for aggregates that raise domain events.</summary>
 public abstract class AggregateRoot

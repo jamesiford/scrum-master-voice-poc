@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mcm.Scrum.Application.Features.Standups.StartStandup;
+namespace Zava.Scrum.Application.Features.Standups.StartStandup;
 
 /// <summary>Validates <see cref="StartStandupCommand"/>.</summary>
 internal sealed class StartStandupValidator : AbstractValidator<StartStandupCommand>

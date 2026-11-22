@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Infrastructure.Voice;
+namespace Zava.Scrum.Infrastructure.Voice;
 
 /// <summary>Binds <c>Retro__*</c>: the retrospective run by voice (M9b). Implements the Application port so handlers never read configuration.</summary>
 public sealed class RetroOptions : IRetroSettings

@@ -1,9 +1,9 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetWorkItemDetails;
+namespace Zava.Scrum.Application.Features.Standups.GetWorkItemDetails;
 
 /// <summary>Looks the item up in the live sprint so due dates and states are current, not as of the pre-brief.</summary>
 internal sealed class GetWorkItemDetailsHandler(ISessionRepository sessions, ITeamRepository teams, IWorkItemReader reader, IClock clock)

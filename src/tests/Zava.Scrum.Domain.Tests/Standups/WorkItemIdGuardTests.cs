@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Tests.Standups;
+namespace Zava.Scrum.Domain.Tests.Standups;
 
 public sealed class WorkItemIdGuardTests
 {

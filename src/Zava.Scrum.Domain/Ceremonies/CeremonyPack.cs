@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.Ceremonies;
+namespace Zava.Scrum.Domain.Ceremonies;
 
 /// <summary>
 /// What a ceremony hands the Scrum Master: figures computed in code (rule 3), a plain summary, and proposed changes that become a

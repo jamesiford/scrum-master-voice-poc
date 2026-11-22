@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>A retrospective event to record.</summary>
 /// <param name="Type">Either <see cref="StandupEventType.RetroItem"/> or <see cref="StandupEventType.ActionItem"/>.</param>

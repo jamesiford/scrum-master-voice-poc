@@ -1,18 +1,18 @@
 using System.Text.Json;
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Standups.EndStandup;
-using Mcm.Scrum.Application.Features.Standups.GetMemberBrief;
-using Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
-using Mcm.Scrum.Application.Features.Standups.GetTimeRemaining;
-using Mcm.Scrum.Application.Features.Standups.GetWorkItemDetails;
-using Mcm.Scrum.Application.Features.Standups.MarkAbsent;
-using Mcm.Scrum.Application.Features.Standups.ParkTopic;
-using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
-using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Standups.EndStandup;
+using Zava.Scrum.Application.Features.Standups.GetMemberBrief;
+using Zava.Scrum.Application.Features.Standups.GetNextSpeaker;
+using Zava.Scrum.Application.Features.Standups.GetTimeRemaining;
+using Zava.Scrum.Application.Features.Standups.GetWorkItemDetails;
+using Zava.Scrum.Application.Features.Standups.MarkAbsent;
+using Zava.Scrum.Application.Features.Standups.ParkTopic;
+using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Tools;
+namespace Zava.Scrum.Application.Tools;
 
 /// <summary>Maps tool names one-to-one onto commands and queries (SPEC 6.1.4).</summary>
 internal sealed class ScrumTools(ISender sender) : IScrumTools

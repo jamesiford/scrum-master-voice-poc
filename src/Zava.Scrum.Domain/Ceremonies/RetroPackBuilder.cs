@@ -1,11 +1,11 @@
 using System.Globalization;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Members;
-using Mcm.Scrum.Domain.Planning;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Members;
+using Zava.Scrum.Domain.Planning;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Work;
 
-namespace Mcm.Scrum.Domain.Ceremonies;
+namespace Zava.Scrum.Domain.Ceremonies;
 
 /// <summary>Builds the retrospective pack: the start-stop-continue figures and the follow-up tasks that would be created.</summary>
 public static class RetroPackBuilder

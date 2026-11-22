@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Common;
+namespace Zava.Scrum.Domain.Common;
 
 /// <summary>Lets pipeline behaviours build a failed result of the closed response type without reflection.</summary>
 /// <typeparam name="TSelf">The result type itself.</typeparam>

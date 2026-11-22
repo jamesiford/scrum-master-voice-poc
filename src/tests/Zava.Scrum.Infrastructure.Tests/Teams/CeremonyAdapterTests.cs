@@ -1,15 +1,15 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.FollowUps;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Infrastructure.Ado;
-using Mcm.Scrum.Infrastructure.Teams;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Infrastructure.Ado;
+using Zava.Scrum.Infrastructure.Teams;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Tests.Teams;
+namespace Zava.Scrum.Infrastructure.Tests.Teams;
 
 public sealed class CeremonyAdapterTests
 {

@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Kpis;
 
-namespace Mcm.Scrum.Domain.Standups;
+namespace Zava.Scrum.Domain.Standups;
 
 /// <summary>Everything the facilitator needs before a standup (SPEC 10.2). Facts and numbers are built in code.</summary>
 /// <param name="TeamId">Team id.</param>

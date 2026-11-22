@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.SendFollowUps;
+namespace Zava.Scrum.Application.Features.FollowUps.SendFollowUps;
 
 /// <summary>Plans and sends the follow-up, absent and escalation cards for an ended standup. Idempotent per session.</summary>
 /// <param name="SessionId">The standup.</param>

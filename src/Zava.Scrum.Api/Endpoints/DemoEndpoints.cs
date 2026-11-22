@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Features.Demo.GetDemoStatus;
-using Mcm.Scrum.Application.Features.Demo.ResetDemo;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Features.Demo.GetDemoStatus;
+using Zava.Scrum.Application.Features.Demo.ResetDemo;
 
-namespace Mcm.Scrum.Api.Endpoints;
+namespace Zava.Scrum.Api.Endpoints;
 
 /// <summary>Demo endpoints (SPEC 14): reset state so the storyboard can be re-run.</summary>
 public static class DemoEndpoints

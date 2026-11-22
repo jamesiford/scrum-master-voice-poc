@@ -1,7 +1,7 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Application.Features.Retrospectives.GetRetroBoard;
+namespace Zava.Scrum.Application.Features.Retrospectives.GetRetroBoard;
 
 /// <summary>Reads what the retrospective has collected so far, for the shared board and the portal. A query: no side effects.</summary>
 /// <param name="SessionId">The retrospective session.</param>

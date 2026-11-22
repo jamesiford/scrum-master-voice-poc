@@ -1,10 +1,10 @@
 using System.Net.Http.Json;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Controls the Node meeting bridge over HTTP (SPEC 7.3). The shared <c>x-bridge-key</c> keeps the control routes private.</summary>
 public sealed class HttpMeetingBridge(HttpClient http, IOptions<BridgeOptions> options, ILogger<HttpMeetingBridge> logger) : IMeetingBridge

@@ -1,8 +1,8 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Common;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Common;
 
-namespace Mcm.Scrum.Application.Features.FollowUps.ListEmails;
+namespace Zava.Scrum.Application.Features.FollowUps.ListEmails;
 
 /// <summary>Reads the email sender's outbox.</summary>
 internal sealed class ListEmailsHandler(IEmailSender emails) : IRequestHandler<ListEmailsQuery, Result<IReadOnlyList<EmailMessage>>>

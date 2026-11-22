@@ -1,13 +1,13 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Domain.Flags;
-using Mcm.Scrum.Domain.Kpis;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Teams;
-using Mcm.Scrum.Domain.Work;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Flags;
+using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mcm.Scrum.Application.Tests.TestDoubles;
+namespace Zava.Scrum.Application.Tests.TestDoubles;
 
 internal sealed class FakeReconcileAgent(ReconcileSuggestion? suggestion) : IReconcileAgent
 {

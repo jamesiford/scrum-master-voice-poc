@@ -1,6 +1,6 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Messaging;
 
-namespace Mcm.Scrum.Application.Features.Standups.ResolveUnblocker;
+namespace Zava.Scrum.Application.Features.Standups.ResolveUnblocker;
 
 /// <summary>
 /// Reads a blocked member's answer to "Who can help unblock this?" and, when it names exactly one other roster member, stores that

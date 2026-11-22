@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Domain.Work;
+namespace Zava.Scrum.Domain.Work;
 
 /// <summary>An Azure DevOps iteration with its dates. The dates are dates: Azure DevOps stores no time of day for them.</summary>
 /// <param name="Path">The iteration path.</param>

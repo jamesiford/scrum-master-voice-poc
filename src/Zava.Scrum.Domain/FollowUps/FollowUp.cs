@@ -1,7 +1,7 @@
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
 
-namespace Mcm.Scrum.Domain.FollowUps;
+namespace Zava.Scrum.Domain.FollowUps;
 
 /// <summary>
 /// A follow-up to a standup, with proposed Azure DevOps changes. Enforces customer requirement F7: nothing is written

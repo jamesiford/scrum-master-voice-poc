@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mcm.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Abstractions.Ports;
 
-namespace Mcm.Scrum.Infrastructure.Teams;
+namespace Zava.Scrum.Infrastructure.Teams;
 
 /// <summary>Binds <c>Calendar__*</c>: the sprint calendar (M9d). Implements the Application port so handlers never read configuration.</summary>
 public sealed class CalendarOptions : ICalendarSettings

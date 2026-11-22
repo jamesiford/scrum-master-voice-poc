@@ -1,4 +1,4 @@
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>
 /// Remembers the Teams conversations the bot may message proactively. The reference is opaque to the Application layer.

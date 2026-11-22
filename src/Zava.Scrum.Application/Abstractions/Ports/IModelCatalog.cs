@@ -1,6 +1,6 @@
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Abstractions.Ports;
+namespace Zava.Scrum.Application.Abstractions.Ports;
 
 /// <summary>Lists the realtime models worth comparing and which one is deployed.</summary>
 public interface IModelCatalog

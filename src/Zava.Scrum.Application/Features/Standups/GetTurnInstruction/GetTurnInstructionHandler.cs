@@ -1,11 +1,11 @@
-using Mcm.Scrum.Application.Abstractions.Messaging;
-using Mcm.Scrum.Application.Abstractions.Ports;
-using Mcm.Scrum.Application.Features.Teams;
-using Mcm.Scrum.Domain.Common;
-using Mcm.Scrum.Domain.Standups;
-using Mcm.Scrum.Domain.Voice;
+using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
 
-namespace Mcm.Scrum.Application.Features.Standups.GetTurnInstruction;
+namespace Zava.Scrum.Application.Features.Standups.GetTurnInstruction;
 
 /// <summary>Fills a turn template with facts from the session. The model only phrases it; every fact comes from code (rule 3).</summary>
 internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITeamRepository teams, IPromptStore prompts, IRetroSettings retro, IClock clock)
