@@ -8,8 +8,14 @@ param environmentName string
 @description('Region for new resources.')
 param location string = resourceGroup().location
 
+@description('Prefix for the resource names this template creates (acs, identity, registry, Cosmos DB, Container Apps environment). An existing environment keeps its names by setting NAME_PREFIX to the prefix it was deployed with (see docs/rebrand/AZURE.md).')
+param namePrefix string = 'zava-scrum'
+
+@description('Cosmos DB database name. Defaults to the name prefix without dashes.')
+param cosmosDatabaseName string = replace(namePrefix, '-', '')
+
 @description('Existing Foundry (AI Services) resource to reuse.')
-param foundryName string = 'fdy-mcm-scrum-demo'
+param foundryName string
 
 @description('Foundry project name inside the Foundry resource (used for the project endpoint).')
 param foundryProjectName string
@@ -18,10 +24,10 @@ param foundryProjectName string
 param adoOrgUrl string
 
 @description('Existing Log Analytics workspace to reuse.')
-param logAnalyticsName string = 'log-fdy-mcm-scrum-demo-dybvsjflknh74'
+param logAnalyticsName string
 
 @description('Existing Application Insights component to reuse.')
-param appInsightsName string = 'appi-fdy-mcm-scrum-demo-9280'
+param appInsightsName string
 
 @description('Existing Azure Bot resource whose endpoint is set after deploy.')
 param botAppId string
@@ -57,20 +63,20 @@ resource insights 'Microsoft.Insights/components@2020-02-02' existing = {
 }
 
 resource acs 'Microsoft.Communication/communicationServices@2023-04-01' = {
-  name: 'acs-mcm-scrum-demo'
+  name: 'acs-${namePrefix}-demo'
   location: 'global'
   tags: tags
   properties: { dataLocation: 'United States' }
 }
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: 'id-mcm-scrum-${token}'
+  name: 'id-${namePrefix}-${token}'
   location: location
   tags: tags
 }
 
 resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
-  name: 'acrmcmscrum${token}'
+  name: 'acr${replace(namePrefix, '-', '')}${token}'
   location: location
   tags: tags
   sku: { name: 'Basic' }
@@ -112,7 +118,7 @@ resource aiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 }
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
-  name: 'cosmos-mcm-scrum-${token}'
+  name: 'cosmos-${namePrefix}-${token}'
   location: location
   tags: tags
   kind: 'GlobalDocumentDB'
@@ -130,8 +136,8 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
 
 resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
   parent: cosmos
-  name: 'mcmscrum'
-  properties: { resource: { id: 'mcmscrum' } }
+  name: cosmosDatabaseName
+  properties: { resource: { id: cosmosDatabaseName } }
 }
 
 resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
@@ -152,7 +158,7 @@ resource cosmosRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@20
 }
 
 resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
-  name: 'cae-mcm-scrum-${token}'
+  name: 'cae-${namePrefix}-${token}'
   location: location
   tags: tags
   properties: {
@@ -211,6 +217,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Connections__ServiceConnection__Settings__ClientSecret', secretRef: 'bot-secret' }
             { name: 'Store__Mode', value: 'Cosmos' }
             { name: 'Cosmos__Endpoint', value: cosmos.properties.documentEndpoint }
+            { name: 'Cosmos__Database', value: cosmosDatabaseName }
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
