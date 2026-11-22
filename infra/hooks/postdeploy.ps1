@@ -4,7 +4,7 @@ $api = $env:API_URI
 $bridge = $env:BRIDGE_URI
 $rg = $env:AZURE_RESOURCE_GROUP
 $org = ($env:ADO_ORG_URL).TrimEnd('/').Split('/')[-1]
-$project = 'MCM-Scrum-Demo'
+$project = 'Zava-Scrum-Demo'
 # The Azure Bot resource is created outside this template; BOT_NAME names it (an existing environment sets it to its current bot).
 $botName = if ($env:BOT_NAME) { $env:BOT_NAME } else { 'bot-zava-scrum-demo' }
 

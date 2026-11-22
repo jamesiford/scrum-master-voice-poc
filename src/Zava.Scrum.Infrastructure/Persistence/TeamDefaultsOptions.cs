@@ -22,7 +22,7 @@ public sealed class TeamDefaultsOptions
 
     /// <summary>Gets or sets the Azure DevOps project.</summary>
     [Required]
-    public string Project { get; set; } = "MCM-Scrum-Demo";
+    public string Project { get; set; } = "Zava-Scrum-Demo";
 
     /// <summary>Gets or sets the Azure DevOps team.</summary>
     [Required]
@@ -30,7 +30,7 @@ public sealed class TeamDefaultsOptions
 
     /// <summary>Gets or sets the area path.</summary>
     [Required]
-    public string AreaPath { get; set; } = "MCM-Scrum-Demo\\Payments";
+    public string AreaPath { get; set; } = "Zava-Scrum-Demo\\Payments";
 
     /// <summary>Gets or sets the sprint goal (Azure DevOps has no sprint goal field).</summary>
     public string SprintGoal { get; set; } = string.Empty;

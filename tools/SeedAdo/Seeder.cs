@@ -9,7 +9,7 @@ namespace Zava.Scrum.Tools.SeedAdo;
 /// </summary>
 internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> log)
 {
-    private const string DemoTag = "mcm-demo";
+    private const string DemoTag = "zava-demo";
     private static readonly string[] BatchFields = ["System.Tags", "System.State"];
     private string _project = string.Empty;
     private string _areaPath = string.Empty;
@@ -84,7 +84,7 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         var teams = $"_apis/projects/{Esc(_project)}/teams";
         if (await ado.GetAsync($"{teams}/{Esc(seed.Team)}", ct, allowNotFound: true) is null)
         {
-            await ado.SendJsonAsync(HttpMethod.Post, teams, new { name = seed.Team, description = "MCM Scrum Agent demo team" }, ct);
+            await ado.SendJsonAsync(HttpMethod.Post, teams, new { name = seed.Team, description = "Zava Scrum Agent demo team" }, ct);
             log($"Created team '{seed.Team}'");
         }
 
