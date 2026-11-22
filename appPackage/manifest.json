@@ -1,15 +1,15 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
   "manifestVersion": "1.25",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "id": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
   "developer": {
-    "name": "MCM Scrum PoC",
+    "name": "Zava Scrum PoC",
     "websiteUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
     "privacyUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
     "termsOfUseUrl": "https://github.com/jamesiford/scrum-master-voice-poc"
   },
-  "name": { "short": "MCM Scrum Agent", "full": "MCM Scrum Agent (PoC)" },
+  "name": { "short": "Zava Scrum Agent", "full": "Zava Scrum Agent (PoC)" },
   "description": {
     "short": "Junior Scrum Master that posts standup recaps and follow-ups.",
     "full": "Runs the daily standup, posts the recap, and sends each person a follow-up card. Approving a card writes the agreed update to Azure DevOps."
