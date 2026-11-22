@@ -25,7 +25,7 @@ public sealed class SeedFileRosterSource(IOptions<DemoOptions> options) : IRoste
         await using var stream = File.OpenRead(path);
         var seed = await JsonSerializer.DeserializeAsync<SeedFile>(stream, Json, ct) ?? new SeedFile([]);
         return seed.Members
-            .Select((m, i) => new Member($"m-{m.Key}", team.Id, m.Key, m.DisplayName, m.AdoUniqueName, m.Pronunciation ?? m.DisplayName, m.Order ?? i + 1, true))
+            .Select((m, i) => new Member($"m-{m.Key}", team.Id, m.Key, m.DisplayName, m.AdoUniqueName ?? options.Value.MemberEmails.GetValueOrDefault(m.Key), m.Pronunciation ?? m.DisplayName, m.Order ?? i + 1, true))
             .ToList();
     }
 

@@ -11,6 +11,18 @@ public enum FollowUpKind
 
     /// <summary>Tells the human Scrum Master a blocker needs help.</summary>
     Escalation,
+
+    /// <summary>Asks a member to help unblock a teammate's item (M9-R2).</summary>
+    Unblock,
+
+    /// <summary>Sprint planning pack for the Scrum Master.</summary>
+    PlanningPack,
+
+    /// <summary>Retrospective actions for the Scrum Master.</summary>
+    RetroActions,
+
+    /// <summary>Sprint review pack for the Scrum Master.</summary>
+    ReviewPack,
 }
 
 /// <summary>Approval lifecycle of a follow-up.</summary>
@@ -43,4 +55,13 @@ public enum ChangeOp
 
     /// <summary>Add or remove a tag; the value is <c>+Name</c> or <c>-Name</c>.</summary>
     Tag,
+
+    /// <summary>Move the item to another iteration; the value is the iteration path.</summary>
+    SetIteration,
+
+    /// <summary>Assign the item; the value is the assignee's display or unique name.</summary>
+    Assign,
+
+    /// <summary>Create a work item from <see cref="ProposedChange.New"/>.</summary>
+    CreateWorkItem,
 }

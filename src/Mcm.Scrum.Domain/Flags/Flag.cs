@@ -17,4 +17,10 @@ public enum Flag
 
     /// <summary>In progress but untouched since yesterday.</summary>
     NoRecentUpdate,
+
+    /// <summary>Due soon with too much work left, or not started (M9-R4).</summary>
+    AtRisk,
+
+    /// <summary>Committed to in an earlier standup and still open two standups later (M9-R3).</summary>
+    MissedCommitment,
 }

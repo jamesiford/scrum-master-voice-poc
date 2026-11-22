@@ -6,7 +6,9 @@ namespace Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
 /// <param name="Type">Kind.</param>
 /// <param name="Text">Description.</param>
 /// <param name="WorkItemIds">Ids that exist in the sprint.</param>
-public sealed record ReconcileEvent(StandupEventType Type, string Text, IReadOnlyList<int> WorkItemIds);
+/// <param name="Category">For a retrospective note, its column.</param>
+/// <param name="OwnerMemberId">For a retrospective action, its owner.</param>
+public sealed record ReconcileEvent(StandupEventType Type, string Text, IReadOnlyList<int> WorkItemIds, RetroCategory? Category = null, string? OwnerMemberId = null);
 
 /// <summary>The grounded result of a reconcile (SPEC 10.2). Nothing here mentions an id outside the sprint.</summary>
 /// <param name="Consistent">Whether the update matched the brief.</param>

@@ -18,12 +18,14 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
     /// <param name="store">Store options.</param>
     /// <param name="defaults">Default team settings.</param>
     /// <param name="ado">Azure DevOps options (organisation URL).</param>
-    public JsonFileTeamRepository(ICollectionStore store, IOptions<TeamDefaultsOptions> defaults, IOptions<AdoOptions> ado)
+    /// <param name="flags">Default flag and escalation thresholds.</param>
+    public JsonFileTeamRepository(ICollectionStore store, IOptions<TeamDefaultsOptions> defaults, IOptions<AdoOptions> ado, IOptions<FlagsOptions> flags)
     {
         ArgumentNullException.ThrowIfNull(store);
         _store = store;
         ArgumentNullException.ThrowIfNull(defaults);
         ArgumentNullException.ThrowIfNull(ado);
+        ArgumentNullException.ThrowIfNull(flags);
         _path = "teams.json";
         var d = defaults.Value;
         _default = new Team(
@@ -32,7 +34,7 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
             d.TimeZone,
             15,
             new AdoSettings(ado.Value.Org, d.Project, d.AdoTeam, d.AreaPath),
-            new TeamBehaviours(),
+            flags.Value.ToBehaviours(),
             d.SprintGoal);
     }
 

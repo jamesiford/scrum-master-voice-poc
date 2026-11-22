@@ -1,4 +1,5 @@
 using Mcm.Scrum.Domain.Common;
+using Mcm.Scrum.Domain.Standups;
 
 namespace Mcm.Scrum.Domain.FollowUps;
 
@@ -25,6 +26,9 @@ public sealed class FollowUp : AggregateRoot
         DecidedAt = s.DecidedAt;
         AppliedAt = s.AppliedAt;
         ApplyError = s.ApplyError;
+        Ceremony = s.Ceremony;
+        ForScrumMaster = s.ForScrumMaster;
+        ApprovedVia = s.ApprovedVia;
     }
 
     /// <summary>Gets the id.</summary>
@@ -38,6 +42,15 @@ public sealed class FollowUp : AggregateRoot
 
     /// <summary>Gets the member it is for, if any.</summary>
     public string? MemberId { get; }
+
+    /// <summary>Gets the ceremony it came from.</summary>
+    public CeremonyKind Ceremony { get; }
+
+    /// <summary>Gets a value indicating whether it belongs to the Scrum Master rather than a member.</summary>
+    public bool ForScrumMaster { get; }
+
+    /// <summary>Gets where it was approved, once approved.</summary>
+    public ApprovalChannel? ApprovedVia { get; private set; }
 
     /// <summary>Gets the kind.</summary>
     public FollowUpKind Kind { get; }
@@ -82,9 +95,11 @@ public sealed class FollowUp : AggregateRoot
     /// <param name="changes">Proposed changes.</param>
     /// <param name="standupDate">Standup date.</param>
     /// <param name="now">Current time.</param>
+    /// <param name="ceremony">The ceremony it came from.</param>
+    /// <param name="forScrumMaster">True when the Scrum Master, not a member, decides it.</param>
     /// <returns>The follow-up.</returns>
-    public static FollowUp Create(Guid id, string teamId, Guid sessionId, string? memberId, FollowUpKind kind, string message, IReadOnlyList<ProposedChange> changes, DateOnly standupDate, DateTimeOffset now) =>
-        new(new FollowUpSnapshot(id, teamId, sessionId, memberId, kind, message, changes, FollowUpStatus.Pending, standupDate, now, null, null, null, null, null));
+    public static FollowUp Create(Guid id, string teamId, Guid sessionId, string? memberId, FollowUpKind kind, string message, IReadOnlyList<ProposedChange> changes, DateOnly standupDate, DateTimeOffset now, CeremonyKind ceremony = CeremonyKind.DailyScrum, bool forScrumMaster = false) =>
+        new(new FollowUpSnapshot(id, teamId, sessionId, memberId, kind, message, changes, FollowUpStatus.Pending, standupDate, now, null, null, null, null, null, ceremony, forScrumMaster, null));
 
     /// <summary>Rehydrates a persisted follow-up.</summary>
     /// <param name="snapshot">Persisted state.</param>
@@ -98,7 +113,7 @@ public sealed class FollowUp : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public FollowUpSnapshot ToSnapshot() =>
-        new(Id, TeamId, SessionId, MemberId, Kind, Message, Changes, Status, StandupDate, CreatedAt, ApprovedBy, RejectedBy, DecidedAt, AppliedAt, ApplyError);
+        new(Id, TeamId, SessionId, MemberId, Kind, Message, Changes, Status, StandupDate, CreatedAt, ApprovedBy, RejectedBy, DecidedAt, AppliedAt, ApplyError, Ceremony, ForScrumMaster, ApprovedVia);
 
     /// <summary>Records that the card was sent.</summary>
     public void MarkSent()
@@ -112,8 +127,9 @@ public sealed class FollowUp : AggregateRoot
     /// <summary>Approves the follow-up. Only a named person can approve, and only while it is undecided.</summary>
     /// <param name="approver">Who approved (display name).</param>
     /// <param name="now">Current time.</param>
+    /// <param name="channel">Where the approval happened; written into the Azure DevOps attribution.</param>
     /// <returns>Success, or a validation or conflict error.</returns>
-    public Result Approve(string approver, DateTimeOffset now)
+    public Result Approve(string approver, DateTimeOffset now, ApprovalChannel channel = ApprovalChannel.Teams)
     {
         if (string.IsNullOrWhiteSpace(approver))
         {
@@ -127,6 +143,7 @@ public sealed class FollowUp : AggregateRoot
 
         Status = FollowUpStatus.Approved;
         ApprovedBy = approver.Trim();
+        ApprovedVia = channel;
         DecidedAt = now;
         Raise(new FollowUpApproved(Id, now));
         return Result.Success();
@@ -167,7 +184,7 @@ public sealed class FollowUp : AggregateRoot
             return Result<IReadOnlyList<ApprovedChange>>.Failure(FollowUpErrors.NotApproved(Status));
         }
 
-        IReadOnlyList<ApprovedChange> changes = Changes.Select(c => new ApprovedChange(c, ApprovedBy, StandupDate)).ToList();
+        IReadOnlyList<ApprovedChange> changes = Changes.Select(c => new ApprovedChange(c, ApprovedBy, StandupDate, Ceremony, ApprovedVia ?? ApprovalChannel.Teams)).ToList();
         return Result<IReadOnlyList<ApprovedChange>>.Success(changes);
     }
 

@@ -17,6 +17,7 @@ namespace Mcm.Scrum.Application.Features.Standups;
 /// <param name="P95LatencyMs">95th percentile latency.</param>
 /// <param name="QuestionsAsked">Clarifying questions the agent asked.</param>
 /// <param name="StandupMinutes">Timebox for this run.</param>
+/// <param name="Kind">The ceremony.</param>
 public sealed record SessionDto(
     Guid Id,
     string TeamId,
@@ -31,4 +32,5 @@ public sealed record SessionDto(
     int P50LatencyMs,
     int P95LatencyMs,
     int QuestionsAsked,
-    int StandupMinutes);
+    int StandupMinutes,
+    CeremonyKind Kind = CeremonyKind.DailyScrum);

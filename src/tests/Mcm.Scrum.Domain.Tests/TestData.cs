@@ -16,6 +16,8 @@ internal static class TestData
         double daysSinceChange = 0,
         double? points = null,
         DateTimeOffset? due = null,
+        double? remaining = null,
+        double? original = null,
         params string[] tags) =>
-        new(new WorkItemId(id), $"Item {id}", type, state, assignedTo, ownerKey, Now.AddDays(-daysInState), Now.AddDays(-daysSinceChange), points, null, due, tags);
+        new(new WorkItemId(id), $"Item {id}", type, state, assignedTo, ownerKey, Now.AddDays(-daysInState), Now.AddDays(-daysSinceChange), points, remaining, due, tags, original);
 }

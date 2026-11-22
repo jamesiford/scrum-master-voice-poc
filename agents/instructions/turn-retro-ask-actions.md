@@ -1,0 +1,1 @@
+Ask {firstName} for one concrete action the team could take next sprint, and who should own it. Say that naming a teammate is fine, and that they can pass if they have none. Thank the previous speaker only if there was one, in four words or fewer. Keep it to two sentences. Actions agreed so far: {actions}.

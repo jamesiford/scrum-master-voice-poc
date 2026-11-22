@@ -1,3 +1,5 @@
+using Mcm.Scrum.Domain.Standups;
+
 namespace Mcm.Scrum.Domain.FollowUps;
 
 /// <summary>Everything persisted about a <see cref="FollowUp"/>.</summary>
@@ -16,6 +18,9 @@ namespace Mcm.Scrum.Domain.FollowUps;
 /// <param name="DecidedAt">When decided.</param>
 /// <param name="AppliedAt">When written to Azure DevOps.</param>
 /// <param name="ApplyError">Why the last write failed, if it did.</param>
+/// <param name="Ceremony">The ceremony it came from; <see cref="CeremonyKind.DailyScrum"/> for data saved before ceremonies existed.</param>
+/// <param name="ForScrumMaster">True when the Scrum Master decides it.</param>
+/// <param name="ApprovedVia">Where it was approved.</param>
 public sealed record FollowUpSnapshot(
     Guid Id,
     string TeamId,
@@ -31,4 +36,7 @@ public sealed record FollowUpSnapshot(
     string? RejectedBy,
     DateTimeOffset? DecidedAt,
     DateTimeOffset? AppliedAt,
-    string? ApplyError);
+    string? ApplyError,
+    CeremonyKind Ceremony = CeremonyKind.DailyScrum,
+    bool ForScrumMaster = false,
+    ApprovalChannel? ApprovedVia = null);

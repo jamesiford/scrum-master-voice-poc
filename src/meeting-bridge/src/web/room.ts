@@ -37,6 +37,7 @@ let socket: WebSocket;
 let members: RoomMember[] = [];
 let cast: CastMemberInfo[] = [];
 let standupSeconds = 900;
+let kind = 'DailyScrum';
 let started = false;
 let castBusy = false;
 let deferredTurn: string | undefined;
@@ -99,6 +100,7 @@ async function onMessage(message: ServerMessage): Promise<void> {
   switch (message.type) {
     case 'hello':
       members = message.members;
+      kind = message.kind ?? 'DailyScrum';
       standupSeconds = message.standupMinutes * 60;
       await loadCast();
       renderRoster();
@@ -129,7 +131,7 @@ async function onMessage(message: ServerMessage): Promise<void> {
 }
 
 async function loadCast(): Promise<void> {
-  const response = await fetch('/cast/script');
+  const response = await fetch(`/cast/script?kind=${encodeURIComponent(kind)}`);
   cast = response.ok ? ((await response.json()) as { members: CastMemberInfo[] }).members : [];
   if (!response.ok)
     banner(
@@ -242,7 +244,7 @@ async function requestLine(
   const response = await fetch('/cast/line', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ sessionId, memberId, question: lastAgentCaption }),
+    body: JSON.stringify({ sessionId, memberId, question: lastAgentCaption, kind }),
   });
   if (!response.ok) {
     banner(

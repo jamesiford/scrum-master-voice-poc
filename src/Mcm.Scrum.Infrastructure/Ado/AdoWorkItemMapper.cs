@@ -41,7 +41,9 @@ internal static class AdoWorkItemMapper
             ReadNumber(fields, AdoFields.StoryPoints),
             ReadNumber(fields, AdoFields.RemainingWork),
             ReadDate(fields, AdoFields.FinishDate) ?? ReadDate(fields, AdoFields.TargetDate),
-            tags);
+            tags,
+            ReadNumber(fields, AdoFields.OriginalEstimate),
+            ReadString(fields, AdoFields.AcceptanceCriteria));
     }
 
     private static List<string> ReadTags(JsonElement fields) =>

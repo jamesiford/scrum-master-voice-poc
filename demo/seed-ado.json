@@ -6,6 +6,7 @@
   "sprintLengthDays": 14,
   "daysElapsed": 7,
   "sprintGoal": "Customers can pay by card and failed payments retry automatically.",
+  "nextIteration": "Sprint 43",
   "members": [
     { "key": "daniel", "displayName": "Daniel Park", "pronunciation": "Daniel", "order": 1 },
     { "key": "maya", "displayName": "Maya Lin", "pronunciation": "MY-ah", "order": 2 },
@@ -29,6 +30,17 @@
     { "key": "gateway-logging", "type": "Task", "title": "Add structured logging to gateway client", "state": "Active", "remaining": 3, "owner": "daniel", "tags": [] },
     { "key": "settlement-schema-review", "type": "Task", "title": "Review settlement schema change", "state": "Active", "remaining": 6, "owner": "maya", "tags": ["demo-quiet-3"] },
     { "key": "batch-runbook", "type": "Task", "title": "Update runbook for batch failure", "state": "New", "remaining": 2, "owner": "daniel", "tags": [] },
-    { "key": "qa-demo-data", "type": "Task", "title": "Prepare demo data for QA", "state": "New", "remaining": 2, "owner": "maya", "tags": [] }
+    { "key": "qa-demo-data", "type": "Task", "title": "Prepare demo data for QA", "state": "New", "remaining": 2, "owner": "maya", "tags": [] },
+    { "key": "audit-report", "type": "Task", "title": "Prepare reconciliation report for audit", "state": "Active", "remaining": 8, "originalEstimate": 10, "owner": "daniel", "finishInDays": 1, "tags": [] },
+    {"key": "b-email-receipt", "type": "User Story", "title": "Email receipt after a successful payment", "state": "New", "points": 3, "owner": null, "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-decline-reason", "type": "User Story", "title": "Show the reason on declined payments", "state": "New", "points": 5, "owner": "daniel", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-apple-pay", "type": "User Story", "title": "Support Apple Pay at checkout", "state": "New", "points": 3, "owner": null, "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-partial-payments", "type": "User Story", "title": "Allow partial payments on payment plans", "state": "New", "points": 5, "owner": "maya", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-statement-pdf", "type": "User Story", "title": "Download statements as PDF", "state": "New", "points": 3, "owner": "admin", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-audit-log", "type": "User Story", "title": "Audit log for payment plan changes", "state": "New", "points": 5, "owner": "daniel", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-address-update", "type": "User Story", "title": "Self-service address update", "state": "New", "points": 3, "owner": "maya", "backlog": true, "tags": []},
+    {"key": "b-settlement-import", "type": "User Story", "title": "Bulk import of settlement files", "state": "New", "points": 5, "owner": null, "backlog": true, "tags": []},
+    {"key": "b-collector-dashboard", "type": "User Story", "title": "Dashboard for the collector queue", "state": "New", "owner": "admin", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []},
+    {"key": "b-reporting-model", "type": "User Story", "title": "Rebuild the reporting data model", "state": "New", "points": 13, "owner": "daniel", "backlog": true, "acceptanceCriteria": "Given a customer, when they act, then the result is shown and logged.", "tags": []}
   ]
 }

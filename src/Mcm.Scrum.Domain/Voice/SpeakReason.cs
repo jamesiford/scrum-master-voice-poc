@@ -35,4 +35,10 @@ public enum SpeakReason
 
     /// <summary>Returning to a member who was skipped earlier.</summary>
     CircleBack,
+
+    /// <summary>Reading the grouped retrospective notes back to the team.</summary>
+    RetroThemes,
+
+    /// <summary>Asking a member who just raised a blocker who can help unblock it (M9-R2).</summary>
+    Unblocker,
 }

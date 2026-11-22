@@ -1,0 +1,37 @@
+# Scripted participants for the Simulated Room retrospective (M9b). Same format as payments-standup.yaml.
+# The first line without `when` is a member's first answer. Later lines run only when the agent's words contain one of the
+# `when` keywords, so an unrelated agent turn gets no reply. Run with ?autopilot=1 so m-admin is played by the cast too.
+#
+# What it demonstrates:
+#   - m-maya: one unclear note, so the agent asks "start, stop or keep doing?" and she answers.
+#   - m-daniel: steps away on his first turn, is circled back to, and corrects himself inside one answer.
+#   - Actions: each person gives one action and the agent confirms the owner (m-admin names m-maya as the owner).
+members:
+  - memberId: m-admin
+    voice: en-US-JennyNeural
+    turns:
+      - say: "We should stop having so many meetings during the sprint. Code reviews went well this sprint. We are missing a proper test environment."
+      - when: ["owned", "does that work"]
+        say: "Yes, that works for me."
+      - when: ["action"]
+        say: "Maya will draft a release checklist for the team."
+  - memberId: m-maya
+    voice: en-US-AriaNeural
+    turns:
+      - say: "We should keep the pairing sessions going. The release process is painful."
+      - when: ["keep doing", "stop or"]
+        say: "I meant we should stop the manual release steps."
+      - when: ["owned", "does that work"]
+        say: "Yes, that's right."
+      - when: ["action"]
+        say: "Add the retry scenarios to the regression suite this sprint."
+  - memberId: m-daniel
+    voice: en-US-GuyNeural
+    turns:
+      - say: "Sorry, I need to step away for a minute."
+      - when: ["went well", "better", "missing", "points"]
+        say: "We should stop writing very long tickets. Scratch that, we should keep tickets detailed for complex stories."
+      - when: ["owned", "does that work"]
+        say: "Yes, that works."
+      - when: ["action"]
+        say: "Daniel can split the oversized stories before planning."

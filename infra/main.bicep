@@ -11,6 +11,12 @@ param location string = resourceGroup().location
 @description('Existing Foundry (AI Services) resource to reuse.')
 param foundryName string = 'fdy-mcm-scrum-demo'
 
+@description('Foundry project name inside the Foundry resource (used for the project endpoint).')
+param foundryProjectName string
+
+@description('Azure DevOps organisation URL, for example https://dev.azure.com/your-organisation.')
+param adoOrgUrl string
+
 @description('Existing Log Analytics workspace to reuse.')
 param logAnalyticsName string = 'log-fdy-mcm-scrum-demo-dybvsjflknh74'
 
@@ -197,6 +203,10 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bot__AppId', value: botAppId }
             { name: 'Bot__TenantId', value: tenantId }
             { name: 'Bot__TunnelHostSuffix', value: '' }
+            { name: 'Foundry__ProjectEndpoint', value: 'https://${foundryName}.services.ai.azure.com/api/projects/${foundryProjectName}' }
+            { name: 'Ado__Org', value: adoOrgUrl }
+            { name: 'Connections__ServiceConnection__Settings__TenantId', value: tenantId }
+            { name: 'Connections__ServiceConnection__Settings__AuthorityEndpoint', value: 'https://login.microsoftonline.com/${tenantId}' }
             { name: 'Connections__ServiceConnection__Settings__ClientId', value: botAppId }
             { name: 'Connections__ServiceConnection__Settings__ClientSecret', secretRef: 'bot-secret' }
             { name: 'Store__Mode', value: 'Cosmos' }

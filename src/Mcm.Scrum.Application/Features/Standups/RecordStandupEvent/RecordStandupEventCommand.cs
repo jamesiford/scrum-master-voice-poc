@@ -9,9 +9,13 @@ namespace Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
 /// <param name="MemberId">Member concerned, if any.</param>
 /// <param name="Text">What happened.</param>
 /// <param name="WorkItemIds">Work items referred to.</param>
+/// <param name="Category">For a retrospective note, its column.</param>
+/// <param name="OwnerMemberId">For a retrospective action, its owner.</param>
 public sealed record RecordStandupEventCommand(
     Guid SessionId,
     StandupEventType Type,
     string? MemberId,
     string Text,
-    IReadOnlyList<int>? WorkItemIds = null) : ICommand;
+    IReadOnlyList<int>? WorkItemIds = null,
+    RetroCategory? Category = null,
+    string? OwnerMemberId = null) : ICommand;

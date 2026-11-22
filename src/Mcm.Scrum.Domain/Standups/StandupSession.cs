@@ -26,6 +26,7 @@ public sealed class StandupSession : AggregateRoot
         _handled = [.. s.HandledMemberIds];
         _events = [.. s.Events];
         _latency = [.. s.LatencySamplesMs];
+        Kind = s.Kind;
     }
 
     /// <summary>Gets the session id.</summary>
@@ -33,6 +34,9 @@ public sealed class StandupSession : AggregateRoot
 
     /// <summary>Gets the owning team.</summary>
     public string TeamId { get; }
+
+    /// <summary>Gets the ceremony this session runs.</summary>
+    public CeremonyKind Kind { get; }
 
     /// <summary>Gets when the session was prepared.</summary>
     public DateTimeOffset CreatedAt { get; }
@@ -75,10 +79,11 @@ public sealed class StandupSession : AggregateRoot
     /// <param name="teamId">The owning team.</param>
     /// <param name="now">Current time, supplied by the caller (no ambient clock in Domain).</param>
     /// <param name="preBrief">The pre-brief.</param>
+    /// <param name="kind">The ceremony.</param>
     /// <returns>A prepared session.</returns>
-    public static StandupSession Prepare(Guid id, string teamId, DateTimeOffset now, PreBrief? preBrief)
+    public static StandupSession Prepare(Guid id, string teamId, DateTimeOffset now, PreBrief? preBrief, CeremonyKind kind = CeremonyKind.DailyScrum)
     {
-        var session = new StandupSession(new StandupSessionSnapshot(id, teamId, now, StandupStatus.Prepared, preBrief, null, null, 15, null, null, new Dictionary<string, Attendance>(), [], [], []));
+        var session = new StandupSession(new StandupSessionSnapshot(id, teamId, now, StandupStatus.Prepared, preBrief, null, null, 15, null, null, new Dictionary<string, Attendance>(), [], [], [], kind));
         session.Raise(new StandupPrepared(id, now));
         return session;
     }
@@ -95,7 +100,7 @@ public sealed class StandupSession : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public StandupSessionSnapshot ToSnapshot() =>
-        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency]);
+        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind);
 
     /// <summary>Starts the standup. A session can start once, and only after it was prepared.</summary>
     /// <param name="mode">Bridge mode.</param>
@@ -129,6 +134,13 @@ public sealed class StandupSession : AggregateRoot
 
         Status = StandupStatus.Ended;
         EndedAt = now;
+        // A retrospective has its own handlers: the standup recap and per-member follow-ups must not fire for it.
+        if (Kind == CeremonyKind.Retrospective)
+        {
+            Raise(new RetrospectiveEnded(Id, now));
+            return;
+        }
+
         Raise(new StandupEnded(Id, now));
     }
 
@@ -138,8 +150,39 @@ public sealed class StandupSession : AggregateRoot
     /// <param name="workItemIds">Work items referred to.</param>
     /// <param name="text">What happened.</param>
     /// <param name="now">Current time.</param>
-    public void RecordEvent(StandupEventType type, string? memberId, IReadOnlyList<int> workItemIds, string text, DateTimeOffset now) =>
-        _events.Add(new StandupEvent(Guid.NewGuid(), now, type, memberId, workItemIds, text));
+    /// <param name="category">For a retrospective note, its column.</param>
+    /// <param name="ownerMemberId">For a retrospective action item, its owner.</param>
+    public void RecordEvent(
+        StandupEventType type,
+        string? memberId,
+        IReadOnlyList<int> workItemIds,
+        string text,
+        DateTimeOffset now,
+        RetroCategory? category = null,
+        string? ownerMemberId = null) =>
+        _events.Add(new StandupEvent(Guid.NewGuid(), now, type, memberId, workItemIds, text, Category: category, OwnerMemberId: ownerMemberId));
+
+    /// <summary>Records who can help unblock a blocker (M9-R2). The id must come from the roster; the caller resolves the spoken name in code.</summary>
+    /// <param name="eventId">The blocker event.</param>
+    /// <param name="unblockerMemberId">The roster member who can help.</param>
+    /// <returns><see langword="true"/> when a blocker event was updated.</returns>
+    public bool SetUnblocker(Guid eventId, string unblockerMemberId)
+    {
+        var i = _events.FindIndex(e => e.Id == eventId && e.Type == StandupEventType.Blocker && !e.Retracted);
+        if (i < 0)
+        {
+            return false;
+        }
+
+        _events[i] = _events[i] with { UnblockerMemberId = unblockerMemberId };
+        return true;
+    }
+
+    /// <summary>Gets the member's latest active blocker that nobody has been named to unblock yet.</summary>
+    /// <param name="memberId">The member.</param>
+    /// <returns>The event, or <see langword="null"/>.</returns>
+    public StandupEvent? OpenBlockerAwaitingUnblocker(string memberId) =>
+        ActiveEvents.LastOrDefault(e => e.Type == StandupEventType.Blocker && e.MemberId == memberId && e.UnblockerMemberId is null);
 
     /// <summary>Marks a member absent today and records it once.</summary>
     /// <param name="memberId">The member.</param>
@@ -208,19 +251,8 @@ public sealed class StandupSession : AggregateRoot
     /// nobody is forgotten (the agent circles back at the end).
     /// </summary>
     /// <returns>The member, whether they are absent and whether this is a circle-back, or <see langword="null"/> when everyone is done.</returns>
-    public (MemberBrief Member, bool Absent, bool CircleBack)? NextSpeaker()
-    {
-        var open = PreBrief?.Members.Where(m => !_handled.Contains(m.MemberId)).ToList() ?? [];
-        var next = open.FirstOrDefault(m => !IsDeferred(m.MemberId));
-        var circleBack = false;
-        if (next is null)
-        {
-            next = open.FirstOrDefault();
-            circleBack = next is not null;
-        }
-
-        return next is null ? null : (next, _attendance.TryGetValue(next.MemberId, out var a) && a == Standups.Attendance.Absent, circleBack);
-    }
+    public (MemberBrief Member, bool Absent, bool CircleBack)? NextSpeaker() =>
+        StandupAgenda.Instance.Next(this) is MemberTurn m ? (m.Member, m.Absent, m.CircleBack) : null;
 
     /// <summary>Adds an end-of-speech to first-audio latency sample.</summary>
     /// <param name="milliseconds">The sample.</param>

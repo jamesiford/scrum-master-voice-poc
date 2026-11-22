@@ -20,3 +20,5 @@ Also: `Azure:TenantId` is passed to `DefaultAzureCredential` because a machine s
 - Rules 2 and 3 hold: numbers and flags are code, model text is checked for invented ids, and the demo works with the model offline.
 - Real per-person assignment in Azure DevOps is not demonstrated until the sandbox has more users; the seed file and tags are the only place that changes.
 - The agent adapter will be replaced in M2 without touching Application or Domain.
+
+> **Superseded in part by ADR 0009b:** the `HttpClient` chat call described here was replaced by Microsoft Agent Framework chat-client agents over the Foundry v2 SDK. The ports and the code fallbacks are unchanged.

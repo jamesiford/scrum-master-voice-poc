@@ -2,6 +2,7 @@ using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Features.FollowUps.ListEmails;
 using Mcm.Scrum.Application.Features.Models.GetModelComparison;
 using Mcm.Scrum.Application.Features.Retrospectives.GetRetrospective;
+using Mcm.Scrum.Application.Features.Retrospectives.PrepareRetrospective;
 using Mcm.Scrum.Application.Features.Stories.DraftUserStory;
 using Mcm.Scrum.Application.Features.Stories.ListParkedTopics;
 
@@ -17,6 +18,8 @@ public static class InsightsEndpoints
     {
         app.MapGet("/api/retrospective", async (string teamId, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetRetrospectiveQuery(teamId), ct)).ToHttpResult());
+        app.MapPost("/api/retrospective/prepare", async (PrepareRetroBody b, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new PrepareRetrospectiveCommand(b.TeamId), ct)).ToHttpResult());
         app.MapGet("/api/stories/topics", async (string teamId, ISender sender, CancellationToken ct) =>
             (await sender.Send(new ListParkedTopicsQuery(teamId), ct)).ToHttpResult());
         app.MapPost("/api/stories/draft", async (DraftBody b, ISender sender, CancellationToken ct) =>
@@ -27,6 +30,10 @@ public static class InsightsEndpoints
             (await sender.Send(new ListEmailsQuery(), ct)).ToHttpResult());
         return app;
     }
+
+    /// <summary>Request body for <c>POST /api/retrospective/prepare</c>.</summary>
+    /// <param name="TeamId">Team id.</param>
+    public sealed record PrepareRetroBody(string TeamId);
 
     /// <summary>Request body for <c>POST /api/stories/draft</c>.</summary>
     /// <param name="TeamId">Team id.</param>

@@ -3,7 +3,10 @@ using Mcm.Scrum.Application.Abstractions.Ports;
 using Mcm.Scrum.Application.Features.Standups.PrepareStandup;
 using Mcm.Scrum.Application.Tests.TestDoubles;
 using Mcm.Scrum.Domain.Common;
+using Mcm.Scrum.Domain.Flags;
+using Mcm.Scrum.Domain.Kpis;
 using Mcm.Scrum.Domain.Members;
+using Mcm.Scrum.Domain.Standups;
 using Mcm.Scrum.Domain.Teams;
 using Mcm.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +28,15 @@ public sealed class PrepareStandupHandlerTests
     private static async Task<(Result<Guid> Result, InMemorySessionRepository Sessions)> RunAsync(
         IReadOnlyList<Member> roster,
         Result<SprintSnapshot> sprint,
-        BacklogRiskSuggestion? suggestion)
+        BacklogRiskSuggestion? suggestion,
+        IReadOnlyList<StandupSession>? previous = null)
     {
         var sessions = new InMemorySessionRepository();
+        foreach (var p in previous ?? [])
+        {
+            await sessions.SaveAsync(p, CancellationToken.None);
+        }
+
         var teams = new InMemoryTeamRepository();
         await teams.SaveAsync(Team, CancellationToken.None);
         var members = new InMemoryMemberRepository();
@@ -99,5 +108,28 @@ public sealed class PrepareStandupHandlerTests
 
         Assert.Equal("ado.unreachable", result.Error?.Code);
         Assert.Empty(await sessions.ListAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Send_CommitmentFromTwoStandupsAgoStillOpen_IsFlaggedAndCarriedIntoTheBrief()
+    {
+        var brief = new PreBrief("t1", "p\\s", "g", 3, new Burndown(10, 4, 6, 3, false), [new MemberBrief("m1", "Priya", [], "q")], [], [], "s");
+        StandupSession Past(DateTimeOffset at, bool commit)
+        {
+            var s = StandupSession.Prepare(Guid.NewGuid(), "t1", at, brief);
+            s.Start("simulated", null, 15, at);
+            if (commit)
+            {
+                s.RecordEvent(StandupEventType.Commitment, "m1", [4521], "finish the retry story", at);
+            }
+
+            return s;
+        }
+
+        var (result, sessions) = await RunAsync(Roster, Result<SprintSnapshot>.Success(Sprint()), null, [Past(Now.AddDays(-1), false), Past(Now.AddDays(-2), true)]);
+
+        var m = (await sessions.GetAsync(result.Value, CancellationToken.None))!.PreBrief!.Members.Single();
+        Assert.Equal(2, Assert.Single(m.PreviousCommitments!).StandupsAgo);
+        Assert.Contains(Flag.MissedCommitment, m.Items.Single().Flags);
     }
 }

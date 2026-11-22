@@ -26,6 +26,16 @@ public sealed class FlagRuleTests
         { "no_recent_update: untouched 2 days", TestData.Item(daysSinceChange: 2), Flag.NoRecentUpdate, true },
         { "no_recent_update: touched today", TestData.Item(daysSinceChange: 0), Flag.NoRecentUpdate, false },
         { "no_recent_update: new item ignored", TestData.Item(state: "New", daysSinceChange: 4), Flag.NoRecentUpdate, false },
+        { "at_risk: due tomorrow, 80% remaining", TestData.Item(due: TestData.Now.AddDays(1), remaining: 8, original: 10), Flag.AtRisk, true },
+        { "at_risk: due tomorrow, exactly 50% remaining", TestData.Item(due: TestData.Now.AddDays(1), remaining: 5, original: 10), Flag.AtRisk, false },
+        { "at_risk: due tomorrow, 20% remaining", TestData.Item(due: TestData.Now.AddDays(1), remaining: 2, original: 10), Flag.AtRisk, false },
+        { "at_risk: due tomorrow, still New", TestData.Item(state: "New", due: TestData.Now.AddDays(1)), Flag.AtRisk, true },
+        { "at_risk: due exactly at the window edge", TestData.Item(due: TestData.Now.AddDays(2), remaining: 9, original: 10), Flag.AtRisk, true },
+        { "at_risk: due beyond the window", TestData.Item(due: TestData.Now.AddDays(3), remaining: 9, original: 10), Flag.AtRisk, false },
+        { "at_risk: already overdue is overdue, not at risk", TestData.Item(due: TestData.Now.AddDays(-1), remaining: 9, original: 10), Flag.AtRisk, false },
+        { "at_risk: no due date", TestData.Item(state: "New"), Flag.AtRisk, false },
+        { "at_risk: done ignored", TestData.Item(state: "Closed", due: TestData.Now.AddDays(1)), Flag.AtRisk, false },
+        { "at_risk: no original estimate and not New", TestData.Item(due: TestData.Now.AddDays(1), remaining: 8), Flag.AtRisk, false },
     };
 
     [Theory]

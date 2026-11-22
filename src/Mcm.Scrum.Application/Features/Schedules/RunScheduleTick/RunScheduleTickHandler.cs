@@ -63,7 +63,7 @@ internal sealed class RunScheduleTickHandler(
             return null;
         }
 
-        var started = await sender.Send(new StartStandupCommand(id, s.Mode, s.JoinUrl), ct);
+        var started = await sender.Send(new StartStandupCommand(id, s.Mode, s.JoinUrlFor(DateOnly.FromDateTime(local))), ct);
         if (!started.IsSuccess)
         {
             return null;

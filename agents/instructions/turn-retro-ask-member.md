@@ -1,0 +1,1 @@
+Invite {firstName} to share their retrospective points. Thank the previous speaker only if there was one, in four words or fewer. Ask {firstName} for {retroPrompt}, and say up to three points is fine. Keep it to two sentences. {notes}

@@ -18,6 +18,7 @@ namespace Mcm.Scrum.Infrastructure;
 public static class DependencyInjection
 {
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
+    private const string GraphScope = "https://graph.microsoft.com/.default";
     private const string CognitiveServicesScope = "https://cognitiveservices.azure.com/.default";
 
     /// <summary>Registers infrastructure services and binds options with <c>ValidateOnStart</c>.</summary>
@@ -38,6 +39,9 @@ public static class DependencyInjection
         services.AddOptions<BridgeOptions>().Bind(configuration.GetSection(BridgeOptions.SectionName));
         AddOptions<BotOptions>(services, configuration, BotOptions.SectionName);
         AddOptions<TeamDefaultsOptions>(services, configuration, TeamDefaultsOptions.SectionName);
+        AddOptions<FlagsOptions>(services, configuration, FlagsOptions.SectionName);
+        AddOptions<RetroOptions>(services, configuration, RetroOptions.SectionName);
+        services.AddSingleton<IRetroSettings>(sp => sp.GetRequiredService<IOptions<RetroOptions>>().Value);
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClock, SystemClock>();
@@ -51,6 +55,8 @@ public static class DependencyInjection
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
         services.AddSingleton<IFollowUpRepository, JsonFileFollowUpRepository>();
+        services.AddSingleton<IPlanningPackRepository, JsonFilePlanningPackRepository>();
+        services.AddSingleton<ISprintCalendarRepository, JsonFileSprintCalendarRepository>();
         services.AddSingleton<IScheduleRepository, JsonFileScheduleRepository>();
         services.AddSingleton<IDemoReset, JsonFileDemoReset>();
         services.AddSingleton<OutboxTeamsMessenger>();
@@ -69,8 +75,46 @@ public static class DependencyInjection
         services.AddSingleton<IVoiceSessionFactory, VoiceLiveSessionFactory>();
         services.AddOptions<ModelComparisonOptions>().Bind(configuration.GetSection(ModelComparisonOptions.SectionName));
         services.AddSingleton<IModelCatalog, ConfigModelCatalog>();
-        services.AddSingleton<IEmailSender, OutboxEmailSender>();
+        AddEmail(services, configuration);
+        AddCalendar(services, configuration);
         return services;
+    }
+
+    private static void AddCalendar(IServiceCollection services, IConfiguration configuration)
+    {
+        // Team:HasSprintReview is a team setting (Rajeev has not confirmed a review), so it is read from the Team section, not Calendar.
+        services.AddOptions<CalendarOptions>()
+            .Bind(configuration.GetSection(CalendarOptions.SectionName))
+            .Configure(o => o.HasSprintReview = configuration.GetValue<bool>("Team:HasSprintReview"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddSingleton<ICalendarSettings>(sp => sp.GetRequiredService<IOptions<CalendarOptions>>().Value);
+        services.AddHttpClient<ICalendarWriter, GraphCalendarWriter>(client => client.BaseAddress = new Uri("https://graph.microsoft.com/"))
+            .AddHttpMessageHandler(sp => new BearerTokenHandler(CalendarCredential(sp), GraphScope));
+    }
+
+    // The az CLI and developer tokens cannot write calendars, so an app registration with Calendars.ReadWrite can be given as a client secret.
+    private static TokenCredential CalendarCredential(IServiceProvider sp)
+    {
+        var calendar = sp.GetRequiredService<IOptions<CalendarOptions>>().Value;
+        return string.IsNullOrWhiteSpace(calendar.ClientId) || string.IsNullOrWhiteSpace(calendar.ClientSecret)
+            ? sp.GetRequiredService<TokenCredential>()
+            : new ClientSecretCredential(sp.GetRequiredService<IOptions<AzureOptions>>().Value.TenantId, calendar.ClientId, calendar.ClientSecret);
+    }
+
+    private static void AddEmail(IServiceCollection services, IConfiguration configuration)
+    {
+        AddOptions<EmailOptions>(services, configuration, EmailOptions.SectionName);
+        services.AddSingleton<OutboxEmailSender>();
+        if (!string.Equals(configuration["Email:Mode"], "Graph", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<IEmailSender>(sp => sp.GetRequiredService<OutboxEmailSender>());
+            return;
+        }
+
+        services.AddHttpClient<GraphEmailSender>(client => client.BaseAddress = new Uri("https://graph.microsoft.com/"))
+            .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), GraphScope));
+        services.AddTransient<IEmailSender>(sp => sp.GetRequiredService<GraphEmailSender>());
     }
 
     private static void AddCollectionStore(IServiceCollection services, IConfiguration configuration)
@@ -103,6 +147,8 @@ public static class DependencyInjection
     private static void AddAdoClient(IServiceCollection services)
     {
         AddAdoHttpClient<IWorkItemReader, AdoRestClient>(services);
+        AddAdoHttpClient<IIterationReader, AdoRestClient>(services);
+        AddAdoHttpClient<IBacklogReader, AdoRestClient>(services);
         AddAdoHttpClient<IWorkItemWriter, AdoWorkItemWriter>(services);
     }
 
@@ -123,15 +169,8 @@ public static class DependencyInjection
 
     private static void AddFoundry(IServiceCollection services)
     {
-        services.AddHttpClient<FoundryChat>((sp, client) =>
-            {
-                var foundry = sp.GetRequiredService<IOptions<FoundryOptions>>().Value;
-                client.BaseAddress = foundry.IsConfigured
-                    ? new Uri(new Uri(foundry.ProjectEndpoint).GetLeftPart(UriPartial.Authority) + "/")
-                    : new Uri("https://localhost/");
-                client.Timeout = TimeSpan.FromSeconds(foundry.TimeoutSeconds);
-            })
-            .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), CognitiveServicesScope));
+        services.AddSingleton<IFoundryAgentFactory, FoundryAgentFactory>();
+        services.AddSingleton<FoundryChat>();
         services.AddTransient<IBacklogRiskAgent, FoundryBacklogRiskAgent>();
         services.AddTransient<IReconcileAgent, FoundryReconcileAgent>();
         services.AddTransient<IReportingAgent, FoundryReportingAgent>();

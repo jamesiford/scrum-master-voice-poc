@@ -36,7 +36,7 @@ public static class ScheduleEvaluator
             return localNow >= start.AddMinutes(-PrepareLeadMinutes) ? ScheduleAction.Prepare : ScheduleAction.None;
         }
 
-        var canJoin = schedule.Mode == "acs" && !string.IsNullOrWhiteSpace(schedule.JoinUrl);
+        var canJoin = schedule.Mode == "acs" && !string.IsNullOrWhiteSpace(schedule.JoinUrlFor(today));
         return canJoin && schedule.StartedFor != today && localNow >= start.AddMinutes(-StartLeadMinutes) ? ScheduleAction.Start : ScheduleAction.None;
     }
 }

@@ -8,6 +8,7 @@ namespace Mcm.Scrum.Domain.Teams;
 /// <param name="Ado">Azure DevOps location.</param>
 /// <param name="Behaviours">Rule thresholds.</param>
 /// <param name="SprintGoal">Current sprint goal (Azure DevOps has no goal field, so it is kept here).</param>
+/// <param name="RecapChannelKey">Teams conversation id of the channel the recap is posted to, captured when the bot is installed in the team (M9-R5).</param>
 public sealed record Team(
     string Id,
     string Name,
@@ -15,4 +16,5 @@ public sealed record Team(
     int StandupMinutes,
     AdoSettings Ado,
     TeamBehaviours Behaviours,
-    string SprintGoal);
+    string SprintGoal,
+    string? RecapChannelKey = null);

@@ -44,4 +44,16 @@ public enum StandupEventType
 
     /// <summary>A member corrected an earlier statement.</summary>
     Correction,
+
+    /// <summary>A retrospective note: what to start, stop or keep (<see cref="StandupEvent.Category"/>; null until classified).</summary>
+    RetroItem,
+
+    /// <summary>A retrospective action item (<see cref="StandupEvent.OwnerMemberId"/> is who owns it).</summary>
+    ActionItem,
+
+    /// <summary>A named group of retrospective notes (<see cref="StandupEvent.Text"/> is the name; <c>WorkItemIds</c> are unused).</summary>
+    Theme,
+
+    /// <summary>The ceremony moved to a new phase (retrospective: themes read-back, or an action turn).</summary>
+    Phase,
 }

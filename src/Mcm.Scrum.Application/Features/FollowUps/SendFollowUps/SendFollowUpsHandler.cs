@@ -5,6 +5,7 @@ using Mcm.Scrum.Application.Features.Teams;
 using Mcm.Scrum.Domain.Common;
 using Mcm.Scrum.Domain.FollowUps;
 using Mcm.Scrum.Domain.Members;
+using Mcm.Scrum.Domain.Standups;
 
 namespace Mcm.Scrum.Application.Features.FollowUps.SendFollowUps;
 
@@ -47,7 +48,7 @@ internal sealed class SendFollowUpsHandler(
         {
             followUp.MarkSent();
             await followUps.SaveAsync(followUp, ct);
-            await messenger.SendAsync(ToMessage(followUp, roster), ct);
+            await messenger.SendAsync(FollowUpCards.Initial(followUp, NameOf(followUp, roster)), ct);
             await EmailAsync(followUp, roster, ct);
         }
 
@@ -62,19 +63,13 @@ internal sealed class SendFollowUpsHandler(
             return;
         }
 
-        await emails.SendAsync(new EmailMessage(m.AdoUniqueName, $"Standup follow-up for {m.DisplayName}", f.Message, f.Id), ct);
+        await emails.SendAsync(new EmailMessage(m.AdoUniqueName, Subject(f, m), f.Message, f.Id), ct);
     }
 
-    private static TeamsMessage ToMessage(FollowUp f, Dictionary<string, Member> roster)
-    {
-        var name = f.MemberId is not null && roster.TryGetValue(f.MemberId, out var m) ? m.DisplayName : "the team";
-        var (kind, title) = f.Kind switch
-        {
-            FollowUpKind.Absent => (CardKind.Absent, $"Missed standup: {name}"),
-            FollowUpKind.Escalation => (CardKind.Escalation, "Blocker needs your help"),
-            _ => (CardKind.FollowUp, $"Follow-up for {name}"),
-        };
-        var facts = f.Changes.Select(c => new CardFact($"Work item {c.WorkItemId} ({c.Op})", c.Value)).ToList();
-        return new TeamsMessage(kind, f.TeamId, f.SessionId, $"followup:{f.Id}", title, f.Message, facts, f.Id, f.MemberId);
-    }
+    private static string Subject(FollowUp f, Member m) => f.Kind == FollowUpKind.Unblock
+        ? $"Can you help unblock a teammate, {m.DisplayName}?"
+        : $"{char.ToUpperInvariant(f.Ceremony.Phrase()[0])}{f.Ceremony.Phrase()[1..]} follow-up for {m.DisplayName}";
+
+    private static string NameOf(FollowUp f, Dictionary<string, Member> roster) =>
+        f.MemberId is not null && roster.TryGetValue(f.MemberId, out var m) ? m.DisplayName : "the team";
 }

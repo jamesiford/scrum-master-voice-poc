@@ -24,8 +24,16 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         var me = await GetCurrentUserAsync(ct);
         log($"Signed in as {me}");
         await EnsureAreaAsync(ct);
-        var iterationId = await EnsureIterationAsync(ct);
-        await EnsureTeamAsync(iterationId, ct);
+        var start = DateTime.UtcNow.Date.AddDays(-seed.DaysElapsed);
+        var iterationId = await EnsureIterationAsync(seed.Iteration, start, ct);
+        var ids = new List<string> { iterationId };
+        if (seed.NextIteration is { } next)
+        {
+            // The next sprint starts the day after the current one ends, so it is the team's "future" iteration (sprint planning moves items into it).
+            ids.Add(await EnsureIterationAsync(next, start.AddDays(seed.SprintLengthDays), ct));
+        }
+
+        await EnsureTeamAsync(ids, ct);
         await SeedWorkItemsAsync(me, ct);
         log("Done. Roster owners are applied through demo-owner-* tags; every assigned item is assigned to the signed-in user.");
     }
@@ -50,28 +58,28 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         log($"Created area '{_areaPath}'");
     }
 
-    private async Task<string> EnsureIterationAsync(CancellationToken ct)
+    private async Task<string> EnsureIterationAsync(string name, DateTime start, CancellationToken ct)
     {
         var path = $"{Esc(_project)}/_apis/wit/classificationnodes/iterations";
-        var start = DateTime.UtcNow.Date.AddDays(-seed.DaysElapsed);
+        var iterationPath = $"{_project}\\{name}";
         var attributes = new { startDate = start.ToString("o"), finishDate = start.AddDays(seed.SprintLengthDays - 1).ToString("o") };
 
-        var existing = await ado.GetAsync($"{path}/{Esc(seed.Iteration)}", ct, allowNotFound: true);
+        var existing = await ado.GetAsync($"{path}/{Esc(name)}", ct, allowNotFound: true);
         if (existing is null)
         {
-            existing = await ado.SendJsonAsync(HttpMethod.Post, path, new { name = seed.Iteration, attributes }, ct);
-            log($"Created iteration '{_iterationPath}'");
+            existing = await ado.SendJsonAsync(HttpMethod.Post, path, new { name, attributes }, ct);
+            log($"Created iteration '{iterationPath}'");
         }
         else
         {
-            await ado.SendJsonAsync(HttpMethod.Patch, $"{path}/{Esc(seed.Iteration)}", new { attributes }, ct);
-            log($"Moved iteration '{_iterationPath}' to {attributes.startDate[..10]} - {attributes.finishDate[..10]}");
+            await ado.SendJsonAsync(HttpMethod.Patch, $"{path}/{Esc(name)}", new { attributes }, ct);
+            log($"Moved iteration '{iterationPath}' to {attributes.startDate[..10]} - {attributes.finishDate[..10]}");
         }
 
         return existing!["identifier"]!.GetValue<string>();
     }
 
-    private async Task EnsureTeamAsync(string iterationId, CancellationToken ct)
+    private async Task EnsureTeamAsync(IReadOnlyList<string> iterationIds, CancellationToken ct)
     {
         var teams = $"_apis/projects/{Esc(_project)}/teams";
         if (await ado.GetAsync($"{teams}/{Esc(seed.Team)}", ct, allowNotFound: true) is null)
@@ -91,10 +99,13 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         var root = await ado.GetAsync($"{Esc(_project)}/_apis/wit/classificationnodes/iterations?$depth=0", ct);
         await ado.SendJsonAsync(HttpMethod.Patch, settings, new { backlogIteration = root!["identifier"]!.GetValue<string>() }, ct);
 
-        var (status, body) = await ado.TrySendJsonAsync(HttpMethod.Post, $"{settings}/iterations", new { id = iterationId }, ct);
-        if (status is not (HttpStatusCode.OK or HttpStatusCode.Created) && !body.Contains("already", StringComparison.OrdinalIgnoreCase))
+        foreach (var iterationId in iterationIds)
         {
-            throw new HttpRequestException($"Could not add the iteration to the team: {(int)status} {body}");
+            var (status, body) = await ado.TrySendJsonAsync(HttpMethod.Post, $"{settings}/iterations", new { id = iterationId }, ct);
+            if (status is not (HttpStatusCode.OK or HttpStatusCode.Created) && !body.Contains("already", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new HttpRequestException($"Could not add the iteration to the team: {(int)status} {body}");
+            }
         }
 
         log("Team area and current iteration are configured");
@@ -151,7 +162,8 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         {
             Add("System.Title", item.Title),
             Add("System.AreaPath", _areaPath),
-            Add("System.IterationPath", _iterationPath),
+            // Backlog items sit in the project's root iteration (no sprint yet); sprint planning moves them.
+            Add("System.IterationPath", item.Backlog ? _project : _iterationPath),
             // "add" on System.Tags only appends, which would leave stale demo-owner-* tags after the roster changes.
             update ? Replace("System.Tags", string.Join("; ", tags)) : Add("System.Tags", string.Join("; ", tags)),
         };
@@ -165,6 +177,15 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
             ops.Add(Add("System.AssignedTo", string.Empty));
         }
 
+        if (item.AcceptanceCriteria is { } criteria)
+        {
+            ops.Add(Add("Microsoft.VSTS.Common.AcceptanceCriteria", criteria));
+        }
+        else if (update)
+        {
+            ops.Add(Add("Microsoft.VSTS.Common.AcceptanceCriteria", string.Empty));
+        }
+
         if (item.Points is { } points)
         {
             ops.Add(Add("Microsoft.VSTS.Scheduling.StoryPoints", points));
@@ -173,6 +194,11 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         if (item.Remaining is { } remaining)
         {
             ops.Add(Add("Microsoft.VSTS.Scheduling.RemainingWork", remaining));
+        }
+
+        if (item.OriginalEstimate is { } original)
+        {
+            ops.Add(Add("Microsoft.VSTS.Scheduling.OriginalEstimate", original));
         }
 
         if (item.FinishInDays is { } days)

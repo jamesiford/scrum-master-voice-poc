@@ -10,7 +10,7 @@ import { TeamsLauncher } from './services/teamsLauncher.js';
 
 const config = loadConfig();
 const cast = new CastRoutes(
-  () => loadCast(config.castFile),
+  (kind) => loadCast(kind === 'Retrospective' ? config.retroCastFile : config.castFile),
   new AzureSpeechSynthesizer(config.speechEndpoint, config.tenantId),
 );
 const teams = new TeamsRoutes(

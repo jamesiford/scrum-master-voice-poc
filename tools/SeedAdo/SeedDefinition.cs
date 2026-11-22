@@ -11,6 +11,7 @@ internal sealed record SeedDefinition(
     int SprintLengthDays,
     int DaysElapsed,
     string SprintGoal,
+    string? NextIteration,
     List<SeedMember> Members,
     List<SeedWorkItem> WorkItems);
 
@@ -25,7 +26,10 @@ internal sealed record SeedWorkItem(
     double? Remaining,
     string? Owner,
     int? FinishInDays,
-    List<string> Tags)
+    List<string> Tags,
+    double? OriginalEstimate = null,
+    bool Backlog = false,
+    string? AcceptanceCriteria = null)
 {
     [JsonIgnore]
     public string KeyTag => "demo-key-" + Key;

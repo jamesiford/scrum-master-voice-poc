@@ -16,7 +16,8 @@ namespace Mcm.Scrum.Infrastructure.Teams;
 /// and the offline demo still work (SPEC 12). A Teams failure is logged and never fails the use case.
 /// </summary>
 /// <remarks>
-/// DEMO: every card goes to every stored conversation (whoever messaged or installed the bot).
+/// DEMO: cards go to every stored conversation (whoever messaged or installed the bot); the recap goes to the team's recap channel and
+/// the meeting chat when the bot is in them (see <see cref="CardRouting"/>).
 /// PROD: route by Entra object id, with one conversation per member and the Scrum Master.
 /// </remarks>
 public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
@@ -67,7 +68,9 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         }
 
         var card = await FindCardJsonAsync(message, ct);
-        foreach (var (key, json) in await _conversations.ListAsync(ct))
+        var stored = await _conversations.ListAsync(ct);
+        var targets = CardRouting.Select(message, [.. stored.Select(c => c.Key)]).ToHashSet();
+        foreach (var (key, json) in stored.Where(c => targets.Contains(c.Key)))
         {
             if (await HasActivityAsync(message.DedupeKey, key, ct))
             {

@@ -28,10 +28,14 @@ internal sealed class UpdateFollowUpCardHandler(IFollowUpRepository followUps, I
             return;
         }
 
+        // A sprint plan is shown on its planning card (updated by ApprovePlan and RejectPlan), not on a follow-up card.
+        if (f.Kind == FollowUpKind.PlanningPack)
+        {
+            return;
+        }
+
         var name = f.MemberId is null ? "the team" : (await members.ListAsync(f.TeamId, ct)).FirstOrDefault(m => m.Id == f.MemberId)?.DisplayName ?? f.MemberId;
-        var facts = f.Changes.Select(c => new CardFact($"Work item {c.WorkItemId} ({c.Op})", c.Value)).ToList();
-        facts.Add(new CardFact("Status", Describe(f)));
-        await messenger.UpdateAsync(new TeamsMessage(CardKind.FollowUpResult, f.TeamId, f.SessionId, $"followup:{f.Id}", $"Follow-up for {name}", f.Message, facts, f.Id, f.MemberId), ct);
+        await messenger.UpdateAsync(FollowUpCards.Result(f, name, Describe(f)), ct);
     }
 
     private static string Describe(FollowUp f) => f.Status switch

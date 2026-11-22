@@ -57,12 +57,39 @@ public static class CoverageNotes
         return $"{(item.Type.Equals("User Story", StringComparison.OrdinalIgnoreCase) ? "story" : item.Type.ToLowerInvariant())} {item.Id}";
     }
 
+    /// <summary>
+    /// Builds the opening notes for a member's turn: what they promised last time, and which blocked teammate they were named to help
+    /// (M9-R2, M9-R3). Both are facts from earlier standups, so the model only phrases the question.
+    /// </summary>
+    /// <param name="member">The member.</param>
+    /// <returns>Instructions for the agent, or an empty string when there is nothing to carry over.</returns>
+    public static string CarryOverNotes(MemberBrief member)
+    {
+        ArgumentNullException.ThrowIfNull(member);
+        var lines = new List<string>();
+        foreach (var c in (member.PreviousCommitments ?? []).OrderByDescending(c => c.StandupsAgo))
+        {
+            var item = member.Items.FirstOrDefault(i => i.Id.Value == c.WorkItemId);
+            var label = item is null ? $"item {c.WorkItemId}" : Label(item);
+            var when = c.StandupsAgo == 1 ? "yesterday" : $"{c.StandupsAgo} standups ago";
+            lines.Add($"Ask first about their earlier commitment: {when} they said \"{c.Text}\" about {label}. Ask whether it is done.");
+        }
+
+        foreach (var h in member.HelpRequests ?? [])
+        {
+            lines.Add($"Ask whether they have been able to help {h.BlockedMemberName} with {h.Type.ToLowerInvariant().Replace("user story", "story", StringComparison.Ordinal)} {h.WorkItemId}, {h.Title}, which is still blocked.");
+        }
+
+        return string.Join(" ", lines);
+    }
     private static string Word(Flag f) => f switch
     {
         Flag.NoRecentUpdate => "no recent update",
+        Flag.AtRisk => "at risk",
+        Flag.MissedCommitment => "missed commitment",
         _ => f.ToString().ToLowerInvariant(),
     };
 
     private static int Rank(IReadOnlyList<Flag> flags) =>
-        flags.Contains(Flag.Blocked) ? 0 : flags.Contains(Flag.Overdue) ? 1 : flags.Contains(Flag.Stale) ? 2 : 3;
+        flags.Contains(Flag.Blocked) ? 0 : flags.Contains(Flag.Overdue) ? 1 : flags.Contains(Flag.AtRisk) ? 2 : flags.Contains(Flag.Stale) ? 3 : 4;
 }

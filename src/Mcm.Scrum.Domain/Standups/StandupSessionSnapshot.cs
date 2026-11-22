@@ -15,6 +15,7 @@ namespace Mcm.Scrum.Domain.Standups;
 /// <param name="HandledMemberIds">Members whose turn is over (spoke, or absent and announced).</param>
 /// <param name="Events">Recorded events in order.</param>
 /// <param name="LatencySamplesMs">End-of-speech to first-audio samples.</param>
+/// <param name="Kind">The ceremony; the daily scrum for data saved before ceremonies existed.</param>
 public sealed record StandupSessionSnapshot(
     Guid Id,
     string TeamId,
@@ -29,4 +30,5 @@ public sealed record StandupSessionSnapshot(
     IReadOnlyDictionary<string, Attendance> Attendance,
     IReadOnlyList<string> HandledMemberIds,
     IReadOnlyList<StandupEvent> Events,
-    IReadOnlyList<int> LatencySamplesMs);
+    IReadOnlyList<int> LatencySamplesMs,
+    CeremonyKind Kind = CeremonyKind.DailyScrum);

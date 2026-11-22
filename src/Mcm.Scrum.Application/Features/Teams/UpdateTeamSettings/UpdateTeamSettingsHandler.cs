@@ -23,7 +23,7 @@ internal sealed class UpdateTeamSettingsHandler(ITeamRepository teams) : IReques
                 TimeZone = request.TimeZone,
                 StandupMinutes = request.StandupMinutes,
                 Ado = team.Ado with { Project = request.Project, Team = request.AdoTeam, AreaPath = request.AreaPath },
-                Behaviours = new TeamBehaviours(request.StaleDays, request.EscalateBlockerAfterDays),
+                Behaviours = team.Behaviours with { StaleDays = request.StaleDays, EscalateBlockerAfterDays = request.EscalateBlockerAfterDays },
                 SprintGoal = request.SprintGoal,
             },
             ct);

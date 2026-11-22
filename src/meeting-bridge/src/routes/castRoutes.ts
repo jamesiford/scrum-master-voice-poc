@@ -25,20 +25,21 @@ export class CastRoutes {
   private readonly planners = new Map<string, CastPlanner>();
 
   /**
-   * @param loadScript - Loads the cast file (re-read per session so edits apply).
+   * @param loadScript - Loads the cast file for a ceremony kind (`Retrospective`, else the standup); re-read per session so edits apply.
    * @param speech - Speech synthesis.
    */
   constructor(
-    private readonly loadScript: () => Promise<CastScript>,
+    private readonly loadScript: (kind?: string) => Promise<CastScript>,
     private readonly speech: SpeechSynthesizer,
   ) {}
 
   /**
    * Handles `GET /cast/script`: who is in the cast and who is absent (no lines, no audio).
    * @param res - Response.
+   * @param kind - The ceremony kind (`Retrospective` selects the retrospective cast).
    */
-  async script(res: ServerResponse): Promise<void> {
-    const script = await this.loadScript();
+  async script(res: ServerResponse, kind?: string): Promise<void> {
+    const script = await this.loadScript(kind);
     sendJson(res, 200, {
       members: script.members.map((m) => ({
         memberId: m.memberId,
@@ -49,7 +50,7 @@ export class CastRoutes {
   }
 
   /**
-   * Handles `POST /cast/line` with `{ sessionId, memberId, question }`.
+   * Handles `POST /cast/line` with `{ sessionId, memberId, question, kind? }`.
    * @param req - Request.
    * @param res - Response.
    */
@@ -58,13 +59,14 @@ export class CastRoutes {
       sessionId?: string;
       memberId?: string;
       question?: string;
+      kind?: string;
     };
     if (!body.sessionId || !body.memberId) {
       sendJson(res, 400, { error: 'bad_request', detail: 'sessionId and memberId are required.' });
       return;
     }
 
-    const planner = await this.plannerFor(body.sessionId);
+    const planner = await this.plannerFor(body.sessionId, body.kind);
     const planned = planner.next(body.memberId, body.question ?? '');
     const sidebar = planned ? planner.takeSidebar(body.memberId) : [];
     const [line, ...side] = await Promise.all(
@@ -77,10 +79,10 @@ export class CastRoutes {
     sendJson(res, 200, result);
   }
 
-  private async plannerFor(sessionId: string): Promise<CastPlanner> {
+  private async plannerFor(sessionId: string, kind?: string): Promise<CastPlanner> {
     let planner = this.planners.get(sessionId);
     if (!planner) {
-      planner = new CastPlanner(await this.loadScript());
+      planner = new CastPlanner(await this.loadScript(kind));
       this.planners.set(sessionId, planner);
     }
     return planner;

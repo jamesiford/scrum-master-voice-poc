@@ -16,7 +16,7 @@ internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, IPub
             return Result.Failure(FollowUpErrors.NotFound(request.FollowUpId));
         }
 
-        var approved = followUp.Approve(request.Approver, clock.UtcNow);
+        var approved = followUp.Approve(request.Approver, clock.UtcNow, request.Channel);
         if (!approved.IsSuccess)
         {
             return approved;

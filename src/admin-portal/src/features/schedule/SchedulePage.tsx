@@ -10,6 +10,7 @@ import { Check, Field, Input, Select } from '../../ui/Form';
 import { PageHeader } from '../../ui/PageHeader';
 import { cx } from '../../ui/cx';
 import { QueryStatus } from '../QueryStatus';
+import { SprintCalendarCard } from './SprintCalendarCard';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -111,6 +112,7 @@ export function SchedulePage() {
             Save schedule
           </Button>
         </div>
+        <SprintCalendarCard />
       </div>
     </>
   );

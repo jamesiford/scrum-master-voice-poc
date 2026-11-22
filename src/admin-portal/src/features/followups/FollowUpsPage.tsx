@@ -144,6 +144,17 @@ interface FollowUpCardProps {
   onRetry: () => void;
 }
 
+/** Card heading per follow-up kind. */
+const kindTitle: Record<FollowUp['kind'], string> = {
+  Followup: 'Follow-up',
+  Absent: 'Missed standup',
+  Escalation: 'Escalation',
+  Unblock: 'Unblock request',
+  PlanningPack: 'Sprint planning pack',
+  RetroActions: 'Retrospective actions',
+  ReviewPack: 'Sprint review pack',
+};
+
 function FollowUpCard({
   followUp: f,
   who,
@@ -155,7 +166,7 @@ function FollowUpCard({
   const undecided = f.status === 'Pending' || f.status === 'Sent';
   return (
     <Card
-      title={`${f.kind === 'Absent' ? 'Missed standup' : f.kind === 'Escalation' ? 'Escalation' : 'Follow-up'} · ${who}`}
+      title={`${kindTitle[f.kind]} · ${who}`}
       actions={
         <Badge tone={statusTone[f.status]} dot>
           {f.status}
@@ -172,7 +183,9 @@ function FollowUpCard({
                 className="rounded-lg bg-subtle px-3 py-2 text-sm"
               >
                 <span className="font-medium">
-                  Work item {c.workItemId} · {c.op}
+                  {c.op === 'CreateWorkItem'
+                    ? 'New work item'
+                    : `Work item ${c.workItemId} · ${c.op}`}
                 </span>
                 <span className="text-muted"> {c.value}</span>
               </li>
@@ -183,7 +196,7 @@ function FollowUpCard({
         {f.rejectedBy && <p className="text-xs text-muted">Rejected by {f.rejectedBy}</p>}
         {f.applyError && <Alert tone="bad">Azure DevOps write failed: {f.applyError}</Alert>}
         <div className="flex flex-wrap gap-2">
-          {undecided && f.kind === 'Followup' && (
+          {undecided && f.changes.length > 0 && (
             <>
               <Button
                 variant="primary"

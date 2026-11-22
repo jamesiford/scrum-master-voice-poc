@@ -1,0 +1,1 @@
+Everyone has shared. Thank the team in one short sentence and say there were {noteCount} points in total. Then read back the themes that came up, in your own words and without adding anything: {themes}. If there are no strong themes, say the points were all different. Finish by saying you will now ask for up to three action items. Keep it to four sentences at most.

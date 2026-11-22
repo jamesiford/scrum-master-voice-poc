@@ -23,6 +23,17 @@ public sealed class ReportingPrioritiesTests
     }
 
     [Fact]
+    public void For_AtRiskItem_RanksBetweenOverdueAndStale()
+    {
+        var m = new MemberBrief("m", "Maya", [Item(1, "Task", Flag.Stale), Item(2, "Task", Flag.AtRisk), Item(3, "Task", Flag.Overdue)], "q");
+
+        var text = ReportingPriorities.For(m, new HashSet<int>());
+
+        Assert.True(text.IndexOf("task 3", StringComparison.Ordinal) < text.IndexOf("task 2", StringComparison.Ordinal));
+        Assert.True(text.IndexOf("task 2", StringComparison.Ordinal) < text.IndexOf("task 1", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void For_EverythingCovered_SaysSo() =>
         Assert.Contains("already covered", ReportingPriorities.For(new MemberBrief("m", "Maya", [Item(1, "Task")], "q"), new HashSet<int> { 1 }), StringComparison.Ordinal);
 }

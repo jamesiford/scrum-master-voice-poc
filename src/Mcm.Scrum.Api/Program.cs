@@ -1,5 +1,6 @@
 using Mcm.Scrum.Api.Bot;
 using Mcm.Scrum.Api.Endpoints;
+using Mcm.Scrum.Api.Telemetry;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Hosting.AspNetCore;
 using Mcm.Scrum.Api.Voice;
@@ -8,12 +9,14 @@ using Mcm.Scrum.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddScrumTelemetry();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks();
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddOptions<VoiceGatewayOptions>().Bind(builder.Configuration.GetSection(VoiceGatewayOptions.SectionName)).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<BridgeTokenService>();
+builder.Services.AddSingleton<ScrumMasterRoster>();
 builder.Services.AddTransient<VoiceGateway>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
 builder.Services.AddSingleton<Mcm.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
@@ -72,6 +75,8 @@ app.MapScheduleEndpoints();
 app.MapDemoEndpoints();
 app.MapReportsEndpoints();
 app.MapPlanningEndpoints();
+app.MapCalendarEndpoints();
+app.MapCeremoniesEndpoints();
 app.MapInsightsEndpoints();
 app.MapBridgeEndpoints();
 app.MapFallbackToFile("index.html");

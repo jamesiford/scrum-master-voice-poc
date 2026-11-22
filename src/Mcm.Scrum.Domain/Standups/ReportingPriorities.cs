@@ -41,6 +41,11 @@ public static class ReportingPriorities
             return $"{label}, {i.Title}, is past its due date: what is the new date";
         }
 
+        if (i.Flags.Contains(Flag.AtRisk))
+        {
+            return $"{label}, {i.Title}, is due soon and at risk: will it finish in time";
+        }
+
         if (i.Flags.Contains(Flag.Stale))
         {
             return $"{label}, {i.Title}, has been {i.State} for {i.DaysInState} days: is it on track";
@@ -52,5 +57,5 @@ public static class ReportingPriorities
     }
 
     private static int Rank(IReadOnlyList<Flag> flags) =>
-        flags.Contains(Flag.Blocked) ? 0 : flags.Contains(Flag.Overdue) ? 1 : flags.Contains(Flag.Stale) ? 2 : 3;
+        flags.Contains(Flag.Blocked) ? 0 : flags.Contains(Flag.Overdue) ? 1 : flags.Contains(Flag.AtRisk) ? 2 : flags.Contains(Flag.Stale) ? 3 : 4;
 }

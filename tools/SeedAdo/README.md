@@ -1,6 +1,6 @@
 # SeedAdo
 
-Console tool that creates the demo backlog in the Azure DevOps sandbox project (SPEC 9.2): the `Payments` area, the `Payments (Demo)` team, a current `Demo Sprint` iteration, and the 18 work items in `demo/seed-ado.json`.
+Console tool that creates the demo backlog in the Azure DevOps sandbox project (SPEC 9.2): the `Payments` area, the `Payments (Demo)` team, a current `Demo Sprint` iteration, and the 19 work items in `demo/seed-ado.json`.
 
 - **Idempotent.** Items are found by their `demo-key-*` tag and reset in place; the sprint dates are moved so the demo sprint is always current. Run it again before every demo.
 - **Auth.** `DefaultAzureCredential` only (run `az login`); no PAT. Pass `--tenant <id>` (or set `Azure__TenantId`) when several accounts are signed in.

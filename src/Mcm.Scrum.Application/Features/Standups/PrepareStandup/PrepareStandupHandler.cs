@@ -43,7 +43,9 @@ internal sealed class PrepareStandupHandler(
         }
 
         var now = clock.UtcNow;
-        var brief = _builder.Build(team, roster, sprint.Value, now);
+        var open = sprint.Value.Items.Where(i => !i.IsDone).Select(i => i.Id.Value).ToHashSet();
+        var previous = (await sessions.ListAsync(ct)).Where(s => s.TeamId == team.Id).ToList();
+        var brief = _builder.Build(team, roster, sprint.Value, now, CommitmentCarryOver.Collect(previous, open));
         brief = await ApplySuggestionsAsync(brief, sprint.Value, ct);
 
         var session = StandupSession.Prepare(Guid.NewGuid(), team.Id, now, brief);

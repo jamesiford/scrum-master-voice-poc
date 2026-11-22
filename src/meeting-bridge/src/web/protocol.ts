@@ -39,13 +39,31 @@ export interface BoardState {
   team: { name: string; total: number; covered: number; status?: string | null }[];
 }
 
+/** What the shared screen shows in a retrospective: three columns that fill as members speak, then the actions. */
+export interface RetroBoardState {
+  kind: 'retro';
+  ended: boolean;
+  sprint: string;
+  phase: 'Round' | 'Actions';
+  speaker: string | null;
+  columns: { key: string; label: string; notes: { text: string; member: string }[] }[];
+  themes: { name: string; count: number }[];
+  actions: { text: string; owner: string }[];
+  team: { name: string; status?: string | null }[];
+}
+
+/** Either board the gateway can push. */
+export type AnyBoardState = BoardState | RetroBoardState;
+
 /** Gateway to room. */
 export type ServerMessage =
-  | ({ type: 'board' } & BoardState)
+  | ({ type: 'board' } & AnyBoardState)
   | {
       type: 'hello';
       sessionId: string;
       mode: string;
+      /** The ceremony: `DailyScrum` or `Retrospective`. Selects the cast script. */
+      kind?: string;
       version: number;
       standupMinutes: number;
       members: RoomMember[];

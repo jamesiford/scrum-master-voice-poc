@@ -1,0 +1,1 @@
+Ask {firstName} in one short sentence: "Who can help unblock this?" Refer to what they just said is blocking them ({notes}) so it is clear which blocker you mean. Do not suggest a person yourself. If they name a teammate, you will acknowledge briefly on your next turn.

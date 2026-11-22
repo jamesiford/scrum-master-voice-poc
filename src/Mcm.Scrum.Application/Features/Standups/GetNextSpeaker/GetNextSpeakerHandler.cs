@@ -1,6 +1,7 @@
 using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Abstractions.Ports;
 using Mcm.Scrum.Domain.Common;
+using Mcm.Scrum.Domain.Standups;
 
 namespace Mcm.Scrum.Application.Features.Standups.GetNextSpeaker;
 
@@ -15,9 +16,12 @@ internal sealed class GetNextSpeakerHandler(ISessionRepository sessions) : IRequ
             return Result<NextSpeakerDto>.Failure(StandupErrors.SessionNotFound(request.SessionId));
         }
 
-        var next = session.NextSpeaker();
-        return Result<NextSpeakerDto>.Success(next is null
-            ? new NextSpeakerDto(null, null, null, false, false, false)
-            : new NextSpeakerDto(next.Value.Member.MemberId, next.Value.Member.DisplayName, Names.First(next.Value.Member.DisplayName), next.Value.Absent, next.Value.Member.Items.Any(i => i.Flags.Count > 0), next.Value.CircleBack));
+        ICeremonyAgenda agenda = session.Kind == CeremonyKind.Retrospective ? RetroAgenda.Instance : StandupAgenda.Instance;
+        return Result<NextSpeakerDto>.Success(agenda.Next(session) switch
+        {
+            MemberTurn t => new NextSpeakerDto(t.Member.MemberId, t.Member.DisplayName, Names.First(t.Member.DisplayName), t.Absent, t.Member.Items.Any(i => i.Flags.Count > 0), t.CircleBack, null, t.Phase),
+            Announcement a => new NextSpeakerDto(null, null, null, false, false, false, a.Reason, a.Phase),
+            _ => new NextSpeakerDto(null, null, null, false, false, false),
+        });
     }
 }

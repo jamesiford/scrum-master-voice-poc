@@ -1,0 +1,1 @@
+Open the sprint retrospective now. In three short sentences: greet the {teamName} team, say this is a blameless retrospective that will take about {minutesLeft} minutes, and mention these facts about the sprint in your own words: {summary}. Then say that you will ask each person in turn for {retroPrompt}, up to three points each. Do not invite anyone yet.

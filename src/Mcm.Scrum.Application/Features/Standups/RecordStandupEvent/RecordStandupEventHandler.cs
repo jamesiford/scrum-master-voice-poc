@@ -18,7 +18,7 @@ internal sealed class RecordStandupEventHandler(ISessionRepository sessions, ICl
 
         var known = SprintIds.From(session.PreBrief);
         var ids = (request.WorkItemIds ?? []).Where(id => known.Contains(new Domain.Work.WorkItemId(id))).Distinct().ToList();
-        session.RecordEvent(request.Type, request.MemberId, ids, request.Text, clock.UtcNow);
+        session.RecordEvent(request.Type, request.MemberId, ids, request.Text, clock.UtcNow, request.Category, request.OwnerMemberId);
         await sessions.SaveAsync(session, ct);
         return Result.Success();
     }

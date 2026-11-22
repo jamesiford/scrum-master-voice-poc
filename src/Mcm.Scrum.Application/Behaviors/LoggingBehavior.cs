@@ -15,6 +15,7 @@ internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavi
     public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, CancellationToken ct)
     {
         var started = Stopwatch.GetTimestamp();
+        using var activity = ScrumTelemetry.Source.StartActivity(typeof(TRequest).Name);
         var response = await next();
         logger.LogInformation(
             "Handled {Request} in {ElapsedMs} ms",

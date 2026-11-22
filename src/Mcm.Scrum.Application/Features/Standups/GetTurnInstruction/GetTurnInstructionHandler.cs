@@ -8,7 +8,7 @@ using Mcm.Scrum.Domain.Voice;
 namespace Mcm.Scrum.Application.Features.Standups.GetTurnInstruction;
 
 /// <summary>Fills a turn template with facts from the session. The model only phrases it; every fact comes from code (rule 3).</summary>
-internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITeamRepository teams, IPromptStore prompts, IClock clock)
+internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITeamRepository teams, IPromptStore prompts, IRetroSettings retro, IClock clock)
     : IRequestHandler<GetTurnInstructionQuery, Result<string>>
 {
     public async Task<Result<string>> Handle(GetTurnInstructionQuery request, CancellationToken ct)
@@ -19,14 +19,31 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             return Result<string>.Failure(StandupErrors.SessionNotFound(request.SessionId));
         }
 
-        var template = await prompts.GetAsync(TemplateName(request.Reason), ct);
+        var name = session.Kind == CeremonyKind.Retrospective ? RetroTemplateName(session, request.Reason) : TemplateName(request.Reason);
+        var template = await prompts.GetAsync(name, ct);
         if (template is null)
         {
-            return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{TemplateName(request.Reason)}' is missing from agents/instructions."));
+            return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));
         }
 
         var team = await teams.GetAsync(session.TeamId, ct);
         return Result<string>.Success(PromptTemplate.Render(template, Values(session, team?.Name ?? "the team", request)));
+    }
+
+    // A retrospective reuses the standup's turns for step-away, silence, parking and the time warning, and has its own for the rest.
+    private static string RetroTemplateName(StandupSession session, SpeakReason reason)
+    {
+        var actions = RetroAgenda.InActions(session);
+        return reason switch
+        {
+            SpeakReason.Open => "turn-retro-open",
+            SpeakReason.CallOn => actions ? "turn-retro-ask-actions" : "turn-retro-ask-member",
+            SpeakReason.CircleBack => actions ? "turn-retro-ask-actions" : "turn-retro-circle-back",
+            SpeakReason.Clarify => actions ? "turn-retro-confirm-owner" : "turn-retro-clarify-category",
+            SpeakReason.RetroThemes => "turn-retro-themes",
+            SpeakReason.Recap => "turn-retro-close",
+            _ => TemplateName(reason),
+        };
     }
 
     private static string TemplateName(SpeakReason reason) => reason switch
@@ -41,6 +58,7 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
         SpeakReason.StepAway => "turn-step-away",
         SpeakReason.NoResponse => "turn-no-response",
         SpeakReason.CircleBack => "turn-circle-back",
+        SpeakReason.Unblocker => "turn-unblocker",
         _ => "turn-recap",
     };
 
@@ -62,7 +80,24 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             ["absent"] = AbsentNames(session),
             ["noResponse"] = SilentNames(session),
             ["commitments"] = session.ActiveEvents.Count(e => e.Type == StandupEventType.Commitment).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            ["summary"] = session.PreBrief?.Summary ?? string.Empty,
+            ["retroPrompt"] = RetroFormats.Prompt(retro.Format),
+            ["themes"] = RetroLines(session),
+            ["actions"] = ActionLines(session),
+            ["noteCount"] = RetroSummary.Build(session).Notes.Count.ToString(System.Globalization.CultureInfo.InvariantCulture),
         };
+    }
+
+    private static string RetroLines(StandupSession session)
+    {
+        var themes = RetroSummary.Build(session).Themes;
+        return themes.Count == 0 ? "no strong themes, the notes were all different" : string.Join("; ", themes.Select(t => $"{t.Name} ({t.Count} notes)"));
+    }
+
+    private static string ActionLines(StandupSession session)
+    {
+        var actions = RetroSummary.Build(session).Actions;
+        return actions.Count == 0 ? "none agreed" : string.Join("; ", actions.Select(a => $"{a.Text}, owned by {Names.First(a.OwnerName)}"));
     }
 
     private static string Lines(StandupSession session, StandupEventType type, string none)

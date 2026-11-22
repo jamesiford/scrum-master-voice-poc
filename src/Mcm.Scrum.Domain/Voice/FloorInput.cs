@@ -61,3 +61,7 @@ public sealed record SpeechActive(string MemberId, bool Active, DateTimeOffset A
 /// <summary>The current speaker cannot speak right now (stepped away, or was said to have), so skip them and circle back.</summary>
 /// <param name="Reason">Why.</param>
 public sealed record DeferCurrent(DeferReason Reason) : FloorInput;
+
+/// <summary>The agenda says the agent speaks to everyone next (a ceremony step that is not a member turn).</summary>
+/// <param name="Reason">What the agent says.</param>
+public sealed record AnnounceStep(SpeakReason Reason) : FloorInput;

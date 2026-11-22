@@ -20,6 +20,7 @@ public static class DependencyInjection
         var assembly = typeof(DependencyInjection).Assembly;
         services.AddMediator(assembly);
         services.AddScoped<Tools.IScrumTools, Tools.ScrumTools>();
+        services.AddScoped<Features.Calendars.SprintCalendarBuilder>();
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

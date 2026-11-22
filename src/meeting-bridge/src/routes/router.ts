@@ -40,10 +40,12 @@ async function route(
   cast: CastRoutes,
   teams: TeamsRoutes,
 ): Promise<void> {
-  const path = new URL(req.url ?? '/', 'http://localhost').pathname;
+  const url = new URL(req.url ?? '/', 'http://localhost');
+  const path = url.pathname;
 
   if (path === '/healthz') return sendJson(res, 200, { status: 'healthy' });
-  if (path === '/cast/script' && req.method === 'GET') return cast.script(res);
+  if (path === '/cast/script' && req.method === 'GET')
+    return cast.script(res, url.searchParams.get('kind') ?? undefined);
   if (path === '/cast/line' && req.method === 'POST') return cast.line(req, res);
   if (path === '/acs/token' && req.method === 'POST') return teams.token(res);
   if (path === '/teams/join' && req.method === 'POST') return teams.control(req, res);

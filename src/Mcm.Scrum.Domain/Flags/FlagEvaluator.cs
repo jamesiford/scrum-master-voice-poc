@@ -8,10 +8,10 @@ public sealed class FlagEvaluator(IEnumerable<IFlagRule> rules)
 {
     private readonly IFlagRule[] _rules = rules.ToArray();
 
-    /// <summary>Creates an evaluator with the six built-in item rules.</summary>
+    /// <summary>Creates an evaluator with the seven built-in item rules.</summary>
     /// <returns>The evaluator.</returns>
     public static FlagEvaluator CreateDefault() =>
-        new([new StaleRule(), new BlockedRule(), new OverdueRule(), new UnassignedRule(), new NoRecentUpdateRule()]);
+        new([new StaleRule(), new BlockedRule(), new OverdueRule(), new UnassignedRule(), new NoRecentUpdateRule(), new AtRiskRule()]);
 
     /// <summary>Evaluates all rules for an item.</summary>
     /// <param name="item">The item.</param>

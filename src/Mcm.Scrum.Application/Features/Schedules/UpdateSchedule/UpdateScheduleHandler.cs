@@ -17,6 +17,13 @@ internal sealed class UpdateScheduleHandler(IScheduleRepository schedules, ITeam
         }
 
         var existing = await schedules.GetAsync(request.TeamId, ct);
+
+        // A pasted link is only needed when no approved sprint calendar supplies the join URLs (M9d).
+        if (request.Mode == "acs" && request.Enabled && string.IsNullOrWhiteSpace(request.JoinUrl) && existing?.Meetings is not { Count: > 0 })
+        {
+            return Result.Failure(Error.Invalid("schedule.join_url_required", "A Teams meeting link is required for acs mode, unless a sprint calendar has been approved."));
+        }
+
         var days = request.Days.Select(Enum.Parse<DayOfWeek>).Distinct().ToList();
         var updated = (existing ?? Schedule.Default(request.TeamId)) with
         {

@@ -3,6 +3,9 @@ using System.Threading.Channels;
 using Mcm.Scrum.Api.Endpoints;
 using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Abstractions.Ports;
+using Mcm.Scrum.Application.Features.Retrospectives.GetRetroBoard;
+using Mcm.Scrum.Application.Features.Retrospectives.NameRetroThemes;
+using Mcm.Scrum.Application.Features.Retrospectives.ReconcileRetroUpdate;
 using Mcm.Scrum.Application.Features.Standups;
 using Mcm.Scrum.Application.Features.Standups.CompleteSpeakerTurn;
 using Mcm.Scrum.Application.Features.Standups.EndStandup;
@@ -15,6 +18,7 @@ using Mcm.Scrum.Application.Features.Standups.ParkTopic;
 using Mcm.Scrum.Application.Features.Standups.RecordAgentLatency;
 using Mcm.Scrum.Application.Features.Standups.RecordStandupEvent;
 using Mcm.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Mcm.Scrum.Application.Features.Standups.ResolveUnblocker;
 using Mcm.Scrum.Application.Features.Standups.RetractStandupEvent;
 using Mcm.Scrum.Application.Tools;
 using Mcm.Scrum.Domain.Common;
@@ -33,6 +37,7 @@ public sealed class VoiceGateway(
     ISender sender,
     IScrumTools tools,
     IVoiceSessionFactory voiceFactory,
+    IRetroSettings retro,
     IClock clock,
     LiveSessionRegistry live,
     IOptions<VoiceGatewayOptions> options,
@@ -51,6 +56,8 @@ public sealed class VoiceGateway(
     private readonly HashSet<string> _deferredNow = [];
     private readonly HashSet<string> _correcting = [];
     private readonly HashSet<string> _redirected = [];
+    private readonly HashSet<string> _askUnblocker = [];
+    private readonly HashSet<string> _awaitingUnblocker = [];
     private IReadOnlyList<NameRef> _roster = [];
     private string? _directive;
     private string? _deferNotes;
@@ -195,6 +202,7 @@ public sealed class VoiceGateway(
                 type = "hello",
                 sessionId = _sessionId,
                 mode = _session.Mode,
+                kind = _session.Kind.ToString(),
                 version = 1,
                 standupMinutes = _session.StandupMinutes,
                 members = _roster.Select(m => new { memberId = m.MemberId, displayName = m.DisplayName }),
@@ -555,6 +563,12 @@ public sealed class VoiceGateway(
         var interpretation = owner != memberId
             ? new Interpretation(ItemMentionsCorrection(text) ? UtteranceIntent.Correction : UtteranceIntent.Update, owner)
             : UtteranceClassifier.Classify(text, memberId, _floor.CurrentMemberId, _roster);
+        if (owner == memberId && memberId == _floor.CurrentMemberId && _awaitingUnblocker.Remove(memberId))
+        {
+            // M9-R2: the answer to "Who can help unblock this?" is matched to a roster member in code, never by the model.
+            await sender.Send(new ResolveUnblockerCommand(_sessionId, memberId, text), _run);
+        }
+
         if (await ReactAsync(interpretation, memberId, text))
         {
             return;
@@ -605,7 +619,9 @@ public sealed class VoiceGateway(
             case UtteranceIntent.AskWhatToReport when MemberOf(i.TargetMemberId ?? speakerId) is { } brief:
                 lock (_gate)
                 {
-                    _directive = $"{Short(brief.DisplayName)} asked what to report on. Tell them, briefly and in this order: {ReportingPriorities.For(brief, _covered)}";
+                    _directive = _session.Kind == CeremonyKind.Retrospective
+                        ? $"{Short(brief.DisplayName)} asked what to share. Tell them, briefly: {RetroFormats.Prompt(retro.Format)}."
+                        : $"{Short(brief.DisplayName)} asked what to report on. Tell them, briefly and in this order: {ReportingPriorities.For(brief, _covered)}";
                 }
 
                 await RespondAsync(_directive);
@@ -703,7 +719,7 @@ public sealed class VoiceGateway(
 
             // Precompute (SPEC 10.2): reconcile while the member may still be talking so the result is ready when silence is detected.
             var snapshot = sb.ToString();
-            _speculative[memberId] = (snapshot, Task.Run(() => sender.Send(Reconcile(memberId, snapshot), _run), _run));
+            _speculative[memberId] = (snapshot, Task.Run(() => ReconcileAsync(memberId, snapshot), _run));
         }
     }
 
@@ -731,7 +747,7 @@ public sealed class VoiceGateway(
         {
             foreach (var e in r.Events)
             {
-                await sender.Send(new RecordStandupEventCommand(_sessionId, e.Type, done.MemberId, e.Text, e.WorkItemIds), _run);
+                await sender.Send(new RecordStandupEventCommand(_sessionId, e.Type, done.MemberId, e.Text, e.WorkItemIds, e.Category, e.OwnerMemberId), _run);
                 lock (_gate)
                 {
                     _covered.UnionWith(e.WorkItemIds);
@@ -750,12 +766,17 @@ public sealed class VoiceGateway(
             }
 
             _correcting.Remove(done.MemberId);
+            if (r.Events.Any(e => e.Type == StandupEventType.Blocker))
+            {
+                _askUnblocker.Add(done.MemberId);
+            }
+
             var corrected = retracted.Count > 0 ? "you corrected an earlier statement, so I have removed it; " : string.Empty;
             _noted[done.MemberId] = corrected + CoverageNotes.Noted(r.Events.Select(e => (e.Type, e.Text)));
 
             _pendingQuestion[done.MemberId] = r.SuggestedQuestion;
             _pendingItem[done.MemberId] = r.QuestionItemId;
-            hasQuestion = !string.IsNullOrWhiteSpace(r.SuggestedQuestion) || _noted[done.MemberId].Length > 0;
+            hasQuestion = !string.IsNullOrWhiteSpace(r.SuggestedQuestion) || _noted[done.MemberId].Length > 0 || _askUnblocker.Contains(done.MemberId);
         }
 
         if (!done.Background)
@@ -802,8 +823,17 @@ public sealed class VoiceGateway(
 
     private async Task SpeakAsync(AgentSpeak speak)
     {
-        var question = speak.Reason == SpeakReason.Clarify && speak.MemberId is not null ? _pendingQuestion.GetValueOrDefault(speak.MemberId) : null;
-        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, speak.Reason, speak.MemberId, question, NotesFor(speak)), _run);
+        var reason = speak.Reason;
+        var question = reason == SpeakReason.Clarify && speak.MemberId is not null ? _pendingQuestion.GetValueOrDefault(speak.MemberId) : null;
+        if (reason == SpeakReason.Clarify && speak.MemberId is not null && _askUnblocker.Remove(speak.MemberId))
+        {
+            // M9-R2: a recorded blocker gets one turn that asks who can help, before any other clarifying question.
+            reason = SpeakReason.Unblocker;
+            question = UnblockerQuestion;
+            _awaitingUnblocker.Add(speak.MemberId);
+        }
+
+        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, reason, speak.MemberId, question, NotesFor(speak)), _run);
         if (!instruction.IsSuccess)
         {
             await _bridge.SendAsync(new { type = "error", code = "TURN_INSTRUCTION", message = instruction.Error!.Message }, _run);
@@ -836,11 +866,17 @@ public sealed class VoiceGateway(
         _createSentAt = clock.UtcNow;
     }
 
-    private ReconcileUpdateQuery Reconcile(string memberId, string text)
+    // A retrospective is sorted by rules in code (RetroInterpreter); the standup also asks the model for phrasing.
+    private Task<Result<ReconcileResult>> ReconcileAsync(string memberId, string text)
     {
         lock (_gate)
         {
-            return new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId));
+            if (_session.Kind == CeremonyKind.Retrospective)
+            {
+                return sender.Send(new ReconcileRetroUpdateQuery(_sessionId, memberId, text, _asked.ContainsKey(memberId), _correcting.Contains(memberId)), _run);
+            }
+
+            return sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId)), _run);
         }
     }
 
@@ -860,8 +896,16 @@ public sealed class VoiceGateway(
         return $"{head} {NameOf(memberId)}'s open items: {list}.";
     }
 
+    private const string UnblockerQuestion = "Who can help unblock this?";
+
     private string? NotesFor(AgentSpeak speak)
     {
+        if (_session.Kind == CeremonyKind.Retrospective && speak.Reason is not (SpeakReason.StepAway or SpeakReason.NoResponse or SpeakReason.Addressed))
+        {
+            // The retrospective's turn templates carry their own facts (themes, actions); there are no flagged items to carry over.
+            return null;
+        }
+
         if (speak.Reason == SpeakReason.Clarify && speak.MemberId is not null)
         {
             return _noted.GetValueOrDefault(speak.MemberId);
@@ -870,6 +914,13 @@ public sealed class VoiceGateway(
         if (speak.Reason is SpeakReason.StepAway or SpeakReason.NoResponse)
         {
             return _deferNotes;
+        }
+
+        if (speak.Reason is SpeakReason.CallOn or SpeakReason.CircleBack && MemberOf(speak.MemberId ?? string.Empty) is { } caller)
+        {
+            // M9-R2, M9-R3: ask first about last time's commitments, and whether they helped the teammate they were named to help.
+            var carried = CoverageNotes.CarryOverNotes(caller);
+            return carried.Length == 0 ? null : carried;
         }
 
         if (speak.Reason == SpeakReason.Addressed && speak.MemberId is not null)
@@ -923,7 +974,7 @@ public sealed class VoiceGateway(
             _speculative.Remove(memberId);
         }
 
-        return await (reused ?? sender.Send(Reconcile(memberId, text), _run));
+        return await (reused ?? ReconcileAsync(memberId, text));
     }
 
     private async Task AdvanceAsync()
@@ -961,6 +1012,24 @@ public sealed class VoiceGateway(
     private async Task AdvanceToNextAsync()
     {
         var next = await sender.Send(new GetNextSpeakerQuery(_sessionId), _run);
+        if (next.IsSuccess && next.Value.Announcement is { } announce)
+        {
+            // The retrospective's themes are named in code-grouped order, then read back to everyone.
+            if (announce == SpeakReason.RetroThemes)
+            {
+                await sender.Send(new NameRetroThemesCommand(_sessionId), _run);
+            }
+
+            await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Phase, null, next.Value.Phase), _run);
+            await ExecuteAsync(_floor.Handle(new AnnounceStep(announce)));
+            return;
+        }
+
+        if (next.IsSuccess && next.Value.Phase == "Actions" && next.Value.MemberId is { } asked)
+        {
+            await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Phase, asked, RetroAgenda.ActionTurnPrefix + asked), _run);
+        }
+
         if (next.IsSuccess && next.Value.CircleBack && next.Value.MemberId is { } back)
         {
             _status.Remove(back);
@@ -1066,6 +1135,12 @@ public sealed class VoiceGateway(
             return;
         }
 
+        if (_session.Kind == CeremonyKind.Retrospective)
+        {
+            await PushRetroBoardAsync(brief, ended);
+            return;
+        }
+
         HashSet<int> covered;
         lock (_gate)
         {
@@ -1099,6 +1174,39 @@ public sealed class VoiceGateway(
                 covered = m.Items.Count(i => covered.Contains(i.Id.Value)),
                 status = _status.GetValueOrDefault(m.MemberId),
             }),
+        };
+        var json = JsonSerializer.Serialize(board);
+        if (json == _lastBoard)
+        {
+            return;
+        }
+
+        _lastBoard = json;
+        await _bridge.SendAsync(board, _run);
+    }
+
+    // The retrospective board: three columns that fill as members speak, then the agreed actions.
+    private async Task PushRetroBoardAsync(PreBrief brief, bool ended)
+    {
+        var read = await sender.Send(new GetRetroBoardQuery(_sessionId), _run);
+        if (!read.IsSuccess)
+        {
+            return;
+        }
+
+        var b = read.Value;
+        var board = new
+        {
+            type = "board",
+            kind = "retro",
+            ended,
+            sprint = brief.IterationPath,
+            phase = b.Phase,
+            speaker = _floor.CurrentMemberId is { } id ? Short(NameOf(id)) : null,
+            columns = b.Columns.Select(c => new { key = c.Category.ToString(), label = c.Label, notes = c.Notes.Select(n => new { text = n.Text, member = n.Member }) }),
+            themes = b.Themes.Select(t => new { name = t.Name, count = t.Count }),
+            actions = b.Actions.Select(a => new { text = a.Text, owner = Short(a.OwnerName) }),
+            team = brief.Members.Select(m => new { name = m.DisplayName, status = _status.GetValueOrDefault(m.MemberId) }),
         };
         var json = JsonSerializer.Serialize(board);
         if (json == _lastBoard)

@@ -16,6 +16,11 @@ internal static class CardRenderer
             CardKind.FollowUpResult => "followup-result",
             CardKind.Absent => "absent",
             CardKind.Escalation => "escalation",
+            CardKind.Unblock => "absent",
+            CardKind.PlanningPack => "planning-pack",
+            CardKind.RetroActions => "retro-actions",
+            CardKind.ReviewPack => "review-pack",
+            CardKind.SprintCalendar => "sprint-calendar",
             _ => "recap",
         });
         var card = JsonNode.Parse(template)!;

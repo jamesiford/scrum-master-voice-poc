@@ -42,12 +42,24 @@ public static class AdoFields
     /// <summary>Target date; Agile Epics and Features carry this. Read as a fallback for other templates.</summary>
     public const string TargetDate = "Microsoft.VSTS.Scheduling.TargetDate";
 
+    /// <summary>Original estimate in hours.</summary>
+    public const string OriginalEstimate = "Microsoft.VSTS.Scheduling.OriginalEstimate";
+
+    /// <summary>Acceptance criteria (HTML); part of the Definition of Ready for sprint planning.</summary>
+    public const string AcceptanceCriteria = "Microsoft.VSTS.Common.AcceptanceCriteria";
+
+    /// <summary>Backlog order (lower is nearer the top).</summary>
+    public const string StackRank = "Microsoft.VSTS.Common.StackRank";
+
+    /// <summary>Description (HTML).</summary>
+    public const string Description = "System.Description";
+
     /// <summary>Iteration path.</summary>
     public const string IterationPath = "System.IterationPath";
 
     /// <summary>Fields requested for every sprint item.</summary>
     public static readonly IReadOnlyList<string> SprintItemFields =
     [
-        Id, Title, WorkItemType, State, AssignedTo, Tags, ChangedDate, StateChangeDate, StoryPoints, RemainingWork, FinishDate, TargetDate,
+        Id, Title, WorkItemType, State, AssignedTo, Tags, ChangedDate, StateChangeDate, StoryPoints, RemainingWork, OriginalEstimate, FinishDate, TargetDate, AcceptanceCriteria,
     ];
 }

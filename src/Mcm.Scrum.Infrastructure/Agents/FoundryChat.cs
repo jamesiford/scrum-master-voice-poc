@@ -1,17 +1,23 @@
-using System.Net.Http.Json;
-using System.Text.Json;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Mcm.Scrum.Infrastructure.Agents;
 
 /// <summary>
-/// Calls the Foundry OpenAI-compatible chat route with an Entra token (no keys) and returns JSON text.
-/// Any failure yields <see langword="null"/> so callers fall back to deterministic text.
+/// Runs one prompt through a Microsoft Agent Framework chat-client agent on the Foundry project and returns the model's JSON text.
+/// Any failure (no model configured, timeout, service error, no credential) yields <see langword="null"/> so callers fall back to
+/// deterministic text; a model outage never fails a use case.
 /// </summary>
-/// <remarks>VERIFY: https://learn.microsoft.com/azure/ai-foundry/openai/latest (v1 chat completions on the Foundry resource host).</remarks>
-public sealed class FoundryChat(HttpClient http, IOptions<FoundryOptions> options, ILogger<FoundryChat> logger)
+/// <remarks>
+/// ADR 0009b replaced the earlier hand-written <c>HttpClient</c> call (ADR 0002) with this; the ports and every caller are unchanged.
+/// </remarks>
+public sealed class FoundryChat(IFoundryAgentFactory agents, IOptions<FoundryOptions> options, ILogger<FoundryChat> logger)
 {
+    private const int MaxOutputTokens = 4000;
+    private const string JsonReminder = "\n\nReply with a single JSON object.";
+
     /// <summary>Gets a value indicating whether a model deployment is configured.</summary>
     public bool IsConfigured => options.Value.IsConfigured;
 
@@ -27,25 +33,19 @@ public sealed class FoundryChat(HttpClient http, IOptions<FoundryOptions> option
             return null;
         }
 
-        var request = new
-        {
-            model = options.Value.ReasoningDeployment,
-            messages = new object[] { new { role = "system", content = system }, new { role = "user", content = user } },
-            response_format = new { type = "json_object" },
-            max_completion_tokens = 4000,
-        };
-
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(TimeSpan.FromSeconds(options.Value.TimeoutSeconds));
         try
         {
-            using var response = await http.PostAsJsonAsync("openai/v1/chat/completions", request, ct);
-            response.EnsureSuccessStatusCode();
-            using var doc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
-            return doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+            var agent = agents.Create("mcm-scrum-agent", system);
+            var run = new ChatClientAgentRunOptions(new ChatOptions { ResponseFormat = ChatResponseFormat.Json, MaxOutputTokens = MaxOutputTokens });
+            // The Responses API rejects JSON mode unless the input (not only the instructions) mentions JSON.
+            var response = await agent.RunAsync(user + JsonReminder, session: null, run, timeout.Token);
+            return string.IsNullOrWhiteSpace(response.Text) ? null : response.Text;
         }
-        catch (Exception ex) when (!ct.IsCancellationRequested
-            && ex is HttpRequestException or TaskCanceledException or JsonException or KeyNotFoundException or InvalidOperationException
-                or Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException)
+        catch (Exception ex) when (!ct.IsCancellationRequested)
         {
+            // Model faults are expected (timeout, 429, no credential); the caller has a code fallback, so log and carry on.
             logger.LogWarning(ex, "Foundry call failed; using deterministic text");
             return null;
         }

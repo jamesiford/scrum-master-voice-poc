@@ -1,11 +1,11 @@
-using System.Net;
-using System.Text;
 using Mcm.Scrum.Application.Abstractions.Ports;
 using Mcm.Scrum.Domain.Flags;
 using Mcm.Scrum.Domain.Kpis;
 using Mcm.Scrum.Domain.Standups;
 using Mcm.Scrum.Domain.Work;
 using Mcm.Scrum.Infrastructure.Agents;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
@@ -13,12 +13,42 @@ namespace Mcm.Scrum.Infrastructure.Tests.Agents;
 
 public sealed class FoundryAgentTests
 {
-    private sealed class StubHandler(HttpStatusCode status, string body) : HttpMessageHandler
+    /// <summary>A fake model behind a real Agent Framework agent: replies with text, or throws to simulate an outage.</summary>
+    private sealed class StubAgents(string? reply, Exception? fault = null) : IFoundryAgentFactory
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>
-            Task.FromResult(new HttpResponseMessage(status) { Content = new StringContent(body, Encoding.UTF8, "application/json") });
+        public string? Instructions { get; private set; }
+
+        public int Calls { get; private set; }
+
+        public AIAgent Create(string name, string instructions)
+        {
+            Instructions = instructions;
+            Calls++;
+            return new ChatClientAgent(new StubChatClient(reply, fault), instructions, name);
+        }
     }
 
+    private sealed class StubChatClient(string? reply, Exception? fault) : IChatClient
+    {
+        public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        {
+            if (fault is not null)
+            {
+                throw fault;
+            }
+
+            return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant, reply)));
+        }
+
+        public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose()
+        {
+        }
+    }
     private sealed class StubPrompts(string? text) : IPromptStore
     {
         public Task<string?> GetAsync(string name, CancellationToken ct) => Task.FromResult(text);
@@ -32,15 +62,11 @@ public sealed class FoundryAgentTests
 
     private static readonly PreBrief Brief = new("t1", "p\\s", "G", 6, new Burndown(10, 5, 5, 6, false), [Member], [], [], "s");
 
-    private static FoundryChat Chat(HttpStatusCode status, string body, bool configured = true) =>
+    private static FoundryChat Chat(string? reply, bool configured = true, Exception? fault = null) =>
         new(
-            new HttpClient(new StubHandler(status, body)) { BaseAddress = new Uri("https://example.test/") },
+            new StubAgents(reply, fault),
             Options.Create(new FoundryOptions { ProjectEndpoint = configured ? "https://example.test/api/projects/p" : string.Empty, ReasoningDeployment = "d" }),
             NullLogger<FoundryChat>.Instance);
-
-    private static string Completion(string content) =>
-        System.Text.Json.JsonSerializer.Serialize(new { choices = new[] { new { message = new { content } } } });
-
     private static FoundryBacklogRiskAgent BacklogAgent(FoundryChat chat, string? prompt = "instructions") =>
         new(chat, new StubPrompts(prompt), NullLogger<FoundryBacklogRiskAgent>.Instance);
 
@@ -49,7 +75,7 @@ public sealed class FoundryAgentTests
     {
         var reply = """{ "summary": "Two risks.", "questions": [ { "memberId": "m1", "question": "Task 1 is stale. Status?" } ] }""";
 
-        var result = await BacklogAgent(Chat(HttpStatusCode.OK, Completion(reply))).SuggestAsync(Brief, CancellationToken.None);
+        var result = await BacklogAgent(Chat(reply)).SuggestAsync(Brief, CancellationToken.None);
 
         Assert.Equal("Two risks.", result!.Summary);
         Assert.Equal("Task 1 is stale. Status?", result.QuestionsByMemberId["m1"]);
@@ -58,25 +84,25 @@ public sealed class FoundryAgentTests
     [Fact]
     public async Task Suggest_ServerError_ReturnsNull()
     {
-        Assert.Null(await BacklogAgent(Chat(HttpStatusCode.InternalServerError, "{}")).SuggestAsync(Brief, CancellationToken.None));
+        Assert.Null(await BacklogAgent(Chat(null, fault: new InvalidOperationException("500"))).SuggestAsync(Brief, CancellationToken.None));
     }
 
     [Fact]
     public async Task Suggest_MalformedJsonContent_ReturnsNull()
     {
-        Assert.Null(await BacklogAgent(Chat(HttpStatusCode.OK, Completion("not json"))).SuggestAsync(Brief, CancellationToken.None));
+        Assert.Null(await BacklogAgent(Chat("not json")).SuggestAsync(Brief, CancellationToken.None));
     }
 
     [Fact]
     public async Task Suggest_NotConfigured_ReturnsNull()
     {
-        Assert.Null(await BacklogAgent(Chat(HttpStatusCode.OK, "{}", configured: false)).SuggestAsync(Brief, CancellationToken.None));
+        Assert.Null(await BacklogAgent(Chat("{}", configured: false)).SuggestAsync(Brief, CancellationToken.None));
     }
 
     [Fact]
     public async Task Suggest_MissingPrompt_ReturnsNull()
     {
-        Assert.Null(await BacklogAgent(Chat(HttpStatusCode.OK, "{}"), prompt: null).SuggestAsync(Brief, CancellationToken.None));
+        Assert.Null(await BacklogAgent(Chat("{}"), prompt: null).SuggestAsync(Brief, CancellationToken.None));
     }
 
     [Fact]
@@ -86,7 +112,7 @@ public sealed class FoundryAgentTests
             { "consistent": true, "mentionedWorkItemIds": [1], "risks": ["story 1 stale"], "suggestedQuestion": "Story 1 stale. Status?",
               "events": [ { "type": "commitment", "text": "Finish tomorrow", "workItemIds": [1] }, { "type": "weird", "text": "x" } ] }
             """;
-        var agent = new FoundryReconcileAgent(Chat(HttpStatusCode.OK, Completion(reply)), new StubPrompts("p"));
+        var agent = new FoundryReconcileAgent(Chat(reply), new StubPrompts("p"));
 
         var result = await agent.ReconcileAsync(Member, "working on it", CancellationToken.None);
 
@@ -97,8 +123,53 @@ public sealed class FoundryAgentTests
     [Fact]
     public async Task Reconcile_EmptyUtterance_ReturnsNullWithoutCallingTheModel()
     {
-        var agent = new FoundryReconcileAgent(Chat(HttpStatusCode.OK, "{}"), new StubPrompts("p"));
+        var agent = new FoundryReconcileAgent(Chat("{}"), new StubPrompts("p"));
 
         Assert.Null(await agent.ReconcileAsync(Member, "  ", CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Draft_ReplyAndPrompt_PassesThePromptTextAsInstructions()
+    {
+        var agents = new StubAgents("""{ "text": "ok" }""");
+        var chat = new FoundryChat(agents, Options.Create(new FoundryOptions { ProjectEndpoint = "https://e.test/api/projects/p", ReasoningDeployment = "d" }), NullLogger<FoundryChat>.Instance);
+
+        var reply = await new FoundryDraftingAgent(chat, new StubPrompts("be brief")).DraftJsonAsync("story-writer", "{}", CancellationToken.None);
+
+        Assert.Equal("""{ "text": "ok" }""", reply);
+        Assert.Equal("be brief", agents.Instructions);
+    }
+
+    [Fact]
+    public async Task Draft_ModelOutage_ReturnsNullSoTheCallerFallsBack()
+    {
+        Assert.Null(await new FoundryDraftingAgent(Chat(null, fault: new HttpRequestException("down")), new StubPrompts("p")).DraftJsonAsync("x", "{}", CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Narrate_ValidReply_ReturnsTheText()
+    {
+        var agent = new FoundryReportingAgent(Chat("""{ "text": "Velocity is steady." }"""), new StubPrompts("p"));
+
+        Assert.Equal("Velocity is steady.", await agent.NarrateAsync("sprint", "{}", CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task TryCompleteJson_NotConfigured_NeverCreatesAnAgent()
+    {
+        var agents = new StubAgents("{}");
+        var chat = new FoundryChat(agents, Options.Create(new FoundryOptions()), NullLogger<FoundryChat>.Instance);
+
+        Assert.Null(await chat.TryCompleteJsonAsync("s", "u", CancellationToken.None));
+        Assert.Equal(0, agents.Calls);
+    }
+
+    [Fact]
+    public async Task TryCompleteJson_CallerCancels_StillPropagates()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Chat(null, fault: new OperationCanceledException(cts.Token)).TryCompleteJsonAsync("s", "u", cts.Token));
     }
 }

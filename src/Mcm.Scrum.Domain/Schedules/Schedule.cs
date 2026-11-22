@@ -10,6 +10,7 @@ namespace Mcm.Scrum.Domain.Schedules;
 /// <param name="PreparedFor">The date a session was last prepared for.</param>
 /// <param name="PreparedSessionId">The session prepared for that date.</param>
 /// <param name="StartedFor">The date the session was last started for.</param>
+/// <param name="Meetings">Teams meetings created from an approved sprint calendar (M9d): the join URL for each standup date, so the scheduler joins without a pasted link.</param>
 public sealed record Schedule(
     string TeamId,
     bool Enabled,
@@ -19,8 +20,14 @@ public sealed record Schedule(
     string? JoinUrl,
     DateOnly? PreparedFor = null,
     Guid? PreparedSessionId = null,
-    DateOnly? StartedFor = null)
+    DateOnly? StartedFor = null,
+    IReadOnlyList<ScheduledMeeting>? Meetings = null)
 {
+    /// <summary>Gets the join URL for a day: the calendar's meeting for that date, else the pasted <see cref="JoinUrl"/>.</summary>
+    /// <param name="day">The standup date.</param>
+    /// <returns>The URL, or <see langword="null"/> when there is none.</returns>
+    public string? JoinUrlFor(DateOnly day) => Meetings?.FirstOrDefault(m => m.Date == day)?.JoinUrl ?? JoinUrl;
+
     /// <summary>Creates the default schedule: off, weekdays 09:30, simulated.</summary>
     /// <param name="teamId">Team id.</param>
     /// <returns>The schedule.</returns>

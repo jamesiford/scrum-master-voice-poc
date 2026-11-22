@@ -16,10 +16,11 @@ internal sealed class GetFacilitatorInstructionsHandler(ISessionRepository sessi
             return Result<string>.Failure(StandupErrors.SessionNotFound(request.SessionId));
         }
 
-        var template = await prompts.GetAsync("facilitator", ct);
+        var name = session.Kind == Domain.Standups.CeremonyKind.Retrospective ? "facilitator-retro" : "facilitator";
+        var template = await prompts.GetAsync(name, ct);
         if (template is null)
         {
-            return Result<string>.Failure(Error.NotFound("prompt.not_found", "Prompt 'facilitator' is missing from agents/instructions."));
+            return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));
         }
 
         var team = await teams.GetAsync(session.TeamId, ct);

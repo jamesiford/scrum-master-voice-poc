@@ -4,7 +4,7 @@ using Mcm.Scrum.Domain.Common;
 
 namespace Mcm.Scrum.Application.Features.Standups.ListSessions;
 
-/// <summary>Projects stored sessions to list rows.</summary>
+/// <summary>Projects stored standup sessions to list rows. Planning and review sessions only carry their pack and are not listed; a retrospective run by voice (it has a roster brief) is.</summary>
 internal sealed class ListSessionsHandler(ISessionRepository sessions)
     : IRequestHandler<ListSessionsQuery, Result<IReadOnlyList<SessionSummaryDto>>>
 {
@@ -12,8 +12,8 @@ internal sealed class ListSessionsHandler(ISessionRepository sessions)
     {
         var all = await sessions.ListAsync(ct);
         IReadOnlyList<SessionSummaryDto> rows = all
-            .Where(s => s.TeamId == request.TeamId)
-            .Select(s => new SessionSummaryDto(s.Id, s.TeamId, s.Status, s.CreatedAt, CountFlagged(s)))
+            .Where(s => s.TeamId == request.TeamId && (s.Kind == Domain.Standups.CeremonyKind.DailyScrum || (s.Kind == Domain.Standups.CeremonyKind.Retrospective && s.PreBrief is not null)))
+            .Select(s => new SessionSummaryDto(s.Id, s.TeamId, s.Status, s.CreatedAt, CountFlagged(s), s.Kind))
             .ToList();
         return Result<IReadOnlyList<SessionSummaryDto>>.Success(rows);
     }

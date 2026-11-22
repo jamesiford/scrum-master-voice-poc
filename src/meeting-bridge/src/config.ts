@@ -7,6 +7,8 @@ export interface BridgeConfig {
   port: number;
   /** Repository-relative or absolute path of the demo cast file (`Demo__CastFile`). */
   castFile: string;
+  /** Repository-relative or absolute path of the retrospective cast file (`Demo__RetroCastFile`). */
+  retroCastFile: string;
   /** Azure Speech resource endpoint used for cast voices. */
   speechEndpoint: string;
   /** Entra tenant to sign in to, when several accounts are signed in. */
@@ -32,6 +34,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BridgeConfig {
   return {
     port: Number(env['PORT'] ?? 5090),
     castFile: env['Demo__CastFile'] ?? 'demo/cast/payments-standup.yaml',
+    retroCastFile: env['Demo__RetroCastFile'] ?? 'demo/cast/payments-retro.yaml',
     speechEndpoint: (
       env['SPEECH_ENDPOINT'] ?? 'https://fdy-mcm-scrum-demo.cognitiveservices.azure.com'
     ).replace(/\/$/, ''),

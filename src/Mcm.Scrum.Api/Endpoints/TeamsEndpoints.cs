@@ -1,7 +1,9 @@
 using Mcm.Scrum.Application.Abstractions.Messaging;
 using Mcm.Scrum.Application.Features.Teams.GetRoster;
 using Mcm.Scrum.Application.Features.Teams.GetTeam;
+using Mcm.Scrum.Application.Features.Teams.SetRecapChannel;
 using Mcm.Scrum.Application.Features.Teams.SyncRoster;
+using Mcm.Scrum.Application.Features.Teams.UpdateMemberAvailability;
 using Mcm.Scrum.Application.Features.Teams.UpdateTeamSettings;
 
 namespace Mcm.Scrum.Api.Endpoints;
@@ -28,8 +30,22 @@ public static class TeamsEndpoints
         group.MapPost("/{id}/members/sync", async (string id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new SyncRosterCommand(id), ct)).ToHttpResult());
 
+        group.MapPut("/{id}/members/{memberId}/availability", async (string id, string memberId, AvailabilityBody body, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new UpdateMemberAvailabilityCommand(id, memberId, body.Percent), ct)).ToHttpResult());
+
+        group.MapPut("/{id}/recap-channel", async (string id, RecapChannelBody body, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new SetRecapChannelCommand(id, body.ConversationId), ct)).ToHttpResult());
+
         return app;
     }
+
+    /// <summary>Request body for <c>PUT /api/teams/{id}/members/{memberId}/availability</c>.</summary>
+    /// <param name="Percent">Availability, 0 to 100.</param>
+    public sealed record AvailabilityBody(int Percent);
+
+    /// <summary>Request body for <c>PUT /api/teams/{id}/recap-channel</c>.</summary>
+    /// <param name="ConversationId">Teams conversation id of the channel.</param>
+    public sealed record RecapChannelBody(string ConversationId);
 
     /// <summary>Request body for <c>PUT /api/teams/{id}</c>.</summary>
     /// <param name="Name">Display name.</param>

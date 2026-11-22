@@ -31,7 +31,7 @@ public static class FollowUpsEndpoints
             (await sender.Send(new ProposeAdoChangeCommand(b.SessionId, b.MemberId, b.WorkItemId, b.Op, b.Value, b.Rationale ?? string.Empty), ct)).ToHttpResult());
 
         group.MapPost("/{id:guid}/approve", async (Guid id, DecisionBody b, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ApproveFollowUpCommand(id, b.Approver), ct)).ToHttpResult());
+            (await sender.Send(new ApproveFollowUpCommand(id, b.Approver, ApprovalChannel.Portal), ct)).ToHttpResult());
 
         group.MapPost("/{id:guid}/reject", async (Guid id, DecisionBody b, ISender sender, CancellationToken ct) =>
             (await sender.Send(new RejectFollowUpCommand(id, b.Approver), ct)).ToHttpResult());

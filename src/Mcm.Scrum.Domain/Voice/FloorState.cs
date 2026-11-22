@@ -39,6 +39,9 @@ public enum FloorState
     /// <summary>Muted from the portal.</summary>
     Paused,
 
+    /// <summary>The agent is speaking to the whole team, not to a member (for example reading back retrospective themes).</summary>
+    Announcing,
+
     /// <summary>The agent is saying it will skip the current member and come back, after which the next member is called.</summary>
     Deferring,
 }

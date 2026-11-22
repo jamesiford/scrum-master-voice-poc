@@ -1,4 +1,4 @@
-import type { BoardState } from './protocol.js';
+import type { AnyBoardState, BoardState, RetroBoardState } from './protocol.js';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
@@ -10,7 +10,7 @@ const HEIGHT = 720;
 export class BoardRenderer {
   private readonly canvas = document.createElement('canvas');
   private readonly ctx: CanvasRenderingContext2D;
-  private state: BoardState | undefined;
+  private state: AnyBoardState | undefined;
   private track: (MediaStreamTrack & { requestFrame?: () => void }) | undefined;
 
   /** Creates the renderer and paints the waiting screen. */
@@ -44,7 +44,7 @@ export class BoardRenderer {
    * Replaces the board contents.
    * @param state - The latest board state from the gateway.
    */
-  update(state: BoardState): void {
+  update(state: AnyBoardState): void {
     this.state = state;
     this.draw();
   }
@@ -60,6 +60,10 @@ export class BoardRenderer {
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
     const s = this.state;
     this.drawPulse();
+    if (s && 'kind' in s) {
+      this.paintRetro(s);
+      return;
+    }
     ctx.fillStyle = '#e2e8f0';
     ctx.font = '600 34px Segoe UI, Arial, sans-serif';
     ctx.fillText(s?.speaker ? `${s.speaker}'s items` : 'Standup agenda: flagged items', 48, 70);
@@ -82,6 +86,68 @@ export class BoardRenderer {
       this.drawItems(s);
     }
     this.drawTeam(s);
+  }
+
+  // The retrospective board: columns for what went well, what to do better and what is missing, then the agreed actions.
+  private paintRetro(s: RetroBoardState): void {
+    const { ctx } = this;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '600 34px Segoe UI, Arial, sans-serif';
+    ctx.fillText('Sprint retrospective', 48, 70);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '20px Segoe UI, Arial, sans-serif';
+    const turn = s.speaker ? ` · ${s.speaker} is sharing` : '';
+    ctx.fillText(
+      `${s.sprint} · ${s.phase === 'Actions' ? 'Agreeing actions' : 'Collecting notes'}${turn}`,
+      48,
+      108,
+    );
+    if (s.ended) {
+      ctx.fillStyle = '#4ade80';
+      ctx.font = '600 24px Segoe UI, Arial, sans-serif';
+      ctx.fillText(
+        'Retrospective complete. The action follow-up is in Teams for approval.',
+        48,
+        140,
+      );
+    }
+    const colors = ['#4ade80', '#fbbf24', '#38bdf8'];
+    s.columns.forEach((col, i) => {
+      const x = 48 + i * 400;
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x, 160, 380, 320);
+      ctx.fillStyle = colors[i % colors.length] ?? '#38bdf8';
+      ctx.fillRect(x, 160, 380, 6);
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '600 22px Segoe UI, Arial, sans-serif';
+      ctx.fillText(`${col.label} (${col.notes.length})`, x + 16, 200);
+      ctx.font = '17px Segoe UI, Arial, sans-serif';
+      col.notes.slice(-5).forEach((n, row) => {
+        ctx.fillStyle = '#e2e8f0';
+        const lines = wrap(n.text, 40);
+        lines.slice(0, 2).forEach((line, l) => ctx.fillText(line, x + 16, 232 + row * 48 + l * 20));
+      });
+    });
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '600 22px Segoe UI, Arial, sans-serif';
+    ctx.fillText(
+      s.phase === 'Actions' ? 'Actions' : 'Themes and actions appear after the round',
+      48,
+      520,
+    );
+    ctx.font = '18px Segoe UI, Arial, sans-serif';
+    if (s.themes.length > 0) {
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(
+        `Themes: ${clip(s.themes.map((th) => `${th.name} (${th.count})`).join(', '), 110)}`,
+        48,
+        552,
+      );
+    }
+    s.actions.slice(0, 3).forEach((a, i) => {
+      ctx.fillStyle = '#4ade80';
+      ctx.fillText(`${a.owner}: ${clip(a.text, 100)}`, 48, 590 + i * 30);
+    });
   }
 
   // A static canvas yields no video frames, so Teams shows nothing until something changes. A ticking clock keeps frames flowing.
@@ -139,6 +205,21 @@ export class BoardRenderer {
       ctx.fillRect(948, y + 10, m.total ? (280 * m.covered) / m.total : 0, 10);
     });
   }
+}
+
+function wrap(text: string, width: number): string[] {
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    if ((line + ' ' + word).trim().length > width) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = (line + ' ' + word).trim();
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
 }
 
 function clip(text: string, max: number): string {

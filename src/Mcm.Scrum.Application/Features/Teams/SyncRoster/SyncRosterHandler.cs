@@ -19,7 +19,7 @@ internal sealed class SyncRosterHandler(ITeamRepository teams, IMemberRepository
         var existing = (await members.ListAsync(team.Id, ct)).ToDictionary(m => m.Key, StringComparer.OrdinalIgnoreCase);
         var merged = (await source.GetRosterAsync(team, ct))
             .Select(m => existing.TryGetValue(m.Key, out var old)
-                ? m with { Active = old.Active, Pronunciation = old.Pronunciation, SpeakingOrder = old.SpeakingOrder }
+                ? m with { Active = old.Active, Pronunciation = old.Pronunciation, SpeakingOrder = old.SpeakingOrder, AvailabilityPct = old.AvailabilityPct }
                 : m)
             .ToList();
 

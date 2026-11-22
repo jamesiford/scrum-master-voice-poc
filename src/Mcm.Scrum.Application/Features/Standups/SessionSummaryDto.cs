@@ -8,4 +8,5 @@ namespace Mcm.Scrum.Application.Features.Standups;
 /// <param name="Status">Lifecycle status.</param>
 /// <param name="CreatedAt">When it was prepared.</param>
 /// <param name="FlaggedItems">Number of open items with at least one flag.</param>
-public sealed record SessionSummaryDto(Guid Id, string TeamId, StandupStatus Status, DateTimeOffset CreatedAt, int FlaggedItems);
+/// <param name="Kind">The ceremony.</param>
+public sealed record SessionSummaryDto(Guid Id, string TeamId, StandupStatus Status, DateTimeOffset CreatedAt, int FlaggedItems, CeremonyKind Kind = CeremonyKind.DailyScrum);

@@ -15,6 +15,10 @@ import { PreBriefView } from './PreBriefView';
 import { SessionTimeline } from './SessionTimeline';
 
 const statusTone: Record<string, Tone> = { Prepared: 'brand', Live: 'ok', Ended: 'neutral' };
+const ceremonyLabel: Record<string, string> = {
+  DailyScrum: 'Daily scrum',
+  Retrospective: 'Retrospective',
+};
 
 /**
  * Sessions page: prepare a standup, start it in the Simulated Room, and read any session's timeline and pre-brief (SPEC 13).
@@ -26,7 +30,7 @@ export function SessionsPage() {
   const sessions = useApiQuery((signal) => listSessions(TEAM_ID, signal), TEAM_ID);
   const detail = useApiQuery((signal) => getSession(selected ?? '', signal), selected);
   const prepare = useApiAction(() => prepareStandup(TEAM_ID));
-  const start = useApiAction((id: string, m: number) => startSession(id, m));
+  const start = useApiAction((id: string, m: number | undefined) => startSession(id, m));
 
   const onPrepare = async () => {
     const id = await prepare.run();
@@ -36,8 +40,9 @@ export function SessionsPage() {
     }
   };
 
-  const onStart = async (id: string) => {
-    const result = await start.run(id, minutes);
+  const onStart = async (id: string, kind: string) => {
+    // A retrospective takes its own timebox (Retro:Minutes), not the standup field.
+    const result = await start.run(id, kind === 'Retrospective' ? undefined : minutes);
     if (result) {
       window.open(result.roomUrl, '_blank');
       sessions.reload();
@@ -100,7 +105,10 @@ export function SessionsPage() {
           />
         )}
         {sessions.data && sessions.data.length > 0 && (
-          <Table label="Sessions" headings={['Prepared', 'Status', 'Flagged items', '']}>
+          <Table
+            label="Sessions"
+            headings={['Prepared', 'Ceremony', 'Status', 'Flagged items', '']}
+          >
             {sessions.data.map((s) => (
               <tr
                 key={s.id}
@@ -108,6 +116,7 @@ export function SessionsPage() {
                 className={s.id === selected ? 'bg-brand-soft/40' : 'hover:bg-subtle/50'}
               >
                 <td className="px-4 py-3">{new Date(s.createdAt).toLocaleString()}</td>
+                <td className="px-4 py-3">{ceremonyLabel[s.kind] ?? s.kind}</td>
                 <td className="px-4 py-3">
                   <Badge tone={statusTone[s.status] ?? 'neutral'} dot>
                     {s.status}
@@ -128,7 +137,7 @@ export function SessionsPage() {
                         size="sm"
                         icon={<Play className="size-3.5" />}
                         disabled={start.busy}
-                        onClick={() => void onStart(s.id)}
+                        onClick={() => void onStart(s.id, s.kind)}
                       >
                         Simulated Room
                       </Button>

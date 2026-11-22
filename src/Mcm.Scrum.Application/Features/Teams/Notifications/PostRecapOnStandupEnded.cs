@@ -4,8 +4,11 @@ using Mcm.Scrum.Domain.Standups;
 
 namespace Mcm.Scrum.Application.Features.Teams.Notifications;
 
-/// <summary>Posts the recap card when a standup ends. Facts come from recorded events, not from a model (rule 3).</summary>
-internal sealed class PostRecapOnStandupEnded(ISessionRepository sessions, IMemberRepository members, ITeamsMessenger messenger) : INotificationHandler<StandupEnded>
+/// <summary>
+/// Posts the recap card when a standup ends. Facts come from recorded events, not from a model (rule 3). It is routed to the team's
+/// recap channel and the meeting chat; only without either does it fall back to every stored conversation (M9-R5).
+/// </summary>
+internal sealed class PostRecapOnStandupEnded(ISessionRepository sessions, IMemberRepository members, ITeamRepository teams, ITeamsMessenger messenger) : INotificationHandler<StandupEnded>
 {
     public async Task Handle(StandupEnded domainEvent, CancellationToken ct)
     {
@@ -22,8 +25,9 @@ internal sealed class PostRecapOnStandupEnded(ISessionRepository sessions, IMemb
                 $"{e.Type}{(e.MemberId is not null && roster.TryGetValue(e.MemberId, out var n) ? $" ({n})" : string.Empty)}",
                 e.Text))
             .ToList();
+        var team = await teams.GetAsync(session.TeamId, ct);
         var absent = session.Attendance.Count(a => a.Value == Attendance.Absent);
         var text = $"{facts.Count} items captured. {absent} absent.";
-        await messenger.SendAsync(new TeamsMessage(CardKind.Recap, session.TeamId, session.Id, $"recap:{session.Id}", "Standup recap", text, facts), ct);
+        await messenger.SendAsync(new TeamsMessage(CardKind.Recap, session.TeamId, session.Id, $"recap:{session.Id}", "Standup recap", text, facts, Route: CardRoute.Recap, RecapChannelKey: team?.RecapChannelKey), ct);
     }
 }

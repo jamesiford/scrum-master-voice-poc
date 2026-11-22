@@ -30,6 +30,7 @@ internal sealed class GetSessionHandler(ISessionRepository sessions) : IRequestH
             LatencyStats.Percentile(s.LatencySamplesMs.ToList(), 50),
             LatencyStats.Percentile(s.LatencySamplesMs.ToList(), 95),
             s.Events.Count(e => e.Type == StandupEventType.Question),
-            s.StandupMinutes));
+            s.StandupMinutes,
+            s.Kind));
     }
 }

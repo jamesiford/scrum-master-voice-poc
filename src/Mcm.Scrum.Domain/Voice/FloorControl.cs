@@ -31,7 +31,7 @@ public sealed class FloorControl(FloorOptions options)
     public string? CurrentMemberId { get; private set; }
 
     /// <summary>Gets a value indicating whether the agent is meant to be speaking right now.</summary>
-    public bool AgentHasFloor => State is FloorState.Opening or FloorState.CallingOn or FloorState.Clarifying or FloorState.Interjecting or FloorState.Recap or FloorState.Deferring;
+    public bool AgentHasFloor => State is FloorState.Opening or FloorState.CallingOn or FloorState.Clarifying or FloorState.Interjecting or FloorState.Recap or FloorState.Deferring or FloorState.Announcing;
 
     /// <summary>Applies an input and returns what the gateway must do.</summary>
     /// <param name="input">The input.</param>
@@ -52,6 +52,7 @@ public sealed class FloorControl(FloorOptions options)
             PauseFloor p => OnSuspend(p.On, FloorState.Paused),
             AgentAddressed => OnAddressed(),
             SkipSpeaker => OnSkip(),
+            AnnounceStep a => OnAnnounce(a.Reason),
             BargeIn b => OnBargeIn(b),
             SpeechActive s => OnSpeechActive(s),
             _ => None,
@@ -96,7 +97,7 @@ public sealed class FloorControl(FloorOptions options)
             case FloorState.Clarifying:
                 BeginListening(e.Now, resetHeard: true);
                 return None;
-            case FloorState.Deferring:
+            case FloorState.Deferring or FloorState.Announcing:
                 State = FloorState.Advancing;
                 return [new AdvanceSpeaker()];
             case FloorState.Interjecting:
@@ -357,6 +358,20 @@ public sealed class FloorControl(FloorOptions options)
         FloorAction speak = new AgentSpeak(reason == DeferReason.NoResponse ? SpeakReason.NoResponse : SpeakReason.StepAway, CurrentMemberId);
         FloorAction defer = new DeferSpeaker(CurrentMemberId, reason);
         return cancel ? [new CancelResponse(), defer, speak] : [defer, speak];
+    }
+
+    // The agenda asked the agent to address the whole team; nobody holds the floor while it does.
+    private FloorAction[] OnAnnounce(SpeakReason reason)
+    {
+        if (State != FloorState.Advancing)
+        {
+            return None;
+        }
+
+        CurrentMemberId = null;
+        _absentCurrent = false;
+        State = FloorState.Announcing;
+        return [new AgentSpeak(reason, null)];
     }
 
     private FloorAction[] OnAddressed() =>

@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $api = $env:API_URI
 $bridge = $env:BRIDGE_URI
 $rg = $env:AZURE_RESOURCE_GROUP
-$org = 'fordjames-demos'
+$org = ($env:ADO_ORG_URL).TrimEnd('/').Split('/')[-1]
 $project = 'MCM-Scrum-Demo'
 
 Write-Host "Setting portal sign-in redirect URIs"
