@@ -68,3 +68,7 @@ The dry run found the project and the existing work items. The changes are the p
 31 change(s) planned.
 
 **ASK James:** review the table, then run step 2.
+
+## Applied
+
+The `--rebrand --apply` run renamed the project to Zava-Scrum-Demo and retagged work items (30 changes), then the normal seed re-ran cleanly. Decisions: Azure Option B (fresh zava azd environment, pending), people's names left as is.
