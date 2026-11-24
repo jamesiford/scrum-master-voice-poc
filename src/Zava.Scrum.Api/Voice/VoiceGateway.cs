@@ -95,6 +95,10 @@ public sealed class VoiceGateway(
     private int _discardAgentAudio;
     private volatile string? _agentItemId;
     private DateTimeOffset? _firstAudioAt;
+    private int _turnTranscriptMs;
+    private int _turnAnalysisMs;
+    private int _turnModelMs;
+    private string _turnSource = "none";
     private DateTimeOffset? _truncatedAt;
     private (AgentSpeak Speak, string? Question)? _lastSpeak;
     private (string ByMemberId, string Saying)? _interrupted;
@@ -504,6 +508,7 @@ public sealed class VoiceGateway(
                 break;
             case UserTranscript t:
                 _pendingTranscripts = Math.Max(0, _pendingTranscripts - 1);
+                _turnTranscriptMs = (int)Math.Max(0, (clock.UtcNow - _lastStoppedAt).TotalMilliseconds);
                 if (!string.IsNullOrWhiteSpace(t.Text))
                 {
                     var started = _speechStartedAt ?? clock.UtcNow.AddSeconds(-2);
@@ -628,6 +633,26 @@ public sealed class VoiceGateway(
             ms,
             (int)(_createSentAt - t).TotalMilliseconds,
             (int)(clock.UtcNow - _createSentAt).TotalMilliseconds);
+        await RecordTimingAsync(ms, (int)(_createSentAt - t).TotalMilliseconds, (int)(clock.UtcNow - _createSentAt).TotalMilliseconds);
+    }
+
+    // One diagnostic event per reactive turn so the gate runner can split the delay by hop. The orchestration hop is what is left of the time to
+    // CreateResponse after the transcript and the analysis: floor control, the wait for silence, and the reconcile.
+    private async Task RecordTimingAsync(int totalMs, int toCreateMs, int voiceMs)
+    {
+        var orchestrationMs = Math.Max(0, toCreateMs - _turnTranscriptMs - _turnAnalysisMs);
+        var json = JsonSerializer.Serialize(new
+        {
+            reason = _lastSpeak?.Speak.Reason.ToString() ?? "unknown",
+            totalMs,
+            speechEndToTranscriptMs = _turnTranscriptMs,
+            analyserMs = Math.Max(0, _turnAnalysisMs - _turnModelMs),
+            decisionModelMs = _turnModelMs,
+            orchestrationMs,
+            voiceFirstAudioMs = voiceMs,
+            source = _turnSource,
+        });
+        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Timing, _floor.CurrentMemberId, json), _run);
     }
 
     private async Task MaybeFinishSpeechAsync()
@@ -711,6 +736,9 @@ public sealed class VoiceGateway(
         var analysis = result.IsSuccess
             ? result.Value!
             : new UtteranceAnalysis(UtteranceClassifier.Classify(text, speakerId, _floor.CurrentMemberId, _roster), [], [], AnalysisSource.Rules);
+        _turnAnalysisMs = (int)(clock.UtcNow - started).TotalMilliseconds;
+        _turnModelMs = analysis.ModelMs;
+        _turnSource = analysis.Source.ToString();
         logger.LogInformation(
             "Utterance session={SessionId} member={MemberId} intent={Intent} source={Source} items={Items} comments={Comments} analysisMs={AnalysisMs}",
             _sessionId,
