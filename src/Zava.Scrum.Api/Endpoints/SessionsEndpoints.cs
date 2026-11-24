@@ -8,6 +8,7 @@ using Zava.Scrum.Application.Features.Standups.JoinMeeting;
 using Zava.Scrum.Application.Features.Standups.ListSessions;
 using Zava.Scrum.Application.Features.Standups.PrepareStandup;
 using Zava.Scrum.Application.Features.Standups.StartStandup;
+using Zava.Scrum.Application.Features.Voice.AnalyseUtterance;
 using Microsoft.Extensions.Configuration;
 
 namespace Zava.Scrum.Api.Endpoints;
@@ -33,6 +34,10 @@ public static class SessionsEndpoints
 
         group.MapGet("/{id:guid}/events", async (Guid id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetSessionEventsQuery(id), ct)).ToHttpResult());
+
+        // Shows how the decision model reads one sentence (intent, items, comment kinds) without a live call, so the prompt can be tuned.
+        group.MapPost("/{id:guid}/analyse", async (Guid id, AnalyseBody body, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new AnalyseUtteranceQuery(id, body.SpeakerId, body.HolderId, body.Text, null, body.Asked, body.FocusItemId), ct)).ToHttpResult());
 
         group.MapPost("/{id:guid}/control", async (Guid id, ControlBody body, ISender sender, CancellationToken ct) =>
             (await sender.Send(new ControlStandupCommand(id, body.Action), ct)).ToHttpResult());
@@ -94,6 +99,14 @@ public static class SessionsEndpoints
     /// <summary>Request body for <c>POST /api/sessions/{id}/control</c>.</summary>
     /// <param name="Action">begin, mute, unmute, skip, takeover, release or end.</param>
     public sealed record ControlBody(string Action);
+
+    /// <summary>Request body for <c>POST /api/sessions/{id}/analyse</c>.</summary>
+    /// <param name="SpeakerId">Who said it.</param>
+    /// <param name="Text">What was said.</param>
+    /// <param name="HolderId">Whose turn it is, if anyone's.</param>
+    /// <param name="Asked">The question the agent just asked, if any.</param>
+    /// <param name="FocusItemId">The item that question was about.</param>
+    public sealed record AnalyseBody(string SpeakerId, string Text, string? HolderId = null, string? Asked = null, int? FocusItemId = null);
 
     /// <summary>Response of the start endpoint.</summary>
     /// <param name="BridgeToken">Short-lived websocket token.</param>

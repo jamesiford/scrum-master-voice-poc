@@ -20,6 +20,14 @@ public sealed class VoiceGatewayOptions
     [Range(200, 3000)]
     public int PauseMs { get; set; } = 800;
 
+    /// <summary>Gets or sets how long, in milliseconds, someone must keep talking over the agent before it stops. Shorter than a word, so a cough does not cut it off, and short enough that it does not talk over the person.</summary>
+    [Range(150, 2000)]
+    public int BargeInMs { get; set; } = 350;
+
+    /// <summary>Gets or sets how long, in milliseconds, a member whose turn it is not must keep talking over the agent before it yields to them too.</summary>
+    [Range(500, 5000)]
+    public int SustainedBargeInMs { get; set; } = 1500;
+
     /// <summary>Gets or sets seconds to wait for a member to start before moving on.</summary>
     [Range(5, 300)]
     public int NoResponseSeconds { get; set; } = 25;

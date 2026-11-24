@@ -35,6 +35,7 @@ public static class DependencyInjection
         AddOptions<AdoOptions>(services, configuration, AdoOptions.SectionName);
         AddOptions<DemoOptions>(services, configuration, DemoOptions.SectionName);
         AddOptions<FoundryOptions>(services, configuration, FoundryOptions.SectionName);
+        AddOptions<UtteranceAnalysisOptions>(services, configuration, UtteranceAnalysisOptions.SectionName);
         AddOptions<VoiceLiveOptions>(services, configuration, VoiceLiveOptions.SectionName);
         services.AddOptions<BridgeOptions>().Bind(configuration.GetSection(BridgeOptions.SectionName));
         AddOptions<BotOptions>(services, configuration, BotOptions.SectionName);
@@ -150,6 +151,7 @@ public static class DependencyInjection
         AddAdoHttpClient<IIterationReader, AdoRestClient>(services);
         AddAdoHttpClient<IBacklogReader, AdoRestClient>(services);
         AddAdoHttpClient<IWorkItemWriter, AdoWorkItemWriter>(services);
+        AddAdoHttpClient<IDemoAdoReset, AdoDemoReset>(services);
     }
 
     private static void AddAdoHttpClient<TService, TImplementation>(IServiceCollection services)
@@ -173,6 +175,19 @@ public static class DependencyInjection
         services.AddSingleton<FoundryChat>();
         services.AddTransient<IBacklogRiskAgent, FoundryBacklogRiskAgent>();
         services.AddTransient<IReconcileAgent, FoundryReconcileAgent>();
+        services.AddTransient<FoundryUtteranceAnalyser>();
+        services.AddHttpClient<DecisionUtteranceAnalyser>((sp, client) =>
+            {
+                // The project endpoint's host also serves the resource-level decision route.
+                if (Uri.TryCreate(sp.GetRequiredService<IOptions<FoundryOptions>>().Value.ProjectEndpoint, UriKind.Absolute, out var endpoint))
+                {
+                    client.BaseAddress = new Uri($"{endpoint.Scheme}://{endpoint.Host}/");
+                }
+            })
+            .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), "https://cognitiveservices.azure.com/.default"));
+        services.AddTransient<IUtteranceAnalyser>(sp => sp.GetRequiredService<IOptions<UtteranceAnalysisOptions>>().Value.UseDecisionEngine
+            ? sp.GetRequiredService<DecisionUtteranceAnalyser>()
+            : sp.GetRequiredService<FoundryUtteranceAnalyser>());
         services.AddTransient<IReportingAgent, FoundryReportingAgent>();
         services.AddTransient<IDraftingAgent, FoundryDraftingAgent>();
         services.AddSingleton<IKpiHistorySource, Reports.FixtureKpiHistorySource>();

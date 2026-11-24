@@ -11,6 +11,13 @@ public sealed record AgentAudio(ReadOnlyMemory<byte> Pcm) : VoiceEvent;
 /// <param name="Text">The text.</param>
 public sealed record AgentTranscript(string Text) : VoiceEvent;
 
+/// <summary>The service started a new response. Audio that arrives before this, after a cancel, belongs to the cancelled response.</summary>
+public sealed record AgentResponseStarted : VoiceEvent;
+
+/// <summary>The service started the agent's spoken message item, which a barge-in truncates to what was actually heard.</summary>
+/// <param name="ItemId">The conversation item id.</param>
+public sealed record AgentItemStarted(string ItemId) : VoiceEvent;
+
 /// <summary>A response finished (spoken, cancelled or failed).</summary>
 /// <param name="HadToolCalls">True when the model asked for tools, so a continuation response is needed.</param>
 public sealed record ResponseDone(bool HadToolCalls) : VoiceEvent;

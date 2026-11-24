@@ -39,7 +39,8 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 | Symptom | Fix |
 |---|---|
 | "Voice Live is unavailable" | `az login` again; check the Foundry deployments exist. |
-| Standup is slow to answer | Normal p50 is 2 to 3 seconds; say so, and show the latency number. |
+| Standup is slow to answer | Measured p50 is 3 to 4 seconds (22 Nov), p95 about 5; say the number on screen. |
+| `ado.auth_failed: No Azure credential available` on a local run | `DefaultAzureCredential` stops at the managed-identity probe on some machines. Start the stack with `$env:AZURE_TOKEN_CREDENTIALS='AzureCliCredential'` and `az login`. |
 | Cards missing in Teams | Message the bot once; cards are always in **Follow-ups** > **Show card outbox**. |
 | Teams join fails | Run the Simulated Room instead; it is the fallback for any live demo. |
 | Approve shows a write error | Check the managed identity is in the Azure DevOps project Contributors group; use **Retry write**. |

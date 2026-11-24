@@ -56,4 +56,7 @@ public enum StandupEventType
 
     /// <summary>The ceremony moved to a new phase (retrospective: themes read-back, or an action turn).</summary>
     Phase,
+
+    /// <summary>A member said an item's finish or target date moves. Recorded for the Scrum Master; nothing in Azure DevOps changes.</summary>
+    DateChange,
 }

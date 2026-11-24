@@ -2,6 +2,7 @@ using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Flags;
 using Zava.Scrum.Domain.Kpis;
 using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
 using Zava.Scrum.Domain.Work;
 using Zava.Scrum.Infrastructure.Agents;
 using Microsoft.Agents.AI;
@@ -171,5 +172,53 @@ public sealed class FoundryAgentTests
         await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Chat(null, fault: new OperationCanceledException(cts.Token)).TryCompleteJsonAsync("s", "u", cts.Token));
+    }
+
+    private static UtteranceContext Said(string text) =>
+        new(text, "m1", "m1", [new NameRef("m1", "Priya")], [new BriefItem(new WorkItemId(1), "T", "Task", "Active", 3, [Flag.Stale])], null, null);
+
+    private static FoundryUtteranceAnalyser Analyser(string? reply, string mode = "Model", bool configured = true, Exception? fault = null) =>
+        new(Chat(reply, configured, fault), new StubPrompts("p"), Options.Create(new UtteranceAnalysisOptions { Mode = mode }));
+
+    [Fact]
+    public async Task ReadUtterance_ValidReply_ParsesIntentItemsAndCommentKinds()
+    {
+        var reply = """
+            { "intent": "ask_item_info", "targetMemberId": null, "confidence": 0.85, "workItemIds": [1],
+              "comments": [ { "kind": "date_change", "text": "Finish moves to Friday", "workItemIds": [1], "newDate": "Friday" },
+                            { "kind": "nonsense", "text": "ignored" }, { "kind": "blocker", "text": " " } ] }
+            """;
+
+        var r = await Analyser(reply).ReadAsync(Said("is that one late?"), CancellationToken.None);
+
+        Assert.Equal(UtteranceIntent.AskItemInfo, r!.Intent);
+        Assert.Equal([1], r.WorkItemIds);
+        var c = Assert.Single(r.Comments);
+        Assert.Equal(CommentKind.DateChange, c.Kind);
+        Assert.Equal("Friday", c.NewDate);
+        Assert.Equal(0.85, r.Confidence);
+    }
+
+    [Fact]
+    public async Task ReadUtterance_UnknownIntent_LeavesItNullSoTheRulesDecide()
+    {
+        var r = await Analyser("""{ "intent": "dance", "confidence": 0.9 }""").ReadAsync(Said("hi"), CancellationToken.None);
+
+        Assert.Null(r!.Intent);
+    }
+
+    [Theory]
+    [InlineData("Rules", true)]
+    [InlineData("Model", false)]
+    public async Task ReadUtterance_RulesModeOrNotConfigured_NeverCallsTheModel(string mode, bool configured)
+    {
+        Assert.Null(await Analyser("{}", mode, configured).ReadAsync(Said("hi"), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ReadUtterance_ModelFaultOrBadJson_ReturnsNull()
+    {
+        Assert.Null(await Analyser(null, fault: new InvalidOperationException("429")).ReadAsync(Said("hi"), CancellationToken.None));
+        Assert.Null(await Analyser("not json").ReadAsync(Said("hi"), CancellationToken.None));
     }
 }

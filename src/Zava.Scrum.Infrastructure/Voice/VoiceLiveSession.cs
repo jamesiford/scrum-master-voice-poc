@@ -65,6 +65,10 @@ internal sealed class VoiceLiveSession(ClientWebSocket socket, string baseInstru
 
     public Task CancelResponseAsync(CancellationToken ct) => SendAsync(new JsonObject { ["type"] = "response.cancel" }, ct);
 
+    // VERIFY: https://learn.microsoft.com/azure/ai-services/speech-service/voice-live-how-to (conversation.item.truncate follows the Realtime API).
+    public Task TruncateAsync(string itemId, int audioEndMs, CancellationToken ct) =>
+        SendAsync(new JsonObject { ["type"] = "conversation.item.truncate", ["item_id"] = itemId, ["content_index"] = 0, ["audio_end_ms"] = Math.Max(0, audioEndMs) }, ct);
+
     public Task AddUserTextAsync(string text, CancellationToken ct) =>
         SendAsync(
             new JsonObject
@@ -154,6 +158,8 @@ internal sealed class VoiceLiveSession(ClientWebSocket socket, string baseInstru
             "response.audio.delta" or "response.output_audio.delta" => new AgentAudio(Convert.FromBase64String(Str(root, "delta") ?? string.Empty)),
             "response.audio_transcript.done" or "response.output_audio_transcript.done" => new AgentTranscript(Str(root, "transcript") ?? string.Empty),
             "response.function_call_arguments.done" => new ToolCallRequested(Str(root, "call_id") ?? string.Empty, Str(root, "name") ?? string.Empty, Str(root, "arguments") ?? "{}"),
+            "response.created" => new AgentResponseStarted(),
+            "response.output_item.added" when root.TryGetProperty("item", out var item) && Str(item, "type") == "message" && Str(item, "id") is { } id => new AgentItemStarted(id),
             "response.done" => new ResponseDone(HasFunctionCall(root)),
             "input_audio_buffer.speech_started" => new UserSpeechStarted(),
             "input_audio_buffer.speech_stopped" => new UserSpeechStopped(),

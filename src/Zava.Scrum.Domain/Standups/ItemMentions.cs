@@ -57,17 +57,24 @@ public static partial class ItemMentions
     }
 
     // A word that appears in exactly one of the speaker's titles identifies that item; "retry" alone does not when two items share it.
+    // Two adjacent title words said together ("settlement schema") also identify it when at least one of them is unique to that title.
     private static IEnumerable<int> ByTitle(string text, IReadOnlyList<BriefItem> own)
     {
-        var spoken = Words(text).ToHashSet();
+        var spokenList = Words(text).ToList();
+        var spoken = spokenList.ToHashSet();
+        var spokenPairs = spokenList.Zip(spokenList.Skip(1), (a, b) => (a, b)).ToHashSet();
         var titleWords = own.ToDictionary(i => i.Id.Value, i => Words(i.Title).Where(w => w.Length >= 4 && !Stop.Contains(w)).ToHashSet());
-        foreach (var (id, words) in titleWords)
+        foreach (var item in own)
         {
+            var words = titleWords[item.Id.Value];
             var unique = words.Where(w => titleWords.Count(o => o.Value.Contains(w)) == 1).ToList();
             var hits = unique.Where(spoken.Contains).ToList();
-            if (hits.Count >= 2 || hits.Any(w => w.Length >= DistinctiveLength))
+            var titleList = Words(item.Title).ToList();
+            var phrase = titleList.Zip(titleList.Skip(1), (a, b) => (a, b))
+                .Any(p => words.Contains(p.a) && words.Contains(p.b) && (unique.Contains(p.a) || unique.Contains(p.b)) && spokenPairs.Contains(p));
+            if (hits.Count >= 2 || hits.Any(w => w.Length >= DistinctiveLength) || phrase)
             {
-                yield return id;
+                yield return item.Id.Value;
             }
         }
     }

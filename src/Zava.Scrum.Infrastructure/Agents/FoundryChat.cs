@@ -25,8 +25,9 @@ public sealed class FoundryChat(IFoundryAgentFactory agents, IOptions<FoundryOpt
     /// <param name="system">System instructions.</param>
     /// <param name="user">User content, usually JSON facts.</param>
     /// <param name="ct">Cancellation token.</param>
+    /// <param name="deployment">A model deployment to use instead of the default reasoning deployment, or <see langword="null"/>.</param>
     /// <returns>The JSON text, or <see langword="null"/> when unconfigured or the call failed.</returns>
-    public async Task<string?> TryCompleteJsonAsync(string system, string user, CancellationToken ct)
+    public async Task<string?> TryCompleteJsonAsync(string system, string user, CancellationToken ct, string? deployment = null)
     {
         if (!IsConfigured)
         {
@@ -37,7 +38,7 @@ public sealed class FoundryChat(IFoundryAgentFactory agents, IOptions<FoundryOpt
         timeout.CancelAfter(TimeSpan.FromSeconds(options.Value.TimeoutSeconds));
         try
         {
-            var agent = agents.Create("zava-scrum-agent", system);
+            var agent = agents.Create("zava-scrum-agent", system, deployment);
             var run = new ChatClientAgentRunOptions(new ChatOptions { ResponseFormat = ChatResponseFormat.Json, MaxOutputTokens = MaxOutputTokens });
             // The Responses API rejects JSON mode unless the input (not only the instructions) mentions JSON.
             var response = await agent.RunAsync(user + JsonReminder, session: null, run, timeout.Token);

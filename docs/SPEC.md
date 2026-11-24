@@ -333,6 +333,7 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 | Teams | `UpdateTeamSettingsCommand`, `SyncRosterCommand`, `SetRecapChannelCommand` (M9-R5), `UpdateMemberAvailabilityCommand` (M9a) | `GetTeamQuery`, `GetRosterQuery`, `ListCardsQuery` | |
 | Sprint calendar (M9d) | `ProposeSprintCalendarCommand`, `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand` | `GetSprintCalendarQuery`, `ListSprintCalendarsQuery` | `SprintCalendarProposed` -> `SendCalendarCardOnSprintCalendarProposed` |
 | Schedules and prompts | `UpdateScheduleCommand`, `UpdatePromptCommand`, `RunScheduleTickCommand` | `GetScheduleQuery`, `GetPromptQuery`, `ListPromptsQuery` | |
+| Voice | `AnalyseUtteranceQuery` (intent, items and comment kinds for one utterance; model first, rules as fallback) |
 | Standups | `PrepareStandupCommand` (creates session and pre-brief), `StartStandupCommand`, `JoinMeetingCommand`, `ControlStandupCommand`, `RecordStandupEventCommand`, `RetractStandupEventCommand`, `MarkAbsentCommand`, `ResolveUnblockerCommand` (M9-R2), `ParkTopicCommand`, `CompleteSpeakerTurnCommand`, `RecordAgentLatencyCommand`, `EndStandupCommand` | `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetWorkItemDetailsQuery`, `GetTimeRemainingQuery`, `GetTurnInstructionQuery`, `GetFacilitatorInstructionsQuery`, `GetLiveStateQuery`, `ListSessionsQuery`, `GetSessionQuery` (includes the pre-brief), `GetSessionEventsQuery` | `StandupPrepared` -> `SendPreBriefCardOnStandupPrepared`; `StandupEnded` -> `PostRecapOnStandupEnded` (routed to the recap channel and meeting chat), `SendFollowUpsOnStandupEnded` (sends `SendFollowUpsCommand`), `LeaveMeetingOnStandupEnded` |
 | Follow-ups | `ProposeAdoChangeCommand`, `SendFollowUpsCommand` (also plans escalation, absent and no-response follow-ups), `ApproveFollowUpCommand` (carries the approval channel), `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListEmailsQuery` | `FollowUpApproved` -> `ApplyOnFollowUpApproved` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `FollowUpRejected`, `FollowUpApplied` -> `UpdateFollowUpCardHandler` |
 | Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (Teams chat Q&A) | |
@@ -385,7 +386,7 @@ Pure Domain rules added during the build (all unit tested in `Zava.Scrum.Domain.
 ### 7.3 `meeting-bridge`
 Implements one protocol (section 8) in three modes:
 - **`simulated`** (build first): `/room/{sessionId}` is a browser page. It shows the roster with avatars, the current speaker, live captions, a timebox bar and the parking lot. The presenter picks "who am I" and talks with push-to-talk or open mic. It needs no ACS and runs locally.
-- **Demo cast** (part of `simulated`): `demo/cast/*.yaml` scripts the other participants. When the agent calls on a cast member, the bridge synthesises their line with Azure AI Speech and streams it as that participant. One presenter can then demo a standup (**As built**: three people). Script lines can branch on keywords in the agent's question.
+- **Demo cast** (part of `simulated`): `demo/cast/*.yaml` scripts the other participants. When the agent calls on a cast member, the bridge synthesises their line with Azure AI Speech and streams it as that participant. One presenter can then demo a standup (**As built**: three people). Script lines can branch on keywords in the agent's question, and a line marked `otherwise: true` answers any question no keyword matched (once), because the agent words its questions freely (22 Nov 2026: the keyword-only cast left Daniel and Admin silent after the agent rephrased its questions).
 
 ```yaml
 # demo/cast/payments-standup.yaml
@@ -771,6 +772,7 @@ Implement it as a pure, table-tested class with no I/O.
 | GET | `/api/sessions/{id}` | `SessionsEndpoints.cs` | `GetSessionQuery` |
 | GET | `/api/sessions/{id}/events` | `SessionsEndpoints.cs` | `GetSessionEventsQuery` |
 | POST | `/api/sessions/{id}/start` | `SessionsEndpoints.cs` | `StartStandupCommand`; for `mode: acs`, then `JoinMeetingCommand`. Body `{mode: simulated or acs, joinUrl?, standupMinutes?}`; returns a bridge token and room URL |
+| POST | `/api/sessions/{id}/analyse` | `SessionsEndpoints.cs` | `AnalyseUtteranceQuery`; body `{speakerId, text, holderId?, asked?, focusItemId?}`; shows how the decision model reads a sentence (intent, items, comment kinds, `source` Model or Rules) |
 | POST | `/api/sessions/{id}/control` | `SessionsEndpoints.cs` | `ControlStandupCommand`. Actions: `begin`, `mute`, `unmute`, `skip`, `takeover`, `release`, `end` |
 | GET | `/api/sessions/{id}/live` | `SessionsEndpoints.cs` | `GetLiveStateQuery` (server-sent events) |
 | POST | `/api/sessions/{id}/followups` | `FollowUpsEndpoints.cs` | `SendFollowUpsCommand` |

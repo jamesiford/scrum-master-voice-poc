@@ -102,14 +102,49 @@ function watchParticipant(p: RemoteParticipant): void {
 }
 
 async function pipeRemoteAudio(c: Call, worklet: AudioWorkletNode): Promise<void> {
+  const piped = new Set<string>();
   const connect = async (stream: { getMediaStream(): Promise<MediaStream> }): Promise<void> => {
     const media = await stream.getMediaStream();
+    const track = media.getAudioTracks()[0];
+    const key = track?.id ?? String(piped.size);
+    if (piped.has(key)) return;
+    piped.add(key);
+    console.log(
+      `[audio] remote stream ${key} tracks=${media.getAudioTracks().length} state=${track?.readyState} muted=${track?.muted} ctx=${context.state}`,
+    );
+    // Chromium hands Web Audio silence for a remote WebRTC stream unless the stream is also attached to a playing media element.
+    const sink = new Audio();
+    sink.srcObject = media;
+    sink.volume = 0.01;
+    document.body.append(sink);
+    await sink.play().catch((e: unknown) => console.log(`[audio] sink play failed: ${String(e)}`));
+    await context.resume();
     const source = context.createMediaStreamSource(media);
     source.connect(worklet);
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+    const buf = new Float32Array(analyser.fftSize);
+    let quiet = 0;
+    setInterval(() => {
+      analyser.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (const v of buf) sum += v * v;
+      const rms = Math.sqrt(sum / buf.length);
+      // Log only on activity (and a periodic heartbeat) so the container log stays readable.
+      if (rms > 0.002 || ++quiet % 15 === 0)
+        console.log(`[audio] remote rms=${rms.toFixed(4)} ctx=${context.state} track=${track?.readyState}/${track?.muted}`);
+    }, 1000);
   };
-  for (const s of c.remoteAudioStreams) await connect(s);
+  const attach = (): void => {
+    for (const s of c.remoteAudioStreams) void connect(s);
+  };
+  attach();
   c.on('remoteAudioStreamsUpdated', (e) => {
     for (const s of e.added) void connect(s);
+  });
+  c.on('stateChanged', () => {
+    if (c.state === 'Connected') attach();
   });
 }
 

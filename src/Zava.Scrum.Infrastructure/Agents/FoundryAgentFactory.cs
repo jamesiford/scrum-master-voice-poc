@@ -35,9 +35,12 @@ public sealed class FoundryAgentFactory : IFoundryAgentFactory
     }
 
     /// <inheritdoc />
-    public AIAgent Create(string name, string instructions) =>
+    public AIAgent Create(string name, string instructions) => Create(name, instructions, null);
+
+    /// <inheritdoc />
+    public AIAgent Create(string name, string instructions, string? model) =>
         _client.Value
-            .AsAIAgent(model: _model, instructions: instructions, name: name)
+            .AsAIAgent(model: string.IsNullOrWhiteSpace(model) ? _model : model, instructions: instructions, name: name)
             .AsBuilder()
             .UseOpenTelemetry(TelemetrySource)
             .Build();

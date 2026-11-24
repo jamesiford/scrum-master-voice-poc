@@ -50,7 +50,8 @@ public sealed record SkipSpeaker : FloorInput;
 /// <summary>Someone started talking over the agent.</summary>
 /// <param name="MemberId">Who.</param>
 /// <param name="IsHuman">True for the human Scrum Master, who may always interrupt.</param>
-public sealed record BargeIn(string MemberId, bool IsHuman) : FloorInput;
+/// <param name="Sustained">True when someone other than the member whose turn it is has kept talking over the agent for a good while; they may cut in too, so the agent never talks across a real conversation.</param>
+public sealed record BargeIn(string MemberId, bool IsHuman, bool Sustained = false) : FloorInput;
 
 /// <summary>A participant started or stopped talking, as heard by the voice service. Silence is only counted once speech has stopped.</summary>
 /// <param name="MemberId">Who.</param>

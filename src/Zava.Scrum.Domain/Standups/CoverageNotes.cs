@@ -15,8 +15,8 @@ public static class CoverageNotes
     {
         ArgumentNullException.ThrowIfNull(events);
         var parts = events
-            .Where(e => e.Type is StandupEventType.Blocker or StandupEventType.Commitment)
-            .Select(e => $"{e.Type.ToString().ToLowerInvariant()}: {e.Text.Trim()}")
+            .Where(e => e.Type is StandupEventType.Blocker or StandupEventType.Commitment or StandupEventType.DateChange)
+            .Select(e => $"{(e.Type == StandupEventType.DateChange ? "date change" : e.Type.ToString().ToLowerInvariant())}: {e.Text.Trim()}")
             .ToList();
         return string.Join("; ", parts);
     }

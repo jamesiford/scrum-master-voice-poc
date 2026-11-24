@@ -28,5 +28,21 @@ public sealed class ItemMentionsTests
     [InlineData("story 5 is someone else's", new[] { 5 })]
     public void Detect_Utterance_FindsOnlyTheItemsMeant(string text, int[] expected) =>
         Assert.Equal(expected, ItemMentions.Detect(text, Own, Known));
+
+    [Fact]
+    public void Detect_AdjacentTitleWords_LinkTheItemWhenOneWordIsUnique()
+    {
+        BriefItem[] maya =
+        [
+            Item(30, "User Story", "Settlement file validation"),
+            Item(31, "User Story", "Update PCI scan exceptions"),
+            Item(32, "Task", "Review settlement schema change"),
+        ];
+
+        HashSet<int> known = [30, 31, 32];
+        Assert.Equal([32], ItemMentions.Detect("Yesterday I reviewed the settlement schema", maya, known));
+        Assert.Equal([30], ItemMentions.Detect("Today I'm continuing the settlement file validation", maya, known));
+        Assert.Empty(ItemMentions.Detect("I need the schema from them", maya, known));
+    }
 }
 

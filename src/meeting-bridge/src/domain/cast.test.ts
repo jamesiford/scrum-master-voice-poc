@@ -44,6 +44,45 @@ describe('CastPlanner', () => {
     assert.equal(planner.next('m-marcus', "Let's take that offline."), undefined);
   });
 
+  it('answers a question no keyword matches with its otherwise line, once', () => {
+    const planner = new CastPlanner({
+      members: [
+        {
+          memberId: 'm-tom',
+          voice: 'v2',
+          turns: [
+            { say: 'All good.' },
+            { when: ['risk'], say: 'The risk is retries.' },
+            { otherwise: true, say: 'I will check after the standup.' },
+          ],
+        },
+      ],
+    });
+    planner.next('m-tom', '');
+
+    assert.equal(planner.next('m-tom', 'Still on track?')?.text, 'I will check after the standup.');
+    assert.equal(planner.next('m-tom', 'What is the new date?'), undefined);
+  });
+
+  it('prefers a matching keyword line over the otherwise line', () => {
+    const planner = new CastPlanner({
+      members: [
+        {
+          memberId: 'm-tom',
+          voice: 'v2',
+          turns: [
+            { say: 'All good.' },
+            { otherwise: true, say: 'Fallback.' },
+            { when: ['risk'], say: 'The risk is retries.' },
+          ],
+        },
+      ],
+    });
+    planner.next('m-tom', '');
+
+    assert.equal(planner.next('m-tom', 'Any risk?')?.text, 'The risk is retries.');
+  });
+
   it('never speaks for an absent member or an unknown member', () => {
     const planner = new CastPlanner(script);
 

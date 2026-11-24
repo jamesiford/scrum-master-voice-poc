@@ -20,6 +20,7 @@ using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 using Zava.Scrum.Application.Features.Standups.ResolveUnblocker;
 using Zava.Scrum.Application.Features.Standups.RetractStandupEvent;
+using Zava.Scrum.Application.Features.Voice.AnalyseUtterance;
 using Zava.Scrum.Application.Tools;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Standups;
@@ -57,6 +58,7 @@ public sealed class VoiceGateway(
     private readonly HashSet<string> _correcting = [];
     private readonly HashSet<string> _redirected = [];
     private readonly HashSet<string> _askUnblocker = [];
+    private readonly HashSet<string> _unblockerAsked = [];
     private readonly HashSet<string> _awaitingUnblocker = [];
     private IReadOnlyList<NameRef> _roster = [];
     private string? _directive;
@@ -88,6 +90,15 @@ public sealed class VoiceGateway(
     private DateTimeOffset _createSentAt;
     private DateTimeOffset? _speechStartedAt;
     private DateTimeOffset? _bargeCheckAt;
+    private DateTimeOffset? _bargeSustainedAt;
+    private string? _bargeSpeaker;
+    private int _discardAgentAudio;
+    private volatile string? _agentItemId;
+    private DateTimeOffset? _firstAudioAt;
+    private DateTimeOffset? _truncatedAt;
+    private (AgentSpeak Speak, string? Question)? _lastSpeak;
+    private (string ByMemberId, string Saying)? _interrupted;
+    private readonly Dictionary<string, (List<int> Items, List<ItemComment> Comments, bool AllModel)> _analysis = [];
     private DateTimeOffset _lastUi;
     private int _pendingTranscripts;
     private DateTimeOffset _lastStoppedAt;
@@ -262,12 +273,24 @@ public sealed class VoiceGateway(
                 switch (ev)
                 {
                     case AgentAudio audio:
+                        // After a barge-in the service may still deliver audio it had already generated; playing it is the agent talking on.
+                        if (Volatile.Read(ref _discardAgentAudio) == 1)
+                        {
+                            break;
+                        }
+
                         await _bridge.SendAudioAsync(audio.Pcm, _run);
                         if (Interlocked.Exchange(ref _firstAudioPending, 0) == 1)
                         {
                             _inbox.Writer.TryWrite(new FirstAudio());
                         }
 
+                        break;
+                    case AgentResponseStarted:
+                        Interlocked.Exchange(ref _discardAgentAudio, 0);
+                        break;
+                    case AgentItemStarted item:
+                        _agentItemId = item.ItemId;
                         break;
                     case VoiceFault f:
                         fault = f;
@@ -452,11 +475,14 @@ public sealed class VoiceGateway(
             case UserSpeechStarted:
                 _speechStartedAt = clock.UtcNow;
                 _speechSpeaker = ResolveSpeaker();
-                _bargeCheckAt = _floor.AgentHasFloor && _audioStarted ? clock.UtcNow.AddMilliseconds(500) : null;
+                _bargeSpeaker = _speechSpeaker;
+                _bargeCheckAt = _floor.AgentHasFloor && _audioStarted ? clock.UtcNow.AddMilliseconds(options.Value.BargeInMs) : null;
+                _bargeSustainedAt = _bargeCheckAt is null ? null : clock.UtcNow.AddMilliseconds(options.Value.SustainedBargeInMs);
                 await ExecuteAsync(_floor.Handle(new SpeechActive(Attribute(_speechSpeaker), true, clock.UtcNow)));
                 break;
             case UserSpeechStopped:
                 _bargeCheckAt = null;
+                _bargeSustainedAt = null;
                 _lastHumanEnd = clock.UtcNow;
                 _pendingTranscripts++;
                 _lastStoppedAt = clock.UtcNow;
@@ -481,10 +507,70 @@ public sealed class VoiceGateway(
             case ResponseDone d:
                 await OnResponseDoneAsync(d);
                 break;
+            case VoiceFault f when _truncatedAt is { } at && clock.UtcNow - at < TimeSpan.FromSeconds(3):
+                // A refused truncate only costs the model some context about what was heard; it is not a failure the room needs to see.
+                logger.LogWarning("Voice Live refused a truncate or cancel after a barge-in: {Message}", f.Message);
+                break;
             case VoiceFault f:
                 await _bridge.SendAsync(new { type = "error", code = "VOICE_FAULT", message = f.Message }, _run);
                 break;
         }
+    }
+
+    // Someone talked over the agent. FloorControl decides whether they may cut in; this stops the voice at once, tells the model how much
+    // was heard, and remembers what was cut off so the next turn can acknowledge it instead of carrying on as if nothing happened.
+    private async Task BargeInAsync(BargeIn barge)
+    {
+        var actions = _floor.Handle(barge);
+        if (actions.OfType<CancelResponse>().Any() && _lastSpeak is { } last)
+        {
+            _interrupted = (barge.MemberId, Saying(last.Speak, last.Question));
+            logger.LogInformation(
+                "Barge-in session={SessionId} by={MemberId} holder={HolderId} sustained={Sustained} saying={Saying}",
+                _sessionId,
+                barge.MemberId,
+                _floor.CurrentMemberId,
+                barge.Sustained,
+                _interrupted.Value.Saying);
+        }
+
+        await ExecuteAsync(actions);
+    }
+
+    private async Task StopSpeakingAsync()
+    {
+        // Set first: audio already in flight must not reach the room after the flush.
+        Interlocked.Exchange(ref _discardAgentAudio, 1);
+        await _voice.CancelResponseAsync(_run);
+        await _bridge.SendAsync(new { type = "control", action = "flush" }, _run);
+        if (_agentItemId is { } item && _firstAudioAt is { } started)
+        {
+            _agentItemId = null;
+            _truncatedAt = clock.UtcNow;
+            await _voice.TruncateAsync(item, (int)(clock.UtcNow - started).TotalMilliseconds, _run);
+        }
+    }
+
+    private string Saying(AgentSpeak speak, string? question) => speak.Reason switch
+    {
+        SpeakReason.Clarify or SpeakReason.Unblocker when question is not null => $"asking: {question}",
+        SpeakReason.CallOn or SpeakReason.CircleBack => $"calling on {Short(NameOf(speak.MemberId ?? string.Empty))}",
+        SpeakReason.Recap => "giving the recap",
+        SpeakReason.StepAway or SpeakReason.NoResponse => "moving on from a member who was away",
+        _ => "speaking",
+    };
+
+    // Consumed by the next turn the agent speaks, so it acknowledges the interruption once and does not repeat what it was saying.
+    private string? WithInterruption(string? notes)
+    {
+        if (_interrupted is not { } i)
+        {
+            return notes;
+        }
+
+        _interrupted = null;
+        var note = $"You were just interrupted by {Short(NameOf(i.ByMemberId))} while you were {i.Saying}, and stopped. Do not repeat or finish what you were saying. If {Short(NameOf(i.ByMemberId))} asked or said something to you, answer or acknowledge it first, in a few words; if they simply carried on with their update, just continue.";
+        return string.IsNullOrEmpty(notes) ? note : $"{note} {notes}";
     }
 
     private async Task OnToolCallAsync(ToolCallRequested call)
@@ -509,6 +595,7 @@ public sealed class VoiceGateway(
     private async Task OnFirstAudioAsync()
     {
         _audioStarted = true;
+        _firstAudioAt = clock.UtcNow;
         await _bridge.SendAsync(new { type = "agentAudioState", state = "speaking" }, _run);
         if (_latencyBaseline is not { } t)
         {
@@ -560,9 +647,10 @@ public sealed class VoiceGateway(
         var owner = Attribute(memberId);
         await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Transcript, owner, owner == memberId ? text : $"({NameOf(memberId)} for {NameOf(owner)}) {text}"), _run);
 
+        var analysis = await AnalyseAsync(memberId, owner, text);
         var interpretation = owner != memberId
             ? new Interpretation(ItemMentionsCorrection(text) ? UtteranceIntent.Correction : UtteranceIntent.Update, owner)
-            : UtteranceClassifier.Classify(text, memberId, _floor.CurrentMemberId, _roster);
+            : analysis.Interpretation;
         if (owner == memberId && memberId == _floor.CurrentMemberId && _awaitingUnblocker.Remove(memberId))
         {
             // M9-R2: the answer to "Who can help unblock this?" is matched to a roster member in code, never by the model.
@@ -576,7 +664,7 @@ public sealed class VoiceGateway(
 
         if (owner == _floor.CurrentMemberId)
         {
-            Remember(owner, text);
+            Remember(owner, text, analysis);
         }
         else
         {
@@ -591,6 +679,34 @@ public sealed class VoiceGateway(
         }
 
         await ExecuteAsync(actions);
+    }
+
+    // The decision model reads the utterance (intent, then items, then comment kind) and code checks it; any failure falls back to the rules.
+    private async Task<UtteranceAnalysis> AnalyseAsync(string speakerId, string owner, string text)
+    {
+        var started = clock.UtcNow;
+        int? focus;
+        string? asked;
+        lock (_gate)
+        {
+            focus = _focus.TryGetValue(owner, out var f) ? f : null;
+            asked = _asked.GetValueOrDefault(owner);
+        }
+
+        var result = await sender.Send(new AnalyseUtteranceQuery(_sessionId, speakerId, _floor.CurrentMemberId, text, _roster, asked, focus), _run);
+        var analysis = result.IsSuccess
+            ? result.Value!
+            : new UtteranceAnalysis(UtteranceClassifier.Classify(text, speakerId, _floor.CurrentMemberId, _roster), [], [], AnalysisSource.Rules);
+        logger.LogInformation(
+            "Utterance session={SessionId} member={MemberId} intent={Intent} source={Source} items={Items} comments={Comments} analysisMs={AnalysisMs}",
+            _sessionId,
+            speakerId,
+            analysis.Interpretation.Intent,
+            analysis.Source,
+            string.Join(',', analysis.WorkItemIds),
+            string.Join(',', analysis.Comments.Select(c => c.Kind)),
+            (int)(clock.UtcNow - started).TotalMilliseconds);
+        return analysis;
     }
 
     private static bool ItemMentionsCorrection(string text) =>
@@ -706,10 +822,14 @@ public sealed class VoiceGateway(
     private MemberBrief? MemberOf(string memberId) => _session.PreBrief?.Members.FirstOrDefault(m => m.MemberId == memberId);
 
     private static string Short(string displayName) => Names.First(displayName);
-    private void Remember(string memberId, string text)
+    private void Remember(string memberId, string text, UtteranceAnalysis analysis)
     {
         lock (_gate)
         {
+            var so = _analysis.TryGetValue(memberId, out var s) ? s : (Items: [], Comments: [], AllModel: true);
+            so.Items.AddRange(analysis.WorkItemIds.Where(i => !so.Items.Contains(i)));
+            so.Comments.AddRange(analysis.Comments);
+            _analysis[memberId] = (so.Items, so.Comments, so.AllModel && analysis.Source == AnalysisSource.Model);
             if (!_utterance.TryGetValue(memberId, out var sb))
             {
                 _utterance[memberId] = sb = new System.Text.StringBuilder();
@@ -719,7 +839,8 @@ public sealed class VoiceGateway(
 
             // Precompute (SPEC 10.2): reconcile while the member may still be talking so the result is ready when silence is detected.
             var snapshot = sb.ToString();
-            _speculative[memberId] = (snapshot, Task.Run(() => ReconcileAsync(memberId, snapshot), _run));
+            var analysed = Snapshot(_analysis[memberId]);
+            _speculative[memberId] = (snapshot, Task.Run(() => ReconcileAsync(memberId, snapshot, analysed), _run));
         }
     }
 
@@ -731,7 +852,13 @@ public sealed class VoiceGateway(
             if (_bargeCheckAt is { } at && now >= at)
             {
                 _bargeCheckAt = null;
-                await ExecuteAsync(_floor.Handle(new BargeIn(_presenter, IsHuman: false)));
+                await BargeInAsync(new BargeIn(_bargeSpeaker ?? _presenter, IsHuman: false));
+            }
+
+            if (_bargeSustainedAt is { } sustained && now >= sustained)
+            {
+                _bargeSustainedAt = null;
+                await BargeInAsync(new BargeIn(_bargeSpeaker ?? _presenter, IsHuman: false, Sustained: true));
             }
 
             await ExecuteAsync(_floor.Handle(new Tick(now)));
@@ -766,7 +893,7 @@ public sealed class VoiceGateway(
             }
 
             _correcting.Remove(done.MemberId);
-            if (r.Events.Any(e => e.Type == StandupEventType.Blocker))
+            if (r.Events.Any(e => e.Type == StandupEventType.Blocker) && _unblockerAsked.Add(done.MemberId))
             {
                 _askUnblocker.Add(done.MemberId);
             }
@@ -797,8 +924,7 @@ public sealed class VoiceGateway(
                     await SpeakAsync(speak);
                     break;
                 case CancelResponse:
-                    await _voice.CancelResponseAsync(_run);
-                    await _bridge.SendAsync(new { type = "control", action = "flush" }, _run);
+                    await StopSpeakingAsync();
                     break;
                 case RunReconcile r:
                     StartReconcile(r);
@@ -833,7 +959,8 @@ public sealed class VoiceGateway(
             _awaitingUnblocker.Add(speak.MemberId);
         }
 
-        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, reason, speak.MemberId, question, NotesFor(speak)), _run);
+        var notes = WithInterruption(NotesFor(speak));
+        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, reason, speak.MemberId, question, notes), _run);
         if (!instruction.IsSuccess)
         {
             await _bridge.SendAsync(new { type = "error", code = "TURN_INSTRUCTION", message = instruction.Error!.Message }, _run);
@@ -844,6 +971,9 @@ public sealed class VoiceGateway(
         _responseDone = false;
         _audioIdle = false;
         _audioStarted = false;
+        _agentItemId = null;
+        _firstAudioAt = null;
+        _lastSpeak = (speak, question);
 
         // Only a turn that reacts to someone finishing speaking has a latency; timebox and time-warning turns do not.
         _latencyBaseline = _lastHumanEnd is { } end && clock.UtcNow - end < TimeSpan.FromSeconds(10) ? end : null;
@@ -853,11 +983,21 @@ public sealed class VoiceGateway(
         {
             await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Question, speak.MemberId, question), _run);
             _asked[speak.MemberId!] = question;
-            if (_pendingItem.GetValueOrDefault(speak.MemberId!) is { } item)
+        }
+
+        if (speak.MemberId is not null && reason is SpeakReason.Clarify or SpeakReason.Unblocker)
+        {
+            // Only an answer to a question about a specific item is credited to that item. "Who can help?" and read-backs are not, or the
+            // next uncovered item would be marked covered although nobody mentioned it.
+            lock (_gate)
             {
-                lock (_gate)
+                if (reason == SpeakReason.Clarify && question is not null && _pendingItem.GetValueOrDefault(speak.MemberId) is { } item)
                 {
-                    _focus[speak.MemberId!] = item;
+                    _focus[speak.MemberId] = item;
+                }
+                else
+                {
+                    _focus.Remove(speak.MemberId);
                 }
             }
         }
@@ -867,7 +1007,11 @@ public sealed class VoiceGateway(
     }
 
     // A retrospective is sorted by rules in code (RetroInterpreter); the standup also asks the model for phrasing.
-    private Task<Result<ReconcileResult>> ReconcileAsync(string memberId, string text)
+    // Comments are only authoritative when the model read every segment of the update; one segment read by rules means the reconcile model proposes the events.
+    private static (IReadOnlyList<int> Items, IReadOnlyList<ItemComment>? Comments) Snapshot((List<int> Items, List<ItemComment> Comments, bool AllModel) a) =>
+        ([.. a.Items], a.AllModel ? [.. a.Comments] : null);
+
+    private Task<Result<ReconcileResult>> ReconcileAsync(string memberId, string text, (IReadOnlyList<int> Items, IReadOnlyList<ItemComment>? Comments) analysed)
     {
         lock (_gate)
         {
@@ -876,7 +1020,7 @@ public sealed class VoiceGateway(
                 return sender.Send(new ReconcileRetroUpdateQuery(_sessionId, memberId, text, _asked.ContainsKey(memberId), _correcting.Contains(memberId)), _run);
             }
 
-            return sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId)), _run);
+            return sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId), analysed.Items, analysed.Comments), _run);
         }
     }
 
@@ -962,9 +1106,12 @@ public sealed class VoiceGateway(
 
         string text;
         Task<Result<ReconcileResult>>? reused = null;
+        (IReadOnlyList<int> Items, IReadOnlyList<ItemComment>? Comments) analysed;
         lock (_gate)
         {
             text = _utterance.TryGetValue(memberId, out var sb) ? sb.ToString() : string.Empty;
+            analysed = _analysis.TryGetValue(memberId, out var a) ? Snapshot(a) : ([], null);
+            _analysis.Remove(memberId);
             if (_speculative.TryGetValue(memberId, out var s) && s.Text == text)
             {
                 reused = s.Task;
@@ -974,11 +1121,12 @@ public sealed class VoiceGateway(
             _speculative.Remove(memberId);
         }
 
-        return await (reused ?? ReconcileAsync(memberId, text));
+        return await (reused ?? ReconcileAsync(memberId, text, analysed));
     }
 
     private async Task AdvanceAsync()
     {
+        _interrupted = null;
         if (_floor.CurrentMemberId is { } previous)
         {
             lock (_gate)

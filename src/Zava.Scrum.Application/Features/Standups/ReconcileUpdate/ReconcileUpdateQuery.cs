@@ -1,4 +1,5 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Domain.Voice;
 
 namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 
@@ -10,4 +11,6 @@ namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 /// <param name="FocusItemId">The item the asked question was about; an answer that names no item is attributed to it.</param>
 /// <param name="Correction">True when the member is correcting an earlier statement.</param>
 /// <param name="Covered">Work item ids already discussed in this standup; questions never ask about them again.</param>
-public sealed record ReconcileUpdateQuery(Guid SessionId, string MemberId, string Utterance, string? Asked = null, IReadOnlyCollection<int>? Covered = null, int? FocusItemId = null, bool Correction = false) : IQuery<ReconcileResult>;
+/// <param name="AnalysedItemIds">Items the utterance analysis linked, added to the ones found by rules.</param>
+/// <param name="Comments">The classified comments from the utterance analysis. <see langword="null"/> when no analysis ran (the reconcile model then proposes the events); a list, even an empty one, is authoritative.</param>
+public sealed record ReconcileUpdateQuery(Guid SessionId, string MemberId, string Utterance, string? Asked = null, IReadOnlyCollection<int>? Covered = null, int? FocusItemId = null, bool Correction = false, IReadOnlyList<int>? AnalysedItemIds = null, IReadOnlyList<ItemComment>? Comments = null) : IQuery<ReconcileResult>;

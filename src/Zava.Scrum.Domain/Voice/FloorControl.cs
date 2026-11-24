@@ -391,8 +391,8 @@ public sealed class FloorControl(FloorOptions options)
 
     private FloorAction[] OnBargeIn(BargeIn b)
     {
-        var holderOrHuman = b.IsHuman || b.MemberId == CurrentMemberId;
-        if (!holderOrHuman || !AgentHasFloor || State is FloorState.Opening or FloorState.Recap || _absentCurrent)
+        var mayInterrupt = b.IsHuman || b.Sustained || b.MemberId == CurrentMemberId;
+        if (!mayInterrupt || !AgentHasFloor || State is FloorState.Opening or FloorState.Recap || _absentCurrent)
         {
             return None;
         }

@@ -3,6 +3,7 @@ using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Domain.Voice;
 using Zava.Scrum.Domain.Work;
 
 namespace Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
@@ -31,6 +32,7 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
         var known = SprintIds.From(session.PreBrief);
         var knownIds = known.Select(k => k.Value).ToHashSet();
         var mentioned = ItemMentions.Detect(request.Utterance, brief.Items, knownIds).ToList();
+        mentioned.AddRange((request.AnalysedItemIds ?? []).Where(id => knownIds.Contains(id) && !mentioned.Contains(id)));
         if (mentioned.Count == 0 && request.FocusItemId is { } focus && brief.Items.Any(i => i.Id.Value == focus))
         {
             // The member answered the question about this item without naming it.
@@ -44,7 +46,7 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
         var utterance = request.FocusItemId is null || string.IsNullOrWhiteSpace(request.Asked) ? request.Utterance : $"(The member is answering this question: \"{request.Asked}\") {request.Utterance}";
         var recorded = request.Correction ? RecordedFor(session, request.MemberId) : null;
         var suggestion = await agent.ReconcileAsync(brief, utterance, ct, recorded?.Select(r => r.Statement).ToList());
-        var events = suggestion is null ? [] : GroundEvents(suggestion, brief, known, knownIds, mentioned);
+        var events = request.Comments is { } comments ? FromComments(comments) : suggestion is null ? [] : GroundEvents(suggestion, brief, known, knownIds, mentioned);
         var risks = suggestion?.Risks.Where(r => WorkItemIdGuard.IsGrounded(r, known)).ToList() ?? [];
         return Result<ReconcileResult>.Success(new ReconcileResult(suggestion?.Consistent ?? true, mentioned, risks, question, events, next?.Id.Value, Retractions(recorded, suggestion)));
     }
@@ -72,6 +74,22 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
 
         return (suggestion.Retracts ?? []).Select(n => recorded.FirstOrDefault(r => r.Statement.Ref == n)).Where(r => r.Id != Guid.Empty).Select(r => r.Id).Distinct().ToList();
     }
+
+    // The decision model already classified each comment and the analyser grounded it, so the reconcile model's own events are not asked for twice.
+    // Progress, done and estimate comments only mark the item as discussed; blockers, commitments, decisions and date changes are recorded.
+    private static List<ReconcileEvent> FromComments(IReadOnlyList<ItemComment> comments) =>
+        comments
+            .Select(c => (Type: c.Kind switch
+            {
+                CommentKind.Blocker => StandupEventType.Blocker,
+                CommentKind.Commitment => StandupEventType.Commitment,
+                CommentKind.Decision => StandupEventType.Decision,
+                CommentKind.DateChange => StandupEventType.DateChange,
+                _ => (StandupEventType?)null,
+            }, Comment: c))
+            .Where(x => x.Type is not null && !(x.Type == StandupEventType.Blocker && NoBlocker().IsMatch(x.Comment.Text)))
+            .Select(x => new ReconcileEvent(x.Type!.Value, x.Comment.Text, x.Comment.WorkItemIds))
+            .ToList();
 
     // Item links come from code (the ids in the event text, else the single item the member was talking about), never from model guesses.
     private static List<ReconcileEvent> GroundEvents(ReconcileSuggestion s, MemberBrief brief, HashSet<WorkItemId> known, HashSet<int> knownIds, List<int> mentioned) =>

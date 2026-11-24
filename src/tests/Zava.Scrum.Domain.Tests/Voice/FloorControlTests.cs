@@ -405,6 +405,30 @@ public sealed class FloorControlTests
     }
 
     [Fact]
+    public void BargeIn_SomeoneElseKeepsTalkingOverAgent_CancelsAndListens()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(2)));
+        f.Handle(new SpeakerSelected("m1", false));
+
+        var actions = f.Handle(new BargeIn("m2", false, Sustained: true));
+
+        Assert.Equal(new CancelResponse(), Assert.Single(actions));
+        Assert.Equal(FloorState.Listening, f.State);
+    }
+
+    [Fact]
+    public void BargeIn_SustainedWhileOpening_IsStillIgnored()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+
+        Assert.Empty(f.Handle(new BargeIn("m2", false, Sustained: true)));
+        Assert.Equal(FloorState.Opening, f.State);
+    }
+
+    [Fact]
     public void Tick_HolderStillSpeaking_NeverReconcilesUntilSpeechStops()
     {
         var f = Listening();

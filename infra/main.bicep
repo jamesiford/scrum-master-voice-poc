@@ -45,6 +45,21 @@ param portalClientSecret string
 @description('Shared secret for API-to-bridge control calls.')
 param bridgeApiKey string
 
+@description('Mailbox that owns the sprint calendar meetings (Calendar:Organizer). Empty disables Graph calendar creation.')
+param calendarOrganizer string = ''
+
+@description('Entra app with Calendars.ReadWrite (application) scoped to the organizer mailbox.')
+param calendarClientId string = ''
+
+@secure()
+param calendarClientSecret string = ''
+
+@description('Roster member emails as a JSON object keyed by member id (Demo:MemberEmails), e.g. {"daniel":"daniel@contoso.com"}.')
+param memberEmailsJson string = '{}'
+
+var memberEmails = json(memberEmailsJson)
+var memberEmailEnv = [for member in items(memberEmails): { name: 'Demo__MemberEmails__${member.key}', value: member.value }]
+
 var tenantId = subscription().tenantId
 var token = toLower(uniqueString(resourceGroup().id, environmentName))
 var tags = { 'azd-env-name': environmentName }
@@ -194,7 +209,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: { external: true, targetPort: 8080, transport: 'auto' }
       registries: [ { server: registry.properties.loginServer, identity: identity.id } ]
-      secrets: concat(commonSecrets, [ { name: 'bot-secret', value: botClientSecret }, { name: 'bridge-key', value: bridgeApiKey } ])
+      secrets: concat(commonSecrets, [ { name: 'bot-secret', value: botClientSecret }, { name: 'bridge-key', value: bridgeApiKey }, { name: 'calendar-secret', value: empty(calendarClientSecret) ? 'unset' : calendarClientSecret } ])
     }
     template: {
       containers: [
@@ -202,7 +217,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'api'
           image: placeholderImage
           resources: { cpu: json('0.5'), memory: '1Gi' }
-          env: [
+          env: concat([
             { name: 'AZURE_CLIENT_ID', value: identity.properties.clientId }
             { name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED', value: 'true' }
             { name: 'Azure__TenantId', value: tenantId }
@@ -221,8 +236,11 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
+            { name: 'Calendar__Organizer', value: calendarOrganizer }
+            { name: 'Calendar__ClientId', value: calendarClientId }
+            { name: 'Calendar__ClientSecret', secretRef: 'calendar-secret' }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: insights.properties.ConnectionString }
-          ]
+          ], memberEmailEnv)
         }
       ]
       // The JSON store is a single file, so exactly one replica. PROD: Cosmos and scale out.

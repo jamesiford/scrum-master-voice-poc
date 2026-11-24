@@ -1,7 +1,8 @@
-/** One scripted line. A `when` line answers a question containing any of its keywords. */
+/** One scripted line. A `when` line answers a question containing any of its keywords; an `otherwise` line answers any question no `when` line matched. */
 export interface CastTurn {
   say: string;
   when?: string[];
+  otherwise?: boolean;
 }
 
 /** A scripted participant (SPEC 7.3). */
@@ -65,12 +66,18 @@ export class CastPlanner {
     }
 
     const lowered = question.toLowerCase();
-    const index = member.turns.findIndex(
+    const matched = member.turns.findIndex(
       (t, i) =>
         t.when &&
         !this.used.has(key(memberId, i)) &&
         t.when.some((w) => lowered.includes(w.toLowerCase())),
     );
+    // The agent phrases its questions freely, so a member who is asked something the keywords miss still answers
+    // (once) with their `otherwise` line instead of leaving the agent talking to itself.
+    const index =
+      matched >= 0
+        ? matched
+        : member.turns.findIndex((t, i) => t.otherwise && !this.used.has(key(memberId, i)));
     const turn = index >= 0 ? member.turns[index] : undefined;
     return turn ? this.plan(member, turn, index) : undefined;
   }

@@ -25,6 +25,13 @@ public interface IVoiceSession : IAsyncDisposable
     /// <returns>A task.</returns>
     Task CancelResponseAsync(CancellationToken ct);
 
+    /// <summary>Tells the model how much of its last spoken message was heard before it was interrupted, so it does not think it said the rest.</summary>
+    /// <param name="itemId">The message item id from <see cref="AgentItemStarted"/>.</param>
+    /// <param name="audioEndMs">Milliseconds of that message that were played.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A task.</returns>
+    Task TruncateAsync(string itemId, int audioEndMs, CancellationToken ct);
+
     /// <summary>Adds text a participant said (for example a demo cast line) to the conversation without a response.</summary>
     /// <param name="text">The text.</param>
     /// <param name="ct">Cancellation token.</param>

@@ -4,10 +4,16 @@ using Zava.Scrum.Domain.Flags;
 using Zava.Scrum.Domain.Kpis;
 using Zava.Scrum.Domain.Standups;
 using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Domain.Voice;
 using Zava.Scrum.Domain.Work;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Zava.Scrum.Application.Tests.TestDoubles;
+
+internal sealed class FakeUtteranceAnalyser(UtteranceReading? reading) : IUtteranceAnalyser
+{
+    public Task<UtteranceReading?> ReadAsync(UtteranceContext context, CancellationToken ct) => Task.FromResult(reading);
+}
 
 internal sealed class FakeReconcileAgent(ReconcileSuggestion? suggestion) : IReconcileAgent
 {
@@ -54,7 +60,7 @@ internal sealed class StandupHarness : IAsyncDisposable
     public T Get<T>()
         where T : notnull => _sp.GetRequiredService<T>();
 
-    public static async Task<StandupHarness> CreateAsync(ReconcileSuggestion? suggestion = null, Dictionary<string, string>? prompts = null, Action<IServiceCollection>? configure = null)
+    public static async Task<StandupHarness> CreateAsync(ReconcileSuggestion? suggestion = null, Dictionary<string, string>? prompts = null, Action<IServiceCollection>? configure = null, UtteranceReading? reading = null)
     {
         var story = new BriefItem(new WorkItemId(1), "Payment retry", "User Story", "Active", 3, [Flag.Stale]);
         var bug = new BriefItem(new WorkItemId(12), "Gateway timeouts", "Bug", "Active", 4, [Flag.Blocked]);
@@ -82,6 +88,7 @@ internal sealed class StandupHarness : IAsyncDisposable
         services.AddSingleton<IMemberRepository>(new InMemoryMemberRepository());
         services.AddSingleton<IFollowUpRepository>(new InMemoryFollowUpRepository());
         services.AddSingleton<IReconcileAgent>(new FakeReconcileAgent(suggestion));
+        services.AddSingleton<IUtteranceAnalyser>(new FakeUtteranceAnalyser(reading));
         services.AddSingleton<IPromptStore>(new FakePrompts(prompts ?? []));
         services.AddSingleton<IEmailSender>(new FakeEmailSender());
         services.AddSingleton<IRetroSettings>(new FakeRetroSettings());
