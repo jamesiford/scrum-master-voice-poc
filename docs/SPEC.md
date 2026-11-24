@@ -198,7 +198,7 @@ External dependencies:
 ```
 zava-scrum-agent/
 ├─ azure.yaml                      # azd: services api, bridge
-├─ infra/main.bicep                # ACA env + 2 apps, ACR, Cosmos, ACS, identity, Easy Auth; reuses the Foundry, Log Analytics and App Insights resources. The Azure Bot is created outside Bicep; infra/hooks/postdeploy.ps1 wires it
+├─ infra/main.bicep                # M11: creates everything (modules/ observability, identity, foundry, data, compute) incl. the Azure Bot; infra/hooks/ holds the idempotent scripts (ADR 0015a)
 ├─ Directory.Build.props           # nullable, warnings as errors, analyzers, XML docs
 ├─ Directory.Packages.props        # central package versions
 ├─ .editorconfig

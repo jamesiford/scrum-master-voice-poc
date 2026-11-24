@@ -1,0 +1,35 @@
+name: infra
+
+# Bicep lint, ARM validation and what-if on every change to infra/. Needs the repository variables AZURE_CLIENT_ID, AZURE_TENANT_ID and
+# AZURE_SUBSCRIPTION_ID for a federated (OIDC) identity with Reader plus Microsoft.Resources/deployments/* at subscription scope.
+# The what-if shows the resource group and the outputs only: nested modules depend on outputs of earlier ones, so ARM cannot expand
+# them before they exist. `azd up` in a scratch resource group is the full proof (docs/DEPLOY.md).
+on:
+  pull_request:
+    paths: ['infra/**', 'azure.yaml']
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint
+        run: az bicep build --file infra/main.bicep --stdout > /dev/null
+      - name: Azure login (OIDC)
+        if: ${{ vars.AZURE_CLIENT_ID != '' }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: What-if
+        if: ${{ vars.AZURE_CLIENT_ID != '' }}
+        run: |
+          az deployment sub what-if --name zava-ci --location eastus2 --template-file infra/main.bicep \
+            --parameters environmentName=ci location=eastus2 tenantId=${{ vars.AZURE_TENANT_ID }} \
+              adoOrgUrl=https://dev.azure.com/example adminUpn=admin@example.com

@@ -1,0 +1,35 @@
+
+Deploying services (azd deploy)
+
+  bridge: Packaging
+  api: Packaging
+  bridge: Publishing
+  api: Publishing
+  api: Publishing (Packing remote build context) [1s]
+  bridge: Publishing (Packing remote build context) [1s]
+  bridge: Publishing (Uploading remote build context) [16s]
+  api: Publishing (Uploading remote build context) [16s]
+  bridge: Publishing (Running remote build) [20s]
+  api: Publishing (Running remote build) [21s]
+  api: Deploying [3m3s]
+  api: Deploying (Updating container app revision) [3m3s]
+  api: Deploying (Waiting for container revision (15s)) [3m18s]
+  api: Deploying (Waiting for container revision (30s)) [3m33s]
+  api: Deploying (Waiting for container revision (45s)) [3m48s]
+  api: Deploying (Fetching endpoints for service) [4m3s]
+  api: Done [4m3s]
+  bridge: Deploying [4m3s]
+  bridge: Deploying (Updating container app revision) [4m3s]
+  bridge: Deploying (Waiting for container revision (15s)) [4m18s]
+  bridge: Deploying (Fetching endpoints for service) [4m20s]
+  bridge: Done [4m21s]
+- Endpoint: https://ca-api-pi7fumnppr2hk.blackrock-5fda80c0.eastus2.azurecontainerapps.io/ 
+
+- Endpoint: https://ca-bridge-pi7fumnppr2hk.blackrock-5fda80c0.eastus2.azurecontainerapps.io/ 
+
+
+SUCCESS: Your application was deployed to Azure in 4 minutes 21 seconds.
+You can view the resources created under the resource group rg-zava-scrum-zavagf in Azure Portal:
+https://portal.azure.com/#@/resource/subscriptions/<subscription-id>/resourceGroups/rg-zava-scrum-zavagf/overview
+Update available: 1.38.0 -> 1.39.1 (https://github.com/Azure/azure-dev/releases/tag/azure-dev-cli_1.39.1)
+To update, run `winget upgrade Microsoft.Azd`

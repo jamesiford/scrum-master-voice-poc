@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.29/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.29",
+  "version": "1.0.0",
+  "id": "ff128b73-3b3f-4654-a8ae-9a85f38ebfe6",
+  "developer": {
+    "name": "spike",
+    "websiteUrl": "https://azure.microsoft.com",
+    "privacyUrl": "https://privacy.microsoft.com",
+    "termsOfUseUrl": "https://www.microsoft.com/legal/terms-of-use"
+  },
+  "name": {
+    "short": "S1 spike",
+    "full": "S1 spike"
+  },
+  "description": {
+    "short": "spike",
+    "full": "spike"
+  },
+  "icons": {
+    "color": "default-color-icon.png",
+    "outline": "default-outline-icon.png"
+  },
+  "accentColor": "#4464ee",
+  "validDomains": [
+    "login.microsoftonline.com"
+  ],
+  "bots": [
+    {
+      "botId": "385b00bb-3a72-48d4-9c9a-f1bc192c5544",
+      "scopes": [
+        "personal",
+        "team",
+        "groupChat",
+        "copilot"
+      ],
+      "supportsFiles": true,
+      "isNotificationOnly": false
+    }
+  ],
+  "supportsChannelFeatures": "tier1",
+  "copilotAgents": {
+    "customEngineAgents": [
+      {
+        "id": "385b00bb-3a72-48d4-9c9a-f1bc192c5544",
+        "type": "bot",
+        "disclaimer": {
+          "text": "This agent uses AI. Please verify important information."
+        }
+      }
+    ]
+  }
+}

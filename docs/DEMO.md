@@ -92,3 +92,16 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 5. Type your name and press **Approve** (or press **Approve** on the Teams card). The proposal shows "Approved" and "N of N meetings created"; the meetings appear in Outlook for the roster as Teams meetings, owned by the agent's mailbox. A Graph failure part-way shows the error; **Approve** again creates the rest.
 6. The **Schedule** is now enabled in Teams mode with each standup's join URL stored. At the next standup time the scheduler prepares the session ten minutes before and joins the calendar meeting one minute before, with no pasted link. (To try it today, change the schedule's start time to a few minutes from now and make the first approved meeting start then.)
 7. Delete the meetings from the agent's calendar before the next run.
+
+## Gate runner (latency and traceability)
+`tools/GateRunner` plays the Simulated Room cast (`demo/cast/payments-standup.yaml`, autopilot) through the real API in Edge and records, for every agent reply that follows someone speaking, the time from the end of their speech to the first audio, split into: speech end to transcript, analyser, decision model, orchestration (floor control, the wait for silence, the reconcile) and Voice Live first audio. Each run is saved as JSON; `summary.md` gives p50, p95 and n per hop (nearest-rank, no interpolation) and the build id. Every later change re-runs it and pastes the summary into the pull request and `docs/gates/M11-gates.md`.
+
+1. Start the API and the bridge (`dotnet run --project src\Zava.Scrum.Api --urls http://localhost:5080`; `npm run start --prefix src\meeting-bridge`). The configuration under test is set on the API: the default is the decision model (`UtteranceAnalysis__Engine=Decision`); for the rules-only run set `UtteranceAnalysis__Mode=Rules` before starting it.
+2. `dotnet run --project tools\GateRunner -- --label decision --runs 3 --out docs\gates\baseline-M10` (use `--label rules` for the other configuration; `--build <id>` names a deployed image tag, default is the git commit).
+3. `dotnet run --project tools\GateRunner -- --summarise docs\gates\baseline-M10` rebuilds the summary from the saved JSON.
+4. `--check-audit` runs the traceability check after each run. **It fails by design until the audit endpoint exists (prompt 3)**, so a run that passes the latency gate still reports the traceability gate as failed.
+5. The runner prints `docs/gates/teams-rehearsal.md` at the end: a ten-step checklist a person ticks in a real Teams meeting.
+
+To drive a deployed API behind Easy Auth, pass `--api <url> --token <bearer>` (or `GATE_TOKEN`); the bridge room must be reachable from the machine running the runner. A run takes about six and a half minutes.
+
+To stand the whole environment up from nothing, and to check it afterwards, see `docs/DEPLOY.md` (`azd up`, then `pwsh infra/hooks/verify.ps1`). Run the gate runner against the deployed API with a token from `az account get-access-token --scope api://<PORTAL_CLIENT_ID>/access_as_user`; `docs/gates/baseline-M10-deployed/` holds the deployed M10 baseline.

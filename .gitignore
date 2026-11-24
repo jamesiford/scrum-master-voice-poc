@@ -9,3 +9,5 @@ data/
 .azure/
 src/meeting-bridge/public/*.js
 src/meeting-bridge/public/*.map
+
+appPackage/dist/

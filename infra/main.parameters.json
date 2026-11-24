@@ -4,20 +4,12 @@
   "parameters": {
     "environmentName": { "value": "${AZURE_ENV_NAME}" },
     "location": { "value": "${AZURE_LOCATION}" },
-    "namePrefix": { "value": "${NAME_PREFIX=zava-scrum}" },
-    "foundryName": { "value": "${FOUNDRY_NAME}" },
-    "logAnalyticsName": { "value": "${LOG_ANALYTICS_NAME}" },
-    "appInsightsName": { "value": "${APP_INSIGHTS_NAME}" },
-    "botAppId": { "value": "${BOT_APP_ID}" },
-    "foundryProjectName": { "value": "${FOUNDRY_PROJECT_NAME}" },
+    "tenantId": { "value": "${AZURE_TENANT_ID}" },
     "adoOrgUrl": { "value": "${ADO_ORG_URL}" },
-    "botClientSecret": { "value": "${BOT_CLIENT_SECRET}" },
-    "portalClientId": { "value": "${PORTAL_CLIENT_ID}" },
-    "portalClientSecret": { "value": "${PORTAL_CLIENT_SECRET}" },
-    "bridgeApiKey": { "value": "${BRIDGE_API_KEY}" },
-    "calendarOrganizer": { "value": "${CALENDAR_ORGANIZER=}" },
-    "calendarClientId": { "value": "${CALENDAR_CLIENT_ID=}" },
-    "calendarClientSecret": { "value": "${CALENDAR_CLIENT_SECRET=}" },
-    "memberEmailsJson": { "value": "${DEMO_MEMBER_EMAILS_JSON={}}" }
+    "adminUpn": { "value": "${ADMIN_UPN}" },
+    "realtimeSku": { "value": "${REALTIME_SKU=DataZoneStandard}" },
+    "chatCapacity": { "value": "${CHAT_CAPACITY=100}" },
+    "realtimeCapacity": { "value": "${REALTIME_CAPACITY=10}" },
+    "decisionCapacity": { "value": "${DECISION_CAPACITY=100}" }
   }
 }

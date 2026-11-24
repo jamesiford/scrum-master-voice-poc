@@ -23,6 +23,7 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
 
         var me = await GetCurrentUserAsync(ct);
         log($"Signed in as {me}");
+        await EnsureProjectAsync(ct);
         await EnsureAreaAsync(ct);
         var start = DateTime.UtcNow.Date.AddDays(-seed.DaysElapsed);
         var iterationId = await EnsureIterationAsync(seed.Iteration, start, ct);
@@ -43,6 +44,44 @@ internal sealed class Seeder(AdoClient ado, SeedDefinition seed, Action<string> 
         var data = await ado.GetAsync("_apis/connectionData?api-version=7.1-preview", ct);
         return data?["authenticatedUser"]?["properties"]?["Account"]?["$value"]?.GetValue<string>()
             ?? throw new InvalidOperationException("Could not read the signed-in user from connectionData.");
+    }
+
+    // Greenfield: an empty organisation has no project. The built-in Agile process matches the seed (User Story, Task, Bug).
+    private async Task EnsureProjectAsync(CancellationToken ct)
+    {
+        const string agileProcess = "adcc42ab-9882-485e-a3ed-7678f01f66bc";
+        if (await ado.GetAsync($"_apis/projects/{Esc(_project)}", ct, allowNotFound: true) is not null)
+        {
+            log($"Project '{_project}' exists");
+            return;
+        }
+
+        var body = new
+        {
+            name = _project,
+            description = "Zava Scrum Agent demo project",
+            visibility = 0,
+            capabilities = new { versioncontrol = new { sourceControlType = "Git" }, processTemplate = new { templateTypeId = agileProcess } },
+        };
+        var operation = await ado.SendJsonAsync(HttpMethod.Post, "_apis/projects", body, ct);
+        var id = operation?["id"]?.GetValue<string>() ?? throw new InvalidOperationException("Project creation returned no operation id.");
+        for (var i = 0; i < 60; i++)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
+            var status = (await ado.GetAsync($"_apis/operations/{id}", ct))?["status"]?.GetValue<string>();
+            if (status == "succeeded")
+            {
+                log($"Created project '{_project}' (Agile process)");
+                return;
+            }
+
+            if (status is "failed" or "cancelled")
+            {
+                throw new InvalidOperationException($"Creating project '{_project}' {status}.");
+            }
+        }
+
+        throw new TimeoutException($"Project '{_project}' was not ready after two minutes.");
     }
 
     private async Task EnsureAreaAsync(CancellationToken ct)
