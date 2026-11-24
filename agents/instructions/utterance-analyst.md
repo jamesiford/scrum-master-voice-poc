@@ -29,8 +29,8 @@ Return only JSON:
 - `proxy_update`: one member gives, or offers to give, another member's update. `targetMemberId` is whose update it is, `byMemberId` who speaks for them.
 - `correction`: takes back or fixes something said earlier ("scratch that", "I meant Friday").
 - `back_now`: a member who stepped away says they are back.
-- `out_of_turn_update`: someone who does not hold the floor starts giving their own update.
-- `chatter`: anything else (greetings, jokes, side talk, "okay", "thanks").
+- `out_of_turn_update`: someone who does not hold the floor reports on their own tasks ("yesterday I...", "today I will...", "I'm blocked on...").
+- `chatter`: anything else, including a side discussion: advice, analysis, guesses or suggestions about a problem someone else raised or about someone else's work ("we hit the same timeouts last sprint", "I think the root cause was the pool settings"), greetings, jokes, "okay", "thanks".
 
 A question to the agent ("Scrum Agent, ...") that asks for a fact is `ask_item_info`. A short answer to `asked` is an `update`. Use only ids from `roster` for `targetMemberId` and `byMemberId`; match first names and display names. If you cannot tell who, use null.
 

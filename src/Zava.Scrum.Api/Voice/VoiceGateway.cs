@@ -60,7 +60,7 @@ public sealed class VoiceGateway(
     private readonly HashSet<string> _askUnblocker = [];
     private readonly HashSet<string> _unblockerAsked = [];
     private readonly HashSet<string> _awaitingUnblocker = [];
-    private IReadOnlyList<NameRef> _roster = [];
+    private List<NameRef> _roster = [];
     private string? _directive;
     private string? _deferNotes;
     private string? _speechSpeaker;
@@ -140,6 +140,7 @@ public sealed class VoiceGateway(
             return;
         }
 
+        WarmUpAnalyser();
         var readers = new[] { ReadBridgeAsync(), ReadVoiceAsync(), TickAsync() };
         live.Register(sessionId, a => _inbox.Writer.TryWrite(new FromControl(a)));
         try
@@ -166,6 +167,19 @@ public sealed class VoiceGateway(
             await sender.Send(new EndStandupCommand(sessionId), CancellationToken.None);
             await _bridge.CloseAsync();
         }
+    }
+
+    // The first call to the decision model pays for the token and the connection (about 2 s); do it now, while the room is still joining,
+    // so the first real utterance does not.
+    private void WarmUpAnalyser()
+    {
+        if (_roster.Count == 0)
+        {
+            return;
+        }
+
+        var speaker = _roster[0].MemberId;
+        _ = Task.Run(() => sender.Send(new AnalyseUtteranceQuery(_sessionId, speaker, speaker, "hello", _roster), _run), _run);
     }
 
     private async Task<bool> PrepareAsync(CancellationToken ct)

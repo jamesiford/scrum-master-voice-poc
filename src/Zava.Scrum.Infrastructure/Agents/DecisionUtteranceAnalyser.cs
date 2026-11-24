@@ -37,8 +37,8 @@ public sealed class DecisionUtteranceAnalyser(
         ("proxy_update", "One person gives, or offers to give, another person's update"),
         ("correction", "The speaker takes back or fixes something they said earlier"),
         ("back_now", "A person who stepped away says they are back"),
-        ("out_of_turn_update", "Someone other than the person whose turn it is starts giving their own update"),
-        ("chatter", "Anything else: greetings, jokes, side talk, acknowledgements"),
+        ("out_of_turn_update", "Someone other than the person whose turn it is reports on their own tasks: what they finished, will do or are blocked on (\"yesterday I...\", \"today I will...\", \"I'm blocked on...\")"),
+        ("chatter", "Anything else, including a side discussion: advice, analysis, guesses or suggestions about a problem someone else raised or about someone else's work, greetings, jokes and acknowledgements"),
     ];
 
     private static readonly (CommentKind Kind, string Question)[] Kinds =
@@ -69,7 +69,9 @@ public sealed class DecisionUtteranceAnalyser(
         {
             // A string body, not PostAsJsonAsync: the route rejects chunked requests and needs a Content-Length header.
             using var body = new StringContent(BuildRequest(o.DecisionDeployment, context, items).ToJsonString(), System.Text.Encoding.UTF8, "application/json");
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
             using var response = await http.PostAsync(Route, body, budget.Token);
+            logger.LogInformation("Decision model status={Status} httpMs={HttpMs} questions={Questions}", (int)response.StatusCode, (int)System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds, items.Count + Kinds.Length + 3);
             if (!response.IsSuccessStatusCode)
             {
                 // 429 is the usual one: the deployment's rate limit. The rules carry the standup meanwhile.

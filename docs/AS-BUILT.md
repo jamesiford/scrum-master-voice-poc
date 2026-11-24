@@ -1,5 +1,7 @@
 # Zava Scrum Master voice PoC: as built
 
+**Date:** November 23, 2026 (includes M9 and M10).
+
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
 
 ## 1. What it is
@@ -23,7 +25,7 @@ Admin portal (React, Tailwind) -> API (served by the same container)
 1. **Prepare:** facts are computed in code from Azure DevOps: sprint, burndown, per-person open items and flags (stale, blocked, overdue, unassigned, no recent update). A model only phrases a summary and questions; ids outside the sprint are dropped.
 2. **Join:** the agent joins the Teams meeting, waits in the lobby if needed, shares the standup board as its screen, and begins 8 seconds after the first roster member is matched (the portal's **Begin** button starts it sooner). Members are matched by any word of their Teams name; anyone not present is marked absent.
 3. **Floor control:** a pure Domain state machine owns who speaks. The agent only speaks when it is allowed to, and stops when a human barges in.
-4. **Each turn:** call on a member, listen, then reconcile what they said against their items. Item links come from code (`ItemMentions`: "story 5", "task fourteen", or a distinctive title word), never from a model guess. The agent briefly says what it noted (blockers, commitments) and asks about the most urgent flagged item not yet covered (blocked, then overdue, then at risk, then stale, then no recent update), up to three questions per person.
+4. **Each turn:** call on a member, listen, then reconcile what they said against their items. Item links come from code (`ItemMentions`: "story 5", "task fourteen", or a distinctive title word) or from the decision model's reading, which code accepts only when it names an id on the roster or sprint (ADR 0014); they are never taken from free model text. The agent briefly says what it noted (blockers, commitments) and asks about the most urgent flagged item not yet covered (blocked, then overdue, then at risk, then stale, then no recent update), up to three questions per person.
 5. **Questions from the team:** "is that one overdue, what was the due date?" is answered from live Azure DevOps through the `get_work_item_details` tool, with the item being discussed supplied as context so "that one" resolves in code.
 6. **Recap:** blockers, parked topics, absent members, members who were present but silent, and flagged items nobody covered. Follow-ups are then sent.
 
@@ -39,10 +41,10 @@ The goal is fixed (everything covered, nobody forgotten); the room changes the p
 | One member gives another's update | Attributes it to the owner; anything captured still needs the owner's approval |
 | Side conversation | Waits, then parks the topic after a threshold |
 | Time warning / timebox | Warns at 80 percent; recaps and ends at the limit |
-Each utterance is read by `AnalyseUtteranceQuery` (ADR 0014): a decision model (Microsoft-Decision-1.1 on the `zava-decision` deployment, or the chat model with `UtteranceAnalysis:Engine=Chat`) returns the intent, the work items and the comment kind (blocker, date change, commitment, decision, estimate, done) in one call, and `UtteranceAnalyser` checks every member and ticket id before anything acts on it. Rules (`UtteranceClassifier`, `ItemMentions`) are the fallback when the model is off, slower than `UtteranceAnalysis:TimeoutMs`, unsure or wrong; the analysis step adds roughly 1.5 to 2.5 s per utterance (p50 agent latency 4.2 s with rules, 6.2 s with the model in the Simulated Room), so set `UtteranceAnalysis:Mode=Rules` to trade it back. A barge-in stops the voice at once, drops audio still in flight, truncates the model's message to what was heard, and the next turn acknowledges it; a member who is not holding the floor can cut in after `Voice:SustainedBargeInMs`. In Teams the mixed audio has no speaker, so the speaker is the member whose live "speaking" event overlaps the speech, else the floor holder.
+Each utterance is read by `AnalyseUtteranceQuery` (ADR 0014): a decision model (Microsoft-Decision-1.1 on the `zava-decision` deployment, or the chat model with `UtteranceAnalysis:Engine=Chat`) returns the intent, the work items and the comment kind (blocker, date change, commitment, decision, estimate, done) in one call, and `UtteranceAnalyser` checks every member and ticket id before anything acts on it. Rules (`UtteranceClassifier`, `ItemMentions`) are the fallback when the model is off, slower than `UtteranceAnalysis:TimeoutMs`, unsure or wrong; the analysis step takes about 0.3 s once the token is cached (`CachingTokenCredential`) and the analyser is warmed at session start; p50 agent latency in the Simulated Room is 3.4 to 4.0 s. Set `UtteranceAnalysis:Mode=Rules` to switch it off. A barge-in stops the voice at once, drops audio still in flight, truncates the model's message to what was heard, and the next turn acknowledges it; a member who is not holding the floor can cut in after `Voice:SustainedBargeInMs`. In Teams the mixed audio has no speaker, so the speaker is the member whose live "speaking" event overlaps the speech, else the floor holder.
 
 ### 3.2 Shared board
-The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at the start, then the current speaker's items (state, flags, owner, a highlight on the item being asked about, a tick when covered) and per-member coverage with a status (away, no response, update by someone). Frames are forced from a canvas attached to the page. Sharing is best effort and supervised: it retries until Teams confirms, and every status change appears as a Bridge event on the Live tab and in the bridge log (`[share]`). **Status:** live behaviour was still being validated at the time of writing.
+The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at the start, then the current speaker's items (state, flags, owner, a highlight on the item being asked about, a tick when covered) and per-member coverage with a status (away, no response, update by someone). Frames are forced from a canvas attached to the page. Sharing is best effort and supervised: it retries until Teams confirms, and every status change appears as a Bridge event on the Live tab and in the bridge log (`[share]`). **Status:** observed working in a real Teams meeting on 23 November 2026 (the recorded take).
 
 ## 4. Safety rules that are enforced in code
 1. No Azure DevOps write without an approved follow-up (`FollowUp.GetApprovedChanges`, `ApplyApprovedChangesHandler`, unit tested). Approval is a card button in Teams or the portal.
@@ -73,8 +75,8 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 
 ## 8. Known limits and open items
 - Teams app installation from the admin center failed repeatedly with a tenant/admin-portal error; sideloading per user is the workaround. Until installed, cards fall back to the portal outbox.
-- Voice latency p50 is about 2 to 3 seconds against a 1 second target; each speaker now waits briefly while the agent checks their update.
-- The utterance classifier recognises English phrasing; unusual wording can be missed. PROD: model-assisted classification for ambiguous speech.
+- Voice latency p50 is about 3.7 seconds (p95 5.0 s) in the 23 November Teams take, against a 1 second target; with the M10 decision model on, the Simulated Room measured 6.2 s p50 against 4.2 s with rules (ADR 0014). Each speaker now waits briefly while the agent checks their update.
+- The utterance classifier recognises English phrasing; unusual wording can be missed by the rules. The M10 decision model (ADR 0014) reads ambiguous speech first and the rules remain the fallback. PROD: tune the model and the thresholds on real standups.
 - Only one API replica is supported (live state is in memory).
 - Cosmos has public network access (Entra-only) because the tenant policy blocked private defaults; PROD: private endpoint.
 - ACS uses a connection string in a secret; PROD: Entra with role assignment.
@@ -86,7 +88,7 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - The sprint calendar's Graph app (`Calendars.ReadWrite`, application) is not yet scoped to one mailbox with an Exchange application access policy; the `.ics` download is the fallback when `Calendar:Organizer` is empty.
 - Email follow-ups are recorded to an outbox; `Email:Mode=Graph` sends them through Microsoft Graph but has not been run against a live mailbox.
 - Escalation cards have no Acknowledge or Reassign buttons.
-- The shared board in a live meeting is still being validated.
+- The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
 227 Domain, 80 Application, 39 Infrastructure and 7 architecture tests; `dotnet format` clean; lint and typecheck for bridge and portal; an end-to-end Simulated Room standup (6 checks) via `npm run e2e --prefix src/meeting-bridge`. A scripted "messy standup" exercised chime-ins, step-away, circle-back, silence, what-to-report, correction and proxy against the real gateway.

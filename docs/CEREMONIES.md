@@ -4,7 +4,7 @@
 >
 > **Companions:** *PoC Build Specification* (v0.6, as built), *PoC As-Built*, *Production Specification* (v0.3) and *Solution Architecture*. This catalogue replaces the short "Ceremony playbooks" table in Solution Architecture section 7 as the detailed reference.
 >
-> **Owner:** James Ford (Microsoft). **Version 0.2**, November 22, 2026 (aligned with the Requirements Audit). Status: draft for confirmation with Rajeev.
+> **Owner:** James Ford (Microsoft). **Version 0.2**, November 23, 2026 (aligned with the Requirements Audit; model-assisted utterance classification moved from production to the PoC in M10). Status: draft for confirmation with Rajeev.
 
 ---
 
@@ -73,7 +73,7 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 | **KPIs fed** | Attendance, follow-up closure, blocker age, coverage of flagged items |
 | **PoC status** | **Built** and run in a real Teams meeting and in the Simulated Room (as-built sections 3 to 5) |
 | **Demo** | End to end live: pre-brief, voice standup in Teams with the shared board, follow-ups, approval, comment visible in Azure DevOps |
-| **Production adds** | Per-speaker audio or Work IQ transcripts for attribution, multilingual and model-assisted utterance classification, one-second latency target, Agent 365 identity, scale to ten teams |
+| **Production adds** | Per-speaker audio or Work IQ transcripts for attribution, multilingual support, one-second latency target, Agent 365 identity, scale to ten teams |
 | **Open with Rajeev** | Standup time per team and location; does the Scrum Master want the agent to lead every day or alternate; which changes beyond comments the agent may propose (state, remaining work) |
 
 ### C2. Sprint Planning

@@ -46,8 +46,8 @@ public static class DependencyInjection
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClock, SystemClock>();
-        services.AddSingleton<TokenCredential>(sp => new DefaultAzureCredential(
-            new DefaultAzureCredentialOptions { TenantId = sp.GetRequiredService<IOptions<AzureOptions>>().Value.TenantId }));
+        services.AddSingleton<TokenCredential>(sp => new CachingTokenCredential(new DefaultAzureCredential(
+            new DefaultAzureCredentialOptions { TenantId = sp.GetRequiredService<IOptions<AzureOptions>>().Value.TenantId })));
         services.AddSingleton<IPromptStore, FilePromptStore>();
         services.AddSingleton<IRosterSource, SeedFileRosterSource>();
 

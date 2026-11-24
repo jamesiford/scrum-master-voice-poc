@@ -1,5 +1,7 @@
 # Documentation drift report
 
+**Date:** November 23, 2026 (reconciliation at `36d25ad`, 22 November; the latency, shared board and decision model notes updated after M10).
+
 Generated while reconciling the documents with `main` at `36d25ad`. **The code wins** over every document (see ADR 0009). Paths are relative to the repository root. "Test" means a test that exercises the use case directly; a domain-only test is noted in the cell.
 
 ## A. Use cases (SPEC 6.1.4 and 6.1.5)
@@ -165,7 +167,7 @@ Routes in the old SPEC 14 that **do not exist in code**: `PUT /api/teams/{id}/me
 | Portal stack | Fluent UI v9, MSAL.js | Tailwind CSS v4, lucide-react, Container Apps Easy Auth |
 | Ports | `IFollowUpAgent` | `IReconcileAgent`, `IDraftingAgent`, `IBacklogRiskAgent`, `IReportingAgent` |
 | Required tests | Repository contract tests on JSON and Cosmos; OpenTelemetry | Contract test runs against the JSON-file store only; no Cosmos repository class; no OpenTelemetry code (now listed as known gaps) |
-| Latency N5 | Target 1 s | Target 1 s, measured 2 to 3 s |
+| Latency N5 | Target 1 s | Target 1 s, measured 3.7 s p50 in the 23 Nov Teams take |
 | Config keys | Several keys listed | SPEC 17 rewritten from the options classes; unused keys listed there as removed |
 | `knowledge/working-agreements.md` | Used by the agent | Not read by any code |
 | M9a (after M9) | M9 documented a sprint planning pack through `POST /api/ceremonies/SprintPlanning/pack` | That route now refuses `SprintPlanning`; planning has its own pack, commands and routes (SPEC 10.6, ADR 0011) |
@@ -177,6 +179,6 @@ Routes in the old SPEC 14 that **do not exist in code**: `PUT /api/teams/{id}/me
 1. docs/CEREMONIES.md and docs/REQUIREMENTS-AUDIT.md are now in place (renamed from the untracked catalogue and audit files). The audit's requirement statuses were re-checked against the M9 code on 22 November 2026 (section 1.1 and the R5, R6, R10 to R12, R14, R15, R17, R18, R20, R21, R25 rows); the CEREMONIES statuses were not re-verified.
 2. Real identifiers still in tracked files outside the scope of item 7: `infra/main.bicep` parameter defaults (resource names), `appPackage/manifest.json` (bot id), `src/meeting-bridge/src/config.ts` (default `SPEECH_ENDPOINT`), `tools/SeedAdo/Program.cs` (default org) and a doc comment in `AdoOptions.cs`. Should these be placeholders too?
 3. Deployment: `Foundry__ProjectEndpoint`, `Ado__Org` and the Connections tenant settings now come from Bicep parameters `foundryProjectName` and `adoOrgUrl` (azd env `FOUNDRY_PROJECT_NAME`, `ADO_ORG_URL`). `azd provision` must run before the next `azd deploy`. Not deployed in this PR.
-4. Shared board in a live Teams meeting: still being validated.
+4. Shared board in a live Teams meeting: seen working on 23 November 2026 (the recorded take).
 5. Voice latency is above the 1 s target.
 6. Teams admin-center install of the app failed; sideloading is the workaround.

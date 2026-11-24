@@ -13,4 +13,4 @@ The goal is fixed (every member's items covered, nobody forgotten). What happens
 - **Board:** shows per-member status (away, no response, update by someone).
 
 ## Consequences
-New command `RetractStandupEventCommand`, new `NextSpeakerDto.CircleBack`, new turn templates (`turn-step-away`, `turn-no-response`, `turn-circle-back`). Classifier phrases are English and rule based; PROD: add a model-assisted classifier behind the same interface for ambiguous speech. A scripted messy standup (`files/scenario.mjs` in the session folder) exercised every path against the real gateway.
+New command `RetractStandupEventCommand`, new `NextSpeakerDto.CircleBack`, new turn templates (`turn-step-away`, `turn-no-response`, `turn-circle-back`). Classifier phrases are English and rule based; PROD: add a model-assisted classifier behind the same interface for ambiguous speech (**done in M10, see ADR 0014**: a decision model reads the utterance first and these rules stay as the fallback). A scripted messy standup (`files/scenario.mjs` in the session folder) exercised every path against the real gateway.

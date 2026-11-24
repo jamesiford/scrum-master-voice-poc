@@ -4,7 +4,7 @@
 >
 > **Companions:** *Zava AI Scrum Master Agent - Solution Architecture* (the why and the options) and *Zava AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
-> **Owner:** James Ford (Microsoft). **Version 0.6 (as built, M9 ceremony and carry-over features)**, November 22, 2026. Status: updated to describe what was actually built. **The code wins** where this document and the code disagree; `DOC-DRIFT.md` lists every difference found and how it was resolved. Companions: `AS-BUILT.md`, `CEREMONIES.md` and the decision records (`adr/0001` to `0011`).
+> **Owner:** James Ford (Microsoft). **Version 0.6 (as built, M9 ceremony and carry-over features, M10 decision model)**, November 23, 2026. Status: updated to describe what was actually built. **The code wins** where this document and the code disagree; `DOC-DRIFT.md` lists every difference found and how it was resolved. Companions: `AS-BUILT.md`, `CEREMONIES.md` and the decision records (`adr/0001` to `0014`).
 
 ### What changed in v0.6 (M9)
 
@@ -122,7 +122,7 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 | F8 | Recommend assignments and escalate risks | Escalation **built** as a follow-up kind for long-blocked items (a card to every stored conversation). Assignment suggestions are **advice only** (`PlanningPlanner`; nothing is written) | 10.3, M3, M8 |
 | F9 | Write user stories and acceptance criteria | **Draft only:** Story Writer page (model draft, or a template when no model is available); never written to Azure DevOps | M8 |
 | F10 | Admin portal for teams, rosters, cadence and prompts | **Full** | 13, M5 |
-| N5 | About one second voice latency | Target 1 s; **measured 2 to 3 s** (p50, US test). Shown in the portal | 11.2 |
+| N5 | About one second voice latency | Target 1 s; **measured 3.7 s p50** in the 23 Nov Teams take (2 to 3 s was the earlier note); the M10 decision model adds latency (ADR 0014). Shown in the portal | 11.2 |
 | N6 | English with Indian, Costa Rican and US accents | Tested with Zava voices if available | 11 |
 | N7 | No Azure DevOps writes without approval | **Enforced in code** | 10.3 |
 | N1 to N4 | Identity, monitoring, licensing, Workday | Production specification | n/a |
@@ -845,7 +845,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 ## 16. Milestones (one issue each; demo check = acceptance)
 
-**Status as built:** M0 to M7 complete and deployed. M8 complete except the Work IQ listener. The M4 Teams join was run in real meetings (audio both ways, lobby, roster matching, speaking events). The **shared board** (screen share) is built and supervised, but its behaviour in a live meeting is still being validated (see `AS-BUILT.md` 3.2); no log or test in the repository shows it verified. Known gaps: Teams app installation from the admin center failed with a tenant/admin-portal error (per-user sideloading is the workaround); voice latency p50 is about 2 to 3 seconds against the 1 second target.
+**Status as built:** M0 to M7 complete and deployed. M8 complete except the Work IQ listener. The M4 Teams join was run in real meetings (audio both ways, lobby, roster matching, speaking events). The **shared board** (screen share) is built and supervised, and was seen working in a live meeting on 23 November 2026 (see `AS-BUILT.md` 3.2). Known gaps: Teams app installation from the admin center failed with a tenant/admin-portal error (per-user sideloading is the workaround); voice latency p50 is about 3.7 seconds against the 1 second target.
 
 **M0 Skeleton and local run.**
 - Build: the solution and Aspire AppHost with the four Clean Architecture projects and test projects (section 6); `Directory.Build.props`, `Directory.Packages.props` and `.editorconfig`; the hand-rolled mediator with `LoggingBehavior`, `ValidationBehavior` and `ExceptionMappingBehavior`, `Result`/`Error` and `ToHttpResult()`, with unit tests; architecture tests for the dependency rule; `Zava.Scrum.Api` with health checks and the JSON-file repository; the bridge serving an empty `/room` page; the portal shell with sign-in; the configuration layout from section 17.
@@ -1025,6 +1025,6 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 6. The demo can be reset and re-run in under five minutes.
 7. The code meets the engineering standards in section 6.1: zero build warnings, architecture tests green, public APIs documented, every use case in the catalogue, so the PoC is a credible starting point for the production build.
 
-**Result as built:** criteria 1 to 4, 6 and 7 are met in the demo environment (storyboard scenes 2 to 11 work; scene 8 runs in a real Teams meeting). Criterion 5 is not yet met: median latency is about 2 to 3 seconds, measured and shown in the portal. Teams card delivery in the tenant depends on the Teams app being installed (see section 16 status); cards are otherwise available in the portal outbox.
+**Result as built:** criteria 1 to 4, 6 and 7 are met in the demo environment (storyboard scenes 2 to 11 work; scene 8 runs in a real Teams meeting). Criterion 5 is not yet met: median latency is about 3.7 seconds, measured and shown in the portal. Teams card delivery in the tenant depends on the Teams app being installed (see section 16 status); cards are otherwise available in the portal outbox.
 
 Everything else (scale, the production bridge, identity, governance, evaluation, networking, operations) is in the *Production Specification*.
