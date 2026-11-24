@@ -2,7 +2,7 @@
 
 > **Purpose:** the single definition of every Scrum ceremony and recurring activity the agent is expected to cover. For each one it says what the agent does before, during and after, what it reads and writes in Azure DevOps, what is built in the PoC today, how it is demonstrated, and what production adds.
 >
-> **Companions:** *PoC Build Specification* (v0.6, as built), *PoC As-Built*, *Production Specification* (v0.3) and *Solution Architecture*. This catalogue replaces the short "Ceremony playbooks" table in Solution Architecture section 7 as the detailed reference.
+> **Companions:** *PoC Build Specification* (v0.6, as built), *PoC As-Built*, *Production Specification* (v0.4) and *Solution Architecture*. This catalogue replaces the short "Ceremony playbooks" table in Solution Architecture section 7 as the detailed reference.
 >
 > **Owner:** James Ford (Microsoft). **Version 0.2**, November 23, 2026 (aligned with the Requirements Audit; model-assisted utterance classification moved from production to the PoC in M10). Status: draft for confirmation with Rajeev.
 
