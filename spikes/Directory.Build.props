@@ -1,0 +1,6 @@
+<Project>
+  <!-- Spikes are throwaway and outside the solution: they opt out of the repository's strict build settings. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
