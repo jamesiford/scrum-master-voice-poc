@@ -1,0 +1,62 @@
+# Shared helpers for the azd hooks. Dot-source: . "$PSScriptRoot/lib.ps1"
+$ErrorActionPreference = 'Stop'
+# The Azure CLI exits non-zero when Graph returns characters the console code page cannot print, so force UTF-8.
+$env:PYTHONIOENCODING = 'utf-8'
+$env:PYTHONUTF8 = '1'
+$script:Failures = 0
+
+# Hooks run with the azd environment already in the process environment. When a script is run by hand, load it from `azd env get-values`.
+function Import-AzdEnvironment {
+  if ($env:AZURE_ENV_NAME) { return }
+  foreach ($line in (azd env get-values 2>$null)) {
+    if ($line -match '^([A-Za-z_][A-Za-z0-9_]*)="?(.*?)"?$') { [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2]) }
+  }
+}
+
+# Writes a value into the azd environment so later hooks and `azd deploy` see it. Never used for secrets.
+function Set-AzdValue([string]$Name, [string]$Value) {
+  azd env set $Name $Value | Out-Null
+  [Environment]::SetEnvironmentVariable($Name, $Value)
+}
+
+function Write-Check([string]$Status, [string]$Name, [string]$Detail = '') {
+  $colour = switch ($Status) { 'PASS' { 'Green' } 'WARN' { 'Yellow' } 'GATE' { 'Yellow' } 'SKIP' { 'DarkGray' } default { 'Red' } }
+  Write-Host ('{0,-5} {1}' -f $Status, $Name) -ForegroundColor $colour -NoNewline
+  if ($Detail) { Write-Host "  $Detail" } else { Write-Host '' }
+  if ($Status -eq 'FAIL') { $script:Failures++ }
+}
+
+# Microsoft Graph through the signed-in Azure CLI session (the CLI's own token carries Application.ReadWrite.All and
+# AppRoleAssignment.ReadWrite.All for an administrator).
+function Invoke-Graph([string]$Method, [string]$Path, $Body = $null) {
+  $uri = if ($Path.StartsWith('http')) { $Path } else { "https://graph.microsoft.com/v1.0$Path" }
+  $azArgs = @('rest', '--method', $Method, '--url', "`"$uri`"", '--headers', 'Content-Type=application/json')
+  $tmp = $null
+  if ($null -ne $Body) {
+    $tmp = New-TemporaryFile
+    ($Body | ConvertTo-Json -Depth 20 -Compress) | Set-Content $tmp -Encoding utf8
+    $azArgs += @('--body', "@$tmp")
+  }
+  try {
+    $out = & az @azArgs 2>&1
+    if ($LASTEXITCODE -ne 0) { throw ($out | Out-String) }
+    if ($out) { return ($out | Out-String | ConvertFrom-Json) }
+  }
+  finally { if ($tmp) { Remove-Item $tmp -ErrorAction SilentlyContinue } }
+}
+
+function Get-GraphToken { az account get-access-token --resource-type ms-graph --query accessToken -o tsv }
+
+function Get-TokenClaims([string]$Jwt) {
+  $p = $Jwt.Split('.')[1].Replace('-', '+').Replace('_', '/')
+  $p = $p.PadRight([int]([Math]::Ceiling($p.Length / 4) * 4), '=')
+  [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p)) | ConvertFrom-Json
+}
+
+$script:AdoResource = '499b84ac-1321-427f-aa17-267ca6975798'
+function Get-AdoHeaders {
+  $t = az account get-access-token --resource $script:AdoResource --query accessToken -o tsv
+  @{ Authorization = "Bearer $t"; 'Content-Type' = 'application/json' }
+}
+
+function Get-AdoOrgName { ($env:ADO_ORG_URL).TrimEnd('/').Split('/')[-1] }

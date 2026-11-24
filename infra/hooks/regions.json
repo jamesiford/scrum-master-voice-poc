@@ -1,0 +1,17 @@
+{
+  "_comment": "Regions the preflight accepts. 'measured' means a deployment was exercised there (ADR 0015); 'documented' means Microsoft Learn lists it (learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions, 24 November 2026) but it has not been exercised here. Realtime model and Voice Live support are checked live against the subscription's model catalogue, not from this file.",
+  "hostedAgents": {
+    "measured": [ "westus3" ],
+    "documented": [ "canadacentral", "eastus2", "japaneast", "northcentralus", "southafricanorth", "southeastasia", "swedencentral", "westus", "westus2", "eastus", "centralus", "uksouth", "westeurope", "francecentral", "norwayeast", "australiaeast", "canadaeast", "switzerlandnorth", "spaincentral", "uaenorth", "koreacentral", "polandcentral", "southindia", "japaneast", "italynorth", "brazilsouth" ]
+  },
+  "requiredModels": [
+    { "deployment": "scrum-gpt-5.4-mini", "name": "gpt-5.4-mini", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-5.4-mini", "sku": "GlobalStandard", "capacityParam": "CHAT_CAPACITY", "capacityDefault": 100 },
+    { "deployment": "gpt-realtime-2.1", "name": "gpt-realtime-2.1", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-realtime-2.1", "sku": "{realtimeSku}", "capacityParam": "REALTIME_CAPACITY", "capacityDefault": 10 },
+    { "deployment": "gpt-live-1", "name": "gpt-live-1", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-live-1", "sku": "{realtimeSku}", "capacityParam": "REALTIME_CAPACITY", "capacityDefault": 10 },
+    { "deployment": "zava-decision", "name": "Microsoft-Decision-1.1", "format": "Microsoft", "usage": "AIServices.{sku}.Microsoft-Decision-1.1", "sku": "GlobalStandard", "capacityParam": "DECISION_CAPACITY", "capacityDefault": 100 }
+  ],
+  "resourceProviders": [
+    "Microsoft.CognitiveServices", "Microsoft.App", "Microsoft.ContainerRegistry", "Microsoft.DocumentDB", "Microsoft.Communication",
+    "Microsoft.BotService", "Microsoft.OperationalInsights", "Microsoft.Insights", "Microsoft.ManagedIdentity", "Microsoft.Authorization"
+  ]
+}

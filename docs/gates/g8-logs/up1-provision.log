@@ -1,0 +1,86 @@
+
+Provisioning Azure resources (azd provision)
+Provisioning Azure resources can take some time.
+
+Initialize bicep provider
+Reading subscription and location from environment...
+Subscription: ME-MngEnvMCAP763514-fordjames-1 (<subscription-id>)
+Location: East US 2
+
+Creating a deployment plan
+Comparing deployment state
+Validating deployment
+  (!) Warning: Role assignment permissions at the target scopes were not verified
+      The deployment-subscription check does not cover every target scope.
+      Principal ID: aeaec64b-d720-4996-9022-02fa0dcf043d
+      Environment subscription: <subscription-id>
+      Required permission: Microsoft.Authorization/roleAssignments/write
+
+      Suggestion: Verify that your account has 'Microsoft.Authorization/roleAssignments/write' at the scopes of the role assignments.
+
+  1 warning found.
+Creating/Updating resources
+
+  You can view detailed progress in the Azure Portal:
+  https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F<subscription-id>%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2Fzavagf-1795553500
+
+  (✓) Done: Resource group: rg-zava-scrum-zavagf (695ms)
+  (✓) Done: Log Analytics workspace: log-zava-scrum-pi7fumnppr2hk (20.952s)
+  (✓) Done: Application Insights: appi-zava-scrum-pi7fumnppr2hk (22.202s)
+  (✓) Done: Foundry: fdy-zava-scrum-pi7fumnppr2hk (37.736s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/zava-decision (8.175s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/gpt-live-1 (7.034s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/gpt-realtime-2.1 (6.144s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/scrum-gpt-5.4-mini (4.863s)
+  (✓) Done: Foundry project: fdy-zava-scrum-pi7fumnppr2hk/proj-zava-scrum (2.706s)
+  (✓) Done: Container Registry: acrzavascrumpi7fumnppr2hk (11.857s)
+  (✓) Done: Azure Cosmos DB: cosmos-zava-scrum-pi7fumnppr2hk (1m21.481s)
+  (✓) Done: Container Apps Environment: cae-zava-scrum-pi7fumnppr2hk (13m30.741s)
+  (✓) Done: Container App: ca-bridge-pi7fumnppr2hk (16.895s)
+  (✓) Done: Container App: ca-api-pi7fumnppr2hk (16.009s)
+
+ERROR: failed running post hooks: 'postprovision' hook failed with exit code: '1', Path: 'C:\Projects\GitHub\scrum-master-voice-poc\infra\hooks\ado-setup.ps1'. : exit code: 1, stdout: Seeding https://dev.azure.com/fordjames-demos / Zava-Scrum-Demo from C:\Projects\GitHub\scrum-master-voice-poc\infra\hooks\..\..\demo\seed-ado.json
+Signed in as admin@MngEnvMCAP763514.onmicrosoft.com
+Project 'Zava-Scrum-Demo' exists
+Area 'Zava-Scrum-Demo\Payments' exists
+Moved iteration 'Zava-Scrum-Demo\Demo Sprint' to 2026-11-17 - 2026-11-30
+Moved iteration 'Zava-Scrum-Demo\Sprint 43' to 2026-12-01 - 2026-12-14
+Team area and current iteration are configured
+Updated #1 Payment retry with exponential backoff
+Updated #2 Settlement file validation
+Updated #3 Customer payment plan summary page
+Updated #4 Idempotency key on payment requests
+Updated #5 Update PCI scan exceptions
+Updated #6 Payment plan reminder SMS
+Updated #7 Refactor ledger reconciliation job
+Updated #8 Dispute workflow: attach evidence
+Updated #9 Add card tokenisation to checkout
+Updated #10 Export statements as CSV
+Updated #11 Payment status API v2
+Updated #12 Sandbox gateway timeouts on retry
+Updated #13 Rounding error on partial refunds
+Updated #14 Write retry load test
+Updated #15 Add structured logging to gateway client
+Updated #16 Review settlement schema change
+Updated #17 Update runbook for batch failure
+Updated #18 Prepare demo data for QA
+Updated #19 Prepare reconciliation report for audit
+Updated #20 Email receipt after a successful payment
+Updated #21 Show the reason on declined payments
+Updated #22 Support Apple Pay at checkout
+Updated #23 Allow partial payments on payment plans
+Updated #24 Download statements as PDF
+Updated #25 Audit log for payment plan changes
+Updated #26 Self-service address update
+Updated #27 Bulk import of settlement files
+Updated #28 Dashboard for the collector queue
+Updated #29 Rebuild the reporting data model
+Done. Roster owners are applied through demo-owner-* tags; every assigned item is assigned to the signed-in user.
+PASS  Azure DevOps project and seed  Zava-Scrum-Demo in fordjames-demos
+, stderr: [31;1mInvoke-RestMethod: [0mC:\Projects\GitHub\scrum-master-voice-poc\infra\hooks\ado-setup.ps1:26[0m
+[31;1m[0m[36;1mLine |[0m
+[31;1m[0m[36;1m[36;1m  26 | [0m $list = [36;1mInvoke-RestMethod "https://vsaex.dev.azure.com/$org/_apis/ser[0m …[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1m {   "count": 1,   "value": {     "Message": "The requested resource does not support http method[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m     | [31;1m\u0027GET\u0027."   } }[0m
+

@@ -1,5 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 name: zava-scrum-agent
+infra:
+  provider: bicep
+  path: infra
+  module: main
 services:
   api:
     project: ./src/Zava.Scrum.Api
@@ -17,13 +21,32 @@ services:
       path: ../../Dockerfile.bridge
       context: ../..
       remoteBuild: true
+# Everything Bicep cannot express is scripted here and is idempotent (docs/DEPLOY.md, ADR 0015a).
 hooks:
+  preprovision:
+    - shell: pwsh
+      run: ./infra/hooks/preflight.ps1
+      interactive: false
+      continueOnError: false
+    - shell: pwsh
+      run: ./infra/hooks/entra-portal-app.ps1
+      interactive: false
+      continueOnError: false
+  postprovision:
+    - shell: pwsh
+      run: ./infra/hooks/entra-post.ps1
+      interactive: false
+      continueOnError: false
+    - shell: pwsh
+      run: ./infra/hooks/ado-setup.ps1
+      interactive: false
+      continueOnError: false
+    - shell: pwsh
+      run: ./infra/hooks/exchange.ps1 -Mode Apply
+      interactive: false
+      continueOnError: false
   postdeploy:
-    windows:
-      shell: pwsh
-      run: ./infra/hooks/postdeploy.ps1
+    - shell: pwsh
+      run: ./infra/hooks/teams-app.ps1
       interactive: false
-    posix:
-      shell: pwsh
-      run: ./infra/hooks/postdeploy.ps1
-      interactive: false
+      continueOnError: false

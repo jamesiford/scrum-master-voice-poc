@@ -1,0 +1,18 @@
+
+Deleting all resources and deployed code on Azure (azd down)
+Local application code is not deleted when running 'azd down'.
+
+Discovering resources to delete...
+Deleting your resources can take some time.
+
+Purging Log Analytics Workspace: log-zava-scrum-pi7fumnppr2hk
+  (✓) Done: Purging Log Analytics Workspace: log-zava-scrum-pi7fumnppr2hk
+Deleting resource group rg-zava-scrum-zavagf
+  (✓) Done: Deleted resource group rg-zava-scrum-zavagf
+
+Purging Cognitive Account: fdy-zava-scrum-pi7fumnppr2hk
+  (✓) Done: Purging Cognitive Account: fdy-zava-scrum-pi7fumnppr2hk
+
+SUCCESS: Your application was removed from Azure in 28 minutes 59 seconds.
+Update available: 1.38.0 -> 1.39.1 (https://github.com/Azure/azure-dev/releases/tag/azure-dev-cli_1.39.1)
+To update, run `winget upgrade Microsoft.Azd`
