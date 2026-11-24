@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Features.Standups;
@@ -20,7 +21,8 @@ internal sealed class SendFollowUpsHandler(
     IFollowUpRepository followUps,
     ITeamsMessenger messenger,
     IEmailSender emails,
-    IClock clock) : IRequestHandler<SendFollowUpsCommand, Result<int>>
+    IClock clock,
+    ILogger<SendFollowUpsHandler> logger) : IRequestHandler<SendFollowUpsCommand, Result<int>>
 {
     public async Task<Result<int>> Handle(SendFollowUpsCommand request, CancellationToken ct)
     {
@@ -52,6 +54,7 @@ internal sealed class SendFollowUpsHandler(
             await EmailAsync(followUp, roster, ct);
         }
 
+        logger.LogInformation("Sent {Count} follow-up card(s) for session {SessionId}", planned.Count, session.Id);
         return Result<int>.Success(planned.Count);
     }
 
