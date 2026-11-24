@@ -19,5 +19,8 @@ Not the cause: swallowed handler exceptions (those are logged), the scheduler, a
 ## Consequences
 - Handler order no longer matters for correctness.
 - `EndStandupFollowUpsTests.End_WhenLeavingTheCallCancelsTheCallersToken_StillSendsRecapAndFollowUps` goes through the real mediator with a bridge that cancels the caller's token on leave and a messenger that refuses cancelled tokens. It fails on the old handler and passes now.
-- Measured: not yet verified in a real Teams meeting. Finding 1.20 stays open until that run is pasted into `docs/AS-BUILT.md`.
+- Measured in a real Teams meeting, 24 November 2026, ending via `POST /api/sessions/{id}/control {"action":"end"}`.
+  - Before (build 84498ad, session d19ae6aa-baab-423a-b722-733bb3c7c285): ended 20:52:47.31, recap card 20:52:47.45, no follow-ups created. A manual `POST /api/sessions/{id}/followups` at 20:53:19 returned 4 (Daniel, Maya, Admin absent, one escalation), all Sent, so generation works and only the automatic send was lost.
+  - After (3c78835, three consecutive runs): follow-ups created 2.4 s, 2.5 s and 2.4 s after the end (sessions 5a855fff, 90ffe8dd, 80384aad), 4 each, all Sent, seen in the Admin's Zava Scrum Agent chat (recap, then "Missed standup" cards).
+  - Not covered: the agent ending the standup itself (same `EndAsync` path) and a run with spoken answers.
 - PROD: an outbox would make delivery survive a process stop between save and publish.
