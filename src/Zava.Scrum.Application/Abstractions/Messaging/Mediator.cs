@@ -76,9 +76,15 @@ internal sealed class Mediator(IServiceProvider services, ILogger<Mediator> logg
             {
                 try
                 {
+                    logger.LogDebug("Notification {Event} -> {Handler}", typeof(TEvent).Name, handler.GetType().Name);
                     await handler.Handle((TEvent)domainEvent, ct);
                 }
-                catch (Exception ex) when (ex is not OperationCanceledException)
+                catch (OperationCanceledException)
+                {
+                    logger.LogWarning("Notification handler {Handler} cancelled for {Event}; remaining handlers skipped", handler.GetType().Name, typeof(TEvent).Name);
+                    throw;
+                }
+                catch (Exception ex)
                 {
                     logger.LogError(ex, "Notification handler {Handler} failed for {Event}", handler.GetType().Name, typeof(TEvent).Name);
                 }

@@ -42,6 +42,7 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 | Standup is slow to answer | Measured p50 is 3 to 4 seconds (22 Nov), p95 about 5; say the number on screen. |
 | `ado.auth_failed: No Azure credential available` on a local run | `DefaultAzureCredential` stops at the managed-identity probe on some machines. Start the stack with `$env:AZURE_TOKEN_CREDENTIALS='AzureCliCredential'` and `az login`. |
 | Cards missing in Teams | Message the bot once; cards are always in **Follow-ups** > **Show card outbox**. |
+| Recap or follow-ups missing after the standup ends | Fixed and verified in a real Teams meeting (ADR 0016: the hang-up cancelled the end-of-standup handlers). If it recurs, look for `StandupEnded raised for session` and `Sent N follow-up card(s)` in the API log for the session id. |
 | Teams join fails | Run the Simulated Room instead; it is the fallback for any live demo. |
 | Approve shows a write error | Check the managed identity is in the Azure DevOps project Contributors group; use **Retry write**. |
 
