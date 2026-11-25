@@ -1,0 +1,8 @@
+{
+  "idle": {
+    "idleMinutes": 16,
+    "reconnectAfterIdleMs": 6796,
+    "turnAfterIdleFailed": null,
+    "turnTotalMs": 2372.5963
+  }
+}

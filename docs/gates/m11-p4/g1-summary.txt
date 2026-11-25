@@ -1,0 +1,8 @@
+## decision model: model
+direct  runs 3 n 35: total p50 3333 p95 4720; Voice Live first audio p50 1535 p95 2993
+hosted  runs 3 n 36: total p50 3363 p95 5679; Voice Live first audio p50 1499 p95 3146
+paired by round (hosted minus direct, ms): r1 p50 -176 p95 993; r2 p50 -370 p95 524; r3 p50 218 p95 331
+## decision model: rules
+direct  runs 3 n 36: total p50 3087 p95 4594; Voice Live first audio p50 1458 p95 2430
+hosted  runs 3 n 35: total p50 3152 p95 4251; Voice Live first audio p50 1485 p95 2147
+paired by round (hosted minus direct, ms): r1 p50 355 p95 -716; r2 p50 -52 p95 -1571; r3 p50 -131 p95 384

@@ -830,7 +830,7 @@ Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends on
 
 ## 15. Data model
 
-**As built:** one Cosmos database `zavascrum` with one container `collections` (partition key `/id`). Each named collection is one JSON document behind `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`; ADR 0006). `// PROD: one item per record, partitioned by team.`
+**As built:** one Cosmos database `zavascrum` with the container `collections` (partition key `/id`), where each named collection is one JSON document behind `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`; ADR 0006), and, since M11 prompt 4, the container `Sessions` (partition key `/teamId`) with **one item per standup session** behind `ISessionItemStore` (`FileSessionItemStore`: `sessions/<team>/<id>.json`; `CosmosSessionItemStore`). The single `sessions.json` document passed the 2 MB item limit after a few dozen standups; `SessionMigration` moves it into items at API start (idempotent). `// PROD: one item per record for the other collections too, partitioned by team.`
 
 | Collection document | Contents |
 |---|---|
@@ -838,7 +838,7 @@ Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends on
 | `memberships.json` | **M11.** Who is in which team and in what role (TeamLead, Member, Reader), keyed by Entra object id |
 | `members.json` | Roster |
 | `schedules.json` | Schedules |
-| `sessions.json` | Sessions of every ceremony (`Kind`, default `DailyScrum`), including their events (a blocker carries `UnblockerMemberId`) and latency samples |
+| `Sessions` container (formerly `sessions.json`) | Sessions of every ceremony (`Kind`, default `DailyScrum`), including their events (a blocker carries `UnblockerMemberId`) and latency samples |
 | `planning-packs.json` | Sprint planning packs (proposal, draft goal, decision) |
 | `approval-records.jsonl` / Cosmos container `ApprovalRecords` (partition `/correlationId`) | **M11.** The append-only approval trail (`ApprovalRecord`): decision and write records with the proposal hash, the approver's `ActorIdentity` and the Azure DevOps revisions. Never updated or deleted; the managed identity has create and read only |
 | `followups.json` | Follow-ups and approval state (`Ceremony`, `ForScrumMaster`, `ApprovedVia`; `kind` adds `Unblock`, `PlanningPack`, `RetroActions`, `ReviewPack`) |
@@ -1060,3 +1060,4 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 **Result as built:** criteria 1 to 4, 6 and 7 are met in the demo environment (storyboard scenes 2 to 11 work; scene 8 runs in a real Teams meeting). Criterion 5 is not yet met: median latency is about 3.7 seconds, measured and shown in the portal. Teams card delivery in the tenant depends on the Teams app being installed (see section 16 status); cards are otherwise available in the portal outbox.
 
 Everything else (scale, the production bridge, identity, governance, evaluation, networking, operations) is in the *Production Specification*.
+

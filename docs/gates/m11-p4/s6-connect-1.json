@@ -1,0 +1,28 @@
+{
+  "connect": {
+    "direct new session": {
+      "P50": 1867,
+      "P95": 2834,
+      "Mean": 2123.2,
+      "N": 4
+    },
+    "direct reconnect same session": {
+      "P50": 2082,
+      "P95": 2331,
+      "Mean": 2067.2,
+      "N": 4
+    },
+    "relay new session": {
+      "P50": 4339,
+      "P95": 5711,
+      "Mean": 4818,
+      "N": 4
+    },
+    "relay reconnect same session": {
+      "P50": 2797,
+      "P95": 3493,
+      "Mean": 2939.8,
+      "N": 4
+    }
+  }
+}
