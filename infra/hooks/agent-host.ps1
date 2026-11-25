@@ -1,8 +1,9 @@
 # Runs in `postdeploy`: builds the agent host image in the environment's registry, creates a new immutable version of the Foundry hosted
 # agent, gives the agent's own identity the roles it needs (least privilege) and warms it up (ADR 0021). Idempotent: a re-run adds a version
 # and leaves the role assignments as they are. The traffic split is not changed here; `canary.ps1` does that.
-#   pwsh infra/hooks/agent-host.ps1 [-Tag <image tag>]
-param([string]$Tag = (Get-Date -Format 'yyyyMMddHHmmss'))
+#   pwsh infra/hooks/agent-host.ps1 [-Tag <image tag>] [-Canary]
+# -Canary builds the same source into a second hosted agent (<name>-canary) that canary.ps1 can send a share of sessions to.
+param([string]$Tag = (Get-Date -Format 'yyyyMMddHHmmss'), [switch]$Canary)
 . "$PSScriptRoot/lib.ps1"
 Import-AzdEnvironment
 
@@ -11,7 +12,7 @@ $registry = ($env:AZURE_CONTAINER_REGISTRY_ENDPOINT -split '\.')[0]
 $account = $env:FOUNDRY_NAME
 $project = $env:FOUNDRY_PROJECT_NAME
 $endpoint = $env:FOUNDRY_PROJECT_ENDPOINT
-$agent = 'zava-voice-relay'
+$agent = if ($Canary) { 'zava-voice-relay-canary' } else { 'zava-voice-relay' }
 $image = "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/zava-scrum-agent/agenthost:$Tag"
 
 # The build context holds only what the image needs, so the upload is a few kilobytes instead of the whole repository.
@@ -34,8 +35,11 @@ $out = dotnet run --project (Join-Path $repo 'tools/AgentDeploy') -- --endpoint 
   --env "VOICELIVE_ENDPOINT=wss://$account.services.ai.azure.com/voice-live/realtime" --env "VOICELIVE_MODEL=$model" --env 'VOICELIVE_API_VERSION=2026-04-10'
 if ($LASTEXITCODE -ne 0) { throw 'Creating the hosted agent version failed.' }
 $version = ($out | Where-Object { $_ -like 'VERSION=*' } | Select-Object -Last 1).Split('=')[1]
-Set-AzdValue AGENT_HOST_NAME $agent
-Set-AzdValue AGENT_HOST_VERSION $version
+if ($Canary) { Set-AzdValue AGENT_HOST_CANARY_VERSION $version }
+else {
+  Set-AzdValue AGENT_HOST_NAME $agent
+  Set-AzdValue AGENT_HOST_VERSION $version
+}
 Write-Check PASS 'hosted agent version' "$agent version $version (immutable)"
 
 # The agent instance identity is created with the agent, so its roles cannot be in the Bicep that runs before it exists.
@@ -51,5 +55,5 @@ foreach ($role in @(@{ Name = 'Cognitive Services User'; Id = 'a97b65f3-24c7-438
   }
   else { Write-Check PASS "agent identity role $($role.Name)" 'already assigned' }
 }
-Set-AzdValue AGENT_HOST_PRINCIPAL_ID $principal
+if (-not $Canary) { Set-AzdValue AGENT_HOST_PRINCIPAL_ID $principal }
 Write-Check PASS 'agent host' "wss://$account.services.ai.azure.com/api/projects/$project/agents/$agent/endpoint/protocols/invocations_ws"

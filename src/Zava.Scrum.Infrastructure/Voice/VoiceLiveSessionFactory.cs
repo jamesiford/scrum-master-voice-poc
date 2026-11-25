@@ -39,11 +39,12 @@ public sealed class VoiceLiveSessionFactory(TokenCredential credential, IOptions
     private Uri BuildUri(VoiceLiveOptions options, VoiceSessionConfig config)
     {
         // Through the hosted relay the platform consumes api-version; the model is forwarded to the relay, which opens Voice Live itself.
-        if (!string.IsNullOrWhiteSpace(options.RelayEndpoint))
+        var hosted = VoiceRoute.EndpointFor(options, config.TeamId, config.SessionId);
+        if (hosted.Length > 0)
         {
             var hostedSession = string.IsNullOrWhiteSpace(options.RelaySessionId) ? (config.SessionId ?? Guid.NewGuid()).ToString() : options.RelaySessionId;
             var team = Uri.EscapeDataString(config.TeamId ?? string.Empty);
-            return new Uri($"{options.RelayEndpoint}?api-version=v1&agent_session_id={hostedSession}&team={team}&model={Uri.EscapeDataString(options.Model)}");
+            return new Uri($"{hosted}?api-version=v1&agent_session_id={hostedSession}&team={team}&model={Uri.EscapeDataString(options.Model)}");
         }
 
         var host = string.IsNullOrWhiteSpace(options.Endpoint)

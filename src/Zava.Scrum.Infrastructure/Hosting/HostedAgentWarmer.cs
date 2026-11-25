@@ -20,12 +20,14 @@ public sealed class HostedAgentWarmer(HttpClient http, TokenCredential credentia
     public async Task<HostWarmResult> WarmAsync(string teamId, Guid sessionId, CancellationToken ct)
     {
         var clock = Stopwatch.StartNew();
+        var endpoint = VoiceRoute.EndpointFor(options.Value, teamId, sessionId);
+        var route = endpoint == options.Value.CanaryEndpoint ? "hosted-canary" : "hosted";
         try
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(20));
             var token = await credential.GetTokenAsync(new TokenRequestContext([Scope]), timeout.Token);
-            using var request = new HttpRequestMessage(HttpMethod.Post, InvocationsUrl(options.Value.RelayEndpoint, teamId, sessionId))
+            using var request = new HttpRequestMessage(HttpMethod.Post, InvocationsUrl(endpoint, teamId, sessionId))
             {
                 Content = new StringContent("{\"warm\":true}", System.Text.Encoding.UTF8, "application/json"),
             };
@@ -34,13 +36,13 @@ public sealed class HostedAgentWarmer(HttpClient http, TokenCredential credentia
             var ms = (int)clock.ElapsedMilliseconds;
             logger.LogInformation("Warmed the agent host for team {TeamId} session {SessionId}: {Status} in {Ms} ms", teamId, sessionId, (int)response.StatusCode, ms);
             return response.IsSuccessStatusCode
-                ? new HostWarmResult("hosted", true, ms)
-                : new HostWarmResult("hosted", false, ms, $"The host answered {(int)response.StatusCode}.");
+                ? new HostWarmResult(route, true, ms)
+                : new HostWarmResult(route, false, ms, $"The host answered {(int)response.StatusCode}.");
         }
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException)
         {
             logger.LogWarning(ex, "Warming the agent host failed for team {TeamId}; the standup will pay the cold start", teamId);
-            return new HostWarmResult("hosted", false, (int)clock.ElapsedMilliseconds, "The host did not answer in time.");
+            return new HostWarmResult(route, false, (int)clock.ElapsedMilliseconds, "The host did not answer in time.");
         }
     }
 

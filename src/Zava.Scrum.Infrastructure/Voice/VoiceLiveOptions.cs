@@ -33,6 +33,19 @@ public sealed class VoiceLiveOptions
     /// </summary>
     public string RelayEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the <c>invocations_ws</c> endpoint of a second hosted agent that runs the candidate version (ADR 0021). The platform refuses a
+    /// percentage split on one agent endpoint (a multi-arm selector is restricted to the Agents Optimization service), so the canary is two agents and
+    /// the API chooses per session. Empty means no canary.
+    /// </summary>
+    public string CanaryEndpoint { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the share of sessions, 0 to 100, that use <see cref="CanaryEndpoint"/>. Zero is the one-step rollback.</summary>
+    public int CanaryPercent { get; set; }
+
+    /// <summary>Gets or sets the teams that may use the canary: a list, or a comma-separated string in the environment. Empty means every team.</summary>
+    public string[] CanaryTeams { get; set; } = [];
+
     /// <summary>Gets or sets the hosted agent session id the relay connection reattaches to. Empty starts a new session for every connection.</summary>
     public string RelaySessionId { get; set; } = string.Empty;
 
