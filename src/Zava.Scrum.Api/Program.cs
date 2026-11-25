@@ -22,6 +22,7 @@ builder.Services.AddTransient<VoiceGateway>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
+builder.Services.AddHostedService<Zava.Scrum.Api.Seeding.SessionMigrationService>();
 builder.Services.AddHostedService<Zava.Scrum.Api.Seeding.DemoTeamSeeder>();
 builder.Services.AddHostedService<Zava.Scrum.Api.Scheduling.ScheduleWorker>();
 

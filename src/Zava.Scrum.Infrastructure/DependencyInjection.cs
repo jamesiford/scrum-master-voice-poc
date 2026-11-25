@@ -56,7 +56,17 @@ public static class DependencyInjection
         AddIdentity(services, configuration);
 
         AddCollectionStore(services, configuration);
-        services.AddSingleton<ISessionRepository, JsonFileSessionRepository>();
+        // The voice route picks between two real adapters of the same port: the hosted agent (a relay endpoint is set) or Voice Live directly.
+        if (!string.IsNullOrWhiteSpace(configuration["VoiceLive:RelayEndpoint"]))
+        {
+            services.AddHttpClient<IAgentHostWarmer, Hosting.HostedAgentWarmer>();
+        }
+        else
+        {
+            services.AddSingleton<IAgentHostWarmer, Hosting.NoHostWarmer>();
+        }
+        services.AddSingleton<ISessionRepository, SessionRepository>();
+        services.AddSingleton<SessionMigration>();
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
         services.AddSingleton<ITeamMembershipRepository, JsonFileTeamMembershipRepository>();
@@ -140,6 +150,7 @@ public static class DependencyInjection
         {
             services.AddSingleton<ICollectionStore, FileCollectionStore>();
             services.AddSingleton<IApprovalRecordStore, FileApprovalRecordStore>();
+            services.AddSingleton<ISessionItemStore, FileSessionItemStore>();
             return;
         }
 
@@ -151,6 +162,11 @@ public static class DependencyInjection
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
             return new CosmosCollectionStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.Container));
+        });
+        services.AddSingleton<ISessionItemStore>(sp =>
+        {
+            var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
+            return new CosmosSessionItemStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.SessionsContainer));
         });
         services.AddSingleton<IApprovalRecordStore>(sp =>
         {

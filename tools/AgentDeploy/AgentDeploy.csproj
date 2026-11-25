@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The hosted-agent administration API is in the 3.0 beta of Azure.AI.Projects; the solution uses 2.x, so this tool keeps its own versions (ADR 0015 S3, ADR 0021). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);AAIP001;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.Projects" Version="3.0.0-beta.6" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+  </ItemGroup>
+
+</Project>

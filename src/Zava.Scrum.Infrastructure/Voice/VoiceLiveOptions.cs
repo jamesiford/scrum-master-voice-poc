@@ -27,6 +27,15 @@ public sealed class VoiceLiveOptions
     [Required]
     public string Language { get; set; } = "en-US";
 
+    /// <summary>
+    /// Gets or sets the <c>invocations_ws</c> endpoint of the hosted agent that relays to Voice Live (ADR 0021). Empty opens Voice Live directly.
+    /// Both are real adapters of the same protocol; the relay forwards frames unchanged.
+    /// </summary>
+    public string RelayEndpoint { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the hosted agent session id the relay connection reattaches to. Empty starts a new session for every connection.</summary>
+    public string RelaySessionId { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the Foundry voice agent name. When set, the Facilitator runs in <c>FoundryAgent</c> mode instead of model-direct (SPEC M8).</summary>
     public string AgentName { get; set; } = string.Empty;
 
