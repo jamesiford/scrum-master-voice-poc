@@ -33,7 +33,8 @@ internal sealed class GetModelComparisonHandler(IModelCatalog catalog, ITeamRepo
                     ModelCostEstimator.PerStandup(m, team.StandupMinutes, AgentTalkShare),
                     current && samples.Count > 0 ? LatencyStats.Percentile(samples, 50) : null,
                     current && samples.Count > 0 ? LatencyStats.Percentile(samples, 95) : null,
-                    m.Notes);
+                    m.Notes,
+                    m.PricingTier);
             })
             .ToList();
         return Result<IReadOnlyList<ModelComparisonRow>>.Success(rows);
