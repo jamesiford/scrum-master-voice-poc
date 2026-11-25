@@ -15,6 +15,9 @@ public sealed class DemoOptions
     /// <summary>Gets or sets the demo backlog definition, also the source of the demo roster.</summary>
     public string SeedFile { get; set; } = "demo/seed-ado.json";
 
+    /// <summary>Gets or sets the seed file for a team other than the default, by team id (ADR 0018). A team with no entry uses <see cref="SeedFile"/>.</summary>
+    public Dictionary<string, string> TeamSeedFiles { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the demo members' email addresses by member key (for example <c>daniel</c>), used as the Azure DevOps unique name when the seed file has none.
     /// Kept in configuration (user secrets or the azd environment) so no tenant identity is committed. They are who the sprint calendar invites.

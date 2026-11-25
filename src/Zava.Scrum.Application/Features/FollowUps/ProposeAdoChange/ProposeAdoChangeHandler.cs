@@ -24,7 +24,7 @@ internal sealed class ProposeAdoChangeHandler(ISessionRepository sessions, IFoll
 
         var change = new ProposedChange(request.WorkItemId, request.Op, request.Value, request.Rationale);
         var date = DateOnly.FromDateTime((session.StartedAt ?? session.CreatedAt).UtcDateTime);
-        var followUp = FollowUp.Create(Guid.NewGuid(), session.TeamId, session.Id, request.MemberId, FollowUpKind.Followup, $"Proposed change to work item {request.WorkItemId}: {request.Value}", [change], date, clock.UtcNow);
+        var followUp = FollowUp.Create(Guid.NewGuid(), session.TeamId, session.Id, request.MemberId, FollowUpKind.Followup, $"Proposed change to work item {request.WorkItemId}: {request.Value}", [change], date, clock.UtcNow, correlationId: session.CorrelationId);
         await followUps.SaveAsync(followUp, ct);
         return Result<Guid>.Success(followUp.Id);
     }

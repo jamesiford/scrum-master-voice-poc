@@ -30,6 +30,12 @@ public sealed record Error(string Code, string Message, ErrorType Type)
     /// <returns>The error.</returns>
     public static Error NotApproved(string code, string message) => new(code, message, ErrorType.NotApproved);
 
+    /// <summary>Creates a <see cref="ErrorType.Forbidden"/> error.</summary>
+    /// <param name="code">Error code.</param>
+    /// <param name="message">Error message.</param>
+    /// <returns>The error.</returns>
+    public static Error Forbidden(string code, string message) => new(code, message, ErrorType.Forbidden);
+
     /// <summary>Creates a <see cref="ErrorType.ExternalRejected"/> error.</summary>
     /// <param name="code">Error code.</param>
     /// <param name="message">Error message.</param>

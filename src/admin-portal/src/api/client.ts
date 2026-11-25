@@ -1,5 +1,8 @@
+import { getAccessToken, type PortalConfig } from '../auth/msal';
+
 /**
  * The one typed API client (SPEC 7.4). All HTTP goes through here so components never call fetch.
+ * Every call carries the signed-in person's Entra bearer token; the API validates it and takes the caller's identity from it.
  */
 
 /** Health read model returned by `GET /api/health`. */
@@ -125,9 +128,9 @@ export interface Session {
   standupMinutes: number;
   /** The ceremony: `DailyScrum` or `Retrospective`. */
   kind: string;
+  /** The W3C trace id carried through the join, each turn, the proposal, the approval and the write. */
+  correlationId: string | null;
 }
-
-/** One thing that happened in a standup. */
 export interface SessionEvent {
   id: string;
   at: string;
@@ -162,6 +165,32 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Reads the public sign-in values (client id and tenant) the API serves without authentication. Falls back to the build-time
+ * `VITE_AAD_*` values so `npm run dev` works against an API that is not serving them.
+ * @returns The client id and tenant; both `null` when sign-in is not configured.
+ */
+export async function getPortalConfig(): Promise<PortalConfig> {
+  try {
+    const response = await fetch('/portal-config.json');
+    if (response.ok) return (await response.json()) as PortalConfig;
+  } catch {
+    // Fall through to the build-time values.
+  }
+  return {
+    clientId: import.meta.env['VITE_AAD_CLIENT_ID'] || null,
+    tenantId: import.meta.env['VITE_AAD_TENANT_ID'] || null,
+  };
+}
+
+async function headers(json: boolean): Promise<Record<string, string>> {
+  const token = await getAccessToken();
+  return {
+    ...(json ? { 'content-type': 'application/json' } : {}),
+    ...(token ? { authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 async function request<T>(
   method: string,
   path: string,
@@ -171,7 +200,7 @@ async function request<T>(
   const response = await fetch(path, {
     method,
     signal,
-    headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+    headers: await headers(body !== undefined),
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {
@@ -312,8 +341,11 @@ export interface FollowUp {
   status: FollowUpStatus;
   standupDate: string;
   createdAt: string;
+  /** Display text derived from the verified identity; `unverified (legacy)` for decisions saved before identities were recorded. */
   approvedBy: string | null;
   rejectedBy: string | null;
+  /** The session's W3C trace id; the Azure DevOps comment ends with its `zsa-` short form. */
+  correlationId: string;
   decidedAt: string | null;
   appliedAt: string | null;
   applyError: string | null;
@@ -343,21 +375,19 @@ export function listFollowUps(teamId: string, signal?: AbortSignal): Promise<Fol
 }
 
 /**
- * Approves a follow-up; the API then writes its changes to Azure DevOps.
+ * Approves a follow-up as the signed-in person; the API then writes its changes to Azure DevOps.
  * @param id - Follow-up id.
- * @param approver - Name recorded as the approver.
  */
-export async function approveFollowUp(id: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/approve`, { approver });
+export async function approveFollowUp(id: string): Promise<void> {
+  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/approve`, {});
 }
 
 /**
- * Rejects a follow-up; nothing is written to Azure DevOps.
+ * Rejects a follow-up as the signed-in person; nothing is written to Azure DevOps.
  * @param id - Follow-up id.
- * @param approver - Name recorded as the person who rejected.
  */
-export async function rejectFollowUp(id: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/reject`, { approver });
+export async function rejectFollowUp(id: string): Promise<void> {
+  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/reject`, {});
 }
 
 /**
@@ -477,6 +507,51 @@ export interface LiveState {
   p95: number;
   running: boolean;
   ended?: boolean;
+}
+
+/**
+ * Streams a standup's live state (server-sent events) with the bearer token. `EventSource` cannot set headers, so this reads
+ * the response body as a stream and parses the `data:` lines. It resolves when the stream ends or is aborted.
+ * @param sessionId - The standup.
+ * @param onState - Called with each state.
+ * @param onConnected - Called with whether the stream is open.
+ * @param signal - Aborts the stream.
+ */
+export async function streamLiveState(
+  sessionId: string,
+  onState: (state: LiveState) => void,
+  onConnected: (connected: boolean) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  try {
+    const response = await fetch(`/api/sessions/${encodeURIComponent(sessionId)}/live`, {
+      headers: await headers(false),
+      signal,
+    });
+    if (!response.ok || !response.body) return;
+    onConnected(true);
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += value;
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop() ?? '';
+      for (const part of parts) {
+        const data = part
+          .split('\n')
+          .filter((line) => line.startsWith('data:'))
+          .map((line) => line.slice(5).trimStart())
+          .join('\n');
+        if (data) onState(JSON.parse(data) as LiveState);
+      }
+    }
+  } catch {
+    // Aborted or dropped: the page shows "disconnected".
+  } finally {
+    onConnected(false);
+  }
 }
 
 /**
@@ -857,30 +932,21 @@ export async function getPlanningPack(
 /**
  * Approves a sprint plan. The kept items become an approved Scrum Master follow-up that writes to Azure DevOps (F7).
  * @param packId - The pack.
- * @param approver - The approver's name.
  * @param selectedItemIds - The proposed items to keep.
  * @returns The follow-up id.
  */
-export function approvePlan(
-  packId: string,
-  approver: string,
-  selectedItemIds: number[],
-): Promise<string> {
+export function approvePlan(packId: string, selectedItemIds: number[]): Promise<string> {
   return request<string>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/approve`, {
-    approver,
     selectedItemIds,
   });
 }
 
 /**
- * Rejects a sprint plan. Nothing is written.
+ * Rejects a sprint plan as the signed-in person. Nothing is written.
  * @param packId - The pack.
- * @param approver - The person rejecting.
  */
-export async function rejectPlan(packId: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/reject`, {
-    approver,
-  });
+export async function rejectPlan(packId: string): Promise<void> {
+  await request<unknown>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/reject`, {});
 }
 
 /**
@@ -987,17 +1053,12 @@ export function proposeSprintCalendar(teamId: string): Promise<string> {
 /**
  * Approves or rejects a proposal. Approving creates the Teams meetings in the agent's calendar.
  * @param id - The proposal id.
- * @param approver - Who decides (recorded).
  * @param approve - True to approve, false to reject.
  */
-export async function decideSprintCalendar(
-  id: string,
-  approver: string,
-  approve: boolean,
-): Promise<void> {
+export async function decideSprintCalendar(id: string, approve: boolean): Promise<void> {
   await request<unknown>(
     'POST',
     `/api/calendar/proposals/${encodeURIComponent(id)}/${approve ? 'approve' : 'reject'}`,
-    { approver },
+    {},
   );
 }

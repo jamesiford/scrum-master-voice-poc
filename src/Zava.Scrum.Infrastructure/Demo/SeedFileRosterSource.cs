@@ -20,16 +20,17 @@ public sealed class SeedFileRosterSource(IOptions<DemoOptions> options) : IRoste
     public async Task<IReadOnlyList<Member>> GetRosterAsync(Team team, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(team);
-        var path = RepositoryFileLocator.Resolve(options.Value.SeedFile)
-            ?? throw new FileNotFoundException($"Seed file '{options.Value.SeedFile}' was not found.");
+        var file = options.Value.TeamSeedFiles.TryGetValue(team.Id, out var own) ? own : options.Value.SeedFile;
+        var path = RepositoryFileLocator.Resolve(file)
+            ?? throw new FileNotFoundException($"Seed file '{file}' was not found.");
         await using var stream = File.OpenRead(path);
         var seed = await JsonSerializer.DeserializeAsync<SeedFile>(stream, Json, ct) ?? new SeedFile([]);
         return seed.Members
-            .Select((m, i) => new Member($"m-{m.Key}", team.Id, m.Key, m.DisplayName, m.AdoUniqueName ?? options.Value.MemberEmails.GetValueOrDefault(m.Key), m.Pronunciation ?? m.DisplayName, m.Order ?? i + 1, true))
+            .Select((m, i) => new Member($"m-{m.Key}", team.Id, m.Key, m.DisplayName, m.AdoUniqueName ?? options.Value.MemberEmails.GetValueOrDefault(m.Key), m.Pronunciation ?? m.DisplayName, m.Order ?? i + 1, true, EntraObjectId: Guid.TryParse(m.EntraObjectId, out var oid) ? oid : null))
             .ToList();
     }
 
     private sealed record SeedFile(List<SeedMember> Members);
 
-    private sealed record SeedMember(string Key, string DisplayName, string? Pronunciation, int? Order, string? AdoUniqueName);
+    private sealed record SeedMember(string Key, string DisplayName, string? Pronunciation, int? Order, string? AdoUniqueName, string? EntraObjectId = null);
 }

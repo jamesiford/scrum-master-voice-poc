@@ -1,0 +1,121 @@
+{
+  "RunId": "7591add5",
+  "Label": "decision",
+  "Build": "p3-wip",
+  "Api": "https://ca-api-pi7fumnppr2hk.kindglacier-e755b75a.eastus2.azurecontainerapps.io",
+  "StartedAt": "2026-11-25T00:22:22.9747032+00:00",
+  "SessionId": "b3c99c7a-830a-417a-93df-c124c974942a",
+  "ReportedP50Ms": 3124,
+  "Turns": [
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2955,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 154,
+      "OrchestrationMs": 1418,
+      "VoiceFirstAudioMs": 1421,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3124,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 29,
+      "DecisionModelMs": 160,
+      "OrchestrationMs": 1639,
+      "VoiceFirstAudioMs": 1360,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2669,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 156,
+      "OrchestrationMs": 1731,
+      "VoiceFirstAudioMs": 820,
+      "Source": "Model"
+    },
+    {
+      "Reason": "CallOn",
+      "TotalMs": 5922,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 153,
+      "OrchestrationMs": 865,
+      "VoiceFirstAudioMs": 4944,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Park",
+      "TotalMs": 2048,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 190,
+      "OrchestrationMs": 507,
+      "VoiceFirstAudioMs": 1393,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2728,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 139,
+      "OrchestrationMs": 1705,
+      "VoiceFirstAudioMs": 928,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3557,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 143,
+      "OrchestrationMs": 1628,
+      "VoiceFirstAudioMs": 1828,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3329,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 154,
+      "OrchestrationMs": 1607,
+      "VoiceFirstAudioMs": 1621,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 4083,
+      "SpeechEndToTranscriptMs": 93,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 125,
+      "OrchestrationMs": 1721,
+      "VoiceFirstAudioMs": 2187,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2523,
+      "SpeechEndToTranscriptMs": 105,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 148,
+      "OrchestrationMs": 1452,
+      "VoiceFirstAudioMs": 868,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Recap",
+      "TotalMs": 4755,
+      "SpeechEndToTranscriptMs": 169,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 140,
+      "OrchestrationMs": 1869,
+      "VoiceFirstAudioMs": 2622,
+      "Source": "Rules"
+    }
+  ]
+}

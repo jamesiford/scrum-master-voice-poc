@@ -4,11 +4,11 @@ using Zava.Scrum.Domain.Common;
 namespace Zava.Scrum.Application.Features.Prompts.GetPrompt;
 
 /// <summary>Reads a prompt.</summary>
-internal sealed class GetPromptHandler(IPromptStore prompts) : IRequestHandler<GetPromptQuery, Result<string>>
+internal sealed class GetPromptHandler(IPromptStore prompts) : IRequestHandler<GetPromptQuery, Result<PromptResolution>>
 {
-    public async Task<Result<string>> Handle(GetPromptQuery request, CancellationToken ct)
+    public async Task<Result<PromptResolution>> Handle(GetPromptQuery request, CancellationToken ct)
     {
-        var text = await prompts.GetAsync(request.Name, ct);
-        return text is null ? Result<string>.Failure(PromptErrors.NotFound(request.Name)) : Result<string>.Success(text);
+        var text = await prompts.ResolveAsync(request.TeamId, request.Name, ct);
+        return text is null ? Result<PromptResolution>.Failure(PromptErrors.NotFound(request.Name)) : Result<PromptResolution>.Success(text);
     }
 }

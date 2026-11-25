@@ -24,6 +24,9 @@ public static class FollowUpErrors
     /// <returns>The error.</returns>
     public static Error UnknownWorkItem(int id) => Error.Invalid("followup.unknown_work_item", $"Work item {id} is not in the current sprint.");
 
+    /// <summary>Gets the error for a write attempted when the approval record is missing or does not match the proposal (ADR 0017).</summary>
+    public static Error ApprovalRecordMissing { get; } = Error.NotApproved("followup.approval_record_missing", "Nothing is written to Azure DevOps without an approval record that matches the proposal.");
+
     /// <summary>Gets the error for an unknown follow-up.</summary>
     /// <param name="id">The id.</param>
     /// <returns>The error.</returns>

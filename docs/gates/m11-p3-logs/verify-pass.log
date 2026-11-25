@@ -1,0 +1,51 @@
+PASS  API health route  200
+PASS  Bridge health route  200
+PASS  API accepts an Entra bearer token  team team-payments
+PASS  Bot endpoint rejects unauthenticated calls  401
+Run 1 of 1: label verify, build d0170ad, api https://ca-api-pi7fumnppr2hk.kindglacier-e755b75a.eastus2.azurecontainerapps.io
+  12 timed turns, API p50 3260 ms, saved C:\Users\fordjames\AppData\Local\Temp\zava-verify-5635c90cef9e4ea7a182c16460965e2d\verify-20261125-004123-adafa6a7.json
+
+# Gate runner summary
+
+### verify (build d0170ad, 1 runs)
+
+| Hop | p50 ms | p95 ms | n |
+| --- | ---: | ---: | ---: |
+| Total (speech end to first audio) | 3260 | 4334 | 12 |
+| Speech end to transcript | 0 | 182 | 12 |
+| Analyser (rules and grounding) | 27 | 45 | 12 |
+| Decision model call | 155 | 289 | 12 |
+| Orchestration (floor, silence, reconcile) | 1698 | 2940 | 12 |
+| Voice Live first audio | 1310 | 2365 | 12 |
+
+Questions only (Clarify and Unblocker turns): p50 3309 ms, p95 4334 ms, n 9.
+Read by the decision model: 10 of 12 turns; the rest used the rules.
+API-reported session p50 per run: 3260 ms.
+
+Percentiles are nearest-rank over every timed turn in every run of the section; no values are interpolated.
+
+
+# Teams rehearsal checklist
+
+A person ticks this after the automated gate run (`tools/GateRunner`). It rehearses the live Teams path that the Simulated Room cannot cover. The brief called this the 10-step rehearsal from DEMO.md; DEMO.md's "Real Teams meeting" section has six numbered steps and a list of things worth showing, so the ten steps below are those, in order, with the live asks made explicit. Record the date, build id and who ran it at the bottom.
+
+- [ ] 1. Create a Teams meeting in the demo tenant and copy the join link.
+- [ ] 2. Live console: pick a prepared session, paste the link, press **Start in Teams**. Admit "Zava Scrum Agent" from the lobby. Status reaches Joining, Lobby, Connected, Live.
+- [ ] 3. Roster members who join are matched by name (a Teams user called "System Administrator" matches the roster member "Admin"). The standup begins about 8 seconds after the first match.
+- [ ] 4. The agent shares the standup board as its screen. Every participant sees it without doing anything. Share status shows as Bridge events.
+- [ ] 5. Mid-update, ask: "Scrum Agent, is that one overdue? What was the due date?" The agent answers from the sprint data and returns to the speaker.
+- [ ] 6. On your turn ask: "What am I supposed to report on?" The agent lists your items in priority order.
+- [ ] 7. A colleague says "Daniel stepped out, he'll be back in a few minutes". Daniel is skipped and circled back to at the end.
+- [ ] 8. Stay silent when called. The agent records present-but-no-response, not absent.
+- [ ] 9. Talk over the agent while it is speaking. It stops within about half a second, does not finish the sentence, and acknowledges you on its next turn. Then correct yourself ("scratch that, I meant ...") and confirm the removed blocker is missing from the follow-up.
+- [ ] 10. When the standup ends, approve one follow-up and reject another in the portal. Azure DevOps shows the "Approved by ..." comment on the approved item and nothing on the rejected one. Someone who said "I'll give Admin's update" still needed Admin's approval.
+
+| Date | Build id | Run by | All ten ticked |
+| --- | --- | --- | --- |
+|  |  |  |  |
+
+PASS  Simulated Room standup with the cast (gate harness subset)  session 1a808a6b-a006-4fe4-8d90-1a5626077e39
+PASS  Follow-up approved in the portal API and written to Azure DevOps  comment verify-7f8d4eb9 on #1 after approval by admin@MngEnvMCAP763514.onmicrosoft.com
+PASS  Audit chain complete (session, proposal, approval record, Azure DevOps write)  zsa-31116ae1b878: approved by object id aeaec64b-d720-4996-9022-02fa0dcf043d, revision 31 on #1
+
+All checks passed.

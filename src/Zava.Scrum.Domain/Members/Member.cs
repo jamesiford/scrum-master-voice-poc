@@ -9,6 +9,7 @@ namespace Zava.Scrum.Domain.Members;
 /// <param name="Pronunciation">Phonetic hint for speech.</param>
 /// <param name="SpeakingOrder">Position in the standup.</param>
 /// <param name="Active">False when absent today.</param>
+/// <param name="EntraObjectId">The member's Entra object id, resolved once from the mapped user principal name and verified at session start; <see langword="null"/> when the member has no Entra identity (a demo cast member). Never matched by display name.</param>
 /// <param name="AvailabilityPct">Share of a normal sprint the member is available for, 0 to 100; sprint planning multiplies their capacity by it (default 100).</param>
 public sealed record Member(
     string Id,
@@ -19,4 +20,5 @@ public sealed record Member(
     string Pronunciation,
     int SpeakingOrder,
     bool Active,
-    int AvailabilityPct = 100);
+    int AvailabilityPct = 100,
+    Guid? EntraObjectId = null);

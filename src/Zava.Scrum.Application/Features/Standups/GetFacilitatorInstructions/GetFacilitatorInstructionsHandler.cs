@@ -17,7 +17,7 @@ internal sealed class GetFacilitatorInstructionsHandler(ISessionRepository sessi
         }
 
         var name = session.Kind == Domain.Standups.CeremonyKind.Retrospective ? "facilitator-retro" : "facilitator";
-        var template = await prompts.GetAsync(name, ct);
+        var template = (await prompts.ResolveAsync(session.TeamId, name, ct))?.Text;
         if (template is null)
         {
             return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));

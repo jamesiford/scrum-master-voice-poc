@@ -15,8 +15,16 @@ param tags object
 @description('Microsoft Entra tenant id.')
 param tenantId string
 
-@description('Azure DevOps organisation URL.')
 param adoOrgUrl string
+
+@description('UPN of the administrator. DEMO: the roster member "Admin" is this person, so the API can resolve their Entra object id (ADR 0017).')
+param adminUpn string = ''
+
+@description('Client id of the portal Entra app registration. The API validates portal bearer tokens against it.')
+param portalClientId string = ''
+
+@description('Entra object id of the administrator; Teams decisions from it are accepted as an administrator.')
+param adminObjectId string = ''
 
 @description('Log Analytics workspace the environment writes to.')
 param logAnalyticsName string
@@ -107,6 +115,10 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED', value: 'true' }
             { name: 'Azure__TenantId', value: tenantId }
+            { name: 'Identity__TenantId', value: tenantId }
+            { name: 'Identity__AdminObjectIds', value: adminObjectId }
+            { name: 'Demo__MemberEmails__admin', value: adminUpn }
+            { name: 'Portal__ClientId', value: portalClientId }
             { name: 'Bot__AppId', value: identityClientId }
             { name: 'Bot__TenantId', value: tenantId }
             { name: 'Bot__TunnelHostSuffix', value: '' }

@@ -16,13 +16,16 @@ namespace Zava.Scrum.Infrastructure.Ado;
 /// follow-up can produce, and stamps every change with who approved it.
 /// </summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/rest/api/azure/devops/wit/work-items/update and /create (json-patch, api-version 7.1).</remarks>
-public sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoWorkItemWriter> logger) : IWorkItemWriter
+public sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoWorkItemWriter> logger)
 {
     private const string ApiVersion = "api-version=7.1";
     private const string OwnerTagPrefix = "demo-owner-";
 
-    /// <inheritdoc />
-    public async Task<Result> ApplyAsync(ApprovedChange change, CancellationToken ct)
+    /// <summary>Applies one approved change to this writer's organisation and records who approved it.</summary>
+    /// <param name="change">The change.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The revision the write produced, or an external failure.</returns>
+    public async Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(change);
         try
@@ -30,27 +33,48 @@ public sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> dem
             var request = await BuildRequestAsync(change, ct);
             if (request is null)
             {
-                return Result.Success();
+                return Result<WorkItemRevision>.Success(new WorkItemRevision(change.WorkItemId, 0));
             }
 
             using (request)
             {
                 using var response = await http.SendAsync(request, ct);
+                var body = await response.Content.ReadAsStringAsync(ct);
                 if (response.IsSuccessStatusCode)
                 {
-                    return Result.Success();
+                    return Result<WorkItemRevision>.Success(ReadRevision(body, change.WorkItemId));
                 }
 
-                var body = await response.Content.ReadAsStringAsync(ct);
+
                 logger.LogWarning("Azure DevOps rejected the {Op} change of {WorkItemId}: {Status} {Body}", change.Op, change.WorkItemId, (int)response.StatusCode, body);
-                return Result.Failure(Error.ExternalRejected("ado.write_rejected", $"Azure DevOps rejected the {change.Op} change ({(int)response.StatusCode})."));
+                return Result<WorkItemRevision>.Failure(Error.ExternalRejected("ado.write_rejected", $"Azure DevOps rejected the {change.Op} change ({(int)response.StatusCode})."));
             }
         }
         catch (Exception ex) when (ex is HttpRequestException or Azure.Identity.CredentialUnavailableException or Azure.Identity.AuthenticationFailedException)
         {
             logger.LogWarning(ex, "Azure DevOps write failed");
-            return Result.Failure(Error.ExternalRejected("ado.unreachable", "Azure DevOps could not be reached or the credential was refused."));
+            return Result<WorkItemRevision>.Failure(Error.ExternalRejected("ado.unreachable", "Azure DevOps could not be reached or the credential was refused."));
         }
+    }
+
+    // Azure DevOps answers a work item write with the item: "id" and the new "rev". The revision goes into the approval trail.
+    private static WorkItemRevision ReadRevision(string body, int requestedId)
+    {
+        // The write already happened, so an unreadable body must not turn into a failure (a retry would write twice); it yields revision 0, which the audit chain reports as a missing revision.
+        JsonDocument doc;
+        try
+        {
+            doc = JsonDocument.Parse(body);
+        }
+        catch (JsonException)
+        {
+            return new WorkItemRevision(requestedId, 0);
+        }
+
+        using var parsed = doc;
+        var id = parsed.RootElement.TryGetProperty("id", out var i) && i.TryGetInt32(out var parsedId) ? parsedId : requestedId;
+        var rev = parsed.RootElement.TryGetProperty("rev", out var r) && r.TryGetInt32(out var parsedRev) ? parsedRev : 0;
+        return new WorkItemRevision(id, rev);
     }
 
     private async Task<HttpRequestMessage?> BuildRequestAsync(ApprovedChange change, CancellationToken ct)

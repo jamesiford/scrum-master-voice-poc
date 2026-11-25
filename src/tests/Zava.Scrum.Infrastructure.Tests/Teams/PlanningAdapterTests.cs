@@ -95,7 +95,7 @@ public sealed class PlanningAdapterTests : IDisposable
     {
         using var http = new HttpClient(spy) { BaseAddress = new Uri("https://dev.azure.com/org/") };
         var f = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), null, FollowUpKind.PlanningPack, "m", [change], new DateOnly(2026, 1, 8), Now, CeremonyKind.SprintPlanning, forScrumMaster: true);
-        f.Approve("Dana", Now, ApprovalChannel.Teams);
+        f.Approve(Actors.Dana(Zava.Scrum.Domain.Identity.ActorSource.Teams), Now, ApprovalChannel.Teams);
 
         var result = await new AdoWorkItemWriter(http, Options.Create(new DemoOptions { HonorOwnerTags = honorOwnerTags }), NullLogger<AdoWorkItemWriter>.Instance)
             .ApplyAsync(f.GetApprovedChanges().Value[0], CancellationToken.None);

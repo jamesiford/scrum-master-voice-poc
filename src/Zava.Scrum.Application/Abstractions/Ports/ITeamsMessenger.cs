@@ -64,6 +64,7 @@ public sealed record CardFact(string Label, string Value);
 /// <param name="MemberId">Recipient member, or <see langword="null"/> for the channel or Scrum Master.</param>
 /// <param name="Route">Where it goes.</param>
 /// <param name="RecapChannelKey">The team's recap channel conversation key, used by <see cref="CardRoute.Recap"/>.</param>
+/// <param name="CorrelationId">The session's W3C trace id, so an outbox entry can be traced to its audit chain.</param>
 public sealed record TeamsMessage(
     CardKind Kind,
     string TeamId,
@@ -75,7 +76,8 @@ public sealed record TeamsMessage(
     Guid? FollowUpId = null,
     string? MemberId = null,
     CardRoute Route = CardRoute.AllConversations,
-    string? RecapChannelKey = null);
+    string? RecapChannelKey = null,
+    string? CorrelationId = null);
 
 /// <summary>Sends cards to Teams.</summary>
 public interface ITeamsMessenger

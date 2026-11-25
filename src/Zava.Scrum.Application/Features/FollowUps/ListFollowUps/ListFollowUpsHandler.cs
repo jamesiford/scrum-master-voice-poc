@@ -11,6 +11,6 @@ internal sealed class ListFollowUpsHandler(IFollowUpRepository followUps) : IReq
     public async Task<Result<IReadOnlyList<FollowUpSnapshot>>> Handle(ListFollowUpsQuery request, CancellationToken ct)
     {
         var list = await followUps.ListAsync(request.TeamId, request.Status, ct);
-        return Result<IReadOnlyList<FollowUpSnapshot>>.Success(list.Select(f => f.ToSnapshot()).ToList());
+        return Result<IReadOnlyList<FollowUpSnapshot>>.Success(list.Select(f => f.ToReadModel()).ToList());
     }
 }

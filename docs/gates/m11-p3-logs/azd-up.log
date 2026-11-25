@@ -1,0 +1,66 @@
+Initialize bicep provider
+
+Provisioning and deploying (azd up)
+Packaging overlaps with provisioning for faster execution.
+
+  bridge: Packaging
+  api: Packaging
+Initialize bicep provider
+Creating a deployment plan
+Comparing deployment state
+Validating deployment
+  (!) Warning: Role assignment permissions at the target scopes were not verified
+      The deployment-subscription check does not cover every target scope.
+      Principal ID: aeaec64b-d720-4996-9022-02fa0dcf043d
+      Environment subscription: <subscription-id>
+      Required permission: Microsoft.Authorization/roleAssignments/write
+
+      Suggestion: Verify that your account has 'Microsoft.Authorization/roleAssignments/write' at the scopes of the role assignments.
+
+  1 warning found.
+Creating/Updating resources
+
+  You can view detailed progress in the Azure Portal:
+  https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F<subscription-id>%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2Fzavagf-1795563001
+
+  (✓) Done: Resource group: rg-zava-scrum-zavagf (477ms)
+  (✓) Done: Application Insights: appi-zava-scrum-pi7fumnppr2hk (22.977s)
+  (✓) Done: Log Analytics workspace: log-zava-scrum-pi7fumnppr2hk (21.195s)
+  (✓) Done: Foundry: fdy-zava-scrum-pi7fumnppr2hk (21.526s)
+  (✓) Done: Foundry project: fdy-zava-scrum-pi7fumnppr2hk/proj-zava-scrum (2.049s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/scrum-gpt-5.4-mini (4.205s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/gpt-live-1 (6.112s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/gpt-realtime-2.1 (5.158s)
+  (✓) Done: Azure AI Services Model Deployment: fdy-zava-scrum-pi7fumnppr2hk/zava-decision (7.127s)
+  (✓) Done: Container Registry: acrzavascrumpi7fumnppr2hk (8.168s)
+  (✓) Done: Azure Cosmos DB: cosmos-zava-scrum-pi7fumnppr2hk (1m8.412s)
+  (✓) Done: Container Apps Environment: cae-zava-scrum-pi7fumnppr2hk (16m24.975s)
+  bridge: Publishing
+  api: Publishing
+  bridge: Publishing (Packing remote build context)
+  api: Publishing (Packing remote build context)
+  api: Publishing (Uploading remote build context) [17s]
+  bridge: Publishing (Uploading remote build context) [17s]
+  api: Publishing (Running remote build) [20s]
+  bridge: Publishing (Running remote build) [20s]
+  api: Deploying [2m58s]
+  api: Deploying (Updating container app revision) [2m58s]
+  api: Deploying (Waiting for container revision (15s)) [3m13s]
+  api: Deploying (Fetching endpoints for service) [3m17s]
+  api: Done [3m17s]
+  bridge: Deploying [3m17s]
+  bridge: Deploying (Updating container app revision) [3m17s]
+  bridge: Deploying (Waiting for container revision (15s)) [3m32s]
+  bridge: Deploying (Fetching endpoints for service) [3m35s]
+  bridge: Done [3m35s]
+Running postdeploy hook...
+  - Endpoint: https://ca-api-pi7fumnppr2hk.kindglacier-e755b75a.eastus2.azurecontainerapps.io/ 
+
+  - Endpoint: https://ca-bridge-pi7fumnppr2hk.kindglacier-e755b75a.eastus2.azurecontainerapps.io/ 
+
+
+SUCCESS: Your application was provisioned and deployed to Azure in 28 minutes 5 seconds.
+  Provisioning: 24 minutes 28 seconds
+  Deploying:    3 minutes 37 seconds
+Update available: 1.38.0 -> 1.39.1 (https://github.com/Azure/azure-dev/releases/tag/azure-dev-cli_1.39.1)
+To update, run `winget upgrade Microsoft.Azd`

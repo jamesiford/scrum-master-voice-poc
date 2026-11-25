@@ -32,7 +32,7 @@ for (var i = 1; i <= runs; i++)
     var file = Path.Combine(outDir, $"{label}-{result.StartedAt:yyyyMMdd-HHmmss}-{result.RunId}.json");
     await File.WriteAllTextAsync(file, JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
     Console.WriteLine($"  {result.Turns.Count} timed turns, API p50 {result.ReportedP50Ms} ms, saved {file}");
-    if (Has("--check-audit") && !AuditCheck.Run(result.SessionId))
+    if (Has("--check-audit") && !await AuditCheck.RunAsync(api, Arg("--token") ?? Environment.GetEnvironmentVariable("GATE_TOKEN"), team, result.SessionId))
     {
         failed = true;
     }

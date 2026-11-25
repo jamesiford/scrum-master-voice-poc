@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.Reports.AnswerTeamQuestion;
 using Zava.Scrum.Application.Features.Reports.GetKpis;

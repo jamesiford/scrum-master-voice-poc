@@ -25,7 +25,7 @@ internal static class FollowUpCards
             FollowUpKind.ReviewPack => (CardKind.ReviewPack, "Sprint review pack"),
             _ => (CardKind.FollowUp, $"Follow-up for {name}"),
         };
-        return new TeamsMessage(kind, f.TeamId, f.SessionId, Key(f), title, f.Message, Facts(f), f.Id, f.MemberId);
+        return new TeamsMessage(kind, f.TeamId, f.SessionId, Key(f), title, f.Message, Facts(f), f.Id, f.MemberId, CorrelationId: f.CorrelationId);
     }
 
     /// <summary>Builds the card that replaces the first one once a decision is made.</summary>

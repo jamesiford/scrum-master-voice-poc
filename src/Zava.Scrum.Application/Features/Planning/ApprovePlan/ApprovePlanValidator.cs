@@ -8,7 +8,8 @@ internal sealed class ApprovePlanValidator : AbstractValidator<ApprovePlanComman
     public ApprovePlanValidator()
     {
         RuleFor(c => c.PackId).NotEmpty();
-        RuleFor(c => c.Approver).NotEmpty().MaximumLength(100);
+        RuleFor(c => c.Decision).NotNull();
+        RuleFor(c => c.Decision.Actor).NotNull().When(c => c.Decision is not null);
         RuleFor(c => c.SelectedItemIds).NotNull();
     }
 }

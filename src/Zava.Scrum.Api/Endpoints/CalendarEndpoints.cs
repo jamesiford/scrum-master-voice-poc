@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
 using Zava.Scrum.Application.Features.Calendars.GetSprintCalendar;
@@ -33,15 +34,14 @@ public static class CalendarEndpoints
         group.MapPost("/propose", async (ProposeBody body, ISender sender, CancellationToken ct) =>
             (await sender.Send(new ProposeSprintCalendarCommand(body.TeamId, body.Iteration), ct)).ToHttpResult());
 
-        group.MapPost("/proposals/{id:guid}/approve", async (Guid id, DecisionBody body, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ApproveSprintCalendarCommand(id, body.Approver), ct)).ToHttpResult());
+        group.MapPost("/proposals/{id:guid}/approve", (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new ApproveSprintCalendarCommand(id, d), ct))).RequireApprover();
 
-        group.MapPost("/proposals/{id:guid}/reject", async (Guid id, DecisionBody body, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new RejectSprintCalendarCommand(id, body.Approver), ct)).ToHttpResult());
+        group.MapPost("/proposals/{id:guid}/reject", (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new RejectSprintCalendarCommand(id, d), ct))).RequireApprover();
         return app;
     }
 
     private sealed record ProposeBody(string TeamId, string? Iteration);
 
-    private sealed record DecisionBody(string Approver);
 }

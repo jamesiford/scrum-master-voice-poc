@@ -59,7 +59,7 @@ internal sealed class CreateCeremonyPackHandler(
         await session.PublishEventsAsync(publisher, ct);
 
         var followUp = FollowUp.Create(
-            Guid.NewGuid(), team.Id, session.Id, null, pack.FollowUpKind, summary, pack.Changes, DateOnly.FromDateTime(now.UtcDateTime), now, request.Kind, forScrumMaster: true);
+            Guid.NewGuid(), team.Id, session.Id, null, pack.FollowUpKind, summary, pack.Changes, DateOnly.FromDateTime(now.UtcDateTime), now, request.Kind, forScrumMaster: true, correlationId: session.CorrelationId);
         followUp.MarkSent();
         await followUps.SaveAsync(followUp, ct);
 

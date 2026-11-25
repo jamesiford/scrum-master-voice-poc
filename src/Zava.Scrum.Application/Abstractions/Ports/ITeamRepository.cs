@@ -11,6 +11,11 @@ public interface ITeamRepository
     /// <returns>The team, or <see langword="null"/> when unknown.</returns>
     Task<Team?> GetAsync(string id, CancellationToken ct);
 
+    /// <summary>Lists every team in the registry, including draft, paused and archived ones.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The teams, ordered by name.</returns>
+    Task<IReadOnlyList<Team>> ListAsync(CancellationToken ct);
+
     /// <summary>Inserts or replaces a team.</summary>
     /// <param name="team">The team.</param>
     /// <param name="ct">Cancellation token.</param>

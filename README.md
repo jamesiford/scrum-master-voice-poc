@@ -32,7 +32,7 @@ dotnet user-secrets set "Ado:Org" "https://dev.azure.com/<your-organisation>" --
 dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Zava.Scrum.Api
 dotnet user-secrets set "Azure:TenantId" "<tenant-id>" --project src/Zava.Scrum.AppHost
 dotnet user-secrets set "Speech:Endpoint" "https://<foundry>.cognitiveservices.azure.com" --project src/Zava.Scrum.AppHost
-# Optional: Team:ScrumMasters (comma-separated display names allowed to run the "prepare sprint planning" chat command)
+# Optional: Identity:AdminObjectIds (comma-separated Entra object ids allowed to decide any card and run the "prepare sprint planning" chat command). Approvals also need Azure:TenantId.
 # Teams only (secrets): Bot:AppId, Connections:ServiceConnection:Settings:{ClientId,ClientSecret,TenantId,AuthorityEndpoint}, Acs:ConnectionString, Bridge:ApiKey
 ```
 

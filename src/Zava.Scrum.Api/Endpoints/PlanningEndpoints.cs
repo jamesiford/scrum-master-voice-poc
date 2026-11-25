@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.Planning.ApprovePlan;
 using Zava.Scrum.Application.Features.Planning.GetPlanningPack;
@@ -25,17 +26,15 @@ public static class PlanningEndpoints
         app.MapGet("/api/planning/pack", async (string teamId, Guid? packId, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetPlanningPackQuery(teamId, packId), ct)).ToHttpResult());
 
-        app.MapPost("/api/planning/packs/{id:guid}/approve", async (Guid id, ApproveBody body, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ApprovePlanCommand(id, body.Approver, body.SelectedItemIds ?? [], ApprovalChannel.Portal), ct)).ToHttpResult());
+        app.MapPost("/api/planning/packs/{id:guid}/approve", (Guid id, ApproveBody body, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new ApprovePlanCommand(id, d, body.SelectedItemIds ?? []), ct))).RequireApprover();
 
-        app.MapPost("/api/planning/packs/{id:guid}/reject", async (Guid id, RejectBody body, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new RejectPlanCommand(id, body.Approver), ct)).ToHttpResult());
+        app.MapPost("/api/planning/packs/{id:guid}/reject", (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new RejectPlanCommand(id, d), ct))).RequireApprover();
         return app;
     }
 
     private sealed record PrepareBody(string TeamId);
 
-    private sealed record ApproveBody(string Approver, IReadOnlyList<int>? SelectedItemIds);
-
-    private sealed record RejectBody(string Approver);
+    private sealed record ApproveBody(IReadOnlyList<int>? SelectedItemIds);
 }

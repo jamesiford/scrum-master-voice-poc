@@ -23,6 +23,7 @@ namespace Zava.Scrum.Infrastructure.Teams;
 public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
 {
     private readonly OutboxTeamsMessenger _outbox;
+    private readonly ITeamRepository _teams;
     private readonly IConversationStore _conversations;
     private readonly IChannelAdapter? _adapter;
     private readonly BotOptions _bot;
@@ -35,6 +36,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
     /// <param name="outbox">The offline outbox.</param>
     /// <param name="conversations">Stored conversation references.</param>
     /// <param name="bot">Bot options.</param>
+    /// <param name="teams">The team registry, whose bindings decide where a team's cards go.</param>
     /// <param name="store">The collection store.</param>
     /// <param name="logger">Logger.</param>
     /// <param name="adapter">The Agents SDK adapter; absent when the bot is not configured.</param>
@@ -42,6 +44,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         OutboxTeamsMessenger outbox,
         IConversationStore conversations,
         IOptions<BotOptions> bot,
+        ITeamRepository teams,
         ICollectionStore store,
         ILogger<TeamsBotMessenger> logger,
         IChannelAdapter? adapter = null)
@@ -49,6 +52,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(store);
         _store = store;
+        _teams = teams;
         _outbox = outbox;
         _conversations = conversations;
         _adapter = adapter;
@@ -69,7 +73,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
 
         var card = await FindCardJsonAsync(message, ct);
         var stored = await _conversations.ListAsync(ct);
-        var targets = CardRouting.Select(message, [.. stored.Select(c => c.Key)]).ToHashSet();
+        var targets = CardRouting.Select(message, [.. stored.Select(c => c.Key)], await _teams.GetAsync(message.TeamId, ct)).ToHashSet();
         foreach (var (key, json) in stored.Where(c => targets.Contains(c.Key)))
         {
             if (await HasActivityAsync(message.DedupeKey, key, ct))

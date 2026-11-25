@@ -7,5 +7,5 @@ namespace Zava.Scrum.Application.Features.Prompts.UpdatePrompt;
 internal sealed class UpdatePromptHandler(IPromptStore prompts) : IRequestHandler<UpdatePromptCommand, Result>
 {
     public async Task<Result> Handle(UpdatePromptCommand request, CancellationToken ct) =>
-        await prompts.SaveAsync(request.Name, request.Text, ct) ? Result.Success() : Result.Failure(PromptErrors.NotFound(request.Name));
+        await prompts.SaveForTeamAsync(request.TeamId, request.Name, request.Text, ct) ? Result.Success() : Result.Failure(PromptErrors.NotFound(request.Name));
 }

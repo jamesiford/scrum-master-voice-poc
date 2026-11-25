@@ -115,7 +115,7 @@ Built after the reconciliation (ADR 0010). Behaviour is in code and covered by u
 ## 12. M9a: sprint planning
 Built after M9 (ADR 0011); `SPEC.md` section 10.6 has the rules.
 
-- **What it does.** **Prepare pack** (portal, API or the chat command "prepare sprint planning" for names in `Team:ScrumMasters`) computes a plan: capacity from the velocity range (the illustrative fixture) split equally by member and scaled by each member's availability; started stories and bugs carry over first; ready backlog items follow in backlog order until the top of the range; not-ready items are listed with why (no points, over 8 points, no acceptance criteria). Unowned selected items get a suggested owner (least loaded). A model phrases the draft goal, with a code fallback. Over- and under-commitment and overloaded members are flagged.
+- **What it does.** **Prepare pack** (portal, API or the chat command "prepare sprint planning" for an administrator's Entra object id in `Identity:AdminObjectIds`) computes a plan: capacity from the velocity range (the illustrative fixture) split equally by member and scaled by each member's availability; started stories and bugs carry over first; ready backlog items follow in backlog order until the top of the range; not-ready items are listed with why (no points, over 8 points, no acceptance criteria). Unowned selected items get a suggested owner (least loaded). A model phrases the draft goal, with a code fallback. Over- and under-commitment and overloaded members are flagged.
 - **Decision.** A named person approves in the portal (**Approve plan**, with a checkbox per item) or in Teams (the card's **Approve plan**, approver = `Activity.From.Name`). Approval creates a Scrum Master follow-up with `SetIteration` and `Assign` changes and writes through the same guard as every follow-up. **Reject** writes nothing.
 - **DEMO.** With owner tags on (the default) an `Assign` sets the `demo-owner-{key}` tag, because the sandbox has one real user.
 - **Checked live.** Against the sandbox: prepare, reject (nothing written), approve (items in Sprint 43, owner tags, "Approved by" comment). **Not checked live:** the Teams card actions and the chat command.
@@ -148,3 +148,15 @@ Built after M9b (ADR 0013); `SPEC.md` section 10.8 has the rules.
 - **Hooks** (`infra/hooks/`): `preflight`, `entra-portal-app`, `entra-post` (Easy Auth), `ado-setup` (project, seed, managed identity access), `exchange` (human gate), `teams-app` (package build, upload is a human gate), `verify`.
 - **Identity.** The bot id is the managed identity client id; Easy Auth holds one client secret as a Container Apps secret; the Azure CLI client is pre-authorised on the portal API scope so `verify` and GateRunner use a normal Entra token.
 - **Not changed.** Application behaviour. The original `mcm-scrum-demo` environment keeps its names and is not managed by these templates.
+
+## 16. M11: identity and correlation
+
+Built in M11 prompt 3 (ADR 0017).
+
+- **Identity.** `ActorIdentity` (object id, tenant, display name, source, authentication method) is a Domain value object; `FollowUp.Approve` and `Reject` take it. `ApprovedBy` is derived text; legacy decisions show `unverified (legacy)` and are never written. `ApprovalAuthority` (Domain) and `ApprovalGate` (Application) decide who may approve: tenant match, then the Approver role (portal) or a configured administrator or the follow-up's own roster member by `EntraObjectId` (Teams). Display names decide nothing.
+- **Portal API.** In-app JwtBearer validation on every `/api` route (no Easy Auth headers); roles `Zava.Scrum.Admin`, `Zava.Scrum.Approver`, `Zava.Scrum.Reader` from `infra/entra/portal-app-roles.json`; reads need any role, changes need Admin, approve and reject need Approver. `Api.Tests` enumerates every route. The SPA sends the bearer token, shows "Deciding as", and reads the live state with `fetch`.
+- **Teams.** `TeamsActor` builds the identity from `Activity.From.AadObjectId` and the tenant. `Identity:AdminObjectIds` replaces `Team:ScrumMasters`.
+- **Roster.** `Member.EntraObjectId` is resolved from the mapped UPN by Graph (`GraphIdentityDirectory`), stored by `SyncRosterCommand` and re-verified when a standup is prepared.
+- **Approval trail.** Append-only `ApprovalRecord`s (Cosmos `ApprovalRecords`, partition `/correlationId`, create and read only for the managed identity; a JSON-lines file locally): Approved or Rejected, then Applied with the Azure DevOps revisions. `ApplyApprovedChangesHandler` refuses without a matching record.
+- **Correlation.** A W3C trace id per session, carried to follow-ups, approvals, the write, cards and the gateway log scope; every Azure DevOps attribution ends with `Correlation: zsa-<12 hex>`. `GET /api/audit/{correlationId}` returns the chain and what is missing.
+- **Not built.** Author attribution in Azure DevOps revisions (prompt 5), team-scoped roles (prompt 3A).

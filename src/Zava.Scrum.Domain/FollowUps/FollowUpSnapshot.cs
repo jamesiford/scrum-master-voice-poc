@@ -1,3 +1,4 @@
+using Zava.Scrum.Domain.Identity;
 using Zava.Scrum.Domain.Standups;
 
 namespace Zava.Scrum.Domain.FollowUps;
@@ -21,6 +22,9 @@ namespace Zava.Scrum.Domain.FollowUps;
 /// <param name="Ceremony">The ceremony it came from; <see cref="CeremonyKind.DailyScrum"/> for data saved before ceremonies existed.</param>
 /// <param name="ForScrumMaster">True when the Scrum Master decides it.</param>
 /// <param name="ApprovedVia">Where it was approved.</param>
+/// <param name="ApprovedByIdentity">The verified identity that approved it; <see langword="null"/> for data saved before identities were recorded (legacy).</param>
+/// <param name="RejectedByIdentity">The verified identity that rejected it, if it was rejected after identities were recorded.</param>
+/// <param name="CorrelationId">The session's W3C trace id; derived from the session id for data saved before correlation existed.</param>
 public sealed record FollowUpSnapshot(
     Guid Id,
     string TeamId,
@@ -39,4 +43,7 @@ public sealed record FollowUpSnapshot(
     string? ApplyError,
     CeremonyKind Ceremony = CeremonyKind.DailyScrum,
     bool ForScrumMaster = false,
-    ApprovalChannel? ApprovedVia = null);
+    ApprovalChannel? ApprovedVia = null,
+    ActorIdentity? ApprovedByIdentity = null,
+    ActorIdentity? RejectedByIdentity = null,
+    string? CorrelationId = null);

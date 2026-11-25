@@ -1,12 +1,16 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.FollowUps;
 
 namespace Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 
-/// <summary>Approves and saves; the raised <c>FollowUpApproved</c> event triggers the Azure DevOps write.</summary>
-internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, IPublisher publisher, IClock clock) : IRequestHandler<ApproveFollowUpCommand, Result>
+/// <summary>
+/// Authorises, approves, saves and appends the approval record; the raised <c>FollowUpApproved</c> event then triggers the Azure DevOps
+/// write. The record is appended before the event is published, so a write can never be ahead of its audit trail.
+/// </summary>
+internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, ApprovalGate gate, IApprovalRecordStore records, IPublisher publisher, IClock clock) : IRequestHandler<ApproveFollowUpCommand, Result>
 {
     public async Task<Result> Handle(ApproveFollowUpCommand request, CancellationToken ct)
     {
@@ -16,13 +20,24 @@ internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, IPub
             return Result.Failure(FollowUpErrors.NotFound(request.FollowUpId));
         }
 
-        var approved = followUp.Approve(request.Approver, clock.UtcNow, request.Channel);
+        var decision = request.Decision;
+        var allowed = await gate.AuthoriseAsync(decision, followUp.TeamId, followUp.MemberId, followUp.ForScrumMaster, ct);
+        if (!allowed.IsSuccess)
+        {
+            return allowed;
+        }
+
+        var now = clock.UtcNow;
+        var approved = followUp.Approve(decision.Actor, now, decision.Channel);
         if (!approved.IsSuccess)
         {
             return approved;
         }
 
         await followUps.SaveAsync(followUp, ct);
+        await records.AppendAsync(
+            new ApprovalRecord(Guid.NewGuid(), followUp.CorrelationId, followUp.Id, followUp.TeamId, ApprovalRecordKind.Approved, followUp.ComputeProposalHash(), decision.Actor, decision.Channel, now, decision.Authentication, null, []),
+            ct);
         await followUp.PublishEventsAsync(publisher, ct);
         return Result.Success();
     }
