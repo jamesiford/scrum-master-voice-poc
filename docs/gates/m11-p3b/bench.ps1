@@ -11,6 +11,8 @@ param(
   [string[]]$Configs,
   [string]$OutRoot = 'docs/gates/m11-p3b'
 )
+# -File passes a comma list as one string, so split it.
+$Configs = $Configs | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim("'", ' ') } | Where-Object { $_ }
 . "$PSScriptRoot/../../../infra/hooks/lib.ps1"
 Import-AzdEnvironment
 
