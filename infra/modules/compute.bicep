@@ -15,8 +15,16 @@ param tags object
 @description('Microsoft Entra tenant id.')
 param tenantId string
 
-@description('Azure DevOps organisation URL.')
 param adoOrgUrl string
+
+@description('UPN of the administrator. DEMO: the roster member "Admin" is this person, so the API can resolve their Entra object id (ADR 0017).')
+param adminUpn string = ''
+
+@description('Client id of the portal Entra app registration. The API validates portal bearer tokens against it.')
+param portalClientId string = ''
+
+@description('Entra object id of the administrator; Teams decisions from it are accepted as an administrator.')
+param adminObjectId string = ''
 
 @description('Log Analytics workspace the environment writes to.')
 param logAnalyticsName string
@@ -103,10 +111,21 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'api'
           image: placeholderImage
           resources: { cpu: json('0.5'), memory: '1Gi' }
+          // Traffic reaches a new revision only when /healthz answers, so a request right after a deploy waits for a ready replica
+          // instead of timing out in front of one that is still starting (seen in the first westus3 verify run).
+          probes: [
+            { type: 'Startup', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 3, timeoutSeconds: 3, failureThreshold: 40 }
+            { type: 'Readiness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+            { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }
+          ]
           env: [
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED', value: 'true' }
             { name: 'Azure__TenantId', value: tenantId }
+            { name: 'Identity__TenantId', value: tenantId }
+            { name: 'Identity__AdminObjectIds', value: adminObjectId }
+            { name: 'Demo__MemberEmails__admin', value: adminUpn }
+            { name: 'Portal__ClientId', value: portalClientId }
             { name: 'Bot__AppId', value: identityClientId }
             { name: 'Bot__TenantId', value: tenantId }
             { name: 'Bot__TunnelHostSuffix', value: '' }
@@ -153,6 +172,13 @@ resource bridge 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'bridge'
           image: placeholderImage
           resources: { cpu: json('2.0'), memory: '4Gi' }
+          // Traffic reaches a new revision only when /healthz answers, so a request right after a deploy waits for a ready replica
+          // instead of timing out in front of one that is still starting (seen in the first westus3 verify run).
+          probes: [
+            { type: 'Startup', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 3, timeoutSeconds: 3, failureThreshold: 40 }
+            { type: 'Readiness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+            { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }
+          ]
           env: [
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'AZURE_TENANT_ID', value: tenantId }

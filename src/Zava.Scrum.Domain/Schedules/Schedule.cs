@@ -10,6 +10,7 @@ namespace Zava.Scrum.Domain.Schedules;
 /// <param name="PreparedFor">The date a session was last prepared for.</param>
 /// <param name="PreparedSessionId">The session prepared for that date.</param>
 /// <param name="StartedFor">The date the session was last started for.</param>
+/// <param name="WaitingReason">Why a due standup is waiting (capacity or stagger), shown in the portal; cleared when it starts.</param>
 /// <param name="Meetings">Teams meetings created from an approved sprint calendar (M9d): the join URL for each standup date, so the scheduler joins without a pasted link.</param>
 public sealed record Schedule(
     string TeamId,
@@ -21,7 +22,8 @@ public sealed record Schedule(
     DateOnly? PreparedFor = null,
     Guid? PreparedSessionId = null,
     DateOnly? StartedFor = null,
-    IReadOnlyList<ScheduledMeeting>? Meetings = null)
+    IReadOnlyList<ScheduledMeeting>? Meetings = null,
+    string? WaitingReason = null)
 {
     /// <summary>Gets the join URL for a day: the calendar's meeting for that date, else the pasted <see cref="JoinUrl"/>.</summary>
     /// <param name="day">The standup date.</param>

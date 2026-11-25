@@ -27,6 +27,7 @@ public sealed class StandupSession : AggregateRoot
         _events = [.. s.Events];
         _latency = [.. s.LatencySamplesMs];
         Kind = s.Kind;
+        CorrelationId = s.CorrelationId ?? Correlation.ForLegacySession(s.Id);
     }
 
     /// <summary>Gets the session id.</summary>
@@ -34,6 +35,9 @@ public sealed class StandupSession : AggregateRoot
 
     /// <summary>Gets the owning team.</summary>
     public string TeamId { get; }
+
+    /// <summary>Gets the correlation id (a W3C trace id) created with the session and carried through the join, each turn, the proposal, the approval, the Azure DevOps write and the outbox.</summary>
+    public string CorrelationId { get; }
 
     /// <summary>Gets the ceremony this session runs.</summary>
     public CeremonyKind Kind { get; }
@@ -83,7 +87,7 @@ public sealed class StandupSession : AggregateRoot
     /// <returns>A prepared session.</returns>
     public static StandupSession Prepare(Guid id, string teamId, DateTimeOffset now, PreBrief? preBrief, CeremonyKind kind = CeremonyKind.DailyScrum)
     {
-        var session = new StandupSession(new StandupSessionSnapshot(id, teamId, now, StandupStatus.Prepared, preBrief, null, null, 15, null, null, new Dictionary<string, Attendance>(), [], [], [], kind));
+        var session = new StandupSession(new StandupSessionSnapshot(id, teamId, now, StandupStatus.Prepared, preBrief, null, null, 15, null, null, new Dictionary<string, Attendance>(), [], [], [], kind, Correlation.New()));
         session.Raise(new StandupPrepared(id, now));
         return session;
     }
@@ -100,7 +104,7 @@ public sealed class StandupSession : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public StandupSessionSnapshot ToSnapshot() =>
-        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind);
+        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind, CorrelationId);
 
     /// <summary>Starts the standup. A session can start once, and only after it was prepared.</summary>
     /// <param name="mode">Bridge mode.</param>

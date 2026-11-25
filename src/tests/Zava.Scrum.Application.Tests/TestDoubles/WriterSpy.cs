@@ -13,15 +13,15 @@ internal sealed class WriterSpy : IWorkItemWriter
 
     public bool Fail { get; set; }
 
-    public Task<Result> ApplyAsync(ApprovedChange change, CancellationToken ct)
+    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, CancellationToken ct)
     {
         if (Fail)
         {
-            return Task.FromResult(Result.Failure(Error.ExternalRejected("ado.write_rejected", "rejected")));
+            return Task.FromResult(Result<WorkItemRevision>.Failure(Error.ExternalRejected("ado.write_rejected", "rejected")));
         }
 
         Written.Add(change);
-        return Task.FromResult(Result.Success());
+        return Task.FromResult(Result<WorkItemRevision>.Success(new WorkItemRevision(change.WorkItemId, Written.Count + 1)));
     }
 }
 

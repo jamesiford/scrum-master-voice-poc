@@ -27,7 +27,7 @@ foreach ($name in 'ADO_ORG_URL', 'ADMIN_UPN', 'AZURE_LOCATION') {
 if ($script:Failures -gt 0) { Write-Host "`n$script:Failures check(s) failed. Fix them and run again."; exit 1 }
 
 # ---- Azure roles of the deployer ---------------------------------------------------------------------------------------------
-$me = az ad signed-in-user show --query id -o tsv 2>$null
+$me = try { (Invoke-Graph GET '/me?$select=id').id } catch { $null }
 $roles = if ($me) { az role assignment list --assignee $me --include-inherited --include-groups --scope "/subscriptions/$sub" --query '[].roleDefinitionName' -o tsv 2>$null } else { @() }
 $hasOwner = $roles -contains 'Owner'
 $hasWrite = $hasOwner -or ($roles -contains 'Contributor' -and (($roles -contains 'User Access Administrator') -or ($roles -contains 'Role Based Access Control Administrator')))

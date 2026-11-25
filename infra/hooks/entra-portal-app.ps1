@@ -67,6 +67,26 @@ if (-not $grants) {
 }
 else { Write-Check PASS 'portal admin consent' 'already granted' }
 
+# The scope's own consent: the SPA signs users in to the portal app and asks for api://<app>/access_as_user. Granting it for the
+# organisation means nobody sees a consent prompt (the grant a tenant administrator would otherwise click).
+$own = (Invoke-Graph GET "/oauth2PermissionGrants?`$filter=clientId eq '$($sp.id)' and resourceId eq '$($sp.id)'").value
+if (-not $own) {
+  Invoke-Graph POST '/oauth2PermissionGrants' @{ clientId = $sp.id; consentType = 'AllPrincipals'; resourceId = $sp.id; scope = 'access_as_user' } | Out-Null
+  Write-Check PASS 'portal API consent' 'access_as_user granted for the organisation'
+}
+else { Write-Check PASS 'portal API consent' 'already granted' }
+
+# The administrator gets every app role (Admin, Approver, Reader) so one person can run the demo end to end. Others are assigned
+# in Entra (Enterprise applications > Zava Scrum Portal > Users and groups); docs/DEPLOY.md lists it as the way to add people.
+$adminUser = Invoke-Graph GET "/users/$([uri]::EscapeDataString($env:ADMIN_UPN))?`$select=id,displayName"
+$assigned = (Invoke-Graph GET "/servicePrincipals/$($sp.id)/appRoleAssignedTo").value | Where-Object { $_.principalId -eq $adminUser.id }
+foreach ($r in @(Get-Content "$PSScriptRoot/../entra/portal-app-roles.json" -Raw | ConvertFrom-Json)) {
+  if ($assigned | Where-Object { $_.appRoleId -eq $r.id }) { continue }
+  Invoke-Graph POST "/servicePrincipals/$($sp.id)/appRoleAssignedTo" @{ principalId = $adminUser.id; resourceId = $sp.id; appRoleId = $r.id } | Out-Null
+}
+Write-Check PASS 'portal app roles' "$($adminUser.displayName) holds Zava.Scrum.Admin, Approver and Reader"
+Set-AzdValue ADMIN_OBJECT_ID $adminUser.id
+
 Set-AzdValue PORTAL_CLIENT_ID $app.appId
 Set-AzdValue PORTAL_APP_OBJECT_ID $app.id
 Set-AzdValue PORTAL_SP_OBJECT_ID $sp.id

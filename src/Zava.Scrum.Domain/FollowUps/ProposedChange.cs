@@ -55,7 +55,7 @@ public sealed record ProposedChange(int WorkItemId, ChangeOp Op, string Value, s
 /// </summary>
 public sealed record ApprovedChange
 {
-    internal ApprovedChange(ProposedChange change, string approvedBy, DateOnly standupDate, CeremonyKind ceremony, ApprovalChannel channel)
+    internal ApprovedChange(ProposedChange change, string approvedBy, DateOnly standupDate, CeremonyKind ceremony, ApprovalChannel channel, string correlationId)
     {
         WorkItemId = change.WorkItemId;
         Op = change.Op;
@@ -66,6 +66,7 @@ public sealed record ApprovedChange
         StandupDate = standupDate;
         Ceremony = ceremony;
         Channel = channel;
+        CorrelationId = correlationId;
     }
 
     /// <summary>Gets the work item. Zero when the change creates one.</summary>
@@ -95,7 +96,10 @@ public sealed record ApprovedChange
     /// <summary>Gets where it was approved.</summary>
     public ApprovalChannel Channel { get; }
 
-    /// <summary>Gets the attribution written with every change (SPEC 9.4).</summary>
+    /// <summary>Gets the correlation id (W3C trace id) of the session this change came from.</summary>
+    public string CorrelationId { get; }
+
+    /// <summary>Gets the attribution written with every change (SPEC 9.4). It ends with the correlation tag so the comment can be traced to its audit chain.</summary>
     public string Attribution =>
-        $"Approved by {ApprovedBy} in {(Channel == ApprovalChannel.Portal ? "the portal" : "Teams")}, proposed by Zava Scrum Agent from the {StandupDate:yyyy-MM-dd} {Ceremony.Phrase()}.";
+        $"Approved by {ApprovedBy} in {(Channel == ApprovalChannel.Portal ? "the portal" : "Teams")}, proposed by Zava Scrum Agent from the {StandupDate:yyyy-MM-dd} {Ceremony.Phrase()}. Correlation: {Domain.Common.Correlation.Tag(CorrelationId)}";
 }

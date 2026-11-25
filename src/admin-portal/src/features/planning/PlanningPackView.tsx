@@ -7,13 +7,14 @@ import {
   type PlanningPack,
   type Team,
 } from '../../api/client';
+import { SignedInAs } from '../../auth/SignedInAs';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Alert, Progress } from '../../ui/Feedback';
-import { Check, Field, Input } from '../../ui/Form';
+import { Check } from '../../ui/Form';
 import { QueryStatus } from '../QueryStatus';
 
 interface PlanningPackViewProps {
@@ -30,12 +31,11 @@ interface PlanningPackViewProps {
  */
 export function PlanningPackView({ pack, team, onChanged }: PlanningPackViewProps) {
   const p = pack.proposal;
-  const [approver, setApprover] = useState('');
   const [kept, setKept] = useState<Set<number>>(new Set(p.selected.map((s) => s.workItemId)));
-  const approve = useApiAction((ids: number[]) => approvePlan(pack.id, approver, ids));
-  const reject = useApiAction(() => rejectPlan(pack.id, approver));
+  const approve = useApiAction((ids: number[]) => approvePlan(pack.id, ids));
+  const reject = useApiAction(() => rejectPlan(pack.id));
   const decided = pack.status !== 'Prepared';
-  const canDecide = approver.trim().length > 0 && !decided;
+  const canDecide = !decided;
   const keptPoints = p.selected
     .filter((s) => kept.has(s.workItemId))
     .reduce((n, s) => n + s.points, 0);
@@ -175,17 +175,7 @@ export function PlanningPackView({ pack, team, onChanged }: PlanningPackViewProp
       {!decided && (
         <Card>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <Field
-              label="Approving as"
-              hint="Your name is recorded on every change written to Azure DevOps."
-              className="w-full max-w-xs"
-            >
-              <Input
-                value={approver}
-                onChange={(e) => setApprover(e.target.value)}
-                placeholder="Your name"
-              />
-            </Field>
+            <SignedInAs />
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="primary"

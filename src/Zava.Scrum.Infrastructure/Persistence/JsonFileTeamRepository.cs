@@ -54,6 +54,28 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
     }
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<Team>> ListAsync(CancellationToken ct)
+    {
+        await _gate.WaitAsync(ct);
+        try
+        {
+            var all = await _store.ReadAsync<Dictionary<string, Team>>(_path, () => [], ct);
+            // The configured default team is part of the registry until it is saved, so existing deployments list it unchanged.
+            var teams = all.Values.ToList();
+            if (!all.ContainsKey(_default.Id))
+            {
+                teams.Add(_default);
+            }
+
+            return teams.OrderBy(t => t.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
     public async Task SaveAsync(Team team, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(team);

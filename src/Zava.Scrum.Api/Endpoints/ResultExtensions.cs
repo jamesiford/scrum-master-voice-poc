@@ -32,7 +32,7 @@ public static class ResultExtensions
         ErrorType.Validation => StatusCodes.Status400BadRequest,
         ErrorType.NotFound => StatusCodes.Status404NotFound,
         ErrorType.Conflict => StatusCodes.Status409Conflict,
-        ErrorType.NotApproved => StatusCodes.Status403Forbidden,
+        ErrorType.NotApproved or ErrorType.Forbidden => StatusCodes.Status403Forbidden,
         ErrorType.ExternalRejected => StatusCodes.Status422UnprocessableEntity,
         _ => StatusCodes.Status500InternalServerError,
     };

@@ -8,6 +8,7 @@ internal sealed class ApproveFollowUpValidator : AbstractValidator<ApproveFollow
     public ApproveFollowUpValidator()
     {
         RuleFor(c => c.FollowUpId).NotEmpty();
-        RuleFor(c => c.Approver).NotEmpty().MaximumLength(100);
+        RuleFor(c => c.Decision).NotNull().WithMessage("An identified approver is required.");
+        RuleFor(c => c.Decision.Actor).NotNull().When(c => c.Decision is not null).WithMessage("An identified approver is required.");
     }
 }

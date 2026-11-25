@@ -21,6 +21,11 @@ public static class DependencyInjection
         services.AddMediator(assembly);
         services.AddScoped<Tools.IScrumTools, Tools.ScrumTools>();
         services.AddScoped<Features.Calendars.SprintCalendarBuilder>();
+        services.AddScoped<Features.Identity.ApprovalGate>();
+        services.AddScoped<Features.Teams.TeamRegistration>();
+        services.AddScoped<Features.Teams.ITeamResolver, Features.Teams.TeamResolver>();
+        services.AddScoped<Features.Teams.IResourceTeamLocator, Features.Teams.ResourceTeamLocator>();
+        services.AddScoped<Features.Identity.RosterIdentityResolver>();
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

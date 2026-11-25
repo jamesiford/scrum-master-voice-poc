@@ -17,6 +17,8 @@ namespace Zava.Scrum.Application.Tests.Features.Ceremonies;
 
 public sealed class CreateCeremonyPackTests : IAsyncDisposable
 {
+    private InMemoryApprovalRecordStore Records { get; } = new();
+
     private static readonly DateTimeOffset T = StandupHarness.Now;
     private readonly WriterSpy _writer = new();
     private readonly RecordingTeamsMessenger _messenger = new();
@@ -40,6 +42,7 @@ public sealed class CreateCeremonyPackTests : IAsyncDisposable
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes(Records);
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(members);
         services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(Result<SprintSnapshot>.Success(sprint)));
@@ -99,10 +102,10 @@ public sealed class CreateCeremonyPackTests : IAsyncDisposable
         var id = (await Sender.Send(new CreateCeremonyPackCommand("t1", CeremonyKind.SprintReview))).Value;
         Assert.Empty(_writer.Written);
 
-        await Sender.Send(new ApproveFollowUpCommand(id, "Sam", ApprovalChannel.Portal));
+        await Sender.Send(new ApproveFollowUpCommand(id, Who.Portal("Sam")));
 
         Assert.Single(_writer.Written);
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint review.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal($"Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint review. Correlation: {Correlation.Tag(w.CorrelationId)}", w.Attribution));
         Assert.Equal(FollowUpStatus.Applied, (await _followUps.GetAsync(id, default))!.Status);
     }
 
@@ -112,7 +115,7 @@ public sealed class CreateCeremonyPackTests : IAsyncDisposable
         await StartAsync();
         var id = (await Sender.Send(new CreateCeremonyPackCommand("t1", CeremonyKind.SprintReview))).Value;
 
-        await Sender.Send(new RejectFollowUpCommand(id, "Sam"));
+        await Sender.Send(new RejectFollowUpCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.Empty(_writer.Written);
     }

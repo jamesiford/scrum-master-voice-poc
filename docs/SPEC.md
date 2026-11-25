@@ -249,6 +249,8 @@ zava-scrum-agent/
 └─ .github/copilot-instructions.md
 ```
 
+**Multi-team (M11, ADR 0018).** Team model and pure rules live in `Domain/Teams` (`TeamAccess`, `WorkItemScope`, `AdoOrganisation`, `TeamsBinding`) and `Domain/Capacity` (`CapacityGovernor`); use cases in `Application/Features/Teams`; `Infrastructure/Ado` holds the per-organisation client factory; `Api/Auth` holds the team filter; `Api/Seeding` the demo team seeder.
+
 ### 6.1 Architecture and coding standards
 
 The PoC is demo-first in **scope**, not in **code quality**. It is built to the same engineering standards as the production system so that the code that wins the demo can be carried forward. `.github/copilot-instructions.md` holds the full rule set; this section is the design it applies to.
@@ -330,15 +332,16 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 | Area | Commands (change state) | Queries (read only) | Domain events -> handlers |
 |---|---|---|---|
-| Teams | `UpdateTeamSettingsCommand`, `SyncRosterCommand`, `SetRecapChannelCommand` (M9-R5), `UpdateMemberAvailabilityCommand` (M9a) | `GetTeamQuery`, `GetRosterQuery`, `ListCardsQuery` | |
+| Teams | `UpdateTeamSettingsCommand`, `SyncRosterCommand`, `SetRecapChannelCommand` (M9-R5), `UpdateMemberAvailabilityCommand` (M9a); **M11 (ADR 0018)** `CreateTeamCommand`, `UpdateTeamCommand`, `ArchiveTeamCommand`, `BindTeamsConversationCommand`, `SetMembershipCommand`, `RemoveMembershipCommand`, `SyncMembershipsFromGroupCommand` | `GetTeamQuery`, `GetRosterQuery`, `ListCardsQuery`; **M11** `ListTeamsQuery`, `TestTeamConnectionQuery`, `GetFleetQuery`, `ListAdoProjectsQuery`, `ListAdoTeamsQuery`, `ListMembershipsQuery` | |
 | Sprint calendar (M9d) | `ProposeSprintCalendarCommand`, `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand` | `GetSprintCalendarQuery`, `ListSprintCalendarsQuery` | `SprintCalendarProposed` -> `SendCalendarCardOnSprintCalendarProposed` |
 | Schedules and prompts | `UpdateScheduleCommand`, `UpdatePromptCommand`, `RunScheduleTickCommand` | `GetScheduleQuery`, `GetPromptQuery`, `ListPromptsQuery` | |
 | Voice | `AnalyseUtteranceQuery` (intent, items and comment kinds for one utterance; model first, rules as fallback) |
 | Standups | `PrepareStandupCommand` (creates session and pre-brief), `StartStandupCommand`, `JoinMeetingCommand`, `ControlStandupCommand`, `RecordStandupEventCommand`, `RetractStandupEventCommand`, `MarkAbsentCommand`, `ResolveUnblockerCommand` (M9-R2), `ParkTopicCommand`, `CompleteSpeakerTurnCommand`, `RecordAgentLatencyCommand`, `EndStandupCommand` | `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetWorkItemDetailsQuery`, `GetTimeRemainingQuery`, `GetTurnInstructionQuery`, `GetFacilitatorInstructionsQuery`, `GetLiveStateQuery`, `ListSessionsQuery`, `GetSessionQuery` (includes the pre-brief), `GetSessionEventsQuery` | `StandupPrepared` -> `SendPreBriefCardOnStandupPrepared`; `StandupEnded` -> `PostRecapOnStandupEnded` (routed to the recap channel and meeting chat), `SendFollowUpsOnStandupEnded` (sends `SendFollowUpsCommand`), `LeaveMeetingOnStandupEnded` |
-| Follow-ups | `ProposeAdoChangeCommand`, `SendFollowUpsCommand` (also plans escalation, absent and no-response follow-ups), `ApproveFollowUpCommand` (carries the approval channel), `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListEmailsQuery` | `FollowUpApproved` -> `ApplyOnFollowUpApproved` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `FollowUpRejected`, `FollowUpApplied` -> `UpdateFollowUpCardHandler` |
+| Follow-ups | `ProposeAdoChangeCommand`, `SendFollowUpsCommand` (also plans escalation, absent and no-response follow-ups), `ApproveFollowUpCommand` (carries a `DecisionContext`: the verified `ActorIdentity`, channel, authentication claims and roles; refused unless `ApprovalAuthority` allows it, and it appends an `ApprovalRecord`), `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListEmailsQuery` | `FollowUpApproved` -> `ApplyOnFollowUpApproved` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `FollowUpRejected`, `FollowUpApplied` -> `UpdateFollowUpCardHandler` |
 | Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (Teams chat Q&A) | |
 | Ceremonies (M9) | `CreateCeremonyPackCommand` (builds the review or retrospective pack and sends it as a Scrum Master follow-up) | | |
 | Sprint planning (M9a) | `PreparePlanningCommand`, `ApprovePlanCommand`, `RejectPlanCommand` | `GetPlanningPackQuery` | `PlanningPrepared` -> `SendPlanningCardOnPlanningPrepared` |
+| Audit (M11) | none (the approval trail is appended by `ApproveFollowUpCommand`, `RejectFollowUpCommand` and `ApplyApprovedChangesHandler`) | `GetAuditChainQuery` | none |
 | Retrospective by voice (M9b) | `PrepareRetrospectiveCommand`, `NameRetroThemesCommand`, `CreateRetroOutcomeCommand` | `ReconcileRetroUpdateQuery`, `GetRetroBoardQuery` | `RetrospectiveEnded` -> `FinishOnRetrospectiveEnded` (leaves the meeting, sends `CreateRetroOutcomeCommand`) |
 | Planning and stretch | | `GetPlanningPrepQuery`, `GetRetrospectiveQuery`, `DraftUserStoryQuery`, `ListParkedTopicsQuery`, `GetModelComparisonQuery` | |
 | Demo and health | `ResetDemoCommand` | `GetDemoStatusQuery`, `GetHealthQuery` | |
@@ -615,7 +618,7 @@ Speak in short sentences. Do not read lists aloud. Warm, professional tone.
 - **Owners.** An owned item counts against its owner; an unowned selected item goes to the least-loaded member (the same rule as the advice page) and is marked as a suggestion.
 - **Flags.** `Over` when the total is above the range (over-promising), `Under` when below it (under-committing), plus a warning for any member planned above their capacity.
 - **Draft goal.** A model phrases it from the selected items (`agents/instructions/planning-goal.md`). It is dropped for a code fallback (`PlanningGoal.Fallback`) when it names a work item outside the sprint and backlog (`WorkItemIdGuard`) or a number the proposal does not contain (`PlanningGoal.IsGrounded`).
-- **Approve.** `ApprovePlanCommand(packId, approver, selectedItemIds)` accepts only ids in the proposal (an empty list keeps all), builds a Scrum Master follow-up (`FollowUpKind.PlanningPack`, ceremony `SprintPlanning`) with `SetIteration` for every kept item and `Assign` for items whose owner was a suggestion, approves it with the approver's name and channel, and publishes `FollowUpApproved`, so `ApplyApprovedChangesCommand` writes through `FollowUp.GetApprovedChanges` as always (F7). The planning card is then replaced with the outcome. **Reject:** `RejectPlanCommand` marks the pack rejected; no follow-up exists, so nothing can be written.
+- **Approve.** `ApprovePlanCommand(packId, decision, selectedItemIds)` (the `DecisionContext` is the caller's verified identity and channel) accepts only ids in the proposal (an empty list keeps all), builds a Scrum Master follow-up (`FollowUpKind.PlanningPack`, ceremony `SprintPlanning`) with `SetIteration` for every kept item and `Assign` for items whose owner was a suggestion, approves it with the approver's name and channel, and publishes `FollowUpApproved`, so `ApplyApprovedChangesCommand` writes through `FollowUp.GetApprovedChanges` as always (F7). The planning card is then replaced with the outcome. **Reject:** `RejectPlanCommand` marks the pack rejected; no follow-up exists, so nothing can be written.
 - **DEMO: owners are tags.** The sandbox has one real user, so with `Demo:HonorOwnerTags` an `Assign` change sets the `demo-owner-{key}` tag (replacing the old one) instead of `System.AssignedTo`; the comment still says "Assigned to {name}". `// PROD: AssignedTo only.`
 - **Teams.** `planning-pack.json` has **Approve plan** (`approve-plan`) and **Reject** (`reject-plan`); the approver is `Activity.From.Name`, the same rule as follow-ups. Chat: "prepare sprint planning" runs `PreparePlanningCommand` for names listed in `Team:ScrumMasters` only.
 - **Portal.** The Planning page: availability inputs, **Prepare pack**, the draft goal, capacity bars, the selection with a checkbox per item, excluded items with reasons, **Approve plan** with **Approving as**, and links to the written items in Azure DevOps.
@@ -645,7 +648,7 @@ The retrospective runs on the standup's voice gateway and `FloorControl`; only t
 
 - **Inputs.** `IIterationReader.FindIterationAsync` (the named iteration, else the next one, else the current one) returns dates; Azure DevOps sends them as UTC midnight and they are used as dates. The standup time and working days come from the team's `Schedule` (default weekdays 09:30), the time zone from `Team.TimeZone`, the standup length from `Team.StandupMinutes`.
 - **Layout.** A standup on every working day at the standup time. Planning follows the standup on the first working day; the review (only when `Team:HasSprintReview`) and the retrospective follow it, back to back, on the last working day. Lengths: `Calendar:PlanningMinutes` (60), `Calendar:ReviewMinutes` (30), `Calendar:RetroMinutes` (45). Local times are converted to UTC with the team's zone, so daylight saving is respected.
-- **Approve.** `ApproveSprintCalendarCommand(id, approver)` is refused without a named approver and when `ICalendarWriter.Enabled` is false (`Calendar:Organizer` empty; the error points to the `.ics`). `SprintCalendar.Approve` returns the meetings still to create; `GraphCalendarWriter` creates each as an Outlook event with `isOnlineMeeting` and `onlineMeetingProvider=teamsForBusiness` in the organizer's calendar, invites every active roster member with an email, and returns the event id and Teams join URL. `transactionId` makes a retry idempotent; a failure part-way keeps what exists (status `Approving`) and a retry creates the rest. Meetings with no join URL are treated as failures.
+- **Approve.** `ApproveSprintCalendarCommand(id, decision)` is refused without an identified, authorised approver (ADR 0017) and when `ICalendarWriter.Enabled` is false (`Calendar:Organizer` empty; the error points to the `.ics`). `SprintCalendar.Approve` returns the meetings still to create; `GraphCalendarWriter` creates each as an Outlook event with `isOnlineMeeting` and `onlineMeetingProvider=teamsForBusiness` in the organizer's calendar, invites every active roster member with an email, and returns the event id and Teams join URL. `transactionId` makes a retry idempotent; a failure part-way keeps what exists (status `Approving`) and a retry creates the rest. Meetings with no join URL are treated as failures.
 - **Scheduler.** The standup meetings' join URLs are stored on the team's `Schedule.Meetings` (date and URL); `Schedule.JoinUrlFor(date)` prefers the calendar's meeting over the pasted `JoinUrl`, and the evaluator and `RunScheduleTickHandler` use it. Approving also sets the schedule to enabled and `acs` mode, because auto-joining needs both. `// PROD: ask first, or only fill the URLs and leave the switch to the Scrum Master.`
 - **Fallback.** `GET /api/calendar/{iteration}.ics?teamId=` returns the plan as an iCalendar file (`IcsFormatter`; UTC times, no attendees). This route did not exist before M9d.
 - **Portal.** Schedule page, **Proposed sprint calendar**: the plan, **Propose calendar**, the latest proposal's status, **Approving as**, **Approve**, **Reject**, and the `.ics` link.
@@ -674,7 +677,7 @@ The retrospective runs on the standup's voice gateway and `FloorControl`; only t
 `create_response: false` lets the gateway, not the VAD, decide when the agent speaks. If the service ignores it, cancel unsolicited responses with `response.cancel` when the agent does not hold the floor. Use semantic VAD v2 if it is exposed as an option.
 
 ### 11.2 Latency
-The gateway measures end of speech (`input_audio_buffer.speech_stopped`) to the first agent audio byte for every agent turn. It stores p50 and p95 per session and shows them live in the portal. Target p50 is about 1,000 ms for US participants. Pre-computing `reconcile_update` (section 10.2) is the main lever.
+The gateway logs inside a scope carrying the session's `CorrelationId` and `SessionId` (M11, ADR 0017), so every structured line for a turn can be tied to the audit chain. It measures end of speech (`input_audio_buffer.speech_stopped`) to the first agent audio byte for every agent turn. It stores p50 and p95 per session and shows them live in the portal. Target p50 is about 1,000 ms for US participants. Pre-computing `reconcile_update` (section 10.2) is the main lever.
 
 ### 11.3 Floor control (state machine in the gateway)
 
@@ -700,9 +703,14 @@ Implement it as a pure, table-tested class with no I/O.
 
 ---
 
+### 11.4 Teams and capacity (M11)
+
+A session carries its team id, and the floor, the gateway and the bridge never read a global team. Concurrent standups are limited per host by `CapacityGovernor` (default 3, a 5 s stagger); a standup that cannot start waits with a reason and the team is notified, and the gateway log scope carries `TeamId`. Three concurrent Simulated Room standups measured p50 3400 ms and p95 4919 ms (G9).
+
 ## 12. Teams and Microsoft 365 Copilot
 
 - One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/zava-scrum-agent.zip` for the demo users.
+- **Approver identity (M11, ADR 0017).** A card action's approver is `Activity.From.AadObjectId` with the activity's tenant, never `From.Name`. The decision is accepted only when the tenant is the deployment's and the object id is a configured administrator (`Identity:AdminObjectIds`) or the roster member (`Member.EntraObjectId`) the follow-up is for; plans, calendars and ceremony packs are administrator only. The chat command "prepare sprint planning" is decided the same way.
 - Proactive messages use conversation references captured when a user messages the bot or it is added (`ScrumAgent` stores them). The portal does not show who has the app installed. `TeamsBotMessenger` sends every card to **every stored conversation** and updates the card in place (ADR 0005). `// PROD: route to the meeting chat, the team channel and the Scrum Master by Entra object id.`
 
 **Cards** (`CardKind`: `PreBrief`, `FollowUp`, `Absent`, `Escalation`, `FollowUpResult`, `Recap`, `Unblock`, `PlanningPack`, `RetroActions`, `ReviewPack`):
@@ -733,22 +741,33 @@ Implement it as a pure, table-tested class with no I/O.
 | Team | Azure DevOps org, project, team and area; time zone; standup length; stale days; escalation days; human Scrum Master; Teams channel |
 | Roster | Members pulled from the Azure DevOps team; Teams identity mapping; pronunciation; speaking order; active or absent today |
 | Schedule | Standup time, days and Teams join URL; bridge mode (`simulated` or `acs`); "Prepare now" and "Start now" buttons |
-| Prompts | Edit any file in `agents/instructions/` (text editor, **Save prompt**). **As built:** one set of prompts for the whole deployment (not per team) and no version numbers; saved edits are stored as overrides (`prompt-overrides.json` or Cosmos) |
+| Prompts | Edit any file in `agents/instructions/` (text editor, **Save prompt**). **As built (ADR 0018):** the selected team's override, then a deployment override, then the default file; the page shows which is in effect. No version numbers |
+| Team switcher, Teams, Onboard a team, Fleet | **M11 (ADR 0018).** The switcher lists only the caller's teams. Admin only: the Teams page (status, next standup, last run, open follow-ups, connection health; edit, test, roster sync, schedule, binding, ceremonies, pause, archive), the onboarding wizard, and the fleet dashboard |
 | Live console | Current state, current speaker, time remaining, captions, events as they are recorded, latency p50; buttons: Begin, Skip speaker, Mute agent, Unmute, Take over, Hand back, End standup, Reset demo, Start in Teams |
 | Sessions | List; detail with transcript, events, pre-brief, follow-ups and their status |
 | Reports | Sprint summary and monthly report; KPI charts with the "illustrative" label when fixture-backed |
 | Overview, Planning, Retrospective, Story Writer, Models and email | **As built (M8):** the four-step flow overview; load, carry-over, readiness gaps and suggested owners; start-stop-continue draft; user story draft from a parked topic; realtime model cost and latency comparison and the email outbox |
 
-**As built:** the portal has 13 pages in a sidebar layout (light and dark), is protected by Container Apps Easy Auth, and Prompts edits are stored in Cosmos so they survive restarts. Sign-in uses MSAL against Zava's or the demo tenant; any signed-in user may edit in the PoC.
+**As built:** the portal has 13 pages in a sidebar layout (light and dark) and Prompts edits are stored in Cosmos so they survive restarts.
+
+**Sign-in and roles (M11, ADR 0017).** The SPA signs in with MSAL.js and sends the Entra bearer token (scope `api://{portal client id}/access_as_user`) on every call; the public client id and tenant come from `GET /portal-config.json`. The API validates the token itself (signature, issuer, audience, lifetime, `tid` equal to the tenant, a valid `oid`) and never reads Easy Auth headers; Easy Auth stays in front as an outer gate only. Three app roles on the portal app registration: `Zava.Scrum.Admin` (operate sessions, schedules and settings), `Zava.Scrum.Approver` (approve or reject follow-ups, plans and calendars) and `Zava.Scrum.Reader` (read, including `GET /api/audit/{correlationId}`). They are app-wide; team-scoped access comes later. The approver is the caller's Entra identity: the pages show **Deciding as {signed-in account}** and the request body names nobody. With no `Portal:ClientId` the API accepts a fixed local principal holding every role in the Development environment only; elsewhere it refuses every portal call.
 
 ---
 
 ## 14. API (Zava.Scrum.Api)
 
+**Authorisation (ADR 0018).** Every route is behind sign-in and the team filter: it finds the team the request is about (route, query, body, or the team of the session, follow-up, plan, calendar or audit chain named) and checks the caller's role in that team. A team the caller is not in is 404; a role that is too low is 403. Registry routes need the Admin app role. `/api/health` and `/api/teams` (which filters its own answer) name no team. A route that names no team is refused.
+
 | Method | Route | Endpoint file | Sends |
 |---|---|---|---|
 | GET | `/api/teams/{id}` | `TeamsEndpoints.cs` | `GetTeamQuery` |
-| PUT | `/api/teams/{id}` | `TeamsEndpoints.cs` | `UpdateTeamSettingsCommand` |
+| GET, POST | `/api/teams` | `TeamsEndpoints.cs` | `ListTeamsQuery` (the caller's teams; every team for an Admin), `CreateTeamCommand` (Admin; starts as a draft) |
+| PUT, DELETE | `/api/teams/{id}` | `TeamsEndpoints.cs` | `UpdateTeamCommand` (Admin: connection, ceremonies, bindings, status), `ArchiveTeamCommand` (Admin; never a hard delete) |
+| PUT | `/api/teams/{id}/settings` | `TeamsEndpoints.cs` | `UpdateTeamSettingsCommand` (team lead; cannot change the Azure DevOps fields) |
+| POST | `/api/teams/{id}/test-connection` | `TeamsEndpoints.cs` | `TestTeamConnectionQuery`; reports the step that failed |
+| GET, PUT, DELETE, POST | `/api/teams/{id}/memberships`, `/{objectId}`, `/sync` | `TeamsEndpoints.cs` | `ListMembershipsQuery`, `SetMembershipCommand`, `RemoveMembershipCommand`, `SyncMembershipsFromGroupCommand` |
+| GET | `/api/fleet` | `TeamsEndpoints.cs` | `GetFleetQuery` (Admin) |
+| GET, POST | `/api/ado/projects`, `/api/ado/teams`, `/api/ado/test-connection` | `TeamsEndpoints.cs` | Azure DevOps discovery for the onboarding wizard (Admin) |
 | GET | `/api/teams/{id}/members` | `TeamsEndpoints.cs` | `GetRosterQuery` |
 | POST | `/api/teams/{id}/members/sync` | `TeamsEndpoints.cs` | `SyncRosterCommand` |
 | GET, PUT | `/api/teams/{teamId}/schedule` | `ScheduleEndpoints.cs` | `GetScheduleQuery`, `UpdateScheduleCommand` |
@@ -761,11 +780,11 @@ Implement it as a pure, table-tested class with no I/O.
 | GET | `/api/calendar/{iteration}.ics?teamId=` | `CalendarEndpoints.cs` | `GetSprintCalendarQuery`; returns `text/calendar` (the fallback when Graph is not configured) |
 | GET | `/api/calendar/proposals?teamId=` | `CalendarEndpoints.cs` | `ListSprintCalendarsQuery` |
 | POST | `/api/calendar/propose` | `CalendarEndpoints.cs` | `ProposeSprintCalendarCommand`; body `{teamId, iteration?}`; returns the proposal id |
-| POST | `/api/calendar/proposals/{id}/approve`, `/reject` | `CalendarEndpoints.cs` | `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand`; body `{approver}` |
+| POST | `/api/calendar/proposals/{id}/approve`, `/reject` | `CalendarEndpoints.cs` | `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand` (approver role; no body) |
 | POST | `/api/planning/prepare` | `PlanningEndpoints.cs` | `PreparePlanningCommand`; body `{teamId}`; returns the pack id |
 | GET | `/api/planning/pack?teamId=&packId=` | `PlanningEndpoints.cs` | `GetPlanningPackQuery` (latest when `packId` is omitted) |
-| POST | `/api/planning/packs/{id}/approve` | `PlanningEndpoints.cs` | `ApprovePlanCommand`; body `{approver, selectedItemIds?}`; returns the follow-up id |
-| POST | `/api/planning/packs/{id}/reject` | `PlanningEndpoints.cs` | `RejectPlanCommand`; body `{approver}` |
+| POST | `/api/planning/packs/{id}/approve` | `PlanningEndpoints.cs` | `ApprovePlanCommand`; body `{selectedItemIds?}`; approver role; returns the follow-up id |
+| POST | `/api/planning/packs/{id}/reject` | `PlanningEndpoints.cs` | `RejectPlanCommand` (approver role; no body) |
 | PUT | `/api/teams/{id}/members/{memberId}/availability` | `TeamsEndpoints.cs` | `UpdateMemberAvailabilityCommand`; body `{percent}` |
 | POST | `/api/sessions/prepare` | `SessionsEndpoints.cs` | `PrepareStandupCommand` |
 | GET | `/api/sessions?teamId=` | `SessionsEndpoints.cs` | `ListSessionsQuery` |
@@ -779,7 +798,9 @@ Implement it as a pure, table-tested class with no I/O.
 | GET | `/api/followups?teamId=&status=` | `FollowUpsEndpoints.cs` | `ListFollowUpsQuery` |
 | GET | `/api/followups/{id}` | `FollowUpsEndpoints.cs` | `GetFollowUpQuery` |
 | POST | `/api/followups/propose` | `FollowUpsEndpoints.cs` | `ProposeAdoChangeCommand` |
-| POST | `/api/followups/{id}/approve`, `/reject` | `FollowUpsEndpoints.cs` | `ApproveFollowUpCommand` (portal: channel `Portal`), `RejectFollowUpCommand` (the Teams card actions send the same commands with channel `Teams`) |
+| POST | `/api/followups/{id}/approve`, `/reject` | `FollowUpsEndpoints.cs` | `ApproveFollowUpCommand`, `RejectFollowUpCommand` with a `DecisionContext` built from the validated token (approver role; any body is ignored). The Teams card actions send the same commands with channel `Teams` |
+| GET | `/api/audit/{correlationId}` | `AuditEndpoints.cs` | `GetAuditChainQuery` (reader role); the full trace id or the `zsa-` tag |
+| GET | `/portal-config.json` | `PortalConfigEndpoint.cs` | Public client id and tenant for MSAL (anonymous, outside `/api`) |
 | POST | `/api/followups/{id}/apply` | `FollowUpsEndpoints.cs` | `ApplyApprovedChangesCommand` (retry of a failed write) |
 | GET | `/api/cards?sessionId=` | `FollowUpsEndpoints.cs` | `ListCardsQuery` (card outbox) |
 | GET | `/api/reports/kpis`, `/sprint`, `/monthly` | `ReportsEndpoints.cs` | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery` |
@@ -807,11 +828,13 @@ Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends on
 
 | Collection document | Contents |
 |---|---|
-| `teams.json` | Team settings (`behaviours` adds `AtRiskDays` and `AtRiskRemainingPct`; `RecapChannelKey`) |
+| `teams.json` | Team registry (`behaviours` adds `AtRiskDays` and `AtRiskRemainingPct`; `RecapChannelKey`; **M11** `Status`, `Ado` (organisation, project, team, area path), `TeamsBindings`, `Ceremonies`, `EntraGroupId`, reserved `KnowledgeBaseIds` and `WorkSignalsEnabled`) |
+| `memberships.json` | **M11.** Who is in which team and in what role (TeamLead, Member, Reader), keyed by Entra object id |
 | `members.json` | Roster |
 | `schedules.json` | Schedules |
 | `sessions.json` | Sessions of every ceremony (`Kind`, default `DailyScrum`), including their events (a blocker carries `UnblockerMemberId`) and latency samples |
 | `planning-packs.json` | Sprint planning packs (proposal, draft goal, decision) |
+| `approval-records.jsonl` / Cosmos container `ApprovalRecords` (partition `/correlationId`) | **M11.** The append-only approval trail (`ApprovalRecord`): decision and write records with the proposal hash, the approver's `ActorIdentity` and the Azure DevOps revisions. Never updated or deleted; the managed identity has create and read only |
 | `followups.json` | Follow-ups and approval state (`Ceremony`, `ForScrumMaster`, `ApprovedVia`; `kind` adds `Unblock`, `PlanningPack`, `RetroActions`, `ReviewPack`) |
 | `cards.json`, `bot-activities.json`, `conversations.json` | Card outbox, sent bot activities, stored conversation references |
 | `emails.json` | Email outbox |
@@ -942,7 +965,10 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Bot:AppId`, `Bot:TenantId`, `Bot:TunnelHostSuffix` | Teams bot (an empty `Bot:AppId` turns the bot off); dev-tunnel guard | `.devtunnels.ms` locally, empty in Azure |
 | `Connections:ServiceConnection:Settings:ClientId`, `:ClientSecret` (**secret**), `:TenantId`, `:AuthorityEndpoint`, `:AuthType`, `:Scopes`; `ConnectionsMap` | Microsoft 365 Agents SDK connection | `AuthType` `ClientSecret` |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` (environment variable) | Turns on OpenTelemetry export to Application Insights; empty means no telemetry | Set by Bicep in Azure; empty locally |
-| `Team:ScrumMasters` | Display names allowed to run the "prepare sprint planning" chat command (a list or comma-separated); nobody when empty | Empty |
+| `Identity:TenantId` (falls back to `Azure:TenantId`, `Bot:TenantId`) | The tenant every approver must belong to; blank means nothing can be approved | Empty |
+| `Identity:AdminObjectIds` | Entra object ids that count as administrators in Teams (decide any follow-up, plan or calendar; run "prepare sprint planning"); replaces `Team:ScrumMasters` | Empty |
+| `Portal:ClientId` | The portal app registration the API validates tokens for; empty is allowed only in the Development environment | Empty |
+| `Cosmos:ApprovalRecordsContainer` | The append-only approval trail container | `ApprovalRecords` |
 | `Features:EmailFollowUps` | Email copy of follow-ups (switch) | `false` |
 | `Email:Mode` (`Outbox` or `Graph`), `Email:Sender` | Delivery: outbox only, or Microsoft Graph `sendMail` from this mailbox (needs `Mail.Send` for the managed identity or developer identity, scoped by an application access policy) | `Outbox`; `Sender` empty |
 | `Flags:StaleDays`, `Flags:EscalateBlockerAfterDays`, `Flags:AtRiskDays`, `Flags:AtRiskRemainingPct` | Default flag and escalation thresholds for the seeded team (the portal can change the first two per team) | 2, 2, 2, 0.5 |

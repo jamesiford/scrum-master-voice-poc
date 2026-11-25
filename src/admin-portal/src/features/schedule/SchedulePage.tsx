@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getSchedule, updateSchedule } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -19,7 +19,8 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
  * @returns The page.
  */
 export function SchedulePage() {
-  const schedule = useApiQuery((signal) => getSchedule(TEAM_ID, signal), TEAM_ID);
+  const teamId = useTeamId();
+  const schedule = useApiQuery((signal) => getSchedule(teamId, signal), teamId);
   const [enabled, setEnabled] = useState(false);
   const [days, setDays] = useState<string[]>([]);
   const [time, setTime] = useState('09:30');
@@ -27,7 +28,7 @@ export function SchedulePage() {
   const [joinUrl, setJoinUrl] = useState('');
   const [saved, setSaved] = useState(false);
   const save = useApiAction(() =>
-    updateSchedule(TEAM_ID, { enabled, days, startTime: time, mode, joinUrl: joinUrl || null }),
+    updateSchedule(teamId, { enabled, days, startTime: time, mode, joinUrl: joinUrl || null }),
   );
 
   useEffect(() => {

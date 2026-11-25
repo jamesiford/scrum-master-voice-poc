@@ -22,7 +22,7 @@ internal sealed class UpdateTeamSettingsHandler(ITeamRepository teams) : IReques
                 Name = request.Name,
                 TimeZone = request.TimeZone,
                 StandupMinutes = request.StandupMinutes,
-                Ado = team.Ado with { Project = request.Project, Team = request.AdoTeam, AreaPath = request.AreaPath },
+                // The Azure DevOps connection is registry data: only an Admin changes it (UpdateTeamCommand), so a team lead cannot repoint their team at another team's project or area path (ADR 0018).
                 Behaviours = team.Behaviours with { StaleDays = request.StaleDays, EscalateBlockerAfterDays = request.EscalateBlockerAfterDays },
                 SprintGoal = request.SprintGoal,
             },

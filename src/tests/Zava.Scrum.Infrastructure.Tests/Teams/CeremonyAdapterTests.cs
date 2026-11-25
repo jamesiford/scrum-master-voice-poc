@@ -1,3 +1,4 @@
+using Zava.Scrum.Domain.Teams;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -36,23 +37,26 @@ public sealed class CeremonyAdapterTests
         Assert.Null(card["actions"]);
     }
 
+    private static Team BoundTeam(params string[] keys) =>
+        new("t", "T", "UTC", 15, new AdoSettings("o", "p", "t", "a"), new TeamBehaviours(), "", TeamsBindings: [.. keys.Select(k => new TeamsBinding("tenant", null, k, null, BindingPurpose.Recap))]);
+
     [Fact]
     public void Select_Recap_GoesToTheRecapChannelAndMeetingChatOnly()
     {
         var message = new TeamsMessage(CardKind.Recap, "t", Guid.NewGuid(), "k", "r", "r", [], Route: CardRoute.Recap, RecapChannelKey: "19:chan@thread.tacv2");
 
-        var keys = CardRouting.Select(message, ["a-dm", "19:chan@thread.tacv2", "19:meeting_abc@thread.v2", "b-dm"]);
+        var keys = CardRouting.Select(message, ["a-dm", "19:chan@thread.tacv2", "19:meeting_abc@thread.v2", "b-dm"], BoundTeam("19:chan@thread.tacv2", "19:meeting_abc@thread.v2"));
 
         Assert.Equal(["19:chan@thread.tacv2", "19:meeting_abc@thread.v2"], keys);
     }
 
     [Fact]
     public void Select_RecapWithNeitherChannelNorMeetingChat_FallsBackToEveryConversation() =>
-        Assert.Equal(["a-dm", "b-dm"], CardRouting.Select(new TeamsMessage(CardKind.Recap, "t", Guid.NewGuid(), "k", "r", "r", [], Route: CardRoute.Recap), ["a-dm", "b-dm"]));
+        Assert.Equal(["a-dm", "b-dm"], CardRouting.Select(new TeamsMessage(CardKind.Recap, "t", Guid.NewGuid(), "k", "r", "r", [], Route: CardRoute.Recap), ["a-dm", "b-dm"], BoundTeam("a-dm", "b-dm")));
 
     [Fact]
     public void Select_FollowUpCard_GoesToEveryConversation() =>
-        Assert.Equal(["a-dm", "19:chan"], CardRouting.Select(new TeamsMessage(CardKind.FollowUp, "t", Guid.NewGuid(), "k", "r", "r", [], RecapChannelKey: "19:chan"), ["a-dm", "19:chan"]));
+        Assert.Equal(["a-dm", "19:chan"], CardRouting.Select(new TeamsMessage(CardKind.FollowUp, "t", Guid.NewGuid(), "k", "r", "r", [], RecapChannelKey: "19:chan"), ["a-dm", "19:chan"], BoundTeam("a-dm", "19:chan")));
 
     [Fact]
     public void ToRequest_Email_IsAGraphSendMailBody()
@@ -76,7 +80,7 @@ public sealed class CeremonyAdapterTests
         Assert.Equal(HttpMethod.Patch, spy.Method);
         Assert.Contains("_apis/wit/workitems/7", spy.Url, StringComparison.Ordinal);
         Assert.Equal(["System.IterationPath", "System.History"], spy.Paths());
-        Assert.Contains("Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", spy.Body, StringComparison.Ordinal);
+        Assert.Contains("Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning. Correlation: zsa-", spy.Body, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -108,11 +112,13 @@ public sealed class CeremonyAdapterTests
     {
         using var http = new HttpClient(spy) { BaseAddress = new Uri("https://dev.azure.com/org/") };
         var f = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), null, FollowUpKind.PlanningPack, "m", [change], new DateOnly(2026, 1, 8), Now, ceremony, forScrumMaster: true);
-        f.Approve("Dana", Now, ApprovalChannel.Portal);
+        f.Approve(Actors.Dana(Zava.Scrum.Domain.Identity.ActorSource.Portal), Now, ApprovalChannel.Portal);
 
         var result = await new AdoWorkItemWriter(http, Options.Create(new DemoOptions { HonorOwnerTags = false }), NullLogger<AdoWorkItemWriter>.Instance).ApplyAsync(f.GetApprovedChanges().Value[0], CancellationToken.None);
 
         Assert.True(result.IsSuccess);
+        Assert.Equal(3, result.Value.Revision);
+        Assert.True(result.Value.Written);
     }
 
     private sealed class SpyHandler : HttpMessageHandler
@@ -132,7 +138,7 @@ public sealed class CeremonyAdapterTests
             Url = request.RequestUri!.PathAndQuery.TrimStart('/');
             Url = Url.StartsWith("org/", StringComparison.Ordinal) ? Url["org/".Length..] : Url;
             Body = await request.Content!.ReadAsStringAsync(cancellationToken);
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":7,\"rev\":3}") };
         }
     }
 }

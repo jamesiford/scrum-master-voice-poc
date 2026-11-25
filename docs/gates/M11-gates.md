@@ -58,9 +58,49 @@ API-reported session p50 per run: 3166, 3116, 3072 ms.
 Percentiles are nearest-rank over every timed turn in every run of the section; no values are interpolated.
 
 
-## Traceability gate
+## Identity and traceability (prompt 3: G2 and G3)
 
-`--check-audit` fails by design until the audit endpoint exists (prompt 3). Status: **failing, not yet testable**.
+Measured on the greenfield environment `zavagf` (`eastus2`), built by `azd up` from an empty resource group with the prompt 3 code (28 min 5 s: 24 min 28 s provisioning, 3 min 37 s deployment). Logs are in `docs/gates/m11-p3-logs/`.
+
+### G2: identity (passed)
+
+| Check | Evidence |
+| --- | --- |
+| Display name alone is never an identity | `ActorIdentityTests`, `TeamsActorTests`: a name, an empty id or the zero id is refused (`identity.object_id_required`); `ApprovalIdentityTests.Approve_ADisplayNameThatMatchesTheRosterButNotTheObjectId_...` refuses a Teams user called "Priya S." whose object id is not the roster member's, writes nothing and appends no record |
+| Authority by object id, tenant and role | `ApprovalAuthorityTests` (own follow-up, someone else's, Scrum Master items, administrator, wrong tenant even for an administrator, wrong channel, each portal role) |
+| Legacy decisions | `FollowUpTests.Restore_LegacyApprovalWithNoIdentity_...`: shows `unverified (legacy)`, is never written, cannot be approved again |
+| In-app token validation | `PortalAuthorizationTests`: no token, Easy Auth headers only, another tenant, wrong audience, wrong issuer, no `oid`, no `tid`, expired, wrong signing key: all 401 |
+| Roles on every route | `PortalAuthorizationTests`: reader and no-role behaviour; approve with Reader or Admin only is 403; operate (`/api/demo/reset`) is 403 for Reader and Approver and allowed for Admin; a test enumerates every `/api` route: reader on all, admin on every change, approver on every approve or reject |
+| Roster object id from Graph | Live: after `POST /api/teams/team-payments/members/sync` the member `admin` (mapped to `ADMIN_UPN`) carried `entraObjectId` `aeaec64b-...`, equal to `ADMIN_OBJECT_ID`; the API log shows the Graph `GET /v1.0/users/{upn}` calls. Daniel and Maya have no account, so none |
+| Fail closed with no client id | `NoClientIdTests`: outside Development every portal route is 401, health stays up |
+
+Test totals after this change: Domain 348, Application 129, Infrastructure 64, Api 26, Architecture 7; all pass. Build has no warnings.
+
+### G3: chain up to the Azure DevOps comment (passed; author attribution is prompt 5)
+
+- **Application tests, real mediator:** `ApprovalIdentityTests.AuditChain_StandupApprovedInTeamsAndInThePortal_IsCompleteBackToTheSession` approves one follow-up as a Teams member and one in the portal and asserts: the session, two proposals with hashes, four append-only records (Approved then Applied for each, the Applied record pointing at its decision and carrying revisions), channels Teams then Portal, and every written attribution ending `Correlation: zsa-<tag>`. Other tests prove the write is refused without a matching approval record, or if the proposal changes after approval, and that a chain with a missing link lists it.
+- **Deployed, `verify.ps1`:** all seven checks pass (`docs/gates/m11-p3-logs/verify-pass.log`), including a follow-up approved through the API with the deployer's token, the comment found on work item 1 with `Correlation: zsa-...`, and `Audit chain complete`: `zsa-31116ae1b878: approved by object id aeaec64b-d720-4996-9022-02fa0dcf043d, revision 31 on #1`. The records are read back from the Cosmos `ApprovalRecords` container.
+- **Deployed, `GateRunner --check-audit`:** three runs, three complete chains (`zsa-ae925f81550b`, `zsa-ecaca2f47de7` and the first run's), each with 2 records and the approver's object id. A real comment reads: "Approved by System Administrator in the portal, proposed by Zava Scrum Agent from the 2026-11-25 standup. Correlation: zsa-ecaca2f47de7".
+- **Earlier attempts, stated:** the first `azd up` stopped because azd needed `adminObjectId` before the preprovision hook could set it (now an optional parameter that `entra-post.ps1` also applies), and the second at a Graph query that does not support filtering `appRoleAssignedTo` by principal (now filtered in the hook). The first `verify.ps1` timed out in the standup after 12 minutes on a fresh deployment (bridge health also timed out once); the second run was interrupted by an environment change I made during it. The harness now waits up to 20 minutes, and the third run passed.
+
+### Latency re-run (deployed, decision model on, three runs, `docs/gates/m11-p3-deployed/`)
+
+| Hop (p50 / p95 ms, n 32) | Prompt 3 | Deployed M10 baseline (n 36) |
+| --- | ---: | ---: |
+| Total (speech end to first audio) | 3071 / 4755 | 2994 / 4081 |
+| Analyser | 25 / 26 | 25 / 28 |
+| Decision model call | 154 / 271 | 147 / 242 |
+| Orchestration | 1560 / 1913 | 1446 / 1889 |
+| Voice Live first audio | 1524 / 2622 | 1440 / 2584 |
+
+The audio path does not use the mediator for identity or the audit trail, and nothing was added to a turn, so the difference (+77 ms at p50, +674 ms at p95) is within what three runs against Voice Live vary by (a different Container Apps environment from the baseline, same region and models). It is recorded, not explained away.
+
+### Not verified
+
+- **Cosmos platform denial.** The custom role gives the managed identity create and read only on `ApprovalRecords`; the code never replaces, and writes and reads through it worked. I did not attempt a replace through the data plane to see the platform refuse it.
+- **A Teams approval from a real Teams user.** The Teams app upload is a human gate, so the `Activity.From.AadObjectId` path is covered by unit tests with constructed activities, not a live card action.
+- **Portal sign-in in a browser.** The SPA build passes `tsc`, ESLint and Prettier, and the API accepts the token the SPA would send (the verify token has the same audience and scope), but I did not drive the MSAL sign-in redirect in a browser.
+- **Destroy and rebuild** is still open from G8 (prompt 2); this deployment is a second `azd up`, not a teardown.
 
 ## Greenfield (G8)
 
@@ -92,3 +132,42 @@ Raw JSON and `summary.md` are in `docs/gates/baseline-M10-deployed/` (three runs
 | Voice Live first audio | 1440 / 2584 | 1381 / 1894 |
 
 Against the local baseline (3827 / 3116 ms p50) the deployed runtime is faster, and the decision model adds about 0.17 s at p50 (2994 against 2828 ms) rather than 0.7 s.
+
+## G9: concurrent standups across teams (westus3, `zavaw3`, build c3083b7)
+
+Three Simulated Room standups ran at the same time through `tools/GateRunner --teams team-payments,team-g9-b,team-g9-c --check-audit`. The two extra teams were registered through the team registry API as copies of team-payments (same Azure DevOps project and area) and set Active. Ten teams were not run live (decision: three prove concurrency; realtime quota in westus3 is 5 per model).
+
+| Measure | Result |
+| --- | --- |
+| Concurrent standups | 3, all completed, 379 s wall clock |
+| Timed turns | 36 (12 per standup) |
+| Total p50 / p95 | 3400 ms / 4919 ms |
+| Single-standup verify run, same environment | p50 3439 ms / p95 4400 ms (10 turns) |
+| API-reported session p50 | 3544, 3262, 3492 ms |
+| Audit chain per team | complete (session, proposal, approval record), 3 of 3 |
+
+Raw results: `docs/gates/g9-three-concurrent-westus3/`. Not shown by this run: cross-team isolation under load beyond the audit chains, and real Teams or Voice Live capacity beyond three sessions.
+
+### Quota request for ten concurrent standups (to be filed by a subscription owner)
+
+Realtime capacity is the limit. Request, in westus3 (and the chosen production region): `gpt-realtime-2.1` and `gpt-live-1`, GlobalStandard, raise from 5 to at least 10 each (one deployment slot per concurrent standup was assumed; measure before relying on it). Parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: **to be filed by the owner** (a subscription owner; not filed by this work).
+
+### Note: bridge health timeout in the first westus3 verify run
+
+The bridge /healthz route does no slow work and no browser work (Chromium launches lazily on the first Teams join, not at start). Probed afterwards it answered 200 in about 0.5 s each time (five probes). The failing check ran about a minute after the new bridge revision was created, so the replica was most likely still starting; this is a hypothesis, not proven. Changes: HTTP startup, readiness and liveness probes on /healthz for both apps, and erify.ps1 retries the health routes for up to three minutes. The G8 rebuild runs erify.ps1 immediately after zd up and will show whether the timeout recurs.
+
+## G8: destroy and rebuild in westus3 (`zavaw3`): closed by the owner after one rebuild
+
+Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStandard`. Build 090bf4d (the Graph `--resource` fix on top of 3A).
+
+| Step | Result | Time |
+| --- | --- | --- |
+| First `azd up` (build c3083b7) | passed | 14m30s |
+| First `verify.ps1` | 6 of 7; bridge health timed out once | about 4 min |
+| `azd down --purge` | passed | 27m09s |
+| Rebuild `azd up` from an empty group, build 090bf4d | **passed** | 15m25s |
+| `verify.ps1` on the rebuild | **7 of 7 passed** (both health routes 200, bearer token, bot 401, Simulated Room standup, follow-up written to Azure DevOps, audit chain complete). Single-standup p50 3470 ms, questions only p50 3730 ms and p95 6427 ms (n 9). | 6m50s |
+
+Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
+
+Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. `zavaw3` is torn down.

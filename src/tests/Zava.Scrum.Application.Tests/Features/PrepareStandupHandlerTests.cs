@@ -44,6 +44,7 @@ public sealed class PrepareStandupHandlerTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes();
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(members);
         services.AddSingleton<ISessionRepository>(sessions);

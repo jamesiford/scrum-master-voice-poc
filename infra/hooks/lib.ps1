@@ -30,7 +30,7 @@ function Write-Check([string]$Status, [string]$Name, [string]$Detail = '') {
 # AppRoleAssignment.ReadWrite.All for an administrator).
 function Invoke-Graph([string]$Method, [string]$Path, $Body = $null) {
   $uri = if ($Path.StartsWith('http')) { $Path } else { "https://graph.microsoft.com/v1.0$Path" }
-  $azArgs = @('rest', '--method', $Method, '--url', "`"$uri`"", '--headers', 'Content-Type=application/json')
+  $azArgs = @('rest', '--method', $Method, '--url', "`"$uri`"", '--resource', 'https://graph.microsoft.com', '--headers', 'Content-Type=application/json')
   $tmp = $null
   if ($null -ne $Body) {
     $tmp = New-TemporaryFile
@@ -45,7 +45,8 @@ function Invoke-Graph([string]$Method, [string]$Path, $Body = $null) {
   finally { if ($tmp) { Remove-Item $tmp -ErrorAction SilentlyContinue } }
 }
 
-function Get-GraphToken { az account get-access-token --resource-type ms-graph --query accessToken -o tsv }
+# --resource names Graph explicitly: without it the CLI can reuse a cached token minted under outdated policies (TokenCreatedWithOutdatedPolicies).
+function Get-GraphToken { az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv }
 
 function Get-TokenClaims([string]$Jwt) {
   $p = $Jwt.Split('.')[1].Replace('-', '+').Replace('_', '/')

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "6f0e1d6a-2f6d-4f6a-8d2e-7a1b9c3d4e01",
+    "value": "Zava.Scrum.Admin",
+    "displayName": "Zava Scrum administrator",
+    "description": "Operates sessions, schedules, settings and the demo. Cannot approve unless also an approver."
+  },
+  {
+    "id": "6f0e1d6a-2f6d-4f6a-8d2e-7a1b9c3d4e02",
+    "value": "Zava.Scrum.Approver",
+    "displayName": "Zava Scrum approver",
+    "description": "Approves or rejects follow-ups, sprint plans and sprint calendars. Only an approval permits an Azure DevOps write."
+  },
+  {
+    "id": "6f0e1d6a-2f6d-4f6a-8d2e-7a1b9c3d4e03",
+    "value": "Zava.Scrum.Reader",
+    "displayName": "Zava Scrum reader",
+    "description": "Reads sessions, follow-ups, reports and the audit chain."
+  }
+]

@@ -6,7 +6,7 @@ namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Deletes the comments this agent wrote. Only the writing identity may delete a comment, which is why this lives in the API.</summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/rest/api/azure/devops/wit/comments (list, delete; api-version 7.1-preview.4).</remarks>
-public sealed class AdoDemoReset(HttpClient http) : IDemoAdoReset
+public sealed class AdoDemoReset(HttpClient http)
 {
     private const string ListVersion = "api-version=7.1-preview.4";
     private const string StampStart = "Approved by";

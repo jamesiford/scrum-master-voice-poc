@@ -1,33 +1,31 @@
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Domain.Teams;
 
 namespace Zava.Scrum.Infrastructure.Teams;
 
-/// <summary>Chooses which stored Teams conversations a card is sent to (M9-R5). Pure, so it is unit tested without Teams.</summary>
+/// <summary>
+/// Chooses which stored conversations a card goes to: only the conversations bound to the card's team (ADR 0018). A team with no bound
+/// conversation gets no Teams delivery (the card stays in the outbox), so one team's cards never reach another team's channel.
+/// </summary>
 public static class CardRouting
 {
-    // Teams names the chat of a meeting "19:meeting_...@thread.v2". The bot is only in that chat when it joined or was added to the meeting.
-    private const string MeetingChatPrefix = "19:meeting_";
-
-    /// <summary>Selects the conversations for a message.</summary>
-    /// <param name="message">The message.</param>
-    /// <param name="storedKeys">Keys of every stored conversation.</param>
-    /// <returns>
-    /// For <see cref="CardRoute.Recap"/>: the recap channel and any meeting chat the bot is in; every stored conversation when neither exists
-    /// (DEMO fallback). For every other route: all stored conversations.
-    /// PROD: route by Entra object id, with one conversation per member and the Scrum Master.
-    /// </returns>
-    public static IReadOnlyList<string> Select(TeamsMessage message, IReadOnlyList<string> storedKeys)
+    /// <summary>Selects the conversations for a card.</summary>
+    /// <param name="message">The card.</param>
+    /// <param name="storedKeys">The keys of every conversation the bot has stored.</param>
+    /// <param name="team">The team the card belongs to.</param>
+    /// <returns>The keys bound to the team for this kind of card.</returns>
+    public static IReadOnlyList<string> Select(TeamsMessage message, IReadOnlyList<string> storedKeys, Team? team)
     {
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(storedKeys);
-        if (message.Route != CardRoute.Recap)
+        if (team is null)
         {
-            return storedKeys;
+            return [];
         }
 
-        var targets = storedKeys
-            .Where(k => k == message.RecapChannelKey || k.StartsWith(MeetingChatPrefix, StringComparison.Ordinal))
+        var planning = message.Kind == CardKind.PlanningPack;
+        return storedKeys
+            .Where(k => team.Bindings.Any(b => b.Matches(k) && (planning ? b.Purpose is BindingPurpose.Planning or BindingPurpose.Recap : b.Purpose is BindingPurpose.Recap or BindingPurpose.Standup)))
             .ToList();
-        return targets.Count > 0 ? targets : storedKeys;
     }
 }

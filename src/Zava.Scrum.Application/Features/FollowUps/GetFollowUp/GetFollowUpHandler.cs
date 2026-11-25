@@ -11,6 +11,6 @@ internal sealed class GetFollowUpHandler(IFollowUpRepository followUps) : IReque
     public async Task<Result<FollowUpSnapshot>> Handle(GetFollowUpQuery request, CancellationToken ct)
     {
         var f = await followUps.GetAsync(request.FollowUpId, ct);
-        return f is null ? Result<FollowUpSnapshot>.Failure(FollowUpErrors.NotFound(request.FollowUpId)) : Result<FollowUpSnapshot>.Success(f.ToSnapshot());
+        return f is null ? Result<FollowUpSnapshot>.Failure(FollowUpErrors.NotFound(request.FollowUpId)) : Result<FollowUpSnapshot>.Success(f.ToReadModel());
     }
 }

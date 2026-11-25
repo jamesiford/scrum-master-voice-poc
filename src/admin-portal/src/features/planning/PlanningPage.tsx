@@ -1,5 +1,5 @@
 import { RefreshCw, Sparkles } from 'lucide-react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   getPlanning,
   getPlanningPack,
@@ -25,13 +25,14 @@ import { PlanningPackView } from './PlanningPackView';
  * @returns The page.
  */
 export function PlanningPage() {
-  const prep = useApiQuery((signal) => getPlanning(TEAM_ID, signal), TEAM_ID);
-  const pack = useApiQuery((signal) => getPlanningPack(TEAM_ID, signal), 'pack');
-  const roster = useApiQuery((signal) => getRoster(TEAM_ID, signal), TEAM_ID);
-  const team = useApiQuery((signal) => getTeam(TEAM_ID, signal), TEAM_ID);
-  const prepare = useApiAction(() => preparePlanning(TEAM_ID));
+  const teamId = useTeamId();
+  const prep = useApiQuery((signal) => getPlanning(teamId, signal), teamId);
+  const pack = useApiQuery((signal) => getPlanningPack(teamId, signal), 'pack');
+  const roster = useApiQuery((signal) => getRoster(teamId, signal), teamId);
+  const team = useApiQuery((signal) => getTeam(teamId, signal), teamId);
+  const prepare = useApiAction(() => preparePlanning(teamId));
   const setAvailability = useApiAction((memberId: string, percent: number) =>
-    updateAvailability(TEAM_ID, memberId, percent),
+    updateAvailability(teamId, memberId, percent),
   );
   const p = prep.data;
   const maxPoints = Math.max(1, ...(p?.loads.map((l) => l.openPoints) ?? [1]));

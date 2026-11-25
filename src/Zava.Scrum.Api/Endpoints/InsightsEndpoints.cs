@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.FollowUps.ListEmails;
 using Zava.Scrum.Application.Features.Models.GetModelComparison;
@@ -27,7 +28,7 @@ public static class InsightsEndpoints
         app.MapGet("/api/models", async (string teamId, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetModelComparisonQuery(teamId), ct)).ToHttpResult());
         app.MapGet("/api/emails", async (ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ListEmailsQuery(), ct)).ToHttpResult());
+            (await sender.Send(new ListEmailsQuery(), ct)).ToHttpResult()).RequireRegistry();
         return app;
     }
 

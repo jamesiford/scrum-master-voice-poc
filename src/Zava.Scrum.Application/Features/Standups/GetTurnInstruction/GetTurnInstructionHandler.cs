@@ -20,7 +20,7 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
         }
 
         var name = session.Kind == CeremonyKind.Retrospective ? RetroTemplateName(session, request.Reason) : TemplateName(request.Reason);
-        var template = await prompts.GetAsync(name, ct);
+        var template = (await prompts.ResolveAsync(session.TeamId, name, ct))?.Text;
         if (template is null)
         {
             return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));

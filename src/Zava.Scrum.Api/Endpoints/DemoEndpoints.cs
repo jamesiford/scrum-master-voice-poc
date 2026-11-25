@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.Demo.GetDemoStatus;
 using Zava.Scrum.Application.Features.Demo.ResetDemo;
@@ -14,7 +15,7 @@ public static class DemoEndpoints
     public static IEndpointRouteBuilder MapDemoEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/demo");
-        group.MapPost("/reset", async (ISender sender, CancellationToken ct) => (await sender.Send(new ResetDemoCommand(), ct)).ToHttpResult());
+        group.MapPost("/reset", async (ISender sender, CancellationToken ct) => (await sender.Send(new ResetDemoCommand(), ct)).ToHttpResult()).RequireRegistry();
         group.MapPost("/reset-ado", async (string teamId, ISender sender, CancellationToken ct) => (await sender.Send(new ResetDemoAdoCommand(teamId), ct)).ToHttpResult());
         group.MapGet("/status", async (string teamId, ISender sender, CancellationToken ct) => (await sender.Send(new GetDemoStatusQuery(teamId), ct)).ToHttpResult());
         return app;

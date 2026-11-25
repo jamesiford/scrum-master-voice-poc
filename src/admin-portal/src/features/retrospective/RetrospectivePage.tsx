@@ -1,6 +1,6 @@
 import { Play, Plus, Video } from 'lucide-react';
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   getRetrospective,
   prepareRetrospective,
@@ -22,11 +22,12 @@ import { QueryStatus } from '../QueryStatus';
  * @returns The page.
  */
 export function RetrospectivePage() {
-  const retro = useApiQuery((signal) => getRetrospective(TEAM_ID, signal), TEAM_ID);
+  const teamId = useTeamId();
+  const retro = useApiQuery((signal) => getRetrospective(teamId, signal), teamId);
   const [sessionId, setSessionId] = useState<string>();
   const [joinUrl, setJoinUrl] = useState('');
   const [started, setStarted] = useState<'room' | 'teams'>();
-  const prepare = useApiAction(() => prepareRetrospective(TEAM_ID));
+  const prepare = useApiAction(() => prepareRetrospective(teamId));
   const startRoom = useApiAction((id: string) => startSession(id));
   const startTeams = useApiAction((id: string, url: string) => startTeamsSession(id, url));
   const doc = retro.data;

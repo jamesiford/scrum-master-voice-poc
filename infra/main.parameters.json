@@ -7,6 +7,8 @@
     "tenantId": { "value": "${AZURE_TENANT_ID}" },
     "adoOrgUrl": { "value": "${ADO_ORG_URL}" },
     "adminUpn": { "value": "${ADMIN_UPN}" },
+    "portalClientId": { "value": "${PORTAL_CLIENT_ID=}" },
+    "adminObjectId": { "value": "${ADMIN_OBJECT_ID=}" },
     "realtimeSku": { "value": "${REALTIME_SKU=DataZoneStandard}" },
     "chatCapacity": { "value": "${CHAT_CAPACITY=100}" },
     "realtimeCapacity": { "value": "${REALTIME_CAPACITY=10}" },

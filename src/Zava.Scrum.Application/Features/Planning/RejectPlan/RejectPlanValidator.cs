@@ -8,6 +8,7 @@ internal sealed class RejectPlanValidator : AbstractValidator<RejectPlanCommand>
     public RejectPlanValidator()
     {
         RuleFor(c => c.PackId).NotEmpty();
-        RuleFor(c => c.Rejecter).NotEmpty().MaximumLength(100);
+        RuleFor(c => c.Decision).NotNull();
+        RuleFor(c => c.Decision.Actor).NotNull().When(c => c.Decision is not null);
     }
 }

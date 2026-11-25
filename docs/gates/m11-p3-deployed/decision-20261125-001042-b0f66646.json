@@ -1,0 +1,101 @@
+{
+  "RunId": "b0f66646",
+  "Label": "decision",
+  "Build": "p3-wip",
+  "Api": "https://ca-api-pi7fumnppr2hk.kindglacier-e755b75a.eastus2.azurecontainerapps.io",
+  "StartedAt": "2026-11-25T00:10:42.1062545+00:00",
+  "SessionId": "cececd01-6f5d-48fe-b56e-56eef3f55405",
+  "ReportedP50Ms": 2812,
+  "Turns": [
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2629,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 174,
+      "OrchestrationMs": 1387,
+      "VoiceFirstAudioMs": 1105,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3504,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 154,
+      "OrchestrationMs": 1793,
+      "VoiceFirstAudioMs": 1590,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2561,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 155,
+      "OrchestrationMs": 1396,
+      "VoiceFirstAudioMs": 1043,
+      "Source": "Model"
+    },
+    {
+      "Reason": "CallOn",
+      "TotalMs": 2812,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 135,
+      "OrchestrationMs": 855,
+      "VoiceFirstAudioMs": 1856,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Park",
+      "TotalMs": 1907,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 227,
+      "OrchestrationMs": 416,
+      "VoiceFirstAudioMs": 1298,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3020,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 160,
+      "OrchestrationMs": 1913,
+      "VoiceFirstAudioMs": 980,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2466,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 24,
+      "DecisionModelMs": 143,
+      "OrchestrationMs": 1560,
+      "VoiceFirstAudioMs": 798,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2920,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 23,
+      "DecisionModelMs": 170,
+      "OrchestrationMs": 1703,
+      "VoiceFirstAudioMs": 1084,
+      "Source": "Model"
+    },
+    {
+      "Reason": "Recap",
+      "TotalMs": 3338,
+      "SpeechEndToTranscriptMs": 94,
+      "AnalyserMs": 23,
+      "DecisionModelMs": 143,
+      "OrchestrationMs": 1452,
+      "VoiceFirstAudioMs": 1685,
+      "Source": "Rules"
+    }
+  ]
+}

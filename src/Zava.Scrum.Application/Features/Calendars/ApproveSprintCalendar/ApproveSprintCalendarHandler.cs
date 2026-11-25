@@ -1,5 +1,6 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Domain.Calendars;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Schedules;
@@ -15,6 +16,7 @@ internal sealed class ApproveSprintCalendarHandler(
     ICalendarWriter writer,
     IMemberRepository members,
     IScheduleRepository schedules,
+    ApprovalGate gate,
     ITeamsMessenger messenger,
     IClock clock) : IRequestHandler<ApproveSprintCalendarCommand, Result>
 {
@@ -31,7 +33,13 @@ internal sealed class ApproveSprintCalendarHandler(
             return Result.Failure(SprintCalendarErrors.NotConfigured);
         }
 
-        var approved = calendar.Approve(request.Approver, clock.UtcNow);
+        var allowed = await gate.AuthoriseAsync(request.Decision, calendar.Data.TeamId, null, forScrumMaster: true, ct);
+        if (!allowed.IsSuccess)
+        {
+            return allowed;
+        }
+
+        var approved = calendar.Approve(request.Decision.Actor.DisplayName, clock.UtcNow);
         if (!approved.IsSuccess)
         {
             return Result.Failure(approved.Error!);

@@ -17,6 +17,8 @@ namespace Zava.Scrum.Application.Tests.Features.Calendars;
 
 public sealed class SprintCalendarFlowTests : IAsyncDisposable
 {
+    private InMemoryApprovalRecordStore Records { get; } = new();
+
     private static readonly DateTimeOffset T = StandupHarness.Now;
     private readonly RecordingTeamsMessenger _messenger = new();
     private readonly FakeCalendarWriter _writer = new();
@@ -38,6 +40,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes(Records);
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(members);
         services.AddSingleton<IScheduleRepository>(_schedules);
@@ -101,7 +104,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         await StartAsync();
         var id = await ProposeAsync();
 
-        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.True(result.IsSuccess);
         Assert.Equal(7, _writer.Created.Count);
@@ -123,7 +126,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         await StartAsync();
         var id = await ProposeAsync();
 
-        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, " "));
+        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, null!));
 
         Assert.Equal(ErrorType.Validation, result.Error!.Type);
         Assert.Empty(_writer.Created);
@@ -135,7 +138,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         await StartAsync(graph: false);
         var id = await ProposeAsync();
 
-        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        var result = await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.Equal("calendar.not_configured", result.Error!.Code);
         Assert.Contains(".ics", result.Error.Message, StringComparison.Ordinal);
@@ -149,8 +152,8 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         await StartAsync();
         var id = await ProposeAsync();
 
-        await Sender.Send(new RejectSprintCalendarCommand(id, "Sam"));
-        var approve = await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        await Sender.Send(new RejectSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
+        var approve = await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.Empty(_writer.Created);
         Assert.Equal(ErrorType.Conflict, approve.Error!.Type);
@@ -164,14 +167,14 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         var id = await ProposeAsync();
         _writer.FailAfter = 3;
 
-        var first = await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        var first = await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.False(first.IsSuccess);
         Assert.Equal(3, _writer.Created.Count);
         Assert.Equal(SprintCalendarStatus.Approving, (await _calendars.GetAsync(id, default))!.Data.Status);
 
         _writer.FailAfter = null;
-        var retry = await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        var retry = await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.True(retry.IsSuccess);
         Assert.Equal(7, _writer.Created.Count);
@@ -185,7 +188,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
         await StartAsync(hasReview: true);
         var id = await ProposeAsync();
 
-        await Sender.Send(new ApproveSprintCalendarCommand(id, "Sam"));
+        await Sender.Send(new ApproveSprintCalendarCommand(id, Who.TeamsAdmin("Sam")));
 
         Assert.Contains(_writer.Created, c => c.Subject.EndsWith("Sprint review", StringComparison.Ordinal));
         Assert.Equal(8, _writer.Created.Count);
@@ -199,7 +202,7 @@ public sealed class SprintCalendarFlowTests : IAsyncDisposable
 
         Assert.Equal("schedule.join_url_required", (await Sender.Send(save)).Error!.Code);
 
-        await Sender.Send(new ApproveSprintCalendarCommand(await ProposeAsync(), "Sam"));
+        await Sender.Send(new ApproveSprintCalendarCommand(await ProposeAsync(), Who.TeamsAdmin("Sam")));
 
         Assert.True((await Sender.Send(save)).IsSuccess);
         Assert.Equal(5, (await _schedules.GetAsync("t1", default))!.Meetings!.Count);

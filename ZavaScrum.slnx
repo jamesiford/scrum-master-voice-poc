@@ -7,6 +7,7 @@
     <Project Path="src/Zava.Scrum.Infrastructure/Zava.Scrum.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/tests/">
+    <Project Path="src/tests/Zava.Scrum.Api.Tests/Zava.Scrum.Api.Tests.csproj" />
     <Project Path="src/tests/Zava.Scrum.Application.Tests/Zava.Scrum.Application.Tests.csproj" />
     <Project Path="src/tests/Zava.Scrum.ArchitectureTests/Zava.Scrum.ArchitectureTests.csproj" />
     <Project Path="src/tests/Zava.Scrum.Domain.Tests/Zava.Scrum.Domain.Tests.csproj" />

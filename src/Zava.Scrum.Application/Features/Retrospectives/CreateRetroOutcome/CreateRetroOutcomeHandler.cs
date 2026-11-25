@@ -43,7 +43,7 @@ internal sealed class CreateRetroOutcomeHandler(
         {
             var now = clock.UtcNow;
             var followUp = FollowUp.Create(
-                Guid.NewGuid(), session.TeamId, session.Id, null, FollowUpKind.RetroActions, headline, changes, DateOnly.FromDateTime(now.UtcDateTime), now, CeremonyKind.Retrospective, forScrumMaster: true);
+                Guid.NewGuid(), session.TeamId, session.Id, null, FollowUpKind.RetroActions, headline, changes, DateOnly.FromDateTime(now.UtcDateTime), now, CeremonyKind.Retrospective, forScrumMaster: true, correlationId: session.CorrelationId);
             followUp.MarkSent();
             await followUps.SaveAsync(followUp, ct);
             var card = FollowUpCards.Initial(followUp, "the team");

@@ -1,6 +1,6 @@
 import { Check, X, RotateCw, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   applyFollowUp,
   getRoster,
@@ -11,13 +11,13 @@ import {
   type FollowUp,
   type FollowUpStatus,
 } from '../../api/client';
+import { SignedInAs } from '../../auth/SignedInAs';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { Badge, type Tone } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Alert, EmptyState } from '../../ui/Feedback';
-import { Field, Input } from '../../ui/Form';
 import { PageHeader } from '../../ui/PageHeader';
 import { QueryStatus } from '../QueryStatus';
 
@@ -34,15 +34,18 @@ const statusTone: Record<FollowUpStatus, Tone> = {
  * @returns The page.
  */
 export function FollowUpsPage() {
-  const [approver, setApprover] = useState('');
+  const teamId = useTeamId();
   const [showCards, setShowCards] = useState(false);
-  const followUps = useApiQuery((signal) => listFollowUps(TEAM_ID, signal), TEAM_ID);
-  const roster = useApiQuery((signal) => getRoster(TEAM_ID, signal), TEAM_ID);
+  const followUps = useApiQuery((signal) => listFollowUps(teamId, signal), teamId);
+  const roster = useApiQuery((signal) => getRoster(teamId, signal), teamId);
   const nameOf = (id: string | null) =>
     id ? (roster.data?.find((m) => m.id === id)?.displayName ?? id) : 'Team';
-  const cards = useApiQuery((signal) => listCards(signal), showCards ? 'cards' : null);
-  const approve = useApiAction((id: string, name: string) => approveFollowUp(id, name));
-  const reject = useApiAction((id: string, name: string) => rejectFollowUp(id, name));
+  const cards = useApiQuery(
+    (signal) => listCards(teamId, signal),
+    showCards ? `cards-${teamId}` : null,
+  );
+  const approve = useApiAction((id: string) => approveFollowUp(id));
+  const reject = useApiAction((id: string) => rejectFollowUp(id));
   const retry = useApiAction((id: string) => applyFollowUp(id));
 
   const decide = async (run: () => Promise<unknown>) => {
@@ -71,17 +74,7 @@ export function FollowUpsPage() {
       <div className="grid gap-6">
         <Card>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <Field
-              label="Approving as"
-              hint="Your name is recorded on every change written to Azure DevOps."
-              className="w-full max-w-xs"
-            >
-              <Input
-                value={approver}
-                onChange={(e) => setApprover(e.target.value)}
-                placeholder="Your name"
-              />
-            </Field>
+            <SignedInAs />
             {needsDecision > 0 && (
               <Badge tone="warn" dot>
                 {needsDecision} waiting for a decision
@@ -102,9 +95,8 @@ export function FollowUpsPage() {
               key={f.id}
               followUp={f}
               who={nameOf(f.memberId)}
-              canDecide={approver.trim().length > 0}
-              onApprove={() => void decide(() => approve.run(f.id, approver))}
-              onReject={() => void decide(() => reject.run(f.id, approver))}
+              onApprove={() => void decide(() => approve.run(f.id))}
+              onReject={() => void decide(() => reject.run(f.id))}
               onRetry={() => void decide(() => retry.run(f.id))}
             />
           ))}
@@ -138,7 +130,6 @@ export function FollowUpsPage() {
 interface FollowUpCardProps {
   followUp: FollowUp;
   who: string;
-  canDecide: boolean;
   onApprove: () => void;
   onReject: () => void;
   onRetry: () => void;
@@ -155,14 +146,7 @@ const kindTitle: Record<FollowUp['kind'], string> = {
   ReviewPack: 'Sprint review pack',
 };
 
-function FollowUpCard({
-  followUp: f,
-  who,
-  canDecide,
-  onApprove,
-  onReject,
-  onRetry,
-}: FollowUpCardProps) {
+function FollowUpCard({ followUp: f, who, onApprove, onReject, onRetry }: FollowUpCardProps) {
   const undecided = f.status === 'Pending' || f.status === 'Sent';
   return (
     <Card
@@ -194,19 +178,15 @@ function FollowUpCard({
         )}
         {f.approvedBy && <p className="text-xs text-muted">Approved by {f.approvedBy}</p>}
         {f.rejectedBy && <p className="text-xs text-muted">Rejected by {f.rejectedBy}</p>}
+        <p className="text-xs text-muted">Correlation: zsa-{f.correlationId.slice(0, 12)}</p>
         {f.applyError && <Alert tone="bad">Azure DevOps write failed: {f.applyError}</Alert>}
         <div className="flex flex-wrap gap-2">
           {undecided && f.changes.length > 0 && (
             <>
-              <Button
-                variant="primary"
-                icon={<Check className="size-4" />}
-                disabled={!canDecide}
-                onClick={onApprove}
-              >
+              <Button variant="primary" icon={<Check className="size-4" />} onClick={onApprove}>
                 Approve and write
               </Button>
-              <Button icon={<X className="size-4" />} disabled={!canDecide} onClick={onReject}>
+              <Button icon={<X className="size-4" />} onClick={onReject}>
                 Reject
               </Button>
             </>

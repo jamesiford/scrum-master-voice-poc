@@ -5,6 +5,7 @@ using Zava.Scrum.Infrastructure.Ado;
 using Zava.Scrum.Infrastructure.Agents;
 using Zava.Scrum.Infrastructure.Demo;
 using Zava.Scrum.Infrastructure.Http;
+using Zava.Scrum.Infrastructure.Identity;
 using Zava.Scrum.Infrastructure.Persistence;
 using Zava.Scrum.Infrastructure.Teams;
 using Zava.Scrum.Infrastructure.Voice;
@@ -42,6 +43,8 @@ public static class DependencyInjection
         AddOptions<TeamDefaultsOptions>(services, configuration, TeamDefaultsOptions.SectionName);
         AddOptions<FlagsOptions>(services, configuration, FlagsOptions.SectionName);
         AddOptions<RetroOptions>(services, configuration, RetroOptions.SectionName);
+        AddOptions<CapacityOptions>(services, configuration, CapacityOptions.SectionName);
+        services.AddSingleton<ICapacitySettings>(sp => sp.GetRequiredService<IOptions<CapacityOptions>>().Value);
         services.AddSingleton<IRetroSettings>(sp => sp.GetRequiredService<IOptions<RetroOptions>>().Value);
 
         services.AddSingleton(TimeProvider.System);
@@ -50,11 +53,13 @@ public static class DependencyInjection
             new DefaultAzureCredentialOptions { TenantId = sp.GetRequiredService<IOptions<AzureOptions>>().Value.TenantId })));
         services.AddSingleton<IPromptStore, FilePromptStore>();
         services.AddSingleton<IRosterSource, SeedFileRosterSource>();
+        AddIdentity(services, configuration);
 
         AddCollectionStore(services, configuration);
         services.AddSingleton<ISessionRepository, JsonFileSessionRepository>();
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
+        services.AddSingleton<ITeamMembershipRepository, JsonFileTeamMembershipRepository>();
         services.AddSingleton<IFollowUpRepository, JsonFileFollowUpRepository>();
         services.AddSingleton<IPlanningPackRepository, JsonFilePlanningPackRepository>();
         services.AddSingleton<ISprintCalendarRepository, JsonFileSprintCalendarRepository>();
@@ -81,6 +86,14 @@ public static class DependencyInjection
         return services;
     }
 
+    private static void AddIdentity(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<IdentityOptions>().Bind(configuration.GetSection(IdentityOptions.SectionName));
+        services.AddSingleton<IIdentityPolicy, ConfigIdentityPolicy>();
+        services.AddHttpClient<IIdentityDirectory, GraphIdentityDirectory>(client => client.BaseAddress = new Uri("https://graph.microsoft.com/"))
+            .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), GraphScope));
+    }
+
     private static void AddCalendar(IServiceCollection services, IConfiguration configuration)
     {
         // Team:HasSprintReview is a team setting (Rajeev has not confirmed a review), so it is read from the Team section, not Calendar.
@@ -90,6 +103,8 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton<ICalendarSettings>(sp => sp.GetRequiredService<IOptions<CalendarOptions>>().Value);
+        services.AddHttpClient<IEntraGroupReader, GraphEntraGroupReader>(client => client.BaseAddress = new Uri("https://graph.microsoft.com/"))
+            .AddHttpMessageHandler(sp => new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), GraphScope));
         services.AddHttpClient<ICalendarWriter, GraphCalendarWriter>(client => client.BaseAddress = new Uri("https://graph.microsoft.com/"))
             .AddHttpMessageHandler(sp => new BearerTokenHandler(CalendarCredential(sp), GraphScope));
     }
@@ -124,19 +139,24 @@ public static class DependencyInjection
         if (!string.Equals(configuration["Store:Mode"], "Cosmos", StringComparison.OrdinalIgnoreCase))
         {
             services.AddSingleton<ICollectionStore, FileCollectionStore>();
+            services.AddSingleton<IApprovalRecordStore, FileApprovalRecordStore>();
             return;
         }
 
-        services.AddSingleton(sp =>
+        services.AddSingleton(sp => new Microsoft.Azure.Cosmos.CosmosClient(
+            sp.GetRequiredService<IOptions<CosmosOptions>>().Value.Endpoint,
+            sp.GetRequiredService<TokenCredential>(),
+            new Microsoft.Azure.Cosmos.CosmosClientOptions { UseSystemTextJsonSerializerWithOptions = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web) }));
+        services.AddSingleton<ICollectionStore>(sp =>
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
-            var client = new Microsoft.Azure.Cosmos.CosmosClient(
-                cosmos.Endpoint,
-                sp.GetRequiredService<TokenCredential>(),
-                new Microsoft.Azure.Cosmos.CosmosClientOptions { UseSystemTextJsonSerializerWithOptions = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web) });
-            return client.GetContainer(cosmos.Database, cosmos.Container);
+            return new CosmosCollectionStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.Container));
         });
-        services.AddSingleton<ICollectionStore>(sp => new CosmosCollectionStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.Container>()));
+        services.AddSingleton<IApprovalRecordStore>(sp =>
+        {
+            var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
+            return new CosmosApprovalRecordStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.ApprovalRecordsContainer));
+        });
     }
 
     private static void AddOptions<T>(IServiceCollection services, IConfiguration configuration, string section)
@@ -147,28 +167,18 @@ public static class DependencyInjection
 
     private static void AddAdoClient(IServiceCollection services)
     {
-        AddAdoHttpClient<IWorkItemReader, AdoRestClient>(services);
-        AddAdoHttpClient<IIterationReader, AdoRestClient>(services);
-        AddAdoHttpClient<IBacklogReader, AdoRestClient>(services);
-        AddAdoHttpClient<IWorkItemWriter, AdoWorkItemWriter>(services);
-        AddAdoHttpClient<IDemoAdoReset, AdoDemoReset>(services);
+        // One client and credential per organisation, created on first use (ADR 0018). Nothing is bound to a single global organisation.
+        services.AddHttpClient("ado-anonymous");
+        services.AddSingleton<IAdoClientFactory, AdoClientFactory>();
+        services.AddSingleton<RoutedWorkItemReader>();
+        services.AddSingleton<IWorkItemReader>(sp => sp.GetRequiredService<RoutedWorkItemReader>());
+        services.AddSingleton<IIterationReader>(sp => sp.GetRequiredService<RoutedWorkItemReader>());
+        services.AddSingleton<IBacklogReader>(sp => sp.GetRequiredService<RoutedWorkItemReader>());
+        services.AddSingleton<IWorkItemWriter, RoutedWorkItemWriter>();
+        services.AddSingleton<IDemoAdoReset, RoutedDemoReset>();
+        services.AddSingleton<IWorkItemScopeReader, AdoWorkItemScopeReader>();
+        services.AddSingleton<IAdoConnectionTester, AdoConnectionTester>();
     }
-
-    private static void AddAdoHttpClient<TService, TImplementation>(IServiceCollection services)
-        where TService : class
-        where TImplementation : class, TService
-    {
-        services.AddHttpClient<TService, TImplementation>((sp, client) =>
-                client.BaseAddress = new Uri(sp.GetRequiredService<IOptions<AdoOptions>>().Value.Org.TrimEnd('/') + "/"))
-            .AddHttpMessageHandler(sp =>
-            {
-                var ado = sp.GetRequiredService<IOptions<AdoOptions>>().Value;
-                return ado.AuthMode == "Pat"
-                    ? new PatAuthHandler(ado.Pat ?? throw new InvalidOperationException("Ado:Pat is required when Ado:AuthMode is Pat."))
-                    : new BearerTokenHandler(sp.GetRequiredService<TokenCredential>(), AdoScope);
-            });
-    }
-
     private static void AddFoundry(IServiceCollection services)
     {
         services.AddSingleton<IFoundryAgentFactory, FoundryAgentFactory>();

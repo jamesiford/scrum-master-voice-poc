@@ -19,6 +19,8 @@ namespace Zava.Scrum.Application.Tests.Features.Planning;
 
 public sealed class PlanningFlowTests : IAsyncDisposable
 {
+    private InMemoryApprovalRecordStore Records { get; } = new();
+
     private static readonly DateTimeOffset T = StandupHarness.Now;
     private readonly WriterSpy _writer = new();
     private readonly RecordingTeamsMessenger _messenger = new();
@@ -47,6 +49,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes(Records);
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(_members);
         services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(Result<SprintSnapshot>.Success(sprint)));
@@ -126,7 +129,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         var pack = await PrepareAsync();
         Assert.Empty(_writer.Written);
 
-        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Teams));
+        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, Who.TeamsAdmin("Sam"), []));
 
         Assert.True(result.IsSuccess);
         Assert.Equal(pack.Proposal.Selected.Count, _writer.Written.Count(w => w.Op == ChangeOp.SetIteration));
@@ -134,7 +137,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         var assigned = _writer.Written.Where(w => w.Op == ChangeOp.Assign).ToList();
         Assert.Equal(pack.Proposal.Selected.Count(s => s.OwnerSuggested), assigned.Count);
         Assert.All(assigned, a => Assert.NotNull(a.OwnerKey));
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in Teams, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal($"Approved by Sam in Teams, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning. Correlation: {Correlation.Tag(w.CorrelationId)}", w.Attribution));
         var stored = (await _packs.GetAsync(pack.Id, default))!.Data;
         Assert.Equal((PlanningPackStatus.Approved, "Sam", (Guid?)result.Value), (stored.Status, stored.DecidedBy, stored.FollowUpId));
         var followUp = (await _followUps.GetAsync(result.Value, default))!;
@@ -150,10 +153,10 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await StartAsync();
         var pack = await PrepareAsync();
 
-        await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [1, 10], ApprovalChannel.Portal));
+        await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), [1, 10]));
 
         Assert.Equal([1, 10], _writer.Written.Where(w => w.Op == ChangeOp.SetIteration).Select(w => w.WorkItemId));
-        Assert.All(_writer.Written, w => Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning.", w.Attribution));
+        Assert.All(_writer.Written, w => Assert.Equal($"Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 sprint planning. Correlation: {Correlation.Tag(w.CorrelationId)}", w.Attribution));
     }
 
     [Fact]
@@ -162,7 +165,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await StartAsync();
         var pack = await PrepareAsync();
 
-        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [16], ApprovalChannel.Portal));
+        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), [16]));
 
         Assert.Equal(ErrorType.Validation, result.Error!.Type);
         Assert.Empty(_writer.Written);
@@ -175,7 +178,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await StartAsync();
         var pack = await PrepareAsync();
 
-        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, " ", [], ApprovalChannel.Portal));
+        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, null!, []));
 
         Assert.Equal(ErrorType.Validation, result.Error!.Type);
         Assert.Empty(_writer.Written);
@@ -186,10 +189,10 @@ public sealed class PlanningFlowTests : IAsyncDisposable
     {
         await StartAsync();
         var pack = await PrepareAsync();
-        await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Portal));
+        await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), []));
         var written = _writer.Written.Count;
 
-        var again = await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Portal));
+        var again = await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), []));
 
         Assert.Equal(ErrorType.Conflict, again.Error!.Type);
         Assert.Equal(written, _writer.Written.Count);
@@ -201,7 +204,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await StartAsync(nextIteration: null);
         var pack = await PrepareAsync();
 
-        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Portal));
+        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), []));
 
         Assert.Equal("planning.no_next_iteration", result.Error!.Code);
         Assert.Empty(_writer.Written);
@@ -214,7 +217,7 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         var pack = await PrepareAsync();
         _writer.Fail = true;
 
-        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Teams));
+        var result = await Sender.Send(new ApprovePlanCommand(pack.Id, Who.TeamsAdmin("Sam"), []));
 
         Assert.True(result.IsSuccess);
         Assert.Equal(FollowUpStatus.Approved, (await _followUps.GetAsync(result.Value, default))!.Status);
@@ -227,14 +230,14 @@ public sealed class PlanningFlowTests : IAsyncDisposable
         await StartAsync();
         var pack = await PrepareAsync();
 
-        var result = await Sender.Send(new RejectPlanCommand(pack.Id, "Sam"));
+        var result = await Sender.Send(new RejectPlanCommand(pack.Id, Who.TeamsAdmin("Sam")));
 
         Assert.True(result.IsSuccess);
         Assert.Empty(_writer.Written);
         Assert.Empty(await _followUps.ListAsync("t1", null, default));
         Assert.Equal(PlanningPackStatus.Rejected, (await _packs.GetAsync(pack.Id, default))!.Data.Status);
         Assert.Contains("Nothing was written", Assert.Single(_messenger.Updated).Facts[^1].Value, StringComparison.Ordinal);
-        Assert.Equal(ErrorType.Conflict, (await Sender.Send(new ApprovePlanCommand(pack.Id, "Sam", [], ApprovalChannel.Portal))).Error!.Type);
+        Assert.Equal(ErrorType.Conflict, (await Sender.Send(new ApprovePlanCommand(pack.Id, Who.Portal("Sam"), []))).Error!.Type);
     }
 
     [Fact]

@@ -56,7 +56,7 @@ resource acrPullFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-// ---- Cosmos DB: Entra only; one container, because ICollectionStore keeps every collection as an item in it ------------------
+// ---- Cosmos DB: Entra only; one container for ICollectionStore (every collection is an item in it) and one append-only container for the approval trail ----
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: 'cosmos-${namePrefix}-${token}'
   location: location
@@ -85,17 +85,55 @@ resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   properties: { resource: { id: 'collections', partitionKey: { paths: [ '/id' ], kind: 'Hash' } } }
 }
 
-// Cosmos DB Built-in Data Contributor.
+// The approval trail (ADR 0017): its own container, partitioned by correlation id, written only with create so a record is never replaced.
+resource approvalRecords 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: cosmosDb
+  name: 'ApprovalRecords'
+  properties: { resource: { id: 'ApprovalRecords', partitionKey: { paths: [ '/correlationId' ], kind: 'Hash' } } }
+}
+
+// Cosmos DB Built-in Data Contributor, on the collections container only, so the identity cannot rewrite the approval trail.
 resource cosmosRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
   parent: cosmos
-  name: guid(cosmos.id, identityPrincipalId, 'data-contributor')
+  name: guid(cosmos.id, identityPrincipalId, 'data-contributor-collections')
   properties: {
     roleDefinitionId: '${cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002'
     principalId: identityPrincipalId
-    scope: cosmos.id
+    scope: '${cosmos.id}/dbs/${cosmosDb.name}/colls/${cosmosContainer.name}'
   }
 }
 
+// Append-only on the trail: create and read, no replace, upsert or delete. Enforced by the platform, not only by the code.
+resource appendRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2024-05-15' = {
+  parent: cosmos
+  name: guid(cosmos.id, 'zava-approval-append')
+  properties: {
+    roleName: 'Zava approval records append-only'
+    type: 'CustomRole'
+    assignableScopes: [ cosmos.id ]
+    permissions: [
+      {
+        dataActions: [
+          'Microsoft.DocumentDB/databaseAccounts/readMetadata'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/create'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/executeQuery'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/readChangeFeed'
+        ]
+      }
+    ]
+  }
+}
+
+resource appendRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+  parent: cosmos
+  name: guid(cosmos.id, identityPrincipalId, 'approval-append')
+  properties: {
+    roleDefinitionId: appendRole.id
+    principalId: identityPrincipalId
+    scope: '${cosmos.id}/dbs/${cosmosDb.name}/colls/${approvalRecords.name}'
+  }
+}
 // ---- Communication Services: the bridge signs in with Entra, so there is no connection string ----------------------------------
 resource acs 'Microsoft.Communication/communicationServices@2023-04-01' = {
   name: 'acs-${namePrefix}-${token}'
@@ -119,4 +157,5 @@ output registryLoginServer string = registry.properties.loginServer
 output cosmosName string = cosmos.name
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosDatabase string = cosmosDb.name
+output approvalRecordsContainer string = approvalRecords.name
 output acsEndpoint string = 'https://${acs.properties.hostName}'

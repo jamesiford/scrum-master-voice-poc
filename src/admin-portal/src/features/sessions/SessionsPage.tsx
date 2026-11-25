@@ -1,6 +1,6 @@
 import { Play, Plus, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getSession, listSessions, prepareStandup, startSession } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -25,11 +25,12 @@ const ceremonyLabel: Record<string, string> = {
  * @returns The page.
  */
 export function SessionsPage() {
+  const teamId = useTeamId();
   const [selected, setSelected] = useState<string | null>(null);
   const [minutes, setMinutes] = useState(15);
-  const sessions = useApiQuery((signal) => listSessions(TEAM_ID, signal), TEAM_ID);
+  const sessions = useApiQuery((signal) => listSessions(teamId, signal), teamId);
   const detail = useApiQuery((signal) => getSession(selected ?? '', signal), selected);
-  const prepare = useApiAction(() => prepareStandup(TEAM_ID));
+  const prepare = useApiAction(() => prepareStandup(teamId));
   const start = useApiAction((id: string, m: number | undefined) => startSession(id, m));
 
   const onPrepare = async () => {

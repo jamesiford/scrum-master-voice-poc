@@ -21,6 +21,13 @@ param adoOrgUrl string
 @description('UPN of the demo tenant administrator. Owns the sprint calendar mailbox and is the first portal user.')
 param adminUpn string
 
+@description('Client id of the portal Entra app registration, created by infra/hooks/entra-portal-app.ps1 in preprovision. Not a secret. Empty only while that hook has not run; entra-post.ps1 re-applies it.')
+param portalClientId string = ''
+
+@description('Entra object id of the administrator, resolved by infra/hooks/entra-portal-app.ps1. Not a secret.')
+param adminObjectId string = ''
+
+
 @description('Deployment SKU of the realtime and live models: GlobalStandard, or DataZoneStandard to keep processing inside the data zone and use data zone quota.')
 @allowed([ 'GlobalStandard', 'DataZoneStandard' ])
 param realtimeSku string = 'DataZoneStandard'
@@ -101,6 +108,9 @@ module compute 'modules/compute.bicep' = {
     token: token
     tags: tags
     tenantId: tenantId
+    portalClientId: portalClientId
+    adminObjectId: adminObjectId
+    adminUpn: adminUpn
     adoOrgUrl: adoOrgUrl
     logAnalyticsName: observability.outputs.logAnalyticsName
     appInsightsConnectionString: observability.outputs.appInsightsConnectionString

@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
 using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
@@ -30,11 +31,12 @@ public static class FollowUpsEndpoints
         group.MapPost("/propose", async (ProposeBody b, ISender sender, CancellationToken ct) =>
             (await sender.Send(new ProposeAdoChangeCommand(b.SessionId, b.MemberId, b.WorkItemId, b.Op, b.Value, b.Rationale ?? string.Empty), ct)).ToHttpResult());
 
-        group.MapPost("/{id:guid}/approve", async (Guid id, DecisionBody b, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ApproveFollowUpCommand(id, b.Approver, ApprovalChannel.Portal), ct)).ToHttpResult());
+        // The approver is the caller's validated Entra identity (oid, tid, roles); the body carries no name (ADR 0017).
+        group.MapPost("/{id:guid}/approve", (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new ApproveFollowUpCommand(id, d), ct))).RequireApprover();
 
-        group.MapPost("/{id:guid}/reject", async (Guid id, DecisionBody b, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new RejectFollowUpCommand(id, b.Approver), ct)).ToHttpResult());
+        group.MapPost("/{id:guid}/reject", (Guid id, HttpContext http, ISender sender, CancellationToken ct) =>
+            PortalActor.DecideAsync(http, d => sender.Send(new RejectFollowUpCommand(id, d), ct))).RequireApprover();
 
         group.MapPost("/{id:guid}/apply", async (Guid id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new ApplyApprovedChangesCommand(id), ct)).ToHttpResult());
@@ -42,13 +44,11 @@ public static class FollowUpsEndpoints
         app.MapPost("/api/sessions/{id:guid}/followups", async (Guid id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new SendFollowUpsCommand(id), ct)).ToHttpResult());
 
-        app.MapGet("/api/cards", async (Guid? sessionId, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new ListCardsQuery(sessionId), ct)).ToHttpResult());
+        app.MapGet("/api/cards", async (Guid? sessionId, string? teamId, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new ListCardsQuery(sessionId, teamId), ct)).ToHttpResult());
 
         return app;
     }
-
-    private sealed record DecisionBody(string Approver);
 
     private sealed record ProposeBody(Guid SessionId, string MemberId, int WorkItemId, ChangeOp Op, string Value, string? Rationale);
 }
