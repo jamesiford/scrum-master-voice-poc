@@ -40,7 +40,14 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
         await page.WaitForFunctionAsync("() => document.getElementById('floor')?.textContent?.startsWith('Closed')", null, new PageWaitForFunctionOptions { Timeout = (float)timeout.TotalMilliseconds });
 
         var session = await _http.GetFromJsonAsync<JsonElement>($"/api/sessions/{sessionId}", Json, ct);
-        return new RunResult(Guid.NewGuid().ToString("N")[..8], label, build, api, startedAt, sessionId, ReadInt(session, "p50LatencyMs"), ReadTurns(session), team);
+        var turns = ReadTurns(session);
+        var exchanges = ReadExchanges(session);
+        return new RunResult(
+            Guid.NewGuid().ToString("N")[..8], label, build, api, startedAt, sessionId, ReadInt(session, "p50LatencyMs"),
+            turns.Where(t => t.Reason != "TalkOver").ToList(), team,
+            TalkOvers: turns.Count(t => t.Reason == "TalkOver"),
+            HumanSegments: exchanges.Count(e => e.MemberId is not null),
+            Exchanges: exchanges);
     }
 
     /// <inheritdoc />
@@ -89,6 +96,25 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
         }
 
         return turns;
+    }
+
+    // The spoken words in order: a member's id with their transcript, or no member for the agent. Used to score quality and to count how
+    // many pieces a person's update arrived in (a pause longer than the silence setting splits it).
+    private static List<Exchange> ReadExchanges(JsonElement session)
+    {
+        var list = new List<Exchange>();
+        if (!session.TryGetProperty("events", out var events))
+        {
+            return list;
+        }
+
+        foreach (var e in events.EnumerateArray().Where(e => e.TryGetProperty("type", out var t) && t.ToString() == "Transcript"))
+        {
+            var member = e.TryGetProperty("memberId", out var m) && m.ValueKind == JsonValueKind.String ? m.GetString() : null;
+            list.Add(new Exchange(member, e.TryGetProperty("text", out var x) ? x.GetString() ?? string.Empty : string.Empty));
+        }
+
+        return list;
     }
 
     private sealed record StartReply(string RoomUrl);

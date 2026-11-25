@@ -10,6 +10,9 @@ namespace Zava.Scrum.Tools.GateRunner;
 /// <param name="ReportedP50Ms">The p50 the API itself reported for the session.</param>
 /// <param name="Turns">Every timed agent reply.</param>
 /// <param name="Team">The team the standup ran for; <see langword="null"/> in results saved before teams existed.</param>
+/// <param name="TalkOvers">Times the agent was cut off by someone speaking: in a scripted run, the agent speaking over a person (a false end of speech).</param>
+/// <param name="HumanSegments">Transcript pieces from people. A pause longer than the silence setting splits one update into several.</param>
+/// <param name="Exchanges">The transcript in order, for the quality score.</param>
 internal sealed record RunResult(
     string RunId,
     string Label,
@@ -19,4 +22,12 @@ internal sealed record RunResult(
     string SessionId,
     int ReportedP50Ms,
     IReadOnlyList<TimingTurn> Turns,
-    string? Team = null);
+    string? Team = null,
+    int TalkOvers = 0,
+    int HumanSegments = 0,
+    IReadOnlyList<Exchange>? Exchanges = null);
+
+/// <summary>One transcript line.</summary>
+/// <param name="MemberId">The roster member, or <see langword="null"/> for the agent.</param>
+/// <param name="Text">The words.</param>
+internal sealed record Exchange(string? MemberId, string Text);
