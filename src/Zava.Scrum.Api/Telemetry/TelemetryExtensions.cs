@@ -32,7 +32,7 @@ public static class TelemetryExtensions
         builder.Services.AddOpenTelemetry()
             .UseAzureMonitor()
             .WithTracing(t => t.AddSource(ScrumTelemetry.SourceName, FoundryAgentFactory.TelemetrySource))
-            .WithMetrics(m => m.AddMeter(FoundryAgentFactory.TelemetrySource));
+            .WithMetrics(m => m.AddMeter(FoundryAgentFactory.TelemetrySource, ScrumTelemetry.SourceName));
         return builder;
     }
 }

@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Api.Bot;
 using Zava.Scrum.Api.Endpoints;
 using Zava.Scrum.Api.Telemetry;
@@ -13,14 +14,15 @@ builder.AddScrumTelemetry();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks();
+builder.AddPortalAuthentication();
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddOptions<VoiceGatewayOptions>().Bind(builder.Configuration.GetSection(VoiceGatewayOptions.SectionName)).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<BridgeTokenService>();
-builder.Services.AddSingleton<ScrumMasterRoster>();
 builder.Services.AddTransient<VoiceGateway>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
+builder.Services.AddHostedService<Zava.Scrum.Api.Seeding.DemoTeamSeeder>();
 builder.Services.AddHostedService<Zava.Scrum.Api.Scheduling.ScheduleWorker>();
 
 var botConfigured = !string.IsNullOrWhiteSpace(builder.Configuration["Bot:AppId"]);
@@ -54,6 +56,8 @@ if (!string.IsNullOrWhiteSpace(tunnelSuffix))
     });
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseWebSockets();
 // The portal build is copied to wwwroot in the container (M7); locally Vite serves it.
 app.UseDefaultFiles();
@@ -67,17 +71,24 @@ if (botConfigured)
 }
 
 app.MapHealthChecks("/healthz");
-app.MapHealthEndpoints();
-app.MapTeamsEndpoints();
-app.MapSessionsEndpoints();
-app.MapFollowUpsEndpoints();
-app.MapScheduleEndpoints();
-app.MapDemoEndpoints();
-app.MapReportsEndpoints();
-app.MapPlanningEndpoints();
-app.MapCalendarEndpoints();
-app.MapCeremoniesEndpoints();
-app.MapInsightsEndpoints();
+app.MapPortalConfigEndpoint();
+
+// Every portal route is validated in-app (ADR 0017): reader for reads, admin for changes, approver for decisions.
+var api = app.MapGroup(string.Empty).RequireRolesByDefault();
+api.MapHealthEndpoints();
+api.MapTeamsEndpoints();
+api.MapSessionsEndpoints();
+api.MapFollowUpsEndpoints();
+api.MapScheduleEndpoints();
+api.MapDemoEndpoints();
+api.MapReportsEndpoints();
+api.MapPlanningEndpoints();
+api.MapCalendarEndpoints();
+api.MapCeremoniesEndpoints();
+api.MapInsightsEndpoints();
+api.MapAuditEndpoints();
+
+// The bridge websocket authenticates with its own short-lived, session-bound token, not a portal bearer token.
 app.MapBridgeEndpoints();
 app.MapFallbackToFile("index.html");
 

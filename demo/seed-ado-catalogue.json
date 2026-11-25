@@ -1,0 +1,168 @@
+{
+  "project": "Zava-Scrum-Catalogue",
+  "team": "Catalogue (Demo)",
+  "areaPath": "Catalogue",
+  "iteration": "Demo Sprint",
+  "sprintLengthDays": 14,
+  "daysElapsed": 9,
+  "sprintGoal": "Shoppers find the right product in two searches.",
+  "nextIteration": "Sprint 43",
+  "members": [
+    {
+      "pronunciation": "Noor",
+      "key": "noor",
+      "order": 1,
+      "displayName": "Noor Haddad"
+    },
+    {
+      "pronunciation": "Viktor",
+      "key": "viktor",
+      "order": 2,
+      "displayName": "Viktor Novak"
+    },
+    {
+      "pronunciation": "Ah-MAR-ah",
+      "key": "amara",
+      "order": 3,
+      "displayName": "Amara Okafor"
+    }
+  ],
+  "workItems": [
+    {
+      "key": "search-facets",
+      "type": "User Story",
+      "title": "Faceted search on the product list",
+      "state": "Active",
+      "points": 8,
+      "owner": "noor",
+      "tags": [
+        "demo-age-3"
+      ]
+    },
+    {
+      "key": "price-rules",
+      "type": "User Story",
+      "title": "Regional price rules",
+      "state": "Active",
+      "points": 5,
+      "owner": "viktor",
+      "tags": []
+    },
+    {
+      "key": "image-pipeline",
+      "type": "User Story",
+      "title": "Image resize pipeline",
+      "state": "Active",
+      "points": 5,
+      "owner": "amara",
+      "tags": []
+    },
+    {
+      "key": "bundle-pricing",
+      "type": "User Story",
+      "title": "Bundle pricing display",
+      "state": "New",
+      "points": 3,
+      "owner": "noor",
+      "tags": []
+    },
+    {
+      "key": "stock-badge",
+      "type": "User Story",
+      "title": "Low stock badge",
+      "state": "New",
+      "points": 2,
+      "owner": null,
+      "tags": []
+    },
+    {
+      "key": "catalogue-export",
+      "type": "User Story",
+      "title": "Catalogue export for partners",
+      "state": "New",
+      "points": 5,
+      "owner": null,
+      "tags": []
+    },
+    {
+      "key": "sku-import",
+      "type": "User Story",
+      "title": "Bulk SKU import",
+      "state": "Closed",
+      "points": 3,
+      "owner": "viktor",
+      "tags": []
+    },
+    {
+      "key": "category-tree",
+      "type": "User Story",
+      "title": "Category tree editor",
+      "state": "Closed",
+      "points": 5,
+      "owner": "amara",
+      "tags": []
+    },
+    {
+      "key": "cache-stale",
+      "type": "Bug",
+      "title": "Stale prices served after an update",
+      "state": "Active",
+      "points": 3,
+      "owner": "viktor",
+      "tags": [
+        "Blocked",
+        "demo-age-4"
+      ]
+    },
+    {
+      "key": "sort-order",
+      "type": "Bug",
+      "title": "Sort order resets on page change",
+      "state": "New",
+      "points": 2,
+      "owner": "amara",
+      "tags": []
+    },
+    {
+      "key": "cdn-runbook",
+      "type": "Task",
+      "title": "Update the CDN purge runbook",
+      "state": "Active",
+      "remaining": 4,
+      "owner": "noor",
+      "tags": [],
+      "finishInDays": -2
+    },
+    {
+      "key": "search-bench",
+      "type": "Task",
+      "title": "Benchmark the search index",
+      "state": "Active",
+      "remaining": 6,
+      "owner": "viktor",
+      "tags": [
+        "demo-quiet-3"
+      ]
+    },
+    {
+      "key": "b-recommendations",
+      "type": "User Story",
+      "title": "Related product recommendations",
+      "state": "New",
+      "points": 8,
+      "owner": null,
+      "tags": [],
+      "backlog": true
+    },
+    {
+      "key": "b-wishlist",
+      "type": "User Story",
+      "title": "Wishlist",
+      "state": "New",
+      "points": 3,
+      "owner": "amara",
+      "tags": [],
+      "backlog": true
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Features.Health.GetHealth;
 
@@ -13,7 +14,7 @@ public static class HealthEndpoints
     {
         var group = app.MapGroup("/api/health");
         group.MapGet("/", async (ISender sender, CancellationToken ct) =>
-            (await sender.Send(new GetHealthQuery(), ct)).ToHttpResult());
+            (await sender.Send(new GetHealthQuery(), ct)).ToHttpResult()).NoTeamScope();
         return app;
     }
 }

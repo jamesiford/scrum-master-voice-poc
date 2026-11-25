@@ -26,11 +26,11 @@ public static class ScheduleEndpoints
         group.MapGet("/prompts", async (ISender sender, CancellationToken ct) =>
             (await sender.Send(new ListPromptsQuery(), ct)).ToHttpResult());
 
-        group.MapGet("/prompts/{name}", async (string name, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new GetPromptQuery(name), ct)).ToHttpResult());
+        group.MapGet("/prompts/{name}", async (string teamId, string name, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new GetPromptQuery(teamId, name), ct)).ToHttpResult());
 
-        group.MapPut("/prompts/{name}", async (string name, PromptBody b, ISender sender, CancellationToken ct) =>
-            (await sender.Send(new UpdatePromptCommand(name, b.Text), ct)).ToHttpResult());
+        group.MapPut("/prompts/{name}", async (string teamId, string name, PromptBody b, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new UpdatePromptCommand(teamId, name, b.Text), ct)).ToHttpResult());
 
         return app;
     }

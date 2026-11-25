@@ -14,4 +14,7 @@ public sealed class CosmosOptions
 
     /// <summary>Gets or sets the container name, partitioned by <c>/id</c>.</summary>
     public string Container { get; set; } = "collections";
+
+    /// <summary>Gets or sets the append-only approval trail container, partitioned by <c>/correlationId</c>. Created by Bicep.</summary>
+    public string ApprovalRecordsContainer { get; set; } = "ApprovalRecords";
 }

@@ -1,5 +1,9 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Identity;
+using Zava.Scrum.Application.Features.Teams;
+using Zava.Scrum.Application.Features.Teams.BindConversation;
+using Zava.Scrum.Domain.Teams;
 using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
 using Zava.Scrum.Application.Features.Calendars.ApproveSprintCalendar;
@@ -30,24 +34,22 @@ public sealed partial class ScrumAgent : AgentApplication
 {
     private readonly IServiceScopeFactory _scopes;
     private readonly IConversationStore _conversations;
-    private readonly ScrumMasterRoster _scrumMasters;
-    private readonly string _teamId;
+    private readonly IIdentityPolicy _identity;
 
     /// <summary>Initializes a new instance of the <see cref="ScrumAgent"/> class.</summary>
     /// <param name="options">Agent application options.</param>
     /// <param name="scopes">Creates a scope per card action, because the mediator is scoped and the agent is resolved once at startup.</param>
     /// <param name="conversations">Conversation reference store.</param>
-    /// <param name="configuration">Configuration, for the team this bot serves.</param>
-    /// <param name="scrumMasters">Who may run Scrum Master chat commands.</param>
-    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations, IConfiguration configuration, ScrumMasterRoster scrumMasters)
+    /// <param name="identity">Who counts as an administrator (by Entra object id) for Scrum Master chat commands.</param>
+    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations, IIdentityPolicy identity)
         : base(options)
     {
         _scopes = scopes;
         _conversations = conversations;
-        _scrumMasters = scrumMasters;
-        _teamId = configuration["Team:Id"] ?? "team-payments";
+        _identity = identity;
         OnConversationUpdate("membersAdded", OnMembersAddedAsync);
         OnActivity(ActivityTypes.Message, OnMessageAsync);
+        AdaptiveCards.OnActionExecute("bind-team", (ctx, _, data, ct) => BindAsync(ctx, data, ct));
         AdaptiveCards.OnActionExecute("approve", (ctx, _, data, ct) => DecideAsync(ctx, data, approve: true, ct));
         AdaptiveCards.OnActionExecute("reject", (ctx, _, data, ct) => DecideAsync(ctx, data, approve: false, ct));
         AdaptiveCards.OnActionExecute("approve-plan", (ctx, _, data, ct) => DecidePlanAsync(ctx, data, approve: true, ct));
@@ -59,21 +61,13 @@ public sealed partial class ScrumAgent : AgentApplication
     private async Task OnMembersAddedAsync(ITurnContext turnContext, ITurnState turnState, CancellationToken ct)
     {
         await RememberAsync(turnContext, ct);
-        await CaptureRecapChannelAsync(turnContext, ct);
-        await turnContext.SendActivityAsync("Hi, I am the Zava Scrum Agent. After each standup I will post follow-ups here for you to approve or reject.", cancellationToken: ct);
-    }
-
-    // Installed in a team channel: that channel becomes the recap channel (M9-R5). Personal and group chats do not.
-    private async Task CaptureRecapChannelAsync(ITurnContext turnContext, CancellationToken ct)
-    {
-        var conversation = turnContext.Activity.Conversation;
-        if (!string.Equals(conversation?.ConversationType, "channel", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(conversation?.Id))
+        var team = await ResolveTeamAsync(turnContext, ct);
+        if (team is null)
         {
             return;
         }
 
-        await using var scope = _scopes.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<ISender>().Send(new SetRecapChannelCommand(_teamId, conversation.Id), ct);
+        await turnContext.SendActivityAsync($"Hi, I am the Zava Scrum Agent for {team.Name}. After each standup I will post follow-ups here for you to approve or reject.", cancellationToken: ct);
     }
 
     private async Task OnMessageAsync(ITurnContext turnContext, ITurnState turnState, CancellationToken ct)
@@ -85,34 +79,43 @@ public sealed partial class ScrumAgent : AgentApplication
             return;
         }
 
+        // The conversation decides the team (its bindings). An unbound conversation gets the onboarding card and nothing else happens (ADR 0018).
+        var team = await ResolveTeamAsync(turnContext, ct);
+        if (team is null)
+        {
+            return;
+        }
+
         if (PreparePlanningPhrase().IsMatch(question))
         {
-            await PreparePlanningAsync(turnContext, ct);
+            await PreparePlanningAsync(turnContext, team, ct);
             return;
         }
 
         await using var scope = _scopes.CreateAsyncScope();
-        var answer = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new AnswerTeamQuestionQuery(_teamId, question), ct);
+        var answer = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new AnswerTeamQuestionQuery(team.Id, question), ct);
         await turnContext.SendActivityAsync(answer.IsSuccess ? answer.Value : answer.Error!.Message, cancellationToken: ct);
     }
 
     // "prepare sprint planning" is a Scrum Master command: it prepares the pack and the card arrives like any other.
-    private async Task PreparePlanningAsync(ITurnContext turnContext, CancellationToken ct)
+    private async Task PreparePlanningAsync(ITurnContext turnContext, Team team, CancellationToken ct)
     {
-        if (!_scrumMasters.IsScrumMaster(turnContext.Activity.From?.Name))
+        // Decided by Entra object id and team role, never by display name (ADR 0017, 0018): an Admin or this team's lead.
+        await using var scope = _scopes.CreateAsyncScope();
+        var allowed = await CanOperateAsync(scope, turnContext, team, ct);
+        if (!allowed)
         {
-            await turnContext.SendActivityAsync("Only the Scrum Master can prepare sprint planning. Ask them, or add your name to Team:ScrumMasters.", cancellationToken: ct);
+            await turnContext.SendActivityAsync("Only an administrator or this team's lead can prepare sprint planning.", cancellationToken: ct);
             return;
         }
 
-        await using var scope = _scopes.CreateAsyncScope();
-        var prepared = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new PreparePlanningCommand(_teamId), ct);
+        var prepared = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new PreparePlanningCommand(team.Id), ct);
         await turnContext.SendActivityAsync(
             prepared.IsSuccess ? "I prepared the sprint planning pack. The card with Approve plan and Reject is in this chat and in the portal." : prepared.Error!.Message,
             cancellationToken: ct);
     }
 
-    // The approver is the signed-in Teams user (Activity.From.Name), the same rule as follow-ups (F7).
+    // The approver is the Entra identity on the activity (From.AadObjectId and tenant), the same rule as follow-ups (F7, ADR 0017).
     private async Task<AdaptiveCardInvokeResponse> DecidePlanAsync(ITurnContext turnContext, object data, bool approve, CancellationToken ct)
     {
         var raw = data is JsonElement e ? e.GetRawText() : JsonSerializer.Serialize(data);
@@ -122,30 +125,31 @@ public sealed partial class ScrumAgent : AgentApplication
             return AdaptiveCardInvokeResponseFactory.BadRequest("This card has no planning pack id.");
         }
 
-        var who = turnContext.Activity.From?.Name;
-        if (string.IsNullOrWhiteSpace(who))
+        var who = TeamsActor.From(turnContext.Activity);
+        if (!who.IsSuccess)
         {
-            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are.");
+            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are (no Entra identity on the activity).");
         }
 
+        var decision = DecisionContext.FromTeams(who.Value);
         await using var scope = _scopes.CreateAsyncScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
         string? failure;
         if (approve)
         {
-            var approved = await sender.Send(new ApprovePlanCommand(id, who, [], ApprovalChannel.Teams), ct);
+            var approved = await sender.Send(new ApprovePlanCommand(id, decision, []), ct);
             failure = approved.IsSuccess ? null : approved.Error!.Message;
         }
         else
         {
-            var rejected = await sender.Send(new RejectPlanCommand(id, who), ct);
+            var rejected = await sender.Send(new RejectPlanCommand(id, decision), ct);
             failure = rejected.IsSuccess ? null : rejected.Error!.Message;
         }
 
         return AdaptiveCardInvokeResponseFactory.Message(failure ?? (approve ? "Plan approved. Writing to Azure DevOps." : "Plan rejected. Nothing was written."));
     }
 
-    // The approver is the signed-in Teams user (Activity.From.Name), the same rule as follow-ups (F7).
+    // The approver is the Entra identity on the activity (From.AadObjectId and tenant), the same rule as follow-ups (F7, ADR 0017).
     private async Task<AdaptiveCardInvokeResponse> DecideCalendarAsync(ITurnContext turnContext, object data, bool approve, CancellationToken ct)
     {
         var raw = data is JsonElement e ? e.GetRawText() : JsonSerializer.Serialize(data);
@@ -155,17 +159,18 @@ public sealed partial class ScrumAgent : AgentApplication
             return AdaptiveCardInvokeResponseFactory.BadRequest("This card has no calendar id.");
         }
 
-        var who = turnContext.Activity.From?.Name;
-        if (string.IsNullOrWhiteSpace(who))
+        var who = TeamsActor.From(turnContext.Activity);
+        if (!who.IsSuccess)
         {
-            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are.");
+            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are (no Entra identity on the activity).");
         }
 
+        var decision = DecisionContext.FromTeams(who.Value);
         await using var scope = _scopes.CreateAsyncScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
         var failure = approve
-            ? (await sender.Send(new ApproveSprintCalendarCommand(id, who), ct)).Error?.Message
-            : (await sender.Send(new RejectSprintCalendarCommand(id, who), ct)).Error?.Message;
+            ? (await sender.Send(new ApproveSprintCalendarCommand(id, decision), ct)).Error?.Message
+            : (await sender.Send(new RejectSprintCalendarCommand(id, decision), ct)).Error?.Message;
         return AdaptiveCardInvokeResponseFactory.Message(failure ?? (approve ? "Calendar approved. The meetings are in the calendar." : "Calendar rejected. Nothing was created."));
     }
 
@@ -178,18 +183,19 @@ public sealed partial class ScrumAgent : AgentApplication
             return AdaptiveCardInvokeResponseFactory.BadRequest("This card has no follow-up id.");
         }
 
-        // The approver is the signed-in Teams user, so a person cannot approve as someone else (F7).
-        var who = turnContext.Activity.From?.Name;
-        if (string.IsNullOrWhiteSpace(who))
+        // The approver is the Entra identity Teams put on the activity, so a person cannot approve as someone else (F7, ADR 0017).
+        var who = TeamsActor.From(turnContext.Activity);
+        if (!who.IsSuccess)
         {
-            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are.");
+            return AdaptiveCardInvokeResponseFactory.BadRequest("Teams did not tell me who you are (no Entra identity on the activity).");
         }
 
+        var decision = DecisionContext.FromTeams(who.Value);
         await using var scope = _scopes.CreateAsyncScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
         var result = approve
-            ? await sender.Send(new ApproveFollowUpCommand(id, who), ct)
-            : await sender.Send(new RejectFollowUpCommand(id, who), ct);
+            ? await sender.Send(new ApproveFollowUpCommand(id, decision), ct)
+            : await sender.Send(new RejectFollowUpCommand(id, decision), ct);
         return AdaptiveCardInvokeResponseFactory.Message(result.IsSuccess
             ? (approve ? "Approved. Writing to Azure DevOps." : "Rejected. Nothing was written.")
             : result.Error!.Message);
@@ -197,6 +203,75 @@ public sealed partial class ScrumAgent : AgentApplication
 
     [GeneratedRegex(@"\bprepare\s+(?:the\s+)?(?:sprint\s+)?planning\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex PreparePlanningPhrase();
+
+    // The team this conversation is bound to, or null after answering the conversation with the onboarding card.
+    private async Task<Team?> ResolveTeamAsync(ITurnContext turnContext, CancellationToken ct)
+    {
+        var tenant = TeamsActor.From(turnContext.Activity) is { IsSuccess: true } actor ? actor.Value.TenantId.ToString() : turnContext.Activity.Conversation?.TenantId;
+        await using var scope = _scopes.CreateAsyncScope();
+        var resolved = await scope.ServiceProvider.GetRequiredService<ITeamResolver>().ForConversationAsync(tenant, turnContext.Activity.Conversation?.Id, ct);
+        if (resolved.IsSuccess)
+        {
+            return resolved.Value;
+        }
+
+        await SendOnboardingCardAsync(turnContext, resolved.Error!.Code == TeamErrors.AmbiguousBinding.Code, ct);
+        return null;
+    }
+
+    // An unbound conversation gets one card and nothing else: no data, no commands. An Admin or the team's lead can bind it.
+    private static async Task SendOnboardingCardAsync(ITurnContext turnContext, bool ambiguous, CancellationToken ct)
+    {
+        var text = ambiguous
+            ? "This conversation is bound to more than one team. An administrator must fix the bindings."
+            : "This conversation is not bound to a team yet. An administrator or a team lead can bind it by typing the team id and pressing Bind.";
+        var card = new
+        {
+            type = "AdaptiveCard",
+            version = "1.5",
+            body = new object[]
+            {
+                new { type = "TextBlock", text = "Zava Scrum Agent", weight = "Bolder", size = "Medium" },
+                new { type = "TextBlock", text, wrap = true },
+                new { type = "Input.Text", id = "teamId", placeholder = "team id, for example team-payments" },
+            },
+            actions = new object[] { new { type = "Action.Execute", title = "Bind", verb = "bind-team" } },
+        };
+        var attachment = new Attachment { ContentType = "application/vnd.microsoft.card.adaptive", Content = JsonDocument.Parse(JsonSerializer.Serialize(card)).RootElement.Clone() };
+        await turnContext.SendActivityAsync(MessageFactory.Attachment(attachment), ct);
+    }
+
+    private async Task<AdaptiveCardInvokeResponse> BindAsync(ITurnContext turnContext, object data, CancellationToken ct)
+    {
+        var raw = data is JsonElement e ? e.GetRawText() : JsonSerializer.Serialize(data);
+        using var doc = JsonDocument.Parse(raw);
+        var teamId = doc.RootElement.TryGetProperty("teamId", out var id) ? id.GetString()?.Trim() : null;
+        var who = TeamsActor.From(turnContext.Activity);
+        var conversation = turnContext.Activity.Conversation;
+        if (string.IsNullOrWhiteSpace(teamId) || !who.IsSuccess || string.IsNullOrWhiteSpace(conversation?.Id))
+        {
+            return AdaptiveCardInvokeResponseFactory.BadRequest("Type a team id, and I need your Entra identity from Teams.");
+        }
+
+        await using var scope = _scopes.CreateAsyncScope();
+        var caller = new CallerContext(who.Value.ObjectId, _identity.IsAdmin(who.Value.ObjectId));
+        var isChannel = string.Equals(conversation.ConversationType, "channel", StringComparison.OrdinalIgnoreCase);
+        var result = await scope.ServiceProvider.GetRequiredService<ISender>().Send(
+            new BindTeamsConversationCommand(caller, teamId, who.Value.TenantId.ToString(), null, conversation.Id, isChannel, BindingPurpose.Recap), ct);
+        return AdaptiveCardInvokeResponseFactory.Message(result.IsSuccess ? $"Bound to {teamId}." : result.Error!.Message);
+    }
+
+    private async Task<bool> CanOperateAsync(AsyncServiceScope scope, ITurnContext turnContext, Team team, CancellationToken ct)
+    {
+        var actor = TeamsActor.From(turnContext.Activity);
+        if (!actor.IsSuccess || actor.Value.TenantId != _identity.TenantId)
+        {
+            return false;
+        }
+
+        var caller = new CallerContext(actor.Value.ObjectId, _identity.IsAdmin(actor.Value.ObjectId));
+        return (await scope.ServiceProvider.GetRequiredService<ITeamResolver>().ForCallerAsync(caller, team.Id, TeamPermission.Operate, ct)).IsSuccess;
+    }
 
     private async Task RememberAsync(ITurnContext turnContext, CancellationToken ct)
     {
