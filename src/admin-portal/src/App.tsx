@@ -2,6 +2,9 @@ import {
   BarChart3,
   BookOpenText,
   Cpu,
+  Building2,
+  Network,
+  UserRoundPlus,
   RotateCcw,
   CalendarClock,
   CheckSquare,
@@ -31,6 +34,12 @@ import { RosterPage } from './features/roster/RosterPage';
 import { SchedulePage } from './features/schedule/SchedulePage';
 import { SessionsPage } from './features/sessions/SessionsPage';
 import { TeamPage } from './features/team/TeamPage';
+import { FleetPage } from './features/admin/FleetPage';
+import { OnboardingWizard } from './features/admin/OnboardingWizard';
+import { TeamsAdminPage } from './features/admin/TeamsAdminPage';
+import { TeamSwitcher } from './team/TeamSwitcher';
+import { useTeams } from './team/TeamContext';
+import { EmptyState } from './ui/Feedback';
 import { useRoute, type PageId } from './hooks/useRoute';
 import { cx } from './ui/cx';
 
@@ -39,6 +48,18 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
 }
+
+/** Admin-only pages. The API enforces the role; this only decides what is shown. */
+const adminGroup: { title: string; items: NavItem[] } = {
+  title: 'Administration',
+  items: [
+    { id: 'fleet', label: 'Fleet', icon: Network },
+    { id: 'teams', label: 'Teams', icon: Building2 },
+    { id: 'onboarding', label: 'Onboard a team', icon: UserRoundPlus },
+  ],
+};
+
+const adminPages: PageId[] = ['fleet', 'teams', 'onboarding'];
 
 /** Navigation follows the work: run a standup, act on the result, learn from it, then configure. */
 const groups: { title: string; items: NavItem[] }[] = [
@@ -73,6 +94,29 @@ const groups: { title: string; items: NavItem[] }[] = [
 ];
 
 function Page({ page, go }: { page: PageId; go: (p: PageId) => void }) {
+  const { team, isAdmin } = useTeams();
+  if (adminPages.includes(page)) {
+    if (!isAdmin) {
+      return (
+        <EmptyState title="Administrators only" hint="Ask an administrator to open this page." />
+      );
+    }
+    return page === 'fleet' ? (
+      <FleetPage />
+    ) : page === 'teams' ? (
+      <TeamsAdminPage />
+    ) : (
+      <OnboardingWizard />
+    );
+  }
+  if (!team) {
+    return (
+      <EmptyState
+        title="You are not in a team yet"
+        hint="Ask an administrator or a team lead to add you to a team."
+      />
+    );
+  }
   switch (page) {
     case 'overview':
       return <OverviewPage go={go} />;
@@ -100,13 +144,17 @@ function Page({ page, go }: { page: PageId; go: (p: PageId) => void }) {
       return <TeamPage />;
     case 'roster':
       return <RosterPage />;
+    default:
+      return null;
   }
 }
 
 function Nav({ page, go, onPick }: { page: PageId; go: (p: PageId) => void; onPick: () => void }) {
+  const { isAdmin } = useTeams();
+  const shown = isAdmin ? [...groups, adminGroup] : groups;
   return (
     <nav aria-label="Main" className="flex flex-col gap-6 px-3 py-4">
-      {groups.map((g) => (
+      {shown.map((g) => (
         <div key={g.title || 'top'} className="grid gap-1">
           {g.title && (
             <p className="px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted">
@@ -160,7 +208,7 @@ export function App() {
           </span>
           <div className="leading-tight">
             <p className="text-sm font-semibold">Scrum Agent</p>
-            <p className="text-xs text-muted">Payments (Demo)</p>
+            <TeamSwitcher />
           </div>
         </div>
         <Nav page={page} go={go} onPick={() => setOpen(false)} />

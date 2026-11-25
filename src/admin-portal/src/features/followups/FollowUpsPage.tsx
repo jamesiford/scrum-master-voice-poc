@@ -1,6 +1,6 @@
 import { Check, X, RotateCw, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   applyFollowUp,
   getRoster,
@@ -34,12 +34,16 @@ const statusTone: Record<FollowUpStatus, Tone> = {
  * @returns The page.
  */
 export function FollowUpsPage() {
+  const teamId = useTeamId();
   const [showCards, setShowCards] = useState(false);
-  const followUps = useApiQuery((signal) => listFollowUps(TEAM_ID, signal), TEAM_ID);
-  const roster = useApiQuery((signal) => getRoster(TEAM_ID, signal), TEAM_ID);
+  const followUps = useApiQuery((signal) => listFollowUps(teamId, signal), teamId);
+  const roster = useApiQuery((signal) => getRoster(teamId, signal), teamId);
   const nameOf = (id: string | null) =>
     id ? (roster.data?.find((m) => m.id === id)?.displayName ?? id) : 'Team';
-  const cards = useApiQuery((signal) => listCards(signal), showCards ? 'cards' : null);
+  const cards = useApiQuery(
+    (signal) => listCards(teamId, signal),
+    showCards ? `cards-${teamId}` : null,
+  );
   const approve = useApiAction((id: string) => approveFollowUp(id));
   const reject = useApiAction((id: string) => rejectFollowUp(id));
   const retry = useApiAction((id: string) => applyFollowUp(id));

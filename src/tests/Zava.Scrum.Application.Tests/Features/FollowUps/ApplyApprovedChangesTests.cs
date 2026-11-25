@@ -14,6 +14,7 @@ namespace Zava.Scrum.Application.Tests.Features.FollowUps;
 public sealed class ApplyApprovedChangesTests : IAsyncDisposable
 {
     private readonly FakeWriter _writer = new();
+    private readonly FakeScopeReader _scope = new();
     private readonly RecordingTeamsMessenger _messenger = new();
     private readonly InMemoryFollowUpRepository _repo = new();
     private readonly InMemoryApprovalRecordStore _records = new();
@@ -27,6 +28,7 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
         services.AddIdentityFakes(_records);
         services.AddSingleton<IFollowUpRepository>(_repo);
         services.AddSingleton<IWorkItemWriter>(_writer);
+        services.AddSingleton<IWorkItemScopeReader>(_scope);
         services.AddSingleton<ITeamsMessenger>(_messenger);
         services.AddSingleton<IMemberRepository>(new InMemoryMemberRepository());
         services.AddSingleton<IClock>(new FixedClock(StandupHarness.Now));
@@ -43,6 +45,19 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
         var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
 
         Assert.Equal(ErrorType.NotApproved, result.Error!.Type);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Apply_AnItemInAnotherTeamsAreaPath_IsRefusedAndNothingIsWritten()
+    {
+        _scope.Place(1, "p", "another-team");
+        var id = await AddAsync();
+
+        await Sender.Send(new ApproveFollowUpCommand(id, Who.TeamsAdmin("Dana")));
+        var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.Equal("team.work_item_out_of_scope", result.Error!.Code);
         Assert.Empty(_writer.Written);
     }
 

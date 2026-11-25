@@ -1,4 +1,4 @@
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getEmails, getModelComparison } from '../../api/client';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { Badge } from '../../ui/Badge';
@@ -13,7 +13,8 @@ import { QueryStatus } from '../QueryStatus';
  * @returns The page.
  */
 export function ModelsPage() {
-  const models = useApiQuery((signal) => getModelComparison(TEAM_ID, signal), TEAM_ID);
+  const teamId = useTeamId();
+  const models = useApiQuery((signal) => getModelComparison(teamId, signal), teamId);
   const emails = useApiQuery((signal) => getEmails(signal), 'emails');
   return (
     <>

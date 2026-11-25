@@ -5,7 +5,7 @@ using Zava.Scrum.Tools.GateRunner;
 // Usage:
 //   dotnet run --project tools/GateRunner -- --label decision [--runs 3] [--api http://localhost:5080] [--team team-payments]
 //        [--teams a,b,c] [--out docs/gates/baseline-M10] [--build <id>] [--token <bearer>] [--timeout-minutes 12] [--check-audit]
-//   dotnet run --project tools/GateRunner -- --summarise docs/gates/baseline-M10
+//   dotnet run --project tools/GateRunner -- --summarise docs/gates/baseline-M10 [--only-team team-payments]
 // Drives the Simulated Room cast (demo/cast/payments-standup.yaml) through the real API and records per-turn timing by hop.
 // The configuration under test (Engine=Decision or Mode=Rules) is set on the API process, not here; --label only names it.
 var label = Arg("--label") ?? "run";
@@ -17,7 +17,7 @@ var timeout = TimeSpan.FromMinutes(int.TryParse(Arg("--timeout-minutes"), out va
 
 if (Arg("--summarise") is { } dir)
 {
-    Console.WriteLine(Summarise(dir));
+    Console.WriteLine(Summarise(dir, Arg("--only-team")));
     return 0;
 }
 
@@ -76,12 +76,13 @@ static string GitHead()
     }
 }
 
-static string Summarise(string directory)
+static string Summarise(string directory, string? onlyTeam = null)
 {
     var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
     var runs = Directory.GetFiles(directory, "*.json")
         .Select(f => JsonSerializer.Deserialize<RunResult>(File.ReadAllText(f), options))
         .OfType<RunResult>()
+        .Where(r => onlyTeam is null || r.Team == onlyTeam)
         .ToList();
     return SummaryWriter.Write(runs);
 }

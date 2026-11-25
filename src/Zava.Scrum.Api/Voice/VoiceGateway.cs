@@ -145,7 +145,7 @@ public sealed class VoiceGateway(
         }
 
         // One structured scope per run (set here, not in PrepareAsync, because a scope set in a callee does not flow back), so every line the gateway writes for a turn carries the session's correlation id (ADR 0017).
-        using var correlation = logger.BeginScope(new Dictionary<string, object?> { ["CorrelationId"] = _session.CorrelationId, ["SessionId"] = sessionId });
+        using var correlation = logger.BeginScope(new Dictionary<string, object?> { ["CorrelationId"] = _session.CorrelationId, ["SessionId"] = sessionId, ["TeamId"] = _session.TeamId });
         WarmUpAnalyser();
         var readers = new[] { ReadBridgeAsync(), ReadVoiceAsync(), TickAsync() };
         live.Register(sessionId, a => _inbox.Writer.TryWrite(new FromControl(a)));

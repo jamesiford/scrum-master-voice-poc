@@ -2,6 +2,7 @@ import { MsalProvider } from '@azure/msal-react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { TeamProvider } from './team/TeamContext';
 import { SignInGate } from './auth/SignInGate';
 import { getPortalConfig } from './api/client';
 import { initAuth } from './auth/msal';
@@ -19,7 +20,9 @@ void getPortalConfig()
       <StrictMode>
         <MsalProvider instance={msalInstance}>
           <SignInGate>
-            <App />
+            <TeamProvider>
+              <App />
+            </TeamProvider>
           </SignInGate>
         </MsalProvider>
       </StrictMode>,

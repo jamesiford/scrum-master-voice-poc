@@ -1,5 +1,5 @@
 import { CalendarPlus, Check as CheckIcon, Download, X } from 'lucide-react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   decideSprintCalendar,
   getSprintCalendar,
@@ -38,9 +38,10 @@ function when(iso: string): string {
  * @returns The card.
  */
 export function SprintCalendarCard() {
-  const plan = useApiQuery((signal) => getSprintCalendar(TEAM_ID, signal), TEAM_ID);
-  const proposals = useApiQuery((signal) => listSprintCalendars(TEAM_ID, signal), TEAM_ID);
-  const propose = useApiAction(() => proposeSprintCalendar(TEAM_ID));
+  const teamId = useTeamId();
+  const plan = useApiQuery((signal) => getSprintCalendar(teamId, signal), teamId);
+  const proposals = useApiQuery((signal) => listSprintCalendars(teamId, signal), teamId);
+  const propose = useApiAction(() => proposeSprintCalendar(teamId));
   const decide = useApiAction((id: string, approve: boolean) => decideSprintCalendar(id, approve));
   const latest = proposals.data?.[0];
   const open = latest && (latest.status === 'Proposed' || latest.status === 'Approving');
@@ -92,7 +93,7 @@ export function SprintCalendarCard() {
           </ul>
           <a
             className="inline-flex items-center gap-1 text-sm text-brand underline"
-            href={`/api/calendar/${encodeURIComponent(name ?? '')}.ics?teamId=${encodeURIComponent(TEAM_ID)}`}
+            href={`/api/calendar/${encodeURIComponent(name ?? '')}.ics?teamId=${encodeURIComponent(teamId)}`}
           >
             <Download className="size-4" /> Download .ics (fallback)
           </a>

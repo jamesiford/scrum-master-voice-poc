@@ -31,8 +31,13 @@ public interface IAdoClientFactory
 /// identity (ADR 0015 S4). The organisation URL is validated by <see cref="AdoOrganisation"/> before any client exists, so a team cannot point
 /// the API, and its token, at an arbitrary host. Nothing here is keyed to a team, so a team resolves its own organisation through its settings.
 /// </summary>
+/// <param name="credential">The managed identity credential.</param>
+/// <param name="options">Azure DevOps options.</param>
+/// <param name="demo">Demo options.</param>
+/// <param name="loggers">Logger factory.</param>
+/// <param name="transport">Creates the innermost handler; <see langword="null"/> uses the network. Tests pass a fake here.</param>
 /// <remarks>PROD (prompt 5): writes use the approver's delegated token against the team's organisation.</remarks>
-public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers) : IAdoClientFactory, IDisposable
+public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
 {
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
     private readonly ConcurrentDictionary<string, Lazy<HttpClient>> _clients = new(StringComparer.OrdinalIgnoreCase);
@@ -77,7 +82,7 @@ public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOpt
         DelegatingHandler auth = ado.AuthMode == "Pat"
             ? new PatAuthHandler(ado.Pat ?? throw new InvalidOperationException("Ado:Pat is required when Ado:AuthMode is Pat."))
             : new BearerTokenHandler(credential, AdoScope);
-        auth.InnerHandler = new HttpClientHandler();
+        auth.InnerHandler = transport?.Invoke() ?? new HttpClientHandler();
         return new HttpClient(auth, disposeHandler: true) { BaseAddress = new Uri(org + "/"), Timeout = TimeSpan.FromSeconds(100) };
     });
 }

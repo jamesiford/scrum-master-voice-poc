@@ -16,19 +16,23 @@ $uris = @("$($env:API_URI)/.auth/login/aad/callback", "$($env:BRIDGE_URI)/.auth/
 Invoke-Graph PATCH "/applications/$appObjectId" @{ web = @{ redirectUris = $uris; implicitGrantSettings = @{ enableIdTokenIssuance = $true } }; spa = @{ redirectUris = @($env:API_URI, "$($env:API_URI)/") } } | Out-Null
 Write-Check PASS 'portal redirect URIs' ($uris -join ', ')
 
-# ---- Microsoft Graph application permission for the API's identity ------------------------------------------------------------
-# User.Read.All lets the API resolve a roster member's user principal name to an Entra object id (ADR 0017). It reads users only.
+# ---- Microsoft Graph application permissions for the API's identity ----------------------------------------------------------
+# User.Read.All lets the API resolve a roster member's user principal name to an Entra object id (ADR 0017). GroupMember.Read.All lets it
+# sync a team's memberships from an Entra group (ADR 0018). Both read only. Role ids are looked up by name on the Graph service principal.
 $graphAppId = '00000003-0000-0000-c000-000000000000'
-$userReadAll = 'df021288-bdef-4463-88db-98f22de89214'
-$graphSp = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '$graphAppId'&`$select=id").value[0]
+$graphSp = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '$graphAppId'&`$select=id,appRoles").value[0]
 $mi = $env:MANAGED_IDENTITY_PRINCIPAL_ID
-$has = (Invoke-Graph GET "/servicePrincipals/$mi/appRoleAssignments").value | Where-Object { $_.appRoleId -eq $userReadAll -and $_.resourceId -eq $graphSp.id }
-if (-not $has) {
-  Invoke-Graph POST "/servicePrincipals/$mi/appRoleAssignments" @{ principalId = $mi; resourceId = $graphSp.id; appRoleId = $userReadAll } | Out-Null
-  Write-Check PASS 'managed identity Graph permission' 'User.Read.All granted (roster identity resolution)'
+$granted = (Invoke-Graph GET "/servicePrincipals/$mi/appRoleAssignments").value
+foreach ($roleName in @('User.Read.All', 'GroupMember.Read.All')) {
+  $role = $graphSp.appRoles | Where-Object { $_.value -eq $roleName -and $_.allowedMemberTypes -contains 'Application' }
+  if (-not $role) { throw "Graph has no application role $roleName." }
+  $has = $granted | Where-Object { $_.appRoleId -eq $role.id -and $_.resourceId -eq $graphSp.id }
+  if (-not $has) {
+    Invoke-Graph POST "/servicePrincipals/$mi/appRoleAssignments" @{ principalId = $mi; resourceId = $graphSp.id; appRoleId = $role.id } | Out-Null
+    Write-Check PASS "managed identity Graph permission $roleName" 'granted'
+  }
+  else { Write-Check PASS "managed identity Graph permission $roleName" 'already granted' }
 }
-else { Write-Check PASS 'managed identity Graph permission' 'User.Read.All already granted' }
-
 # ---- Portal sign-in values for the API (idempotent) ---------------------------------------------------------------------------
 # Bicep takes these as optional parameters, but azd may resolve them before preprovision has created the app, so they are applied here too.
 $cur = az containerapp show -n $env:API_APP_NAME -g $rg --query "properties.template.containers[0].env[?name=='Portal__ClientId'].value | [0]" -o tsv

@@ -10,7 +10,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   controlSession,
   getSession,
@@ -36,9 +36,10 @@ import { SessionTimeline } from '../sessions/SessionTimeline';
  * @returns The page.
  */
 export function LivePage() {
+  const teamId = useTeamId();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [joinUrl, setJoinUrl] = useState('');
-  const sessions = useApiQuery((signal) => listSessions(TEAM_ID, signal), TEAM_ID);
+  const sessions = useApiQuery((signal) => listSessions(teamId, signal), teamId);
   const detail = useApiQuery((signal) => getSession(sessionId ?? '', signal), sessionId);
   const { state, connected } = useLiveState(sessionId);
   const control = useApiAction((action: string) => controlSession(sessionId ?? '', action));

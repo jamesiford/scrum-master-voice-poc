@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getTeam, updateTeam, type Team, type TeamSettingsInput } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -9,6 +9,7 @@ import { Card } from '../../ui/Card';
 import { Field, Input, Textarea } from '../../ui/Form';
 import { PageHeader } from '../../ui/PageHeader';
 import { QueryStatus } from '../QueryStatus';
+import { MembershipsCard } from '../admin/MembershipsCard';
 
 function toInput(team: Team): TeamSettingsInput {
   return {
@@ -29,9 +30,10 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
   const [saved, setSaved] = useState(false);
   const save = useApiAction((input: TeamSettingsInput) => updateTeam(team.id, input));
 
-  const text = (key: keyof TeamSettingsInput, label: string, hint?: string) => (
-    <Field label={label} hint={hint}>
+  const text = (key: keyof TeamSettingsInput, label: string, readOnly = false) => (
+    <Field label={label} hint={readOnly ? 'Set by an administrator on the Teams page.' : undefined}>
       <Input
+        readOnly={readOnly}
         value={String(form[key])}
         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
       />
@@ -63,9 +65,9 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
           <Field label="Organisation" hint="Set with Ado__Org; not editable here.">
             <Input value={team.ado.org} readOnly />
           </Field>
-          {text('project', 'Project')}
-          {text('adoTeam', 'Team')}
-          {text('areaPath', 'Area path')}
+          {text('project', 'Project', true)}
+          {text('adoTeam', 'Team', true)}
+          {text('areaPath', 'Area path', true)}
         </div>
       </Card>
       <Card title="Standup" description="Timing and the rules that raise flags.">
@@ -105,7 +107,8 @@ function TeamForm({ team, onSaved }: { team: Team; onSaved: () => void }) {
  * @returns The page.
  */
 export function TeamPage() {
-  const team = useApiQuery((signal) => getTeam(TEAM_ID, signal), TEAM_ID);
+  const teamId = useTeamId();
+  const team = useApiQuery((signal) => getTeam(teamId, signal), teamId);
   return (
     <>
       <PageHeader
@@ -114,7 +117,10 @@ export function TeamPage() {
       />
       <QueryStatus loading={team.loading} error={team.error} />
       {team.data && (
-        <TeamForm key={JSON.stringify(team.data)} team={team.data} onSaved={team.reload} />
+        <div className="grid gap-6">
+          <TeamForm key={JSON.stringify(team.data)} team={team.data} onSaved={team.reload} />
+          <MembershipsCard teamId={teamId} hasGroup={Boolean(team.data.entraGroupId)} />
+        </div>
       )}
     </>
   );

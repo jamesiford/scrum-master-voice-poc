@@ -18,15 +18,49 @@ export interface ApiErrorBody {
   detail: string;
 }
 
-/** Team settings. */
+/** Team life cycle (ADR 0018). */
+export type TeamStatus = 'Draft' | 'Active' | 'Paused' | 'Archived';
+
+/** A team's Azure DevOps connection. */
+export interface AdoConnection {
+  org: string;
+  project: string;
+  team: string;
+  areaPath: string;
+}
+
+/** A Teams channel or chat bound to a team. */
+export interface TeamsBinding {
+  tenantId: string;
+  teamId: string | null;
+  channelId: string | null;
+  chatId: string | null;
+  purpose: 'Recap' | 'Standup' | 'Planning';
+}
+
+/** Which ceremonies a team runs. */
+export interface Ceremonies {
+  dailyScrum: boolean;
+  planning: boolean;
+  retrospective: boolean;
+  review: boolean;
+}
+
+/** Team settings and registry entry. */
 export interface Team {
   id: string;
   name: string;
   timeZone: string;
   standupMinutes: number;
-  ado: { org: string; project: string; team: string; areaPath: string };
+  ado: AdoConnection;
   behaviours: { staleDays: number; escalateBlockerAfterDays: number };
   sprintGoal: string;
+  status: TeamStatus;
+  /** The bindings, never null. */
+  bindings: TeamsBinding[];
+  /** The ceremony flags, never null. */
+  ceremonyFlags: Ceremonies;
+  entraGroupId: string | null;
 }
 
 /** Editable team settings sent with `PUT /api/teams/{id}`. */
@@ -236,7 +270,7 @@ export function getTeam(teamId: string, signal?: AbortSignal): Promise<Team> {
  * @param input - New settings.
  */
 export async function updateTeam(teamId: string, input: TeamSettingsInput): Promise<void> {
-  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}`, input);
+  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}/settings`, input);
 }
 
 /**
@@ -399,12 +433,18 @@ export async function applyFollowUp(id: string): Promise<void> {
 }
 
 /**
- * Lists the cards that were sent.
+ * Lists the cards that were sent for a team.
+ * @param teamId - Team id.
  * @param signal - Optional abort signal.
  * @returns The cards, newest first.
  */
-export function listCards(signal?: AbortSignal): Promise<SentCard[]> {
-  return request<SentCard[]>('GET', '/api/cards', undefined, signal);
+export function listCards(teamId: string, signal?: AbortSignal): Promise<SentCard[]> {
+  return request<SentCard[]>(
+    'GET',
+    `/api/cards?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
 }
 
 /** A team's schedule. */
@@ -465,15 +505,26 @@ export function listPrompts(teamId: string, signal?: AbortSignal): Promise<strin
   );
 }
 
+/** A prompt and which version is in effect for the team. */
+export interface PromptResolution {
+  text: string;
+  /** `Default`, `DeploymentOverride` or `TeamOverride`. */
+  source: 'Default' | 'DeploymentOverride' | 'TeamOverride';
+}
+
 /**
  * Reads a prompt.
  * @param teamId - Team id.
  * @param name - Prompt name.
  * @param signal - Optional abort signal.
- * @returns The prompt text.
+ * @returns The prompt text and where it comes from.
  */
-export function getPrompt(teamId: string, name: string, signal?: AbortSignal): Promise<string> {
-  return request<string>(
+export function getPrompt(
+  teamId: string,
+  name: string,
+  signal?: AbortSignal,
+): Promise<PromptResolution> {
+  return request<PromptResolution>(
     'GET',
     `/api/teams/${encodeURIComponent(teamId)}/prompts/${encodeURIComponent(name)}`,
     undefined,
@@ -1061,4 +1112,213 @@ export async function decideSprintCalendar(id: string, approve: boolean): Promis
     `/api/calendar/proposals/${encodeURIComponent(id)}/${approve ? 'approve' : 'reject'}`,
     {},
   );
+}
+
+/** What an Admin enters to register or edit a team (`POST /api/teams`, `PUT /api/teams/{id}`). */
+export interface TeamRegistryInput {
+  name: string;
+  timeZone: string;
+  standupMinutes: number;
+  ado: AdoConnection;
+  sprintGoal: string;
+  ceremonies?: Ceremonies;
+  status?: TeamStatus;
+  teamsBindings?: TeamsBinding[];
+  entraGroupId?: string | null;
+}
+
+/** One step of a connection test. */
+export interface ConnectionStep {
+  name: string;
+  ok: boolean;
+  detail: string;
+}
+
+/** Result of testing a team's Azure DevOps connection; names exactly which step failed. */
+export interface ConnectionReport {
+  steps: ConnectionStep[];
+  ok: boolean;
+}
+
+/** One row of the Admin fleet dashboard. */
+export interface FleetRow {
+  teamId: string;
+  name: string;
+  status: TeamStatus;
+  organisation: string;
+  project: string;
+  nextStandup: string | null;
+  lastRun: string | null;
+  openFollowUps: number;
+  /** `ok`, `not checked`, or the step that failed. */
+  connection: string;
+  bound: number;
+}
+
+/** A person's role in one team. */
+export type TeamRole = 'Reader' | 'Member' | 'TeamLead';
+
+/** A membership: who is in a team and in what role. */
+export interface Membership {
+  teamId: string;
+  objectId: string;
+  role: TeamRole;
+}
+
+/**
+ * Lists the teams the caller may see: their own, or every team for an Admin.
+ * @param includeArchived - Include archived teams (Admin only).
+ * @param signal - Optional abort signal.
+ * @returns The teams.
+ */
+export function listTeams(includeArchived = false, signal?: AbortSignal): Promise<Team[]> {
+  return request<Team[]>('GET', `/api/teams?includeArchived=${includeArchived}`, undefined, signal);
+}
+
+/**
+ * Registers a team (Admin). It starts as a draft until it is enabled.
+ * @param teamId - The new team id.
+ * @param input - The team.
+ */
+export async function createTeam(teamId: string, input: TeamRegistryInput): Promise<void> {
+  await request<unknown>('POST', '/api/teams', { teamId, input });
+}
+
+/**
+ * Edits a team's registry entry (Admin): connection, ceremonies, bindings and status.
+ * @param teamId - Team id.
+ * @param input - The full entry.
+ */
+export async function updateTeamRegistry(teamId: string, input: TeamRegistryInput): Promise<void> {
+  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}`, input);
+}
+
+/**
+ * Archives a team (Admin). Teams are never hard deleted.
+ * @param teamId - Team id.
+ */
+export async function archiveTeam(teamId: string): Promise<void> {
+  await request<unknown>('DELETE', `/api/teams/${encodeURIComponent(teamId)}`);
+}
+
+/**
+ * Tests a registered team's Azure DevOps connection with the API's managed identity.
+ * @param teamId - Team id.
+ * @returns The step-by-step report.
+ */
+export function testTeamConnection(teamId: string): Promise<ConnectionReport> {
+  return request<ConnectionReport>(
+    'POST',
+    `/api/teams/${encodeURIComponent(teamId)}/test-connection`,
+  );
+}
+
+/**
+ * Tests a connection before the team exists (onboarding wizard).
+ * @param ado - The organisation, project, team and area path.
+ * @returns The step-by-step report.
+ */
+export function testConnection(ado: AdoConnection): Promise<ConnectionReport> {
+  return request<ConnectionReport>('POST', '/api/ado/test-connection', { ado });
+}
+
+/**
+ * Lists the projects in an Azure DevOps organisation (Admin).
+ * @param organisation - The organisation URL.
+ * @param signal - Optional abort signal.
+ * @returns The project names.
+ */
+export function listAdoProjects(
+  organisation: string,
+  signal?: AbortSignal,
+): Promise<{ name: string }[]> {
+  return request<{ name: string }[]>(
+    'GET',
+    `/api/ado/projects?organisation=${encodeURIComponent(organisation)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Lists the teams in an Azure DevOps project (Admin).
+ * @param organisation - The organisation URL.
+ * @param project - The project.
+ * @param signal - Optional abort signal.
+ * @returns The teams and their default area paths.
+ */
+export function listAdoTeams(
+  organisation: string,
+  project: string,
+  signal?: AbortSignal,
+): Promise<{ name: string; defaultAreaPath: string | null }[]> {
+  return request<{ name: string; defaultAreaPath: string | null }[]>(
+    'GET',
+    `/api/ado/teams?organisation=${encodeURIComponent(organisation)}&project=${encodeURIComponent(project)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Reads the Admin fleet dashboard: one row per team.
+ * @param signal - Optional abort signal.
+ * @returns The rows.
+ */
+export function getFleet(signal?: AbortSignal): Promise<FleetRow[]> {
+  return request<FleetRow[]>('GET', '/api/fleet', undefined, signal);
+}
+
+/**
+ * Lists a team's memberships.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The memberships.
+ */
+export function listMemberships(teamId: string, signal?: AbortSignal): Promise<Membership[]> {
+  return request<Membership[]>(
+    'GET',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Adds a person to a team or changes their role (Admin or the team's lead).
+ * @param teamId - Team id.
+ * @param objectId - The person's Entra object id.
+ * @param role - The role.
+ */
+export async function setMembership(
+  teamId: string,
+  objectId: string,
+  role: TeamRole,
+): Promise<void> {
+  await request<unknown>(
+    'PUT',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships/${encodeURIComponent(objectId)}`,
+    { role },
+  );
+}
+
+/**
+ * Removes a person from a team.
+ * @param teamId - Team id.
+ * @param objectId - The person's Entra object id.
+ */
+export async function removeMembership(teamId: string, objectId: string): Promise<void> {
+  await request<unknown>(
+    'DELETE',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships/${encodeURIComponent(objectId)}`,
+  );
+}
+
+/**
+ * Adds the members of the team's Entra group as Members.
+ * @param teamId - Team id.
+ * @returns How many were added.
+ */
+export function syncMemberships(teamId: string): Promise<number> {
+  return request<number>('POST', `/api/teams/${encodeURIComponent(teamId)}/memberships/sync`);
 }

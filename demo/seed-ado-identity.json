@@ -1,0 +1,168 @@
+{
+  "project": "Zava-Scrum-Identity",
+  "team": "Identity (Demo)",
+  "areaPath": "Identity",
+  "iteration": "Demo Sprint",
+  "sprintLengthDays": 14,
+  "daysElapsed": 5,
+  "sprintGoal": "Partners sign in once and stay signed in safely.",
+  "nextIteration": "Sprint 43",
+  "members": [
+    {
+      "pronunciation": "Sofia",
+      "key": "sofia",
+      "order": 1,
+      "displayName": "Sofia Reyes"
+    },
+    {
+      "pronunciation": "TAR-ik",
+      "key": "tariq",
+      "order": 2,
+      "displayName": "Tariq Aziz"
+    },
+    {
+      "pronunciation": "LAY-na",
+      "key": "lena",
+      "order": 3,
+      "displayName": "Lena Fischer"
+    }
+  ],
+  "workItems": [
+    {
+      "key": "sso-story",
+      "type": "User Story",
+      "title": "Single sign-on for the partner portal",
+      "state": "Active",
+      "points": 8,
+      "owner": "sofia",
+      "tags": [
+        "demo-age-3"
+      ]
+    },
+    {
+      "key": "mfa-prompt",
+      "type": "User Story",
+      "title": "Step-up prompt for sensitive actions",
+      "state": "Active",
+      "points": 5,
+      "owner": "tariq",
+      "tags": []
+    },
+    {
+      "key": "token-refresh",
+      "type": "User Story",
+      "title": "Silent token refresh in the mobile app",
+      "state": "Active",
+      "points": 5,
+      "owner": "lena",
+      "tags": []
+    },
+    {
+      "key": "password-reset",
+      "type": "User Story",
+      "title": "Self-service password reset",
+      "state": "New",
+      "points": 3,
+      "owner": "sofia",
+      "tags": []
+    },
+    {
+      "key": "consent-screen",
+      "type": "User Story",
+      "title": "Consent screen copy review",
+      "state": "New",
+      "points": 2,
+      "owner": null,
+      "tags": []
+    },
+    {
+      "key": "session-audit",
+      "type": "User Story",
+      "title": "Session audit trail export",
+      "state": "New",
+      "points": 5,
+      "owner": null,
+      "tags": []
+    },
+    {
+      "key": "lockout",
+      "type": "User Story",
+      "title": "Account lockout policy",
+      "state": "Closed",
+      "points": 3,
+      "owner": "tariq",
+      "tags": []
+    },
+    {
+      "key": "oidc-discovery",
+      "type": "User Story",
+      "title": "OIDC discovery endpoint",
+      "state": "Closed",
+      "points": 5,
+      "owner": "lena",
+      "tags": []
+    },
+    {
+      "key": "jwks-rotation",
+      "type": "Bug",
+      "title": "Signing key rotation drops in-flight sessions",
+      "state": "Active",
+      "points": 3,
+      "owner": "tariq",
+      "tags": [
+        "Blocked",
+        "demo-age-4"
+      ]
+    },
+    {
+      "key": "logout-redirect",
+      "type": "Bug",
+      "title": "Logout redirects to a stale URL",
+      "state": "New",
+      "points": 2,
+      "owner": "lena",
+      "tags": []
+    },
+    {
+      "key": "rotation-runbook",
+      "type": "Task",
+      "title": "Write the key rotation runbook",
+      "state": "Active",
+      "remaining": 4,
+      "owner": "sofia",
+      "tags": [],
+      "finishInDays": -1
+    },
+    {
+      "key": "idp-load-test",
+      "type": "Task",
+      "title": "Load test the identity provider",
+      "state": "Active",
+      "remaining": 6,
+      "owner": "tariq",
+      "tags": [
+        "demo-quiet-3"
+      ]
+    },
+    {
+      "key": "b-passkeys",
+      "type": "User Story",
+      "title": "Passkey sign-in",
+      "state": "New",
+      "points": 8,
+      "owner": null,
+      "tags": [],
+      "backlog": true
+    },
+    {
+      "key": "b-device-list",
+      "type": "User Story",
+      "title": "Signed-in devices list",
+      "state": "New",
+      "points": 3,
+      "owner": "lena",
+      "tags": [],
+      "backlog": true
+    }
+  ]
+}

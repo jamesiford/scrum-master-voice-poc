@@ -20,7 +20,8 @@ public sealed class SeedFileRosterSource(IOptions<DemoOptions> options) : IRoste
     public async Task<IReadOnlyList<Member>> GetRosterAsync(Team team, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(team);
-        var file = options.Value.TeamSeedFiles.TryGetValue(team.Id, out var own) ? own : options.Value.SeedFile;
+        var file = options.Value.TeamSeedFiles.TryGetValue(team.Id, out var own) ? own
+            : options.Value.Teams.FirstOrDefault(t => t.Id == team.Id)?.SeedFile ?? options.Value.SeedFile;
         var path = RepositoryFileLocator.Resolve(file)
             ?? throw new FileNotFoundException($"Seed file '{file}' was not found.");
         await using var stream = File.OpenRead(path);

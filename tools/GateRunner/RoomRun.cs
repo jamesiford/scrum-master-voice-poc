@@ -40,7 +40,7 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
         await page.WaitForFunctionAsync("() => document.getElementById('floor')?.textContent?.startsWith('Closed')", null, new PageWaitForFunctionOptions { Timeout = (float)timeout.TotalMilliseconds });
 
         var session = await _http.GetFromJsonAsync<JsonElement>($"/api/sessions/{sessionId}", Json, ct);
-        return new RunResult(Guid.NewGuid().ToString("N")[..8], label, build, api, startedAt, sessionId, ReadInt(session, "p50LatencyMs"), ReadTurns(session));
+        return new RunResult(Guid.NewGuid().ToString("N")[..8], label, build, api, startedAt, sessionId, ReadInt(session, "p50LatencyMs"), ReadTurns(session), team);
     }
 
     /// <inheritdoc />

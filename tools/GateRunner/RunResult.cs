@@ -9,6 +9,7 @@ namespace Zava.Scrum.Tools.GateRunner;
 /// <param name="SessionId">The standup session id.</param>
 /// <param name="ReportedP50Ms">The p50 the API itself reported for the session.</param>
 /// <param name="Turns">Every timed agent reply.</param>
+/// <param name="Team">The team the standup ran for; <see langword="null"/> in results saved before teams existed.</param>
 internal sealed record RunResult(
     string RunId,
     string Label,
@@ -17,4 +18,5 @@ internal sealed record RunResult(
     DateTimeOffset StartedAt,
     string SessionId,
     int ReportedP50Ms,
-    IReadOnlyList<TimingTurn> Turns);
+    IReadOnlyList<TimingTurn> Turns,
+    string? Team = null);

@@ -1,6 +1,6 @@
 import { Send } from 'lucide-react';
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { askAgent, getKpis, getReport } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -21,12 +21,13 @@ const pct = (n: number) => `${Math.round(n * 100)}%`;
  * @returns The page.
  */
 export function ReportsPage() {
+  const teamId = useTeamId();
   const [kind, setKind] = useState<'sprint' | 'monthly'>('sprint');
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
-  const kpis = useApiQuery((signal) => getKpis(TEAM_ID, 6, signal), TEAM_ID);
-  const report = useApiQuery((signal) => getReport(kind, TEAM_ID, 6, signal), kind);
-  const ask = useApiAction(() => askAgent(TEAM_ID, question));
+  const kpis = useApiQuery((signal) => getKpis(teamId, 6, signal), teamId);
+  const report = useApiQuery((signal) => getReport(kind, teamId, 6, signal), kind);
+  const ask = useApiAction(() => askAgent(teamId, question));
   const k = kpis.data?.summary;
 
   const onAsk = async () => {

@@ -76,3 +76,22 @@ export function signedInName(): string | undefined {
   const account = instance?.getActiveAccount() ?? instance?.getAllAccounts()[0];
   return account?.name ?? account?.username;
 }
+
+/**
+ * The app roles on the signed-in person's ID token, used only to decide what to show (the API enforces every role itself).
+ * @returns The role values, empty when nobody is signed in or sign-in is not configured.
+ */
+export function signedInRoles(): string[] {
+  const account = instance?.getActiveAccount() ?? instance?.getAllAccounts()[0];
+  const roles = account?.idTokenClaims?.['roles'];
+  return Array.isArray(roles) ? roles.map(String) : [];
+}
+
+/**
+ * A stable key for the signed-in person, so per-user choices (the selected team) are remembered per user.
+ * @returns The Entra account id, or `local` when sign-in is not configured.
+ */
+export function signedInKey(): string {
+  const account = instance?.getActiveAccount() ?? instance?.getAllAccounts()[0];
+  return account?.localAccountId ?? 'local';
+}
