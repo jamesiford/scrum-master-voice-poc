@@ -21,6 +21,7 @@ using Microsoft.Agents.Builder.State;
 using Microsoft.Agents.Core.Models;
 using Microsoft.Agents.Core.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -32,6 +33,7 @@ namespace Zava.Scrum.Api.Bot;
 /// </summary>
 public sealed partial class ScrumAgent : AgentApplication
 {
+    private readonly string[]? _ssoHandlers;
     private readonly IServiceScopeFactory _scopes;
     private readonly IConversationStore _conversations;
     private readonly IIdentityPolicy _identity;
@@ -41,19 +43,22 @@ public sealed partial class ScrumAgent : AgentApplication
     /// <param name="scopes">Creates a scope per card action, because the mediator is scoped and the agent is resolved once at startup.</param>
     /// <param name="conversations">Conversation reference store.</param>
     /// <param name="identity">Who counts as an administrator (by Entra object id) for Scrum Master chat commands.</param>
-    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations, IIdentityPolicy identity)
+    /// <param name="configuration">Tells the agent whether the single sign-on OAuth handler is configured.</param>
+    public ScrumAgent(AgentApplicationOptions options, IServiceScopeFactory scopes, IConversationStore conversations, IIdentityPolicy identity, IConfiguration configuration)
         : base(options)
     {
+        // Approving needs the approver's own sign-in (ADR 0020). Without the OAuth connection there is no sign-in, so approvals are refused, not faked.
+        _ssoHandlers = string.IsNullOrWhiteSpace(configuration[$"AgentApplication:UserAuthorization:Handlers:{SsoHandler}:Settings:AzureBotOAuthConnectionName"]) ? null : [SsoHandler];
         _scopes = scopes;
         _conversations = conversations;
         _identity = identity;
         OnConversationUpdate("membersAdded", OnMembersAddedAsync);
         OnActivity(ActivityTypes.Message, OnMessageAsync);
         AdaptiveCards.OnActionExecute("bind-team", (ctx, _, data, ct) => BindAsync(ctx, data, ct));
-        AdaptiveCards.OnActionExecute("approve", (ctx, _, data, ct) => DecideAsync(ctx, data, approve: true, ct));
-        AdaptiveCards.OnActionExecute("reject", (ctx, _, data, ct) => DecideAsync(ctx, data, approve: false, ct));
-        AdaptiveCards.OnActionExecute("approve-plan", (ctx, _, data, ct) => DecidePlanAsync(ctx, data, approve: true, ct));
-        AdaptiveCards.OnActionExecute("reject-plan", (ctx, _, data, ct) => DecidePlanAsync(ctx, data, approve: false, ct));
+        AdaptiveCards.OnActionExecute("approve", (ctx, state, data, ct) => DecideAsync(ctx, state, data, approve: true, ct), autoSignInHandlers: _ssoHandlers!);
+        AdaptiveCards.OnActionExecute("reject", (ctx, state, data, ct) => DecideAsync(ctx, state, data, approve: false, ct));
+        AdaptiveCards.OnActionExecute("approve-plan", (ctx, state, data, ct) => DecidePlanAsync(ctx, state, data, approve: true, ct), autoSignInHandlers: _ssoHandlers!);
+        AdaptiveCards.OnActionExecute("reject-plan", (ctx, state, data, ct) => DecidePlanAsync(ctx, state, data, approve: false, ct));
         AdaptiveCards.OnActionExecute("approve-calendar", (ctx, _, data, ct) => DecideCalendarAsync(ctx, data, approve: true, ct));
         AdaptiveCards.OnActionExecute("reject-calendar", (ctx, _, data, ct) => DecideCalendarAsync(ctx, data, approve: false, ct));
     }
@@ -116,7 +121,7 @@ public sealed partial class ScrumAgent : AgentApplication
     }
 
     // The approver is the Entra identity on the activity (From.AadObjectId and tenant), the same rule as follow-ups (F7, ADR 0017).
-    private async Task<AdaptiveCardInvokeResponse> DecidePlanAsync(ITurnContext turnContext, object data, bool approve, CancellationToken ct)
+    private async Task<AdaptiveCardInvokeResponse> DecidePlanAsync(ITurnContext turnContext, ITurnState turnState, object data, bool approve, CancellationToken ct)
     {
         var raw = data is JsonElement e ? e.GetRawText() : JsonSerializer.Serialize(data);
         using var doc = JsonDocument.Parse(raw);
@@ -137,6 +142,11 @@ public sealed partial class ScrumAgent : AgentApplication
         string? failure;
         if (approve)
         {
+            if (!await SignInApproverAsync(scope, turnContext, turnState, ct))
+            {
+                return AdaptiveCardInvokeResponseFactory.Message(SignInNeeded);
+            }
+
             var approved = await sender.Send(new ApprovePlanCommand(id, decision, []), ct);
             failure = approved.IsSuccess ? null : approved.Error!.Message;
         }
@@ -174,7 +184,7 @@ public sealed partial class ScrumAgent : AgentApplication
         return AdaptiveCardInvokeResponseFactory.Message(failure ?? (approve ? "Calendar approved. The meetings are in the calendar." : "Calendar rejected. Nothing was created."));
     }
 
-    private async Task<AdaptiveCardInvokeResponse> DecideAsync(ITurnContext turnContext, object data, bool approve, CancellationToken ct)
+    private async Task<AdaptiveCardInvokeResponse> DecideAsync(ITurnContext turnContext, ITurnState turnState, object data, bool approve, CancellationToken ct)
     {
         var raw = data is JsonElement e ? e.GetRawText() : JsonSerializer.Serialize(data);
         using var doc = JsonDocument.Parse(raw);
@@ -193,12 +203,39 @@ public sealed partial class ScrumAgent : AgentApplication
         var decision = DecisionContext.FromTeams(who.Value);
         await using var scope = _scopes.CreateAsyncScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+        if (approve && !await SignInApproverAsync(scope, turnContext, turnState, ct))
+        {
+            return AdaptiveCardInvokeResponseFactory.Message(SignInNeeded);
+        }
+
         var result = approve
             ? await sender.Send(new ApproveFollowUpCommand(id, decision), ct)
             : await sender.Send(new RejectFollowUpCommand(id, decision), ct);
         return AdaptiveCardInvokeResponseFactory.Message(result.IsSuccess
             ? (approve ? "Approved. Writing to Azure DevOps." : "Rejected. Nothing was written.")
             : result.Error!.Message);
+    }
+
+    private const string SsoHandler = "sso";
+    private const string SignInNeeded = "Sign in with the prompt Teams just showed, then press Approve again. Azure DevOps records you as the author, so nothing is written without your sign-in.";
+
+    // Approving writes to Azure DevOps as the approver, so the card action needs the approver's own single sign-on token (ADR 0020). When the
+    // sign-in is still pending, the Agents SDK has already shown the sign-in prompt; nothing is approved and nothing falls back to a service identity.
+    private async Task<bool> SignInApproverAsync(AsyncServiceScope scope, ITurnContext turnContext, ITurnState turnState, CancellationToken ct)
+    {
+        if (_ssoHandlers is null)
+        {
+            return false;
+        }
+
+        var token = await UserAuthorization.GetTurnTokenAsync(turnContext, SsoHandler, ct);
+        if (!SsoToken.TryReadIdentity(token, out var oid, out var tid))
+        {
+            return false;
+        }
+
+        scope.ServiceProvider.GetRequiredService<IUserAssertionAccessor>().Current = new UserAssertion(token!, oid, tid);
+        return true;
     }
 
     [GeneratedRegex(@"\bprepare\s+(?:the\s+)?(?:sprint\s+)?planning\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]

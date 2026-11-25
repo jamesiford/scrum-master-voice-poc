@@ -33,14 +33,15 @@ public sealed class RoutedWorkItemReader(IAdoClientFactory factory) : IWorkItemR
     }
 }
 
-/// <summary>Writes an approved change to the organisation of the team it belongs to.</summary>
+/// <summary>Writes an approved change to the organisation of the team it belongs to, as the approver (ADR 0020).</summary>
 public sealed class RoutedWorkItemWriter(IAdoClientFactory factory) : IWorkItemWriter
 {
     /// <inheritdoc />
-    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, CancellationToken ct)
+    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedAdoAccess access, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(target);
-        return factory.WriterFor(target.Org).ApplyAsync(change, ct);
+        ArgumentNullException.ThrowIfNull(access);
+        return factory.DelegatedWriterFor(target.Org, access.AccessToken).ApplyAsync(change, ct);
     }
 }
 

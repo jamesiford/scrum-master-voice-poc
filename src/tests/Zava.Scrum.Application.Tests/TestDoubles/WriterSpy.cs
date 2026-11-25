@@ -11,9 +11,12 @@ internal sealed class WriterSpy : IWorkItemWriter
 {
     public List<ApprovedChange> Written { get; } = [];
 
+    /// <summary>The delegated token each write carried.</summary>
+    public List<string> Tokens { get; } = [];
+
     public bool Fail { get; set; }
 
-    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, CancellationToken ct)
+    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedAdoAccess access, CancellationToken ct)
     {
         if (Fail)
         {
@@ -21,6 +24,7 @@ internal sealed class WriterSpy : IWorkItemWriter
         }
 
         Written.Add(change);
+        Tokens.Add(access.AccessToken);
         return Task.FromResult(Result<WorkItemRevision>.Success(new WorkItemRevision(change.WorkItemId, Written.Count + 1)));
     }
 }

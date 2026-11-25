@@ -1,5 +1,6 @@
 using FluentValidation;
 using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,8 @@ public static class DependencyInjection
         services.AddScoped<Tools.IScrumTools, Tools.ScrumTools>();
         services.AddScoped<Features.Calendars.SprintCalendarBuilder>();
         services.AddScoped<Features.Identity.ApprovalGate>();
+        services.AddScoped<Features.Identity.DelegatedAccessProvider>();
+        services.AddScoped<IUserAssertionAccessor, UserAssertionAccessor>();
         services.AddScoped<Features.Teams.TeamRegistration>();
         services.AddScoped<Features.Teams.ITeamResolver, Features.Teams.TeamResolver>();
         services.AddScoped<Features.Teams.IResourceTeamLocator, Features.Teams.ResourceTeamLocator>();

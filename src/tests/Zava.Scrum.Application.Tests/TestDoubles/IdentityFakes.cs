@@ -95,8 +95,16 @@ internal static class Who
     public static DecisionContext Portal(string name = "Dana", params string[] roles) =>
         new(Actor(AdminId, name, ActorSource.Portal), ApprovalChannel.Portal, AuthenticationContext.Of("entra-bearer"), roles.Length == 0 ? [AppRoles.Approver] : roles);
 
-    public static ActorIdentity Actor(Guid objectId, string name, ActorSource source) =>
-        ActorIdentity.Create(objectId.ToString(), Tenant.ToString(), name, null, source, source == ActorSource.Portal ? "entra-bearer" : "bot-service-token").Value;
+    private static readonly AsyncLocal<UserAssertion?> SignedIn = new();
+
+    /// <summary>The token the test caller presents: whoever the most recent test identity was, because a real caller signs in as themselves.</summary>
+    public static UserAssertion? Signed { get => SignedIn.Value; set => SignedIn.Value = value; }
+
+    public static ActorIdentity Actor(Guid objectId, string name, ActorSource source)
+    {
+        Signed = new UserAssertion($"token-of-{objectId}", objectId, Tenant);
+        return ActorIdentity.Create(objectId.ToString(), Tenant.ToString(), name, null, source, source == ActorSource.Portal ? "entra-bearer" : "bot-service-token").Value;
+    }
 
     /// <summary>Registers the identity ports with the test tenant and <see cref="AdminId"/> as administrator.</summary>
     public static IServiceCollection AddIdentityFakes(this IServiceCollection services, InMemoryApprovalRecordStore? records = null, IReadOnlyDictionary<string, Guid>? users = null)
@@ -106,9 +114,28 @@ internal static class Who
         services.AddSingleton<IApprovalRecordStore>(records ?? new InMemoryApprovalRecordStore());
         services.AddSingleton<ITeamMembershipRepository>(new InMemoryMembershipRepository());
         services.AddSingleton<IWorkItemScopeReader>(new FakeScopeReader());
+        services.AddSingleton<IUserAssertionAccessor, AmbientAssertionAccessor>();
+        services.AddSingleton<IApproverTokenSource>(new FakeApproverTokenSource());
         var teams = new InMemoryTeamRepository();
         teams.SaveAsync(new Team("t1", "Payments", "UTC", 15, new AdoSettings("o", "p", "t", "a"), new TeamBehaviours(), "Ship retries"), default).GetAwaiter().GetResult();
         services.AddSingleton<ITeamRepository>(teams);
         return services;
     }
+}
+
+/// <summary>Holds the token the current test caller presents, so a test sets it by choosing who it acts as (<see cref="Who.Signed"/>).</summary>
+internal sealed class AmbientAssertionAccessor : IUserAssertionAccessor
+{
+    public UserAssertion? Current { get => Who.Signed; set => Who.Signed = value; }
+}
+
+/// <summary>Exchanges any assertion for a token that names its owner, or refuses when <see cref="Refuse"/> is set.</summary>
+internal sealed class FakeApproverTokenSource : IApproverTokenSource
+{
+    public bool Refuse { get; set; }
+
+    public Task<Result<DelegatedAdoAccess>> ExchangeAsync(UserAssertion assertion, CancellationToken ct) =>
+        Task.FromResult(Refuse
+            ? Result<DelegatedAdoAccess>.Failure(Error.ExternalRejected("delegation.exchange_failed", "no consent"))
+            : Result<DelegatedAdoAccess>.Success(new DelegatedAdoAccess($"ado-for-{assertion.ObjectId}")));
 }
