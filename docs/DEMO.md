@@ -13,7 +13,7 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 1. **Sessions** > **Prepare now** > open the pre-brief with **View** (burndown, flags, questions).
 2. **Simulated Room**. Tick **Autopilot (cast plays my lines)** in the room, then press **Start standup**, to let the demo cast play the three-person standup (Daniel Park, Maya Lin and Admin).
 3. Watch the **Live console** tab: floor, current speaker, timebox, parking lot, latency. Controls: **Begin**, **Skip speaker**, **Mute agent**, **Unmute**, **Take over**, **Hand back**, **End standup**.
-4. When the standup ends: **Follow-ups** tab. Type your name in **Approving as**, press **Approve and write** on one, **Reject** another.
+4. When the standup ends: **Follow-ups** tab. The page shows **Deciding as** your signed-in account (your Entra identity is what is recorded). Press **Approve and write** on one, **Reject** another. The comment in Azure DevOps ends with `Correlation: zsa-...`; open `/api/audit/zsa-...` (or the full trace id on the session) to see the chain.
 5. Open Azure DevOps and show the "Approved by ..." comment on the approved item and nothing on the rejected one.
 6. **Reports** tab: sprint summary, monthly report, then ask "How is attendance?" (the same answer works in Teams chat).
 7. **Planning** tab: load per person, carry-over, not-ready items and suggested owners.
@@ -54,7 +54,7 @@ Needs `az login`, the stack running and, for packs, a reachable Azure DevOps pro
 3. **Unblock loop:** run a standup (Simulated Room), say a blocker ("I am blocked on the gateway timeouts"), and answer "Who can help unblock this?" with a teammate's name. After **End standup**, **Follow-ups** shows an unblock request for that teammate (and the outbox shows an email when `Features:EmailFollowUps` is on).
 4. **Carry-over:** run the standup again after a day (or a second standup): the pre-brief lists the still-blocked item with its unblocker, and the agent opens with "Yesterday you said you'd finish ...". A commitment still open two standups later raises a Scrum Master escalation.
 5. **Review and retrospective packs** (no portal button yet):
-   `curl -X POST http://localhost:5080/api/ceremonies/SprintReview/pack -H "Content-Type: application/json" -d "{\"teamId\":\"team-payments\"}"` (also `Retrospective`). The card appears in **Follow-ups** > **Show card outbox** and in Teams. Type your name in **Approving as** and press **Approve and write**: comments are added to the completed stories, or the retro action tasks are created, each with "Approved by {name} in the portal, proposed by Zava Scrum Agent from the {date} {ceremony}."
+   `curl -X POST http://localhost:5080/api/ceremonies/SprintReview/pack -H "Content-Type: application/json" -d "{\"teamId\":\"team-payments\"}"` (also `Retrospective`). The card appears in **Follow-ups** > **Show card outbox** and in Teams. Press **Approve and write** (you are recorded from your sign-in): comments are added to the completed stories, or the retro action tasks are created, each with "Approved by {name} in the portal, proposed by Zava Scrum Agent from the {date} {ceremony}."
 6. **Recap routing:** add the bot to a team channel and it becomes the recap channel (`PUT /api/teams/team-payments/recap-channel` sets it by hand). The recap then goes to that channel and the meeting chat instead of every conversation.
 7. **Graph email (optional):** set `Features:EmailFollowUps=true`, `Email:Mode=Graph` and `Email:Sender=<agent mailbox>`; absent, no-response and unblock members receive an email as well as the card.
 
@@ -65,9 +65,9 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 2. **Planning** tab. Optional: set **Maya Lin**'s availability to 50 and leave the field; her capacity halves the next time you prepare the pack, and the plan warns if she is overloaded.
 3. Press **Prepare pack**. The page shows the draft goal, the velocity range, capacity bars per person, the proposed selection (carry-over first, then ready backlog items in order, suggested owners marked), **Not planned** with a reason on each excluded item (no story points, no acceptance criteria, too large, beyond capacity, not started), and a warning when the plan is over- or under-committed.
 4. The card **Sprint planning: Sprint 43** arrives in **Follow-ups** > **Show card outbox** and in Teams, with **Approve plan** and **Reject**.
-5. **Reject** first (type your name in **Approving as**): nothing changes in Azure DevOps. **Prepare pack** again.
+5. **Reject** first: nothing changes in Azure DevOps. **Prepare pack** again.
 6. Untick one item if you like, type your name and press **Approve plan** (or press **Approve plan** on the Teams card). The page shows "Plan written to Azure DevOps" with links to the work items. In Azure DevOps the kept items are in `Sprint 43`, the unowned ones have the suggested owner (a `demo-owner-*` tag in the sandbox) and each has an "Approved by {name} in the portal (or Teams), proposed by Zava Scrum Agent from the {date} sprint planning." comment.
-7. Chat: in Teams, a Scrum Master (a name in `Team:ScrumMasters`) can type "prepare sprint planning" to the bot; anyone else is told only the Scrum Master can.
+7. Chat: in Teams, a Scrum Master (an Entra object id in `Identity:AdminObjectIds`) can type "prepare sprint planning" to the bot; anyone else is told only the Scrum Master can.
 8. Re-run `SeedAdo` to put the items back for the next run.
 
 ## Retrospective by voice (M9b)
@@ -88,7 +88,7 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Schedule** tab, **Proposed sprint calendar**: the plan for the next sprint (daily standups, planning on day one, the retrospective on the last day; a review only when `Team:HasSprintReview` is true). Press **Download .ics (fallback)** to see the file.
 3. Press **Propose calendar**. The card **Proposed sprint calendar: Sprint 43** arrives in **Follow-ups** > **Show card outbox** and in Teams, with **Approve** and **Reject**.
-4. **Reject** first (type your name in **Approving as**): nothing is created. **Propose calendar** again.
+4. **Reject** first: nothing is created. **Propose calendar** again.
 5. Type your name and press **Approve** (or press **Approve** on the Teams card). The proposal shows "Approved" and "N of N meetings created"; the meetings appear in Outlook for the roster as Teams meetings, owned by the agent's mailbox. A Graph failure part-way shows the error; **Approve** again creates the rest.
 6. The **Schedule** is now enabled in Teams mode with each standup's join URL stored. At the next standup time the scheduler prepares the session ten minutes before and joins the calendar meeting one minute before, with no pasted link. (To try it today, change the schedule's start time to a few minutes from now and make the first approved meeting start then.)
 7. Delete the meetings from the agent's calendar before the next run.
@@ -99,9 +99,21 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 1. Start the API and the bridge (`dotnet run --project src\Zava.Scrum.Api --urls http://localhost:5080`; `npm run start --prefix src\meeting-bridge`). The configuration under test is set on the API: the default is the decision model (`UtteranceAnalysis__Engine=Decision`); for the rules-only run set `UtteranceAnalysis__Mode=Rules` before starting it.
 2. `dotnet run --project tools\GateRunner -- --label decision --runs 3 --out docs\gates\baseline-M10` (use `--label rules` for the other configuration; `--build <id>` names a deployed image tag, default is the git commit).
 3. `dotnet run --project tools\GateRunner -- --summarise docs\gates\baseline-M10` rebuilds the summary from the saved JSON.
-4. `--check-audit` runs the traceability check after each run. **It fails by design until the audit endpoint exists (prompt 3)**, so a run that passes the latency gate still reports the traceability gate as failed.
+4. `--check-audit` runs the traceability check (G3) after each run: it proposes and approves one change through the API as the caller, waits for the write, and fails unless `GET /api/audit/{correlationId}` shows the session, the approval record with the approver's object id and the write record with an Azure DevOps revision. The caller needs the Approver and Reader roles (a local Development API gives every role); the check writes one comment on work item 1.
 5. The runner prints `docs/gates/teams-rehearsal.md` at the end: a ten-step checklist a person ticks in a real Teams meeting.
 
 To drive a deployed API behind Easy Auth, pass `--api <url> --token <bearer>` (or `GATE_TOKEN`); the bridge room must be reachable from the machine running the runner. A run takes about six and a half minutes.
 
 To stand the whole environment up from nothing, and to check it afterwards, see `docs/DEPLOY.md` (`azd up`, then `pwsh infra/hooks/verify.ps1`). Run the gate runner against the deployed API with a token from `az account get-access-token --scope api://<PORTAL_CLIENT_ID>/access_as_user`; `docs/gates/baseline-M10-deployed/` holds the deployed M10 baseline.
+
+## Teams, onboarding and roles (M11 prompt 3A)
+The portal serves every team. The switcher in the sidebar lists only the teams you belong to and remembers your choice; an Admin sees all of them and gets an **Administration** group (Fleet, Teams, Onboard a team).
+
+- **Roles.** Admin (the Entra app role) manages the registry and sees every team. In each team a person is a **team lead** (approve, schedule, edit prompts, manage members), a **member** or a **reader** (read only). A person in no team sees "You are not in a team yet". Add people on the Team page by Entra object id, or set an Entra group on the team and press **Sync from Entra group**.
+- **Onboard a team.** Administration > Onboard a team: name and id, the Azure DevOps organisation (press **Load projects**, then pick the project and team), **Run test** (every step must pass), create and sync the roster, schedule, an optional Teams channel id, then **Enable**. The team stays a draft until the last step. Adding a new Azure DevOps organisation first needs the human gate in `docs/DEPLOY.md`.
+- **Bind a Teams channel.** In a channel the bot is installed in but no team is bound to, the bot answers with a card and nothing else. An Admin or that team's lead types the team id and presses **Bind**. Or add the channel id on the team's edit panel.
+- **Three demo teams.** `dotnet run --project tools\SeedAdo` seeds Payments, Identity and Catalogue (one project each). The API registers them from `Demo:Teams`. For the film set `Demo:PaymentsOnly=true` and seed with `--payments-only`: one team, as before.
+- **Prompts.** The Prompts page edits the selected team's override and says whether the default, a deployment override or the team's own is in effect.
+- **Pause and archive.** Pause stops a team's ceremonies from starting; archive makes it read-only. Neither deletes anything.
+- **Capacity.** If more standups are due than the host allows, the extra ones wait and the schedule shows why; after the grace the team's recap channel is told.
+- **Three at once.** `dotnet run --project tools\GateRunner -- --label g9 --teams team-payments,team-b,team-c --api <url> --token <bearer> --out docs\gates\g9 --check-audit` runs three Simulated Room standups together (it registers the extra teams as copies of the first). `--summarise <dir> --only-team <id>` filters the summary by team.
