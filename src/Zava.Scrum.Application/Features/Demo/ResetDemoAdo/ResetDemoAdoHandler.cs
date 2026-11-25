@@ -17,7 +17,7 @@ internal sealed class ResetDemoAdoHandler(ITeamRepository teams, IDemoAdoReset r
 
         try
         {
-            return Result<int>.Success(await reset.RemoveAgentCommentsAsync(team.Ado.Project, ct));
+            return Result<int>.Success(await reset.RemoveAgentCommentsAsync(team.Ado, ct));
         }
         catch (HttpRequestException)
         {

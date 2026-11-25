@@ -30,21 +30,21 @@ public static class FollowUpPlanner
         {
             if (session.Attendance.TryGetValue(member.MemberId, out var a) && a == Attendance.Absent)
             {
-                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Absent, AbsentMessage(member), [], date, now));
+                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Absent, AbsentMessage(member), [], date, now, correlationId: session.CorrelationId));
                 continue;
             }
 
             if (session.NoResponseCount(member.MemberId) > 0 && !session.HasSpoken(member.MemberId))
             {
                 // Present but silent is not the same as absent: the message says so.
-                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Absent, NoResponseMessage(member), [], date, now));
+                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Absent, NoResponseMessage(member), [], date, now, correlationId: session.CorrelationId));
                 continue;
             }
 
             var changes = ChangesFor(session, member);
             if (changes.Count > 0)
             {
-                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Followup, FollowupMessage(member, changes), changes, date, now));
+                result.Add(FollowUp.Create(newId(), session.TeamId, session.Id, member.MemberId, FollowUpKind.Followup, FollowupMessage(member, changes), changes, date, now, correlationId: session.CorrelationId));
             }
         }
 
@@ -89,7 +89,7 @@ public static class FollowUpPlanner
             var item = blocker.WorkItemIds.Count > 0 ? blocked.Items.FirstOrDefault(i => i.Id.Value == blocker.WorkItemIds[0]) : null;
             var about = item is null ? "an item" : $"{item.Type} {item.Id} ({item.Title})";
             var message = $"Hi {Name(helper)}, {Name(blocked)} is blocked on {about} and said you may be able to help: \"{blocker.Text.Trim()}\". Can you pick this up with them?";
-            yield return FollowUp.Create(newId(), session.TeamId, session.Id, helper.MemberId, FollowUpKind.Unblock, message, [], date, now);
+            yield return FollowUp.Create(newId(), session.TeamId, session.Id, helper.MemberId, FollowUpKind.Unblock, message, [], date, now, correlationId: session.CorrelationId);
         }
     }
 
@@ -100,7 +100,7 @@ public static class FollowUpPlanner
         foreach (var (member, item) in items.Where(x => x.Item.Flags.Contains(Flag.Blocked) && x.Item.DaysInState >= afterDays))
         {
             var message = $"{item.Type} {item.Id} ({item.Title}), owned by {Name(member)}, has been blocked for {item.DaysInState} days. It needs your help.";
-            yield return FollowUp.Create(newId(), session.TeamId, session.Id, null, FollowUpKind.Escalation, message, [], date, now, session.Kind, forScrumMaster: true);
+            yield return FollowUp.Create(newId(), session.TeamId, session.Id, null, FollowUpKind.Escalation, message, [], date, now, session.Kind, forScrumMaster: true, correlationId: session.CorrelationId);
         }
     }
 
@@ -118,7 +118,7 @@ public static class FollowUpPlanner
                 }
 
                 var message = $"{Name(member)} said \"{missed.Text}\" on {item.Type} {item.Id} ({item.Title}) {missed.StandupsAgo} standups ago and it is still {item.State}. Missed commitment.";
-                yield return FollowUp.Create(newId(), session.TeamId, session.Id, null, FollowUpKind.Escalation, message, [], date, now, session.Kind, forScrumMaster: true);
+                yield return FollowUp.Create(newId(), session.TeamId, session.Id, null, FollowUpKind.Escalation, message, [], date, now, session.Kind, forScrumMaster: true, correlationId: session.CorrelationId);
             }
         }
     }

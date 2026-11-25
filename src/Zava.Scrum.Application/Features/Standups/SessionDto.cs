@@ -18,6 +18,7 @@ namespace Zava.Scrum.Application.Features.Standups;
 /// <param name="QuestionsAsked">Clarifying questions the agent asked.</param>
 /// <param name="StandupMinutes">Timebox for this run.</param>
 /// <param name="Kind">The ceremony.</param>
+/// <param name="CorrelationId">The W3C trace id carried through the join, each turn, the proposal, the approval and the write (GET /api/audit/{correlationId}).</param>
 public sealed record SessionDto(
     Guid Id,
     string TeamId,
@@ -33,4 +34,5 @@ public sealed record SessionDto(
     int P95LatencyMs,
     int QuestionsAsked,
     int StandupMinutes,
-    CeremonyKind Kind = CeremonyKind.DailyScrum);
+    CeremonyKind Kind = CeremonyKind.DailyScrum,
+    string? CorrelationId = null);

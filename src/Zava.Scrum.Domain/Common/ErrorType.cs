@@ -15,6 +15,9 @@ public enum ErrorType
     /// <summary>The action requires an approved follow-up that does not exist (customer requirement F7).</summary>
     NotApproved,
 
+    /// <summary>The caller is identified but may not do this (wrong tenant, missing role, not on the roster).</summary>
+    Forbidden,
+
     /// <summary>A downstream system (for example Azure DevOps) rejected the operation.</summary>
     ExternalRejected,
 

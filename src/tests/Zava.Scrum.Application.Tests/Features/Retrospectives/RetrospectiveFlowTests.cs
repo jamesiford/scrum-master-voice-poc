@@ -1,3 +1,4 @@
+using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
@@ -23,6 +24,8 @@ namespace Zava.Scrum.Application.Tests.Features.Retrospectives;
 
 public sealed class RetrospectiveFlowTests : IAsyncDisposable
 {
+    private InMemoryApprovalRecordStore Records { get; } = new();
+
     private static readonly DateTimeOffset T = StandupHarness.Now;
     private readonly WriterSpy _writer = new();
     private readonly RecordingTeamsMessenger _messenger = new();
@@ -43,6 +46,7 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes(Records);
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IMemberRepository>(members);
         services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(Zava.Scrum.Domain.Common.Result<SprintSnapshot>.Success(sprint)));
@@ -175,11 +179,11 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
         await Sender.Send(new EndStandupCommand(id));
         var followUp = Assert.Single(await _followUps.ListBySessionAsync(id, default));
 
-        await Sender.Send(new ApproveFollowUpCommand(followUp.Id, "Sam", ApprovalChannel.Portal));
+        await Sender.Send(new ApproveFollowUpCommand(followUp.Id, Who.Portal("Sam")));
 
         var written = Assert.Single(_writer.Written);
         Assert.Equal(ChangeOp.CreateWorkItem, written.Op);
-        Assert.Equal("Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 retrospective.", written.Attribution);
+        Assert.Equal($"Approved by Sam in the portal, proposed by Zava Scrum Agent from the 2026-01-08 retrospective. Correlation: {Correlation.Tag(written.CorrelationId)}", written.Attribution);
     }
 
     [Fact]
@@ -190,7 +194,7 @@ public sealed class RetrospectiveFlowTests : IAsyncDisposable
         await Sender.Send(new EndStandupCommand(id));
         var followUp = Assert.Single(await _followUps.ListBySessionAsync(id, default));
 
-        await Sender.Send(new RejectFollowUpCommand(followUp.Id, "Sam"));
+        await Sender.Send(new RejectFollowUpCommand(followUp.Id, Who.TeamsAdmin("Sam")));
 
         Assert.Empty(_writer.Written);
     }

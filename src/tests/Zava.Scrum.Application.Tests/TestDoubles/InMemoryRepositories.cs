@@ -10,6 +10,8 @@ internal sealed class InMemoryTeamRepository : ITeamRepository
 
     public Task<Team?> GetAsync(string id, CancellationToken ct) => Task.FromResult(_items.GetValueOrDefault(id));
 
+    public Task<IReadOnlyList<Team>> ListAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<Team>>([.. _items.Values]);
+
     public Task SaveAsync(Team team, CancellationToken ct)
     {
         _items[team.Id] = team;

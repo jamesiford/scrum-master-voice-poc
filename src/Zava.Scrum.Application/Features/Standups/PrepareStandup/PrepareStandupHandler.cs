@@ -1,5 +1,6 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Application.Features.Teams;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Flags;
@@ -14,6 +15,7 @@ namespace Zava.Scrum.Application.Features.Standups.PrepareStandup;
 internal sealed class PrepareStandupHandler(
     ITeamRepository teams,
     IMemberRepository members,
+    RosterIdentityResolver identities,
     IWorkItemReader reader,
     IBacklogRiskAgent agent,
     ISessionRepository sessions,
@@ -31,6 +33,13 @@ internal sealed class PrepareStandupHandler(
         }
 
         var roster = await members.ListAsync(team.Id, ct);
+        var verified = await identities.ResolveAsync(roster, ct);
+        if (!verified.SequenceEqual(roster))
+        {
+            await members.ReplaceAsync(team.Id, verified, ct);
+            roster = verified;
+        }
+
         if (!roster.Any(m => m.Active))
         {
             return Result<Guid>.Failure(StandupErrors.RosterEmpty);

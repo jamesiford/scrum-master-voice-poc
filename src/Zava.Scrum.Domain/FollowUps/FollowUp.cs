@@ -1,4 +1,5 @@
 using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Identity;
 using Zava.Scrum.Domain.Standups;
 
 namespace Zava.Scrum.Domain.FollowUps;
@@ -9,6 +10,10 @@ namespace Zava.Scrum.Domain.FollowUps;
 /// </summary>
 public sealed class FollowUp : AggregateRoot
 {
+    private const string LegacyText = "unverified (legacy)";
+    private string? _approvedByText;
+    private string? _rejectedByText;
+
     private FollowUp(FollowUpSnapshot s)
     {
         Id = s.Id;
@@ -21,8 +26,11 @@ public sealed class FollowUp : AggregateRoot
         Status = s.Status;
         StandupDate = s.StandupDate;
         CreatedAt = s.CreatedAt;
-        ApprovedBy = s.ApprovedBy;
-        RejectedBy = s.RejectedBy;
+        _approvedByText = s.ApprovedBy;
+        _rejectedByText = s.RejectedBy;
+        ApprovedByIdentity = s.ApprovedByIdentity;
+        RejectedByIdentity = s.RejectedByIdentity;
+        CorrelationId = s.CorrelationId ?? Correlation.ForLegacySession(s.SessionId);
         DecidedAt = s.DecidedAt;
         AppliedAt = s.AppliedAt;
         ApplyError = s.ApplyError;
@@ -70,11 +78,20 @@ public sealed class FollowUp : AggregateRoot
     /// <summary>Gets when it was created.</summary>
     public DateTimeOffset CreatedAt { get; }
 
-    /// <summary>Gets who approved it.</summary>
-    public string? ApprovedBy { get; private set; }
+    /// <summary>Gets the session's correlation id (a W3C trace id) that ties this follow-up to its meeting, turns, approval and write.</summary>
+    public string CorrelationId { get; }
 
-    /// <summary>Gets who rejected it.</summary>
-    public string? RejectedBy { get; private set; }
+    /// <summary>Gets the verified identity that approved it, or <see langword="null"/> when none was recorded.</summary>
+    public ActorIdentity? ApprovedByIdentity { get; private set; }
+
+    /// <summary>Gets the verified identity that rejected it, or <see langword="null"/> when none was recorded.</summary>
+    public ActorIdentity? RejectedByIdentity { get; private set; }
+
+    /// <summary>Gets the approver's display name for text, derived from the identity. Data saved before identities were recorded reads "unverified (legacy)".</summary>
+    public string? ApprovedBy => ApprovedByIdentity?.DisplayName ?? (string.IsNullOrWhiteSpace(_approvedByText) ? null : LegacyText);
+
+    /// <summary>Gets the rejecter's display name for text, derived from the identity. Data saved before identities were recorded reads "unverified (legacy)".</summary>
+    public string? RejectedBy => RejectedByIdentity?.DisplayName ?? (string.IsNullOrWhiteSpace(_rejectedByText) ? null : LegacyText);
 
     /// <summary>Gets when it was decided.</summary>
     public DateTimeOffset? DecidedAt { get; private set; }
@@ -97,9 +114,10 @@ public sealed class FollowUp : AggregateRoot
     /// <param name="now">Current time.</param>
     /// <param name="ceremony">The ceremony it came from.</param>
     /// <param name="forScrumMaster">True when the Scrum Master, not a member, decides it.</param>
+    /// <param name="correlationId">The session's correlation id; derived from the session id when omitted.</param>
     /// <returns>The follow-up.</returns>
-    public static FollowUp Create(Guid id, string teamId, Guid sessionId, string? memberId, FollowUpKind kind, string message, IReadOnlyList<ProposedChange> changes, DateOnly standupDate, DateTimeOffset now, CeremonyKind ceremony = CeremonyKind.DailyScrum, bool forScrumMaster = false) =>
-        new(new FollowUpSnapshot(id, teamId, sessionId, memberId, kind, message, changes, FollowUpStatus.Pending, standupDate, now, null, null, null, null, null, ceremony, forScrumMaster, null));
+    public static FollowUp Create(Guid id, string teamId, Guid sessionId, string? memberId, FollowUpKind kind, string message, IReadOnlyList<ProposedChange> changes, DateOnly standupDate, DateTimeOffset now, CeremonyKind ceremony = CeremonyKind.DailyScrum, bool forScrumMaster = false, string? correlationId = null) =>
+        new(new FollowUpSnapshot(id, teamId, sessionId, memberId, kind, message, changes, FollowUpStatus.Pending, standupDate, now, null, null, null, null, null, ceremony, forScrumMaster, null, null, null, correlationId));
 
     /// <summary>Rehydrates a persisted follow-up.</summary>
     /// <param name="snapshot">Persisted state.</param>
@@ -113,7 +131,11 @@ public sealed class FollowUp : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public FollowUpSnapshot ToSnapshot() =>
-        new(Id, TeamId, SessionId, MemberId, Kind, Message, Changes, Status, StandupDate, CreatedAt, ApprovedBy, RejectedBy, DecidedAt, AppliedAt, ApplyError, Ceremony, ForScrumMaster, ApprovedVia);
+        new(Id, TeamId, SessionId, MemberId, Kind, Message, Changes, Status, StandupDate, CreatedAt, _approvedByText, _rejectedByText, DecidedAt, AppliedAt, ApplyError, Ceremony, ForScrumMaster, ApprovedVia, ApprovedByIdentity, RejectedByIdentity, CorrelationId);
+
+    /// <summary>Captures the state for display: the approver and rejecter read as their derived text, so a legacy decision shows as unverified.</summary>
+    /// <returns>The snapshot with derived display names.</returns>
+    public FollowUpSnapshot ToReadModel() => ToSnapshot() with { ApprovedBy = ApprovedBy, RejectedBy = RejectedBy };
 
     /// <summary>Records that the card was sent.</summary>
     public void MarkSent()
@@ -124,14 +146,14 @@ public sealed class FollowUp : AggregateRoot
         }
     }
 
-    /// <summary>Approves the follow-up. Only a named person can approve, and only while it is undecided.</summary>
-    /// <param name="approver">Who approved (display name).</param>
+    /// <summary>Approves the follow-up. Only an identified person can approve, and only while it is undecided.</summary>
+    /// <param name="approver">The verified identity of who approved. A display name alone is not an identity.</param>
     /// <param name="now">Current time.</param>
     /// <param name="channel">Where the approval happened; written into the Azure DevOps attribution.</param>
     /// <returns>Success, or a validation or conflict error.</returns>
-    public Result Approve(string approver, DateTimeOffset now, ApprovalChannel channel = ApprovalChannel.Teams)
+    public Result Approve(ActorIdentity? approver, DateTimeOffset now, ApprovalChannel channel = ApprovalChannel.Teams)
     {
-        if (string.IsNullOrWhiteSpace(approver))
+        if (approver is null || approver.ObjectId == Guid.Empty || string.IsNullOrWhiteSpace(approver.DisplayName))
         {
             return Result.Failure(FollowUpErrors.ApproverRequired);
         }
@@ -142,7 +164,8 @@ public sealed class FollowUp : AggregateRoot
         }
 
         Status = FollowUpStatus.Approved;
-        ApprovedBy = approver.Trim();
+        ApprovedByIdentity = approver;
+        _approvedByText = approver.DisplayName;
         ApprovedVia = channel;
         DecidedAt = now;
         Raise(new FollowUpApproved(Id, now));
@@ -150,12 +173,12 @@ public sealed class FollowUp : AggregateRoot
     }
 
     /// <summary>Rejects the follow-up. Its changes are never written.</summary>
-    /// <param name="rejecter">Who rejected (display name).</param>
+    /// <param name="rejecter">The verified identity of who rejected.</param>
     /// <param name="now">Current time.</param>
     /// <returns>Success, or a validation or conflict error.</returns>
-    public Result Reject(string rejecter, DateTimeOffset now)
+    public Result Reject(ActorIdentity? rejecter, DateTimeOffset now)
     {
-        if (string.IsNullOrWhiteSpace(rejecter))
+        if (rejecter is null || rejecter.ObjectId == Guid.Empty || string.IsNullOrWhiteSpace(rejecter.DisplayName))
         {
             return Result.Failure(FollowUpErrors.ApproverRequired);
         }
@@ -166,7 +189,8 @@ public sealed class FollowUp : AggregateRoot
         }
 
         Status = FollowUpStatus.Rejected;
-        RejectedBy = rejecter.Trim();
+        RejectedByIdentity = rejecter;
+        _rejectedByText = rejecter.DisplayName;
         DecidedAt = now;
         Raise(new FollowUpRejected(Id, now));
         return Result.Success();
@@ -179,14 +203,24 @@ public sealed class FollowUp : AggregateRoot
     /// <returns>The changes, or a <see cref="ErrorType.NotApproved"/> error.</returns>
     public Result<IReadOnlyList<ApprovedChange>> GetApprovedChanges()
     {
-        if (Status != FollowUpStatus.Approved || string.IsNullOrWhiteSpace(ApprovedBy))
+        if (Status != FollowUpStatus.Approved)
         {
             return Result<IReadOnlyList<ApprovedChange>>.Failure(FollowUpErrors.NotApproved(Status));
         }
 
-        IReadOnlyList<ApprovedChange> changes = Changes.Select(c => new ApprovedChange(c, ApprovedBy, StandupDate, Ceremony, ApprovedVia ?? ApprovalChannel.Teams)).ToList();
+        // A legacy approval has a name but no verified identity, so it is never written (ADR 0017).
+        if (ApprovedByIdentity is null)
+        {
+            return Result<IReadOnlyList<ApprovedChange>>.Failure(IdentityErrors.LegacyUnverified);
+        }
+
+        IReadOnlyList<ApprovedChange> changes = Changes.Select(c => new ApprovedChange(c, ApprovedByIdentity.DisplayName, StandupDate, Ceremony, ApprovedVia ?? ApprovalChannel.Teams, CorrelationId)).ToList();
         return Result<IReadOnlyList<ApprovedChange>>.Success(changes);
     }
+
+    /// <summary>Computes the SHA-256 of the canonical proposed changes, recorded with the approval.</summary>
+    /// <returns>Upper-case hex.</returns>
+    public string ComputeProposalHash() => ProposalHash.Of(Changes);
 
     /// <summary>Records that every approved change was written.</summary>
     /// <param name="now">Current time.</param>

@@ -40,7 +40,7 @@ public sealed class ApprovalGuardKindsTests
     public void GetApprovedChanges_Rejected_IsRefusedForEveryNewKind(ChangeOp op)
     {
         var f = New(op);
-        f.Reject("Dana", Now);
+        f.Reject(Actors.Dana, Now);
 
         Assert.Equal(ErrorType.NotApproved, f.GetApprovedChanges().Error!.Type);
     }
@@ -50,7 +50,7 @@ public sealed class ApprovalGuardKindsTests
     public void GetApprovedChanges_Approved_ReturnsTheChangeForEveryNewKind(ChangeOp op)
     {
         var f = New(op);
-        f.Approve("Dana", Now);
+        f.Approve(Actors.Dana, Now);
 
         var change = Assert.Single(f.GetApprovedChanges().Value);
 
@@ -63,9 +63,9 @@ public sealed class ApprovalGuardKindsTests
     public void Attribution_StandupApprovedInTeams_KeepsTheExistingText()
     {
         var f = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), "m1", FollowUpKind.Followup, "m", [new ProposedChange(1, ChangeOp.Comment, "x", "y")], new DateOnly(2026, 1, 8), Now);
-        f.Approve("Dana", Now);
+        f.Approve(Actors.Dana, Now);
 
-        Assert.Equal("Approved by Dana in Teams, proposed by Zava Scrum Agent from the 2026-01-08 standup.", f.GetApprovedChanges().Value[0].Attribution);
+        Assert.Equal($"Approved by Dana in Teams, proposed by Zava Scrum Agent from the 2026-01-08 standup. Correlation: {Correlation.Tag(f.CorrelationId)}", f.GetApprovedChanges().Value[0].Attribution);
     }
 
     [Theory]
@@ -75,9 +75,9 @@ public sealed class ApprovalGuardKindsTests
     public void Attribution_PortalApproval_NamesTheChannelAndCeremony(CeremonyKind ceremony, string phrase)
     {
         var f = New(ChangeOp.Assign, ceremony);
-        f.Approve("Dana", Now, ApprovalChannel.Portal);
+        f.Approve(Actors.DanaInPortal, Now, ApprovalChannel.Portal);
 
-        Assert.Equal($"Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 {phrase}.", f.GetApprovedChanges().Value[0].Attribution);
+        Assert.Equal($"Approved by Dana in the portal, proposed by Zava Scrum Agent from the 2026-01-08 {phrase}. Correlation: {Correlation.Tag(f.CorrelationId)}", f.GetApprovedChanges().Value[0].Attribution);
     }
 
     [Fact]

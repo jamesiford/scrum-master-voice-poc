@@ -8,5 +8,5 @@ namespace Zava.Scrum.Application.Features.Teams.ListCards;
 internal sealed class ListCardsHandler(ICardOutbox outbox) : IRequestHandler<ListCardsQuery, Result<IReadOnlyList<SentCard>>>
 {
     public async Task<Result<IReadOnlyList<SentCard>>> Handle(ListCardsQuery request, CancellationToken ct) =>
-        Result<IReadOnlyList<SentCard>>.Success(await outbox.ListAsync(request.SessionId, ct));
+        Result<IReadOnlyList<SentCard>>.Success((await outbox.ListAsync(request.SessionId, ct)).Where(c => request.TeamId is null || c.Message.TeamId == request.TeamId).ToList());
 }

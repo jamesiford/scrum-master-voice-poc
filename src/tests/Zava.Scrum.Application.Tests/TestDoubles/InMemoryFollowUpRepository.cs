@@ -16,6 +16,8 @@ internal sealed class InMemoryFollowUpRepository : IFollowUpRepository
     public Task<IReadOnlyList<FollowUp>> ListBySessionAsync(Guid sessionId, CancellationToken ct) =>
         Task.FromResult<IReadOnlyList<FollowUp>>(_items.Values.Where(s => s.SessionId == sessionId).Select(FollowUp.Restore).ToList());
 
+    public FollowUpSnapshot Snapshot(Guid id) => _items[id];
+
     public Task SaveAsync(FollowUp followUp, CancellationToken ct)
     {
         _items[followUp.Id] = followUp.ToSnapshot();

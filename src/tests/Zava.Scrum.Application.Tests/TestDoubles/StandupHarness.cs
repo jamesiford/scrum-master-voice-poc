@@ -80,6 +80,7 @@ internal sealed class StandupHarness : IAsyncDisposable
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddApplication();
+        services.AddIdentityFakes();
         services.AddSingleton<ISessionRepository>(sessions);
         services.AddSingleton<ITeamRepository>(teams);
         services.AddSingleton<IClock>(new FixedClock(Now));
