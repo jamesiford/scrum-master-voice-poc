@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { draftStory, getParkedTopics, type StoryDraft } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -17,10 +17,11 @@ import { QueryStatus } from '../QueryStatus';
  * @returns The page.
  */
 export function StoriesPage() {
+  const teamId = useTeamId();
   const [topic, setTopic] = useState('');
   const [result, setResult] = useState<StoryDraft>();
-  const topics = useApiQuery((signal) => getParkedTopics(TEAM_ID, signal), TEAM_ID);
-  const draft = useApiAction(() => draftStory(TEAM_ID, topic));
+  const topics = useApiQuery((signal) => getParkedTopics(teamId, signal), teamId);
+  const draft = useApiAction(() => draftStory(teamId, topic));
 
   const onDraft = async () => {
     const r = await draft.run();

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import type { LiveState } from '../api/client';
+import { streamLiveState, type LiveState } from '../api/client';
 
 /**
- * Subscribes to a standup's live state over server-sent events.
+ * Subscribes to a standup's live state over server-sent events. The stream is read with `fetch`, not `EventSource`, because
+ * `EventSource` cannot send the bearer token the API requires.
  * @param sessionId - The standup, or `null` to stay disconnected.
  * @returns The latest state, and whether the stream is connected.
  */
@@ -15,14 +16,9 @@ export function useLiveState(sessionId: string | null): {
 
   useEffect(() => {
     if (!sessionId) return;
-    const source = new EventSource(`/api/sessions/${encodeURIComponent(sessionId)}/live`);
-    source.onopen = () => setConnected(true);
-    source.onmessage = (e: MessageEvent<string>) => setState(JSON.parse(e.data) as LiveState);
-    source.onerror = () => {
-      setConnected(false);
-      source.close();
-    };
-    return () => source.close();
+    const controller = new AbortController();
+    void streamLiveState(sessionId, setState, setConnected, controller.signal);
+    return () => controller.abort();
   }, [sessionId]);
 
   return { state, connected };

@@ -1,5 +1,5 @@
 import { RefreshCw } from 'lucide-react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getRoster, syncRoster } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -15,8 +15,9 @@ import { QueryStatus } from '../QueryStatus';
  * @returns The page.
  */
 export function RosterPage() {
-  const roster = useApiQuery((signal) => getRoster(TEAM_ID, signal), TEAM_ID);
-  const sync = useApiAction(() => syncRoster(TEAM_ID));
+  const teamId = useTeamId();
+  const roster = useApiQuery((signal) => getRoster(teamId, signal), teamId);
+  const sync = useApiAction(() => syncRoster(teamId));
 
   const onSync = async () => {
     await sync.run();

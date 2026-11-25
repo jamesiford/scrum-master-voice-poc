@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2, Circle } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getDemoStatus, listFollowUps, listSessions } from '../../api/client';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import type { PageId } from '../../hooks/useRoute';
@@ -25,9 +25,10 @@ interface Step {
  * @returns The page.
  */
 export function OverviewPage({ go }: { go: (page: PageId) => void }) {
-  const sessions = useApiQuery((s) => listSessions(TEAM_ID, s), TEAM_ID);
-  const followUps = useApiQuery((s) => listFollowUps(TEAM_ID, s), TEAM_ID);
-  const status = useApiQuery((s) => getDemoStatus(TEAM_ID, s), TEAM_ID);
+  const teamId = useTeamId();
+  const sessions = useApiQuery((s) => listSessions(teamId, s), teamId);
+  const followUps = useApiQuery((s) => listFollowUps(teamId, s), teamId);
+  const status = useApiQuery((s) => getDemoStatus(teamId, s), teamId);
 
   const latest = sessions.data?.[0];
   const pending =

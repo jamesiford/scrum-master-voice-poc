@@ -14,7 +14,10 @@ export type PageId =
   | 'schedule'
   | 'prompts'
   | 'team'
-  | 'roster';
+  | 'roster'
+  | 'fleet'
+  | 'teams'
+  | 'onboarding';
 
 const pages: PageId[] = [
   'overview',
@@ -30,6 +33,9 @@ const pages: PageId[] = [
   'prompts',
   'team',
   'roster',
+  'fleet',
+  'teams',
+  'onboarding',
 ];
 
 function read(): PageId {

@@ -1,19 +1,18 @@
 import { CalendarPlus, Check as CheckIcon, Download, X } from 'lucide-react';
-import { useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import {
   decideSprintCalendar,
   getSprintCalendar,
   listSprintCalendars,
   proposeSprintCalendar,
 } from '../../api/client';
+import { SignedInAs } from '../../auth/SignedInAs';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { Badge, type Tone } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Alert } from '../../ui/Feedback';
-import { Field, Input } from '../../ui/Form';
 import { QueryStatus } from '../QueryStatus';
 
 const statusTone: Record<string, Tone> = {
@@ -39,13 +38,11 @@ function when(iso: string): string {
  * @returns The card.
  */
 export function SprintCalendarCard() {
-  const plan = useApiQuery((signal) => getSprintCalendar(TEAM_ID, signal), TEAM_ID);
-  const proposals = useApiQuery((signal) => listSprintCalendars(TEAM_ID, signal), TEAM_ID);
-  const [approver, setApprover] = useState('');
-  const propose = useApiAction(() => proposeSprintCalendar(TEAM_ID));
-  const decide = useApiAction((id: string, approve: boolean) =>
-    decideSprintCalendar(id, approver, approve),
-  );
+  const teamId = useTeamId();
+  const plan = useApiQuery((signal) => getSprintCalendar(teamId, signal), teamId);
+  const proposals = useApiQuery((signal) => listSprintCalendars(teamId, signal), teamId);
+  const propose = useApiAction(() => proposeSprintCalendar(teamId));
+  const decide = useApiAction((id: string, approve: boolean) => decideSprintCalendar(id, approve));
   const latest = proposals.data?.[0];
   const open = latest && (latest.status === 'Proposed' || latest.status === 'Approving');
   const name = plan.data?.iterationPath.split('\\').pop();
@@ -96,7 +93,7 @@ export function SprintCalendarCard() {
           </ul>
           <a
             className="inline-flex items-center gap-1 text-sm text-brand underline"
-            href={`/api/calendar/${encodeURIComponent(name ?? '')}.ics?teamId=${encodeURIComponent(TEAM_ID)}`}
+            href={`/api/calendar/${encodeURIComponent(name ?? '')}.ics?teamId=${encodeURIComponent(teamId)}`}
           >
             <Download className="size-4" /> Download .ics (fallback)
           </a>
@@ -117,20 +114,18 @@ export function SprintCalendarCard() {
           {latest.applyError && <Alert tone="warn">{latest.applyError}</Alert>}
           {open && (
             <div className="flex flex-wrap items-end gap-3">
-              <Field label="Approving as" hint="Your name is recorded." className="w-full max-w-xs">
-                <Input value={approver} onChange={(e) => setApprover(e.target.value)} />
-              </Field>
+              <SignedInAs />
               <Button
                 variant="primary"
                 icon={<CheckIcon className="size-4" />}
-                disabled={!approver.trim() || decide.busy}
+                disabled={decide.busy}
                 onClick={() => void onDecide(true)}
               >
                 Approve
               </Button>
               <Button
                 icon={<X className="size-4" />}
-                disabled={!approver.trim() || decide.busy || latest.status !== 'Proposed'}
+                disabled={decide.busy || latest.status !== 'Proposed'}
                 onClick={() => void onDecide(false)}
               >
                 Reject

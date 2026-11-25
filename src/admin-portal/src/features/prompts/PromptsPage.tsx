@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TEAM_ID } from '../../api/config';
+import { useTeamId } from '../../team/TeamContext';
 import { getPrompt, listPrompts, savePrompt } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
 import { useApiQuery } from '../../hooks/useApiQuery';
@@ -16,17 +16,23 @@ import { QueryStatus } from '../QueryStatus';
  * @returns The page.
  */
 export function PromptsPage() {
-  const names = useApiQuery((signal) => listPrompts(TEAM_ID, signal), TEAM_ID);
+  const teamId = useTeamId();
+  const names = useApiQuery((signal) => listPrompts(teamId, signal), teamId);
   const [name, setName] = useState<string | null>(null);
-  const prompt = useApiQuery((signal) => getPrompt(TEAM_ID, name ?? '', signal), name);
+  const prompt = useApiQuery((signal) => getPrompt(teamId, name ?? '', signal), name);
   const [text, setText] = useState('');
   const [saved, setSaved] = useState(false);
-  const save = useApiAction(() => savePrompt(TEAM_ID, name ?? '', text));
+  const save = useApiAction(() => savePrompt(teamId, name ?? '', text));
 
   useEffect(() => {
-    setText(prompt.data ?? '');
+    setText(prompt.data?.text ?? '');
     setSaved(false);
   }, [prompt.data]);
+  const sourceLabel = {
+    Default: 'the default for every team',
+    DeploymentOverride: 'a deployment-wide override',
+    TeamOverride: "this team's override",
+  };
 
   const onSave = async () => {
     await save.run();
@@ -37,7 +43,7 @@ export function PromptsPage() {
     <>
       <PageHeader
         title="Prompts"
-        description="The agent's instructions live in plain files. Edit one and it applies on the next agent turn, with no rebuild."
+        description="The agent's instructions live in plain files. Saving edits this team's override only; other teams keep the default. It applies on the next agent turn, with no rebuild."
       />
       <QueryStatus
         loading={names.loading || prompt.loading}
@@ -81,6 +87,11 @@ export function PromptsPage() {
             }
           >
             <div className="grid gap-3">
+              {prompt.data && (
+                <p className="text-sm text-muted">
+                  In effect for this team: <strong>{sourceLabel[prompt.data.source]}</strong>.
+                </p>
+              )}
               <Textarea
                 value={text}
                 rows={22}

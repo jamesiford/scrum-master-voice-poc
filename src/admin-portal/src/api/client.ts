@@ -1,5 +1,8 @@
+import { getAccessToken, type PortalConfig } from '../auth/msal';
+
 /**
  * The one typed API client (SPEC 7.4). All HTTP goes through here so components never call fetch.
+ * Every call carries the signed-in person's Entra bearer token; the API validates it and takes the caller's identity from it.
  */
 
 /** Health read model returned by `GET /api/health`. */
@@ -15,15 +18,49 @@ export interface ApiErrorBody {
   detail: string;
 }
 
-/** Team settings. */
+/** Team life cycle (ADR 0018). */
+export type TeamStatus = 'Draft' | 'Active' | 'Paused' | 'Archived';
+
+/** A team's Azure DevOps connection. */
+export interface AdoConnection {
+  org: string;
+  project: string;
+  team: string;
+  areaPath: string;
+}
+
+/** A Teams channel or chat bound to a team. */
+export interface TeamsBinding {
+  tenantId: string;
+  teamId: string | null;
+  channelId: string | null;
+  chatId: string | null;
+  purpose: 'Recap' | 'Standup' | 'Planning';
+}
+
+/** Which ceremonies a team runs. */
+export interface Ceremonies {
+  dailyScrum: boolean;
+  planning: boolean;
+  retrospective: boolean;
+  review: boolean;
+}
+
+/** Team settings and registry entry. */
 export interface Team {
   id: string;
   name: string;
   timeZone: string;
   standupMinutes: number;
-  ado: { org: string; project: string; team: string; areaPath: string };
+  ado: AdoConnection;
   behaviours: { staleDays: number; escalateBlockerAfterDays: number };
   sprintGoal: string;
+  status: TeamStatus;
+  /** The bindings, never null. */
+  bindings: TeamsBinding[];
+  /** The ceremony flags, never null. */
+  ceremonyFlags: Ceremonies;
+  entraGroupId: string | null;
 }
 
 /** Editable team settings sent with `PUT /api/teams/{id}`. */
@@ -125,9 +162,9 @@ export interface Session {
   standupMinutes: number;
   /** The ceremony: `DailyScrum` or `Retrospective`. */
   kind: string;
+  /** The W3C trace id carried through the join, each turn, the proposal, the approval and the write. */
+  correlationId: string | null;
 }
-
-/** One thing that happened in a standup. */
 export interface SessionEvent {
   id: string;
   at: string;
@@ -162,6 +199,32 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Reads the public sign-in values (client id and tenant) the API serves without authentication. Falls back to the build-time
+ * `VITE_AAD_*` values so `npm run dev` works against an API that is not serving them.
+ * @returns The client id and tenant; both `null` when sign-in is not configured.
+ */
+export async function getPortalConfig(): Promise<PortalConfig> {
+  try {
+    const response = await fetch('/portal-config.json');
+    if (response.ok) return (await response.json()) as PortalConfig;
+  } catch {
+    // Fall through to the build-time values.
+  }
+  return {
+    clientId: import.meta.env['VITE_AAD_CLIENT_ID'] || null,
+    tenantId: import.meta.env['VITE_AAD_TENANT_ID'] || null,
+  };
+}
+
+async function headers(json: boolean): Promise<Record<string, string>> {
+  const token = await getAccessToken();
+  return {
+    ...(json ? { 'content-type': 'application/json' } : {}),
+    ...(token ? { authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 async function request<T>(
   method: string,
   path: string,
@@ -171,7 +234,7 @@ async function request<T>(
   const response = await fetch(path, {
     method,
     signal,
-    headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+    headers: await headers(body !== undefined),
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {
@@ -207,7 +270,7 @@ export function getTeam(teamId: string, signal?: AbortSignal): Promise<Team> {
  * @param input - New settings.
  */
 export async function updateTeam(teamId: string, input: TeamSettingsInput): Promise<void> {
-  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}`, input);
+  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}/settings`, input);
 }
 
 /**
@@ -312,8 +375,11 @@ export interface FollowUp {
   status: FollowUpStatus;
   standupDate: string;
   createdAt: string;
+  /** Display text derived from the verified identity; `unverified (legacy)` for decisions saved before identities were recorded. */
   approvedBy: string | null;
   rejectedBy: string | null;
+  /** The session's W3C trace id; the Azure DevOps comment ends with its `zsa-` short form. */
+  correlationId: string;
   decidedAt: string | null;
   appliedAt: string | null;
   applyError: string | null;
@@ -343,21 +409,19 @@ export function listFollowUps(teamId: string, signal?: AbortSignal): Promise<Fol
 }
 
 /**
- * Approves a follow-up; the API then writes its changes to Azure DevOps.
+ * Approves a follow-up as the signed-in person; the API then writes its changes to Azure DevOps.
  * @param id - Follow-up id.
- * @param approver - Name recorded as the approver.
  */
-export async function approveFollowUp(id: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/approve`, { approver });
+export async function approveFollowUp(id: string): Promise<void> {
+  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/approve`, {});
 }
 
 /**
- * Rejects a follow-up; nothing is written to Azure DevOps.
+ * Rejects a follow-up as the signed-in person; nothing is written to Azure DevOps.
  * @param id - Follow-up id.
- * @param approver - Name recorded as the person who rejected.
  */
-export async function rejectFollowUp(id: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/reject`, { approver });
+export async function rejectFollowUp(id: string): Promise<void> {
+  await request<unknown>('POST', `/api/followups/${encodeURIComponent(id)}/reject`, {});
 }
 
 /**
@@ -369,12 +433,18 @@ export async function applyFollowUp(id: string): Promise<void> {
 }
 
 /**
- * Lists the cards that were sent.
+ * Lists the cards that were sent for a team.
+ * @param teamId - Team id.
  * @param signal - Optional abort signal.
  * @returns The cards, newest first.
  */
-export function listCards(signal?: AbortSignal): Promise<SentCard[]> {
-  return request<SentCard[]>('GET', '/api/cards', undefined, signal);
+export function listCards(teamId: string, signal?: AbortSignal): Promise<SentCard[]> {
+  return request<SentCard[]>(
+    'GET',
+    `/api/cards?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
 }
 
 /** A team's schedule. */
@@ -435,15 +505,26 @@ export function listPrompts(teamId: string, signal?: AbortSignal): Promise<strin
   );
 }
 
+/** A prompt and which version is in effect for the team. */
+export interface PromptResolution {
+  text: string;
+  /** `Default`, `DeploymentOverride` or `TeamOverride`. */
+  source: 'Default' | 'DeploymentOverride' | 'TeamOverride';
+}
+
 /**
  * Reads a prompt.
  * @param teamId - Team id.
  * @param name - Prompt name.
  * @param signal - Optional abort signal.
- * @returns The prompt text.
+ * @returns The prompt text and where it comes from.
  */
-export function getPrompt(teamId: string, name: string, signal?: AbortSignal): Promise<string> {
-  return request<string>(
+export function getPrompt(
+  teamId: string,
+  name: string,
+  signal?: AbortSignal,
+): Promise<PromptResolution> {
+  return request<PromptResolution>(
     'GET',
     `/api/teams/${encodeURIComponent(teamId)}/prompts/${encodeURIComponent(name)}`,
     undefined,
@@ -477,6 +558,51 @@ export interface LiveState {
   p95: number;
   running: boolean;
   ended?: boolean;
+}
+
+/**
+ * Streams a standup's live state (server-sent events) with the bearer token. `EventSource` cannot set headers, so this reads
+ * the response body as a stream and parses the `data:` lines. It resolves when the stream ends or is aborted.
+ * @param sessionId - The standup.
+ * @param onState - Called with each state.
+ * @param onConnected - Called with whether the stream is open.
+ * @param signal - Aborts the stream.
+ */
+export async function streamLiveState(
+  sessionId: string,
+  onState: (state: LiveState) => void,
+  onConnected: (connected: boolean) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  try {
+    const response = await fetch(`/api/sessions/${encodeURIComponent(sessionId)}/live`, {
+      headers: await headers(false),
+      signal,
+    });
+    if (!response.ok || !response.body) return;
+    onConnected(true);
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += value;
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop() ?? '';
+      for (const part of parts) {
+        const data = part
+          .split('\n')
+          .filter((line) => line.startsWith('data:'))
+          .map((line) => line.slice(5).trimStart())
+          .join('\n');
+        if (data) onState(JSON.parse(data) as LiveState);
+      }
+    }
+  } catch {
+    // Aborted or dropped: the page shows "disconnected".
+  } finally {
+    onConnected(false);
+  }
 }
 
 /**
@@ -857,30 +983,21 @@ export async function getPlanningPack(
 /**
  * Approves a sprint plan. The kept items become an approved Scrum Master follow-up that writes to Azure DevOps (F7).
  * @param packId - The pack.
- * @param approver - The approver's name.
  * @param selectedItemIds - The proposed items to keep.
  * @returns The follow-up id.
  */
-export function approvePlan(
-  packId: string,
-  approver: string,
-  selectedItemIds: number[],
-): Promise<string> {
+export function approvePlan(packId: string, selectedItemIds: number[]): Promise<string> {
   return request<string>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/approve`, {
-    approver,
     selectedItemIds,
   });
 }
 
 /**
- * Rejects a sprint plan. Nothing is written.
+ * Rejects a sprint plan as the signed-in person. Nothing is written.
  * @param packId - The pack.
- * @param approver - The person rejecting.
  */
-export async function rejectPlan(packId: string, approver: string): Promise<void> {
-  await request<unknown>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/reject`, {
-    approver,
-  });
+export async function rejectPlan(packId: string): Promise<void> {
+  await request<unknown>('POST', `/api/planning/packs/${encodeURIComponent(packId)}/reject`, {});
 }
 
 /**
@@ -987,17 +1104,221 @@ export function proposeSprintCalendar(teamId: string): Promise<string> {
 /**
  * Approves or rejects a proposal. Approving creates the Teams meetings in the agent's calendar.
  * @param id - The proposal id.
- * @param approver - Who decides (recorded).
  * @param approve - True to approve, false to reject.
  */
-export async function decideSprintCalendar(
-  id: string,
-  approver: string,
-  approve: boolean,
-): Promise<void> {
+export async function decideSprintCalendar(id: string, approve: boolean): Promise<void> {
   await request<unknown>(
     'POST',
     `/api/calendar/proposals/${encodeURIComponent(id)}/${approve ? 'approve' : 'reject'}`,
-    { approver },
+    {},
   );
+}
+
+/** What an Admin enters to register or edit a team (`POST /api/teams`, `PUT /api/teams/{id}`). */
+export interface TeamRegistryInput {
+  name: string;
+  timeZone: string;
+  standupMinutes: number;
+  ado: AdoConnection;
+  sprintGoal: string;
+  ceremonies?: Ceremonies;
+  status?: TeamStatus;
+  teamsBindings?: TeamsBinding[];
+  entraGroupId?: string | null;
+}
+
+/** One step of a connection test. */
+export interface ConnectionStep {
+  name: string;
+  ok: boolean;
+  detail: string;
+}
+
+/** Result of testing a team's Azure DevOps connection; names exactly which step failed. */
+export interface ConnectionReport {
+  steps: ConnectionStep[];
+  ok: boolean;
+}
+
+/** One row of the Admin fleet dashboard. */
+export interface FleetRow {
+  teamId: string;
+  name: string;
+  status: TeamStatus;
+  organisation: string;
+  project: string;
+  nextStandup: string | null;
+  lastRun: string | null;
+  openFollowUps: number;
+  /** `ok`, `not checked`, or the step that failed. */
+  connection: string;
+  bound: number;
+}
+
+/** A person's role in one team. */
+export type TeamRole = 'Reader' | 'Member' | 'TeamLead';
+
+/** A membership: who is in a team and in what role. */
+export interface Membership {
+  teamId: string;
+  objectId: string;
+  role: TeamRole;
+}
+
+/**
+ * Lists the teams the caller may see: their own, or every team for an Admin.
+ * @param includeArchived - Include archived teams (Admin only).
+ * @param signal - Optional abort signal.
+ * @returns The teams.
+ */
+export function listTeams(includeArchived = false, signal?: AbortSignal): Promise<Team[]> {
+  return request<Team[]>('GET', `/api/teams?includeArchived=${includeArchived}`, undefined, signal);
+}
+
+/**
+ * Registers a team (Admin). It starts as a draft until it is enabled.
+ * @param teamId - The new team id.
+ * @param input - The team.
+ */
+export async function createTeam(teamId: string, input: TeamRegistryInput): Promise<void> {
+  await request<unknown>('POST', '/api/teams', { teamId, input });
+}
+
+/**
+ * Edits a team's registry entry (Admin): connection, ceremonies, bindings and status.
+ * @param teamId - Team id.
+ * @param input - The full entry.
+ */
+export async function updateTeamRegistry(teamId: string, input: TeamRegistryInput): Promise<void> {
+  await request<unknown>('PUT', `/api/teams/${encodeURIComponent(teamId)}`, input);
+}
+
+/**
+ * Archives a team (Admin). Teams are never hard deleted.
+ * @param teamId - Team id.
+ */
+export async function archiveTeam(teamId: string): Promise<void> {
+  await request<unknown>('DELETE', `/api/teams/${encodeURIComponent(teamId)}`);
+}
+
+/**
+ * Tests a registered team's Azure DevOps connection with the API's managed identity.
+ * @param teamId - Team id.
+ * @returns The step-by-step report.
+ */
+export function testTeamConnection(teamId: string): Promise<ConnectionReport> {
+  return request<ConnectionReport>(
+    'POST',
+    `/api/teams/${encodeURIComponent(teamId)}/test-connection`,
+  );
+}
+
+/**
+ * Tests a connection before the team exists (onboarding wizard).
+ * @param ado - The organisation, project, team and area path.
+ * @returns The step-by-step report.
+ */
+export function testConnection(ado: AdoConnection): Promise<ConnectionReport> {
+  return request<ConnectionReport>('POST', '/api/ado/test-connection', { ado });
+}
+
+/**
+ * Lists the projects in an Azure DevOps organisation (Admin).
+ * @param organisation - The organisation URL.
+ * @param signal - Optional abort signal.
+ * @returns The project names.
+ */
+export function listAdoProjects(
+  organisation: string,
+  signal?: AbortSignal,
+): Promise<{ name: string }[]> {
+  return request<{ name: string }[]>(
+    'GET',
+    `/api/ado/projects?organisation=${encodeURIComponent(organisation)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Lists the teams in an Azure DevOps project (Admin).
+ * @param organisation - The organisation URL.
+ * @param project - The project.
+ * @param signal - Optional abort signal.
+ * @returns The teams and their default area paths.
+ */
+export function listAdoTeams(
+  organisation: string,
+  project: string,
+  signal?: AbortSignal,
+): Promise<{ name: string; defaultAreaPath: string | null }[]> {
+  return request<{ name: string; defaultAreaPath: string | null }[]>(
+    'GET',
+    `/api/ado/teams?organisation=${encodeURIComponent(organisation)}&project=${encodeURIComponent(project)}`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Reads the Admin fleet dashboard: one row per team.
+ * @param signal - Optional abort signal.
+ * @returns The rows.
+ */
+export function getFleet(signal?: AbortSignal): Promise<FleetRow[]> {
+  return request<FleetRow[]>('GET', '/api/fleet', undefined, signal);
+}
+
+/**
+ * Lists a team's memberships.
+ * @param teamId - Team id.
+ * @param signal - Optional abort signal.
+ * @returns The memberships.
+ */
+export function listMemberships(teamId: string, signal?: AbortSignal): Promise<Membership[]> {
+  return request<Membership[]>(
+    'GET',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Adds a person to a team or changes their role (Admin or the team's lead).
+ * @param teamId - Team id.
+ * @param objectId - The person's Entra object id.
+ * @param role - The role.
+ */
+export async function setMembership(
+  teamId: string,
+  objectId: string,
+  role: TeamRole,
+): Promise<void> {
+  await request<unknown>(
+    'PUT',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships/${encodeURIComponent(objectId)}`,
+    { role },
+  );
+}
+
+/**
+ * Removes a person from a team.
+ * @param teamId - Team id.
+ * @param objectId - The person's Entra object id.
+ */
+export async function removeMembership(teamId: string, objectId: string): Promise<void> {
+  await request<unknown>(
+    'DELETE',
+    `/api/teams/${encodeURIComponent(teamId)}/memberships/${encodeURIComponent(objectId)}`,
+  );
+}
+
+/**
+ * Adds the members of the team's Entra group as Members.
+ * @param teamId - Team id.
+ * @returns How many were added.
+ */
+export function syncMemberships(teamId: string): Promise<number> {
+  return request<number>('POST', `/api/teams/${encodeURIComponent(teamId)}/memberships/sync`);
 }
