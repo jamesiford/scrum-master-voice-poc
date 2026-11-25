@@ -111,6 +111,13 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'api'
           image: placeholderImage
           resources: { cpu: json('0.5'), memory: '1Gi' }
+          // Traffic reaches a new revision only when /healthz answers, so a request right after a deploy waits for a ready replica
+          // instead of timing out in front of one that is still starting (seen in the first westus3 verify run).
+          probes: [
+            { type: 'Startup', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 3, timeoutSeconds: 3, failureThreshold: 40 }
+            { type: 'Readiness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+            { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }
+          ]
           env: [
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED', value: 'true' }
@@ -165,6 +172,13 @@ resource bridge 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'bridge'
           image: placeholderImage
           resources: { cpu: json('2.0'), memory: '4Gi' }
+          // Traffic reaches a new revision only when /healthz answers, so a request right after a deploy waits for a ready replica
+          // instead of timing out in front of one that is still starting (seen in the first westus3 verify run).
+          probes: [
+            { type: 'Startup', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 3, timeoutSeconds: 3, failureThreshold: 40 }
+            { type: 'Readiness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+            { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }
+          ]
           env: [
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'AZURE_TENANT_ID', value: tenantId }

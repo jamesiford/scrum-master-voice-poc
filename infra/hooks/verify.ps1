@@ -17,8 +17,15 @@ $token = az account get-access-token --scope "api://$($env:PORTAL_CLIENT_ID)/acc
 $auth = @{ Authorization = "Bearer $token" }
 $org = Get-AdoOrgName
 
-Check 'API health route' { (Invoke-WebRequest "$api/healthz" -TimeoutSec 30).StatusCode }
-Check 'Bridge health route' { (Invoke-WebRequest "$bridge/healthz" -TimeoutSec 30).StatusCode }
+# A fresh revision can still be starting right after azd up, so a health route is retried for up to three minutes before it counts as failed.
+function Wait-Healthy([string]$Url) {
+  $deadline = (Get-Date).AddMinutes(3)
+  while ($true) {
+    try { return (Invoke-WebRequest $Url -TimeoutSec 15).StatusCode } catch { if ((Get-Date) -ge $deadline) { throw } ; Start-Sleep -Seconds 5 }
+  }
+}
+Check 'API health route' { Wait-Healthy "$api/healthz" }
+Check 'Bridge health route' { Wait-Healthy "$bridge/healthz" }
 Check 'API accepts an Entra bearer token' {
   $t = Invoke-RestMethod "$api/api/teams/$team" -Headers $auth -TimeoutSec 30
   "team $($t.id)"
