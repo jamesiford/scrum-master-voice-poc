@@ -11,13 +11,12 @@ public sealed class ModelComparisonOptions
     public const string SectionName = "ModelComparison";
 
     /// <summary>Gets or sets the candidates.</summary>
-    // The two models deployed in infra/main.bicep (realtimeModels). Tiers are from Microsoft Learn (Voice Live overview, 25 November 2026).
+    // The models deployed by default in infra/main.bicep (realtimeModels). gpt-realtime-2.1-mini was measured and rejected (ADR 0019); add it here when it is deployed. Tiers are from Microsoft Learn (Voice Live overview, 25 November 2026).
     // VERIFY: https://azure.microsoft.com/pricing/details/speech/ lists the USD rates per million tokens for each tier, but the page loads them by
     // script and they could not be read here. Prices are therefore left null and shown as unverified; set them under ModelComparison:Models.
     public List<ModelPriceOption> Models { get; set; } =
     [
-        new() { Name = "gpt-realtime-2.1", PricingTier = "Pro", Notes = "Current default (ADR 0019)." },
-        new() { Name = "gpt-realtime-2.1-mini", PricingTier = "Standard", Notes = "Cheaper tier; see ADR 0019 for the measured latency and quality." },
+        new() { Name = "gpt-realtime-2.1", PricingTier = "Pro", Notes = "Chosen from measurements against gpt-realtime-2.1-mini (ADR 0019)." },
     ];
 }
 
