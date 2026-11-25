@@ -62,7 +62,7 @@ The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at
 - **Planning (M8):** load per person, carry-over, Definition-of-Ready gaps, suggested owners (advice only).
 - **Retrospective (M8):** start/stop/continue built in code from the sprint and standups; a model writes the opening summary. Text, not voice-led.
 - **Story Writer (M8):** drafts a user story and acceptance criteria from a parked topic. Draft only; never written to Azure DevOps.
-- **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are placeholders to verify.
+- **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are not set (they were placeholders): the page shows the Voice Live pricing tier from Learn and "Price unverified" until real rates are configured (ADR 0019).
 - **Teams chat Q&A:** any message to the bot is answered by `AnswerTeamQuestionQuery`. Microsoft 365 Copilot is **not built**: the app manifest declares a bot only.
 - **Foundry agent mode (M8):** `VoiceLive:AgentName` and `AgentProjectName` bind the session to a Foundry voice agent instead of a model. Implemented, not exercised against a live agent; parameter names need verifying.
 - **Not built:** Work IQ real-time transcripts (needs delegated sign-in, a Work IQ MCP connection and a tenant setting; delivery contract not documented enough); Graph media bot; API Management, Service Bus, private networking, on-behalf-of, evaluation pipelines.
@@ -177,3 +177,13 @@ Built in M11 prompt 3A (ADR 0018).
 - **Seed.** Payments, Identity and Catalogue (`demo/seed-ado*.json`, `tools/SeedAdo`; `--payments-only`), registered by `DemoTeamSeeder` from `Demo:Teams` (`Demo:PaymentsOnly` for the film).
 - **Deployment.** The managed identity gets `GroupMember.Read.All` in `entra-post.ps1`. Both container apps have startup, readiness and liveness probes on `/healthz`.
 - **Not built or not verified live.** Delegated writes (prompt 5); a second Azure DevOps organisation; `SeedAdo` against the sandbox for the two new projects; the onboarding card in a real channel; the Entra group sync; ten concurrent standups (three were run, see G9).
+
+## 18. M11: realtime model and silence
+
+Built in M11 prompt 3B (ADR 0019).
+
+- **Voice default unchanged.** `VoiceLive:Model` stays `gpt-realtime-2.1` and `Voice:SilenceMs` stays 800. `gpt-realtime-2.1-mini` was measured and rejected (no latency gain, fewer flagged items raised, repeated turns); silence at 500, 650 and 800 ms could not be told apart by the test.
+- **Infrastructure.** `realtimeModels` in `infra/main.bicep` is a parameterised list (default one entry) that feeds `foundry.bicep`; `requiredModels` in `infra/hooks/regions.json` is the matching preflight list. `gpt-live-1` is removed from both. The preflight adds back the quota the environment already holds, so a repeat `azd up` passes.
+- **Models page.** Prices are `null` until set under `ModelComparison:Models`; the page shows the pricing tier and "Price unverified". `ModelCostEstimator.PerStandup` returns `null` when a price is unverified.
+- **Measurement aids.** `[pause N]` markers in cast lines (`demo/cast/payments-standup-pauses.yaml`), a `TalkOver` timing event from the voice gateway, transcripts and talk-over counts in the gate harness results, `docs/gates/m11-p3b/bench.ps1`.
+- **Known limit.** All sessions are one Cosmos item (`sessions.json`) and pass the 2 MB item limit after a few dozen standups with transcripts; one item per session is needed before many teams run for long.

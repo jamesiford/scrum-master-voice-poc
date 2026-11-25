@@ -8,7 +8,7 @@
     "dev": "npm run build:web && tsx watch src/index.ts",
     "start": "npm run build:web && tsx src/index.ts",
     "build": "npm run build:web && tsc -p tsconfig.json",
-    "test": "node --import tsx --test src/domain/cast.test.ts",
+    "test": "node --import tsx --test src/domain/cast.test.ts src/domain/pauses.test.ts",
     "e2e": "node --import tsx --test e2e/standup.e2e.ts",
     "e2e:retro": "node --import tsx --test e2e/retro.e2e.ts",
     "lint": "eslint . && prettier --check .",

@@ -78,18 +78,26 @@ else { Write-Check FAIL 'hosted agents region' "$loc is not a documented hosted 
 $sku = if ($env:REALTIME_SKU) { $env:REALTIME_SKU } else { 'DataZoneStandard' }
 $catalogue = az cognitiveservices model list -l $loc -o json 2>$null | ConvertFrom-Json
 $usage = az cognitiveservices usage list -l $loc -o json 2>$null | ConvertFrom-Json
+# On a re-run this environment already holds part of the quota. Its own deployments are added back, so azd up stays repeatable.
+$ownDeployments = @()
+foreach ($acct in (az resource list --tag "azd-env-name=$($env:AZURE_ENV_NAME)" -o json 2>$null | ConvertFrom-Json | Where-Object { $_.type -eq 'Microsoft.CognitiveServices/accounts' })) {
+  $ownDeployments += az cognitiveservices account deployment list -g $acct.resourceGroup -n $acct.name -o json 2>$null | ConvertFrom-Json
+}
 foreach ($m in $regions.requiredModels) {
   $deploySku = $m.sku.Replace('{realtimeSku}', $sku)
   $found = $catalogue | Where-Object { $_.model.name -eq $m.name -and ($_.model.skus.name -contains $deploySku) } | Select-Object -First 1
   if (-not $found) { Write-Check FAIL "model: $($m.name)" "Not offered as $deploySku in $loc for this subscription (check with: az cognitiveservices model list -l $loc)"; continue }
   $want = [int]$(if ([Environment]::GetEnvironmentVariable($m.capacityParam)) { [Environment]::GetEnvironmentVariable($m.capacityParam) } else { $m.capacityDefault })
   $row = $usage | Where-Object { $_.name.value -eq $m.usage.Replace('{sku}', $deploySku) }
-  if (-not $row) { Write-Check WARN "quota: $($m.name)" "No quota row for $($m.usage.Replace('{sku}', $deploySku)); the deployment will show the real answer" }
-  elseif (($row.limit - $row.currentValue) -lt $want) {
+  if (-not $row) { Write-Check WARN "quota: $($m.name)" "No quota row for $($m.usage.Replace('{sku}', $deploySku)); the deployment will show the real answer"; continue }
+  $own = 0
+  foreach ($d in ($ownDeployments | Where-Object { $_.properties.model.name -eq $m.name -and $_.sku.name -eq $deploySku })) { $own += [int]$d.sku.capacity }
+  $free = $row.limit - ($row.currentValue - $own)
+  if ($free -lt $want) {
     $hint = if ($deploySku -eq 'GlobalStandard' -and $m.sku -eq '{realtimeSku}') { ' Try: azd env set REALTIME_SKU DataZoneStandard' } else { " Lower $($m.capacityParam) or free quota." }
-    Write-Check FAIL "quota: $($m.name) ($deploySku)" ("Needs $want, only {0} of {1} free in $loc.$hint" -f ($row.limit - $row.currentValue), $row.limit)
+    Write-Check FAIL "quota: $($m.name) ($deploySku)" "Needs $want, only $free of $($row.limit) free in $loc.$hint"
   }
-  else { Write-Check PASS "quota: $($m.name) ($deploySku)" ("{0} of {1} free, need $want" -f ($row.limit - $row.currentValue), $row.limit) }
+  else { Write-Check PASS "quota: $($m.name) ($deploySku)" "$free of $($row.limit) free, need $want$(if ($own) { " ($own already held by this environment)" })" }
 }
 
 # ---- tenant policy that already bit us ---------------------------------------------------------------------------------------

@@ -13,6 +13,13 @@ public sealed class ModelCostEstimatorTests
         Assert.Equal(0.576m, ModelCostEstimator.PerStandup(price, 15, 0.25));
     }
 
+    [Theory]
+    [InlineData(null, 64)]
+    [InlineData(32, null)]
+    [InlineData(null, null)]
+    public void PerStandup_AnUnverifiedPrice_IsNullAndNothingIsGuessed(int? priceIn, int? priceOut) =>
+        Assert.Null(ModelCostEstimator.PerStandup(new ModelPrice("m", priceIn, priceOut, string.Empty, "Standard"), 15, 0.25));
+
     [Fact]
     public void PerStandup_NegativeMinutes_CostsNothing() =>
         Assert.Equal(0m, ModelCostEstimator.PerStandup(new ModelPrice("m", 32m, 64m, string.Empty), -5, 0.25));

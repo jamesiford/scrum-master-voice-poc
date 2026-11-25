@@ -797,7 +797,10 @@ export interface StoryDraft {
 export interface ModelRow {
   name: string;
   isCurrent: boolean;
-  costPerStandupUsd: number;
+  /** Null when the list price is unverified. */
+  costPerStandupUsd: number | null;
+  /** The Voice Live pricing tier (Pro, Standard or Lite) from Microsoft Learn. */
+  pricingTier: string | null;
   measuredP50Ms: number | null;
   measuredP95Ms: number | null;
   notes: string;

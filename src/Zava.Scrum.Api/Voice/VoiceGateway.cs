@@ -553,6 +553,7 @@ public sealed class VoiceGateway(
                 _floor.CurrentMemberId,
                 barge.Sustained,
                 _interrupted.Value.Saying);
+            await RecordTalkOverAsync(barge.MemberId);
         }
 
         await ExecuteAsync(actions);
@@ -655,6 +656,14 @@ public sealed class VoiceGateway(
             source = _turnSource,
         });
         await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Timing, _floor.CurrentMemberId, json), _run);
+    }
+
+    // One event each time the agent is cut off by someone speaking. In a scripted run nobody talks over the agent on purpose, so each one
+    // is the agent speaking over a person: the voice service ended their turn too early (ADR 0019). The gate runner counts them.
+    private async Task RecordTalkOverAsync(string? memberId)
+    {
+        var json = JsonSerializer.Serialize(new { reason = "TalkOver", totalMs = 0, speechEndToTranscriptMs = 0, analyserMs = 0, decisionModelMs = 0, orchestrationMs = 0, voiceFirstAudioMs = 0, source = "none" });
+        await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Timing, memberId, json), _run);
     }
 
     private async Task MaybeFinishSpeechAsync()

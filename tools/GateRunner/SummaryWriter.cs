@@ -41,6 +41,7 @@ internal static class SummaryWriter
             var modelRead = turns.Count(t => t.Source == "Model");
             sb.AppendLine(string.Create(System.Globalization.CultureInfo.InvariantCulture, $"Read by the decision model: {modelRead} of {turns.Count} turns; the rest used the rules."));
             sb.AppendLine(string.Create(System.Globalization.CultureInfo.InvariantCulture, $"API-reported session p50 per run: {string.Join(", ", group.OrderBy(r => r.StartedAt).Select(r => r.ReportedP50Ms))} ms."));
+            sb.AppendLine(string.Create(System.Globalization.CultureInfo.InvariantCulture, $"Agent spoke over a person (talk-overs): {group.Sum(r => r.TalkOvers)} in {group.Count()} runs. People's transcript pieces: {string.Join(", ", group.OrderBy(r => r.StartedAt).Select(r => r.HumanSegments))} per run."));
             sb.AppendLine();
         }
 

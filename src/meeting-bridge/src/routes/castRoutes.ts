@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { CastPlanner, type PlannedLine } from '../domain/cast.js';
 import type { SpeechSynthesizer } from '../services/speech.js';
 import type { CastScript } from '../domain/cast.js';
+import { silence, splitPauses, stripPauses } from '../domain/pauses.js';
 
 /** A cast line with its audio, as sent to the Simulated Room. */
 export interface SpokenLine {
@@ -90,12 +91,22 @@ export class CastRoutes {
 
   private async speak(line: PlannedLine): Promise<SpokenLine> {
     try {
-      const pcm = await this.speech.synthesize(line.voice, line.text);
-      return { memberId: line.memberId, text: line.text, audio: pcm.toString('base64') };
+      // A line may hold [pause N] markers: each stretch is synthesised on its own and joined with silence, so the pause is exact.
+      const parts: Buffer[] = [];
+      for (const segment of splitPauses(line.text)) {
+        parts.push(await this.speech.synthesize(line.voice, segment.text));
+        if (segment.pauseAfterMs > 0) parts.push(silence(segment.pauseAfterMs));
+      }
+      const pcm = Buffer.concat(parts);
+      return {
+        memberId: line.memberId,
+        text: stripPauses(line.text),
+        audio: pcm.toString('base64'),
+      };
     } catch (error) {
       return {
         memberId: line.memberId,
-        text: line.text,
+        text: stripPauses(line.text),
         audio: null,
         error: error instanceof Error ? error.message : 'Speech failed',
       };
