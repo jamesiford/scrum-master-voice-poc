@@ -148,9 +148,11 @@ Three Simulated Room standups ran at the same time through `tools/GateRunner --t
 
 Raw results: `docs/gates/g9-three-concurrent-westus3/`. Not shown by this run: cross-team isolation under load beyond the audit chains, and real Teams or Voice Live capacity beyond three sessions.
 
-### Quota request for ten concurrent standups (to be filed by a subscription owner)
+### Quota request for ten concurrent standups (to be filed by the owner)
 
-Realtime capacity is the limit. Request, in westus3 (and the chosen production region): `gpt-realtime-2.1` and `gpt-live-1`, GlobalStandard, raise from 5 to at least 10 each (one deployment slot per concurrent standup was assumed; measure before relying on it). Parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: **to be filed by the owner** (a subscription owner; not filed by this work).
+Realtime capacity is the limit. After M11 prompt 3B (ADR 0019) the only realtime deployment is `gpt-realtime-2.1`; `gpt-live-1` is removed. Quota is one row per model: in westus3 `OpenAI.GlobalStandard.gpt-realtime-2.1` has a limit of 10, of which the `mcm` environment holds 5, so one new environment can take 5. Removing `gpt-live-1` frees its own row only; it does not raise the `gpt-realtime-2.1` limit.
+
+Request: raise `OpenAI.GlobalStandard.gpt-realtime-2.1` in westus3 (and the chosen production region) from 10 to at least 20, so two environments can each hold 10. Whether one capacity unit supports one concurrent standup is an assumption: three concurrent standups ran at capacity 5 (G9), which is consistent with it but does not prove ten. The parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: **to be filed by the owner**.
 
 ### Note: bridge health timeout in the first westus3 verify run
 
@@ -171,3 +173,18 @@ Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStand
 Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
 
 Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. `zavaw3` is torn down.
+
+## 3B: realtime model and silence (ADR 0019)
+
+Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`, westus3.
+
+| Measure | Result |
+| --- | --- |
+| Candidates | `gpt-realtime-2.1` and `gpt-realtime-2.1-mini`, same Azure TTS voice; `gpt-live-1` not tested by design |
+| Latency, same mode, next to each other | p50 within 100 ms (rules only 3301 against 3342 ms; decision model on 4192 against 4253 ms); mini p95 worse |
+| Quality (transcript read of 18 standups each) | 2.1 raised 87 % of flagged items, mini 72 %; mini repeated a turn 8 times, 2.1 never; mini finished 139 timed turns, 2.1 finished 215 |
+| Choice | keep `gpt-realtime-2.1` |
+| Silence 800 / 650 / 500 ms | no difference measurable, nobody was talked over; keep 800 ms |
+| Drift | the same configuration moved about 25 % between time windows, so G1 at 5 % and 10 % cannot be re-confirmed by measurement; the default path is unchanged |
+| Deployments | `gpt-live-1` removed; mini added for the test and removed |
+| Not done | listening to audio; a longer pause test; the westus3 deployed baseline folder (closed by the owner under G8) |

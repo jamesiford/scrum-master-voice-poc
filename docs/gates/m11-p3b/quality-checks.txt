@@ -1,0 +1,24 @@
+## gpt-realtime-2.1: 18 standups
+  agent_turns: 269
+  completed_timed_turns: 215
+  items_expected: 144
+  items_raised: 125
+  invented_history: 3
+  repeated_sentence: 0
+  repeated_turn: 0
+  flagged items raised: 87%
+  e.g. Admin, quick check on your earlier commitments: yesterday you said you’d keep working on the payment retry story today—story 1—and you also said “Finish it tomorrow” about task 14; are those done? Then please share what 
+  e.g. Daniel, for story 3, story 4, task 15, and task 19, are those done as you committed three standups ago after the idempotency keys? What have you finished, what’s next, and is anything blocking you, and have you been able
+  e.g. Daniel, quick check first: for story 3, story 4, task 15, and task 19, are those done based on what you committed 3 standups ago? Also, have you been able to help Maya Lin with bug 12, and what did you finish, what’s nex
+## gpt-realtime-2.1-mini: 18 standups
+  agent_turns: 247
+  completed_timed_turns: 139
+  items_expected: 144
+  items_raised: 104
+  invented_history: 3
+  repeated_sentence: 2
+  repeated_turn: 6
+  flagged items raised: 72%
+  e.g. Thanks, Daniel.  Maya, can you share what you finished, what’s next, and what’s blocking you? Two standups ago, you listed continuing the settlement file validation for story 2, chasing them today for story 5, and pairin
+  e.g. Thanks, Daniel.  Maya, can you share what you finished, what’s next, and what’s blocking you? Two standups ago, you mentioned continuing the settlement file validation for story 2, chasing them today for story 5, and pai
+  e.g. Admin, thanks for jumping in.   Three standups ago, you said you’d finish it tomorrow for task 14—is that done? What have you finished, what’s next, and is anything blocking you?

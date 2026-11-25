@@ -18,14 +18,19 @@ Import-AzdEnvironment
 
 # name -> model, analyser mode, silence ms, cast file
 $all = @{
-  'rt21-decision' = @{ Model = 'gpt-realtime-2.1';      Mode = 'Decision'; Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
+  'rt21-model'    = @{ Model = 'gpt-realtime-2.1';      Mode = 'Model'; Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
   'rt21-rules'    = @{ Model = 'gpt-realtime-2.1';      Mode = 'Rules';    Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
-  'mini-decision' = @{ Model = 'gpt-realtime-2.1-mini'; Mode = 'Decision'; Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
+  'mini-model'    = @{ Model = 'gpt-realtime-2.1-mini'; Mode = 'Model'; Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
   'mini-rules'    = @{ Model = 'gpt-realtime-2.1-mini'; Mode = 'Rules';    Silence = 800; Cast = 'demo/cast/payments-standup.yaml' }
 }
+# Drift controls: the same configuration again later, one batch, interleaved with the others.
+$all['rt21-rules-ctrl'] = $all['rt21-rules']
+$all['rt21-model-ctrl'] = $all['rt21-model']
+# Repeat of the first silence batch at the end, to show drift.
+$all['sil-rt21-800b'] = @{ Model = 'gpt-realtime-2.1'; Mode = 'Model'; Silence = 800; Cast = 'demo/cast/payments-standup-pauses.yaml' }
 foreach ($ms in 800, 650, 500) {
   foreach ($m in @(@('rt21', 'gpt-realtime-2.1'), @('mini', 'gpt-realtime-2.1-mini'))) {
-    $all["sil-$($m[0])-$ms"] = @{ Model = $m[1]; Mode = 'Decision'; Silence = $ms; Cast = 'demo/cast/payments-standup-pauses.yaml' }
+    $all["sil-$($m[0])-$ms"] = @{ Model = $m[1]; Mode = 'Model'; Silence = $ms; Cast = 'demo/cast/payments-standup-pauses.yaml' }
   }
 }
 
@@ -43,7 +48,7 @@ function Wait-Healthy([string]$Url) {
 foreach ($name in $Configs) {
   $c = $all[$name]
   if (-not $c) { throw "Unknown configuration $name" }
-  Write-Host "=== $name : $($c.Model), analyser $($c.Mode), silence $($c.Silence) ms, $($c.Cast)"
+  Write-Host "=== $name : $($c.Model), analyser mode $($c.Mode) (Model = the decision model reads each utterance, Rules = plain rules only), silence $($c.Silence) ms, $($c.Cast)"
   az containerapp update -g $rg -n $apiApp --set-env-vars "VoiceLive__Model=$($c.Model)" "UtteranceAnalysis__Mode=$($c.Mode)" "Voice__SilenceMs=$($c.Silence)" -o none
   az containerapp update -g $rg -n $bridgeApp --set-env-vars "Demo__CastFile=$($c.Cast)" -o none
   Wait-Healthy "$api/healthz"
@@ -51,6 +56,6 @@ foreach ($name in $Configs) {
   Start-Sleep -Seconds 20
   $token = az account get-access-token --scope "api://$($env:PORTAL_CLIENT_ID)/access_as_user" --query accessToken -o tsv
   $out = Join-Path $OutRoot $name
-  dotnet run --project tools/GateRunner -- --label $name --runs $(if ($name -like 'sil-*') { 1 } else { 2 }) --api $api --team team-payments --teams team-payments,team-b,team-c --out $out --token $token --timeout-minutes 25 --build "$(git rev-parse --short HEAD)"
+  dotnet run --project tools/GateRunner -- --label $name --runs $(if ($name -like 'sil-*' -or $name -like '*-ctrl') { 1 } else { 2 }) --api $api --team team-payments --teams team-payments,team-b,team-c --out $out --token $token --timeout-minutes 25 --build "$(git rev-parse --short HEAD)"
   if ($LASTEXITCODE -ne 0) { Write-Warning "GateRunner exited with $LASTEXITCODE for $name" }
 }

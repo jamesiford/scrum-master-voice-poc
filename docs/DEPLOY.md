@@ -13,7 +13,7 @@ Set once with `azd env set`. None is a secret.
 | `ADO_ORG_URL` | yes | For example `https://dev.azure.com/your-org`. The project and seed data are created inside it. |
 | `ADMIN_UPN` | yes | The administrator. Also the calendar organiser. |
 | `REALTIME_SKU` | no | `DataZoneStandard` (default in `main.parameters.json`) or `GlobalStandard`. Global realtime quota is subscription-wide and was used by the original environment, so the default avoids it. |
-| `CHAT_CAPACITY`, `REALTIME_CAPACITY`, `DECISION_CAPACITY` | no | Deployment capacity. Defaults 100, 10, 100. Below 100 the decision model hits its rate limit. |
+| `CHAT_CAPACITY`, `REALTIME_CAPACITY`, `DECISION_CAPACITY` | no | Deployment capacity. Defaults 100, 10, 100. Below 100 the decision model hits its rate limit. `REALTIME_CAPACITY` applies to each model in the `realtimeModels` list in `infra/main.bicep` (default `gpt-realtime-2.1` only). Quota is one row per model, so a model you do not deploy frees nothing for another. |
 
 ```pwsh
 azd env new <name>
