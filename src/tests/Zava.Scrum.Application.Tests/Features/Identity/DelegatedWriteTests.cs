@@ -115,6 +115,36 @@ public sealed class DelegatedWriteTests
         Assert.True(retried.IsSuccess);
         Assert.Single(_writer.Written);
     }
+    [Fact]
+    public async Task Apply_WhenTheApproverCannotWriteTheItem_FailsWithTheReasonAndRecordsNoAppliedRecord()
+    {
+        var f = await AddAsync();
+        _writer.Fail = true;
+        _writer.FailWith = Error.Forbidden("ado.approver_cannot_write", "no write access. Nothing was written.");
+
+        await Sender.Send(new ApproveFollowUpCommand(f.Id, Who.TeamsUser(PriyaId)));
+
+        var stored = (await _followUps.GetAsync(f.Id, default))!;
+        Assert.Contains("no write access", stored.ApplyError, StringComparison.Ordinal);
+        Assert.NotEqual(FollowUpStatus.Applied, stored.Status);
+        Assert.DoesNotContain(_records.All, r => r.Kind == ApprovalRecordKind.Applied);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Approve_WhenConditionalAccessNeedsAnInteractiveSignIn_IsRefusedWithThatCodeAndNothingIsRecorded()
+    {
+        var f = await AddAsync();
+        _tokens.Refuse = true;
+        _tokens.RefusalError = Error.NotApproved("delegation.interaction_required", "sign in again");
+
+        var result = await Sender.Send(new ApproveFollowUpCommand(f.Id, Who.TeamsUser(PriyaId)));
+
+        Assert.Equal("delegation.interaction_required", result.Error!.Code);
+        Assert.Empty(_records.All);
+        Assert.Empty(_writer.Written);
+    }
+
     private async Task ResetAppliedAsync(Guid id)
     {
         var stored = (await _followUps.GetAsync(id, default))!;

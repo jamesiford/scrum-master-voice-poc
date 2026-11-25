@@ -707,7 +707,11 @@ Implement it as a pure, table-tested class with no I/O.
 
 A session carries its team id, and the floor, the gateway and the bridge never read a global team. Concurrent standups are limited per host by `CapacityGovernor` (default 3, a 5 s stagger); a standup that cannot start waits with a reason and the team is notified, and the gateway log scope carries `TeamId`. Three concurrent Simulated Room standups measured p50 3400 ms and p95 4919 ms (G9).
 
+> **Approval and sign-in (M11 5A, ADR 0020), applies to sections 11 to 13.** A decision made by voice is only a proposal; nothing is written until a person approves it in the portal or on a Teams card, and the write is made as that person (Azure DevOps shows them as author). The voice path never holds an Azure DevOps credential.
+
 ## 12. Teams and Microsoft 365 Copilot
+
+**Teams approval (M11 5A).** Approve and Approve plan card actions sign the person in with Teams single sign-on (Azure Bot OAuth connection, Entra ID v2 with federated credentials; bot Entra app exposes `access_as_user`, Teams clients pre-authorised, `webApplicationInfo` in the manifest). If sign-in is pending the Agents SDK shows the real sign-in card; with no token the approve is refused. Reject needs no token.
 
 - One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/zava-scrum-agent.zip` for the demo users.
 - **Approver identity (M11, ADR 0017).** A card action's approver is `Activity.From.AadObjectId` with the activity's tenant, never `From.Name`. The decision is accepted only when the tenant is the deployment's and the object id is a configured administrator (`Identity:AdminObjectIds`) or the roster member (`Member.EntraObjectId`) the follow-up is for; plans, calendars and ceremony packs are administrator only. The chat command "prepare sprint planning" is decided the same way.
@@ -735,6 +739,8 @@ A session carries its team id, and the floor, the gateway and the bridge never r
 ---
 
 ## 13. Admin portal (demo scope)
+
+**Approval in the portal (M11 5A).** The API validates the bearer token, then exchanges it on-behalf-of for Azure DevOps (`user_impersonation`). If the person cannot write, or Entra needs consent, multi-factor or a Conditional Access step, the approve is refused with a message that says what to do, and nothing is written (never a fallback to the service identity).
 
 | Page | Must have |
 |---|---|

@@ -159,7 +159,7 @@ Built in M11 prompt 3 (ADR 0017).
 - **Roster.** `Member.EntraObjectId` is resolved from the mapped UPN by Graph (`GraphIdentityDirectory`), stored by `SyncRosterCommand` and re-verified when a standup is prepared.
 - **Approval trail.** Append-only `ApprovalRecord`s (Cosmos `ApprovalRecords`, partition `/correlationId`, create and read only for the managed identity; a JSON-lines file locally): Approved or Rejected, then Applied with the Azure DevOps revisions. `ApplyApprovedChangesHandler` refuses without a matching record.
 - **Correlation.** A W3C trace id per session, carried to follow-ups, approvals, the write, cards and the gateway log scope; every Azure DevOps attribution ends with `Correlation: zsa-<12 hex>`. `GET /api/audit/{correlationId}` returns the chain and what is missing.
-- **Author attribution.** Built in prompt 5A, section 19. Team-scoped roles are section 17.
+- **Author attribution.** Built in prompt 5A, section 19. Identity summary: the approver is identified by Entra object id and tenant (this section), and the same identity is the Azure DevOps author through a delegated token (section 19). Team-scoped roles are section 17.
 
 ## 17. M11: multi-team and multi-organisation
 
@@ -198,4 +198,5 @@ Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live
 - **Api.** `UserAssertionMiddleware` for the portal bearer token. `ScrumAgent` approve routes use the `sso` user-authorisation handler (`autoSignInHandlers`) and `SsoToken` to read `oid` and `tid`; no connection configured means approve is refused.
 - **Bridge.** The ACS connection-string branch is removed.
 - **Hooks.** Portal app: Azure DevOps `user_impersonation` consent, `api://botid-<id>`, Teams clients pre-authorised. Post-provision: two federated credentials, the `sso` bot connection, agent settings. Teams manifest `webApplicationInfo`. `verify.ps1` checks the comment author.
+- **Port.** `IWorkItemWriter` has one method and it takes a `DelegatedWriteContext` (approver plus token provider); an architecture test enforces it. The Azure DevOps client types are `internal` to Infrastructure, so no other project can construct one (architecture test); an AgentHost source scan test is in place for prompt 4. A 401 or 403 from Azure DevOps becomes `ado.approver_cannot_write`; an Entra interaction, consent or Conditional Access answer becomes `delegation.interaction_required`.
 - **Known limits.** Teams SSO with a managed-identity bot id and the portal app id in `webApplicationInfo` is unverified. Every approver must be a Contributor in the Azure DevOps project. `IDemoAdoReset` still uses the managed identity (it is not an approved-change write).

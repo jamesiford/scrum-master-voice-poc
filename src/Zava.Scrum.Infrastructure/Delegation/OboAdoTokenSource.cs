@@ -18,6 +18,11 @@ public sealed class OboAdoTokenSource(IOptions<DelegationOptions> options, ILogg
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
     private const string FederatedAudience = "api://AzureADTokenExchange/.default";
 
+    // Entra answers interaction_required, consent_required or a claims challenge (AADSTS50076 MFA, 50079, 53003 Conditional Access, 65001 consent).
+    private static readonly string[] InteractionMarkers = ["interaction_required", "consent_required", "AADSTS50076", "AADSTS50079", "AADSTS53003", "AADSTS65001", "AADSTS50158", "claims"];
+
+    private static bool NeedsInteraction(string message) => InteractionMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase));
+
     /// <inheritdoc />
     public async Task<Result<DelegatedAdoAccess>> ExchangeAsync(UserAssertion assertion, CancellationToken ct)
     {
@@ -41,6 +46,12 @@ public sealed class OboAdoTokenSource(IOptions<DelegationOptions> options, ILogg
         }
         catch (Exception ex) when (ex is AuthenticationFailedException or CredentialUnavailableException)
         {
+            if (NeedsInteraction(ex.Message))
+            {
+                logger.LogWarning("On-behalf-of exchange needs the person to sign in again (consent, multi-factor or Conditional Access)");
+                return Result<DelegatedAdoAccess>.Failure(DelegationErrors.InteractionRequired);
+            }
+
             // The message carries Entra's reason (consent or sign-in needed); the token and the assertion are never logged.
             logger.LogWarning("On-behalf-of exchange for Azure DevOps failed: {Reason}", ex.Message.Split('\n')[0]);
             return Result<DelegatedAdoAccess>.Failure(DelegationErrors.ExchangeFailed);

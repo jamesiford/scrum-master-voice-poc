@@ -52,6 +52,7 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
             return Result.Failure(access.Error);
         }
 
+        var context = new DelegatedWriteContext(decision.Actor, _ => Task.FromResult(access));
         var team = await teams.GetAsync(followUp.TeamId, ct);
         if (team is null)
         {
@@ -71,7 +72,7 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
         var revisions = new List<AdoRevision>();
         foreach (var change in changes.Value)
         {
-            var written = await writer.ApplyAsync(change, team.Ado, access.Value, ct);
+            var written = await writer.ApplyAsync(change, team.Ado, context, ct);
             if (!written.IsSuccess)
             {
                 followUp.MarkApplyFailed(written.Error!.Message);

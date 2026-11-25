@@ -14,17 +14,24 @@ internal sealed class WriterSpy : IWorkItemWriter
     /// <summary>The delegated token each write carried.</summary>
     public List<string> Tokens { get; } = [];
 
+    /// <summary>The approver each write named.</summary>
+    public List<Guid> Approvers { get; } = [];
+
     public bool Fail { get; set; }
 
-    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedAdoAccess access, CancellationToken ct)
+    /// <summary>The error a failing write returns; defaults to a generic rejection.</summary>
+    public Error FailWith { get; set; } = Error.ExternalRejected("ado.write_rejected", "rejected");
+
+    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
     {
         if (Fail)
         {
-            return Task.FromResult(Result<WorkItemRevision>.Failure(Error.ExternalRejected("ado.write_rejected", "rejected")));
+            return Task.FromResult(Result<WorkItemRevision>.Failure(FailWith));
         }
 
         Written.Add(change);
-        Tokens.Add(access.AccessToken);
+        Tokens.Add(context.GetAccessAsync(ct).GetAwaiter().GetResult().Value.AccessToken);
+        Approvers.Add(context.Approver.ObjectId);
         return Task.FromResult(Result<WorkItemRevision>.Success(new WorkItemRevision(change.WorkItemId, Written.Count + 1)));
     }
 }

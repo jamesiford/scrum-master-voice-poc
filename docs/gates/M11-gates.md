@@ -201,4 +201,6 @@ Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`,
 | G3 Teams | **Not verified.** Needs the Teams app upload (human gate) and a real user. |
 | Latency (G1) | **Not re-measured.** The change adds nothing to the voice turn; no numbers are claimed. |
 
+G3 second approver without write access refused: covered by Application and Infrastructure tests (403 becomes `ado.approver_cannot_write`, nothing written); **not run live** (needs a second Entra user without project access).
+
 G3 for Teams stays open until a real user approves from a card (human gate).

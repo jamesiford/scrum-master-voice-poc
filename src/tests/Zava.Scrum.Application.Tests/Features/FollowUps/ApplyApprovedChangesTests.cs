@@ -155,7 +155,7 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
 
         public bool Fail { get; set; }
 
-        public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedAdoAccess access, CancellationToken ct)
+        public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
         {
             if (Fail)
             {

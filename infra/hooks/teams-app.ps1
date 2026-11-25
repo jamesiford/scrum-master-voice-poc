@@ -18,7 +18,7 @@ $manifest = Get-Content (Join-Path $src 'manifest.json') -Raw | ConvertFrom-Json
 $manifest.id = $botId
 $manifest.bots[0].botId = $botId
 # Teams single sign-on for card actions (ADR 0020): the Entra app that holds the Azure DevOps delegated permission and the bot OAuth connection.
-# VERIFY: https://learn.microsoft.com/microsoftteams/platform/resources/bot-v3/bots-auth-aad
+# Checked against Learn (bots/how-to/authentication/bot-sso-register-aad): the manifest names the Entra app that holds the exposed scope and the bot OAuth connection, with resource api://botid-<app id>.
 if ($env:PORTAL_CLIENT_ID) {
   $manifest | Add-Member -NotePropertyName webApplicationInfo -NotePropertyValue ([ordered]@{ id = $env:PORTAL_CLIENT_ID; resource = "api://botid-$($env:PORTAL_CLIENT_ID)" }) -Force
 }

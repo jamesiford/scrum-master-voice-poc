@@ -58,6 +58,11 @@ The API validates the Entra bearer token itself; Easy Auth is an outer gate only
 
 The approval trail is the Cosmos container `ApprovalRecords`. The managed identity has a custom data-plane role there with create and read only (`data.bicep`), and Cosmos DB Data Contributor on the `collections` container only. `azd down` removes the trail with the environment.
 
+## Remaining secrets (defects)
+
+- **`portal-secret` (Easy Auth client secret).** Container Apps Easy Auth accepts only a client secret, not a federated credential. It is stored only as a Container Apps secret, rotated on each hook run, and is not used for Azure DevOps or ACS. This is a known defect, to be removed by moving the outer gate to the in-app validation already in place (ADR 0017) or when Easy Auth supports federated credentials.
+- No ACS key or connection string, no bot secret, no Azure DevOps PAT in the deployment (`Ado:AuthMode` `Pat` exists for local development only).
+
 ## Container registry permissions
 
 The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, set explicitly. In that mode the Foundry project identity needs **AcrPull**, not Container Registry Repository Reader (ADR 0015 S3). Both identities get AcrPull in `data.bicep`. If you switch the mode to ABAC, change the role to Container Registry Repository Reader.
@@ -72,6 +77,7 @@ The platform forces these. Each is named in the script output as `GATE`.
 | Teams app upload | A Teams administrator, or a user allowed to upload custom apps | `pwsh infra/hooks/teams-app.ps1 -Interactive` (device-code sign-in; Graph accepts catalogue uploads only for a signed-in user with `AppCatalog.Submit`), or Teams admin centre > Teams apps > Manage apps > Upload new app, with the zip in `appPackage/dist`. Then approve the app. |
 | Adding an Azure DevOps organisation | An Azure DevOps Project Collection Administrator of that organisation | Organisation settings > Users > Add users: add the API's managed identity (`id-<prefix>-<token>`, shown in the deployment outputs) with at least Basic access, then add it to the project's Contributors for each team project. Only organisations backed by this deployment's Entra tenant can be registered; the registry refuses another tenant. Then register the team (Teams page or onboarding wizard) and press Test connection. |
 | Azure DevOps access for approvers | An Azure DevOps Project Collection Administrator (or project administrator) | Each person who approves needs to be a Contributor of the team's project, because an approval is written as that person (ADR 0020). Without it Azure DevOps refuses the write and the follow-up shows the reason. The managed identity no longer writes. |
+| Admin consent for Azure DevOps | An Entra Global Administrator or Privileged Role Administrator | `entra-portal-app.ps1` grants the delegated Azure DevOps `user_impersonation` permission for the organisation. If the deployer cannot, do it in Entra admin centre > Enterprise applications > Zava Scrum Portal > Permissions > Grant admin consent. Without it every approval is refused with a consent message. |
 | Deployer Entra roles | A Privileged Role Administrator | The deployer needs Application Administrator (or Cloud Application Administrator) to create the app registration, federated credentials and consents, and Privileged Role Administrator or Global Administrator for the tenant-wide consents. Global Reader is not enough: `entra-portal-app.ps1` stops with `Authorization_RequestDenied`. |
 | Exchange calendar and mail scope | An Exchange administrator | `pwsh infra/hooks/exchange.ps1 -Mode Grant`. It gives the managed identity Application Calendars.ReadWrite and Application Mail.Send on the organiser's mailbox only (RBAC for Applications). Until then the calendar and email run on the outbox. |
 

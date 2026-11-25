@@ -8,7 +8,7 @@ using Zava.Scrum.Infrastructure.Http;
 namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Gives each Azure DevOps organisation its own <see cref="HttpClient"/> and credential (ADR 0018).</summary>
-public interface IAdoClientFactory
+internal interface IAdoClientFactory
 {
     /// <summary>Gets the client for an organisation, created on first use and cached.</summary>
     /// <param name="organisationUrl">The organisation URL; normalised, and refused unless it is a Microsoft-hosted Azure DevOps address.</param>
@@ -38,7 +38,7 @@ public interface IAdoClientFactory
 /// <param name="loggers">Logger factory.</param>
 /// <param name="transport">Creates the innermost handler; <see langword="null"/> uses the network. Tests pass a fake here.</param>
 /// <remarks>Writes never use this credential: <see cref="DelegatedWriterFor"/> carries the approver's own token (ADR 0020).</remarks>
-public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
+internal sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
 {
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
     private readonly ConcurrentDictionary<string, Lazy<HttpClient>> _clients = new(StringComparer.OrdinalIgnoreCase);

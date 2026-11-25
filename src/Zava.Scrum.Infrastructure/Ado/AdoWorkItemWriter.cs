@@ -16,7 +16,7 @@ namespace Zava.Scrum.Infrastructure.Ado;
 /// follow-up can produce, and stamps every change with who approved it.
 /// </summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/rest/api/azure/devops/wit/work-items/update and /create (json-patch, api-version 7.1).</remarks>
-public sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoWorkItemWriter> logger)
+internal sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoWorkItemWriter> logger)
 {
     private const string ApiVersion = "api-version=7.1";
     private const string OwnerTagPrefix = "demo-owner-";
@@ -47,6 +47,12 @@ public sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> dem
 
 
                 logger.LogWarning("Azure DevOps rejected the {Op} change of {WorkItemId}: {Status} {Body}", change.Op, change.WorkItemId, (int)response.StatusCode, body);
+                if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden or System.Net.HttpStatusCode.NonAuthoritativeInformation)
+                {
+                    // The write is made as the approver, so this means the approver cannot change this item (ADR 0020). Nothing was written.
+                    return Result<WorkItemRevision>.Failure(Error.Forbidden("ado.approver_cannot_write", $"Azure DevOps will not let you change work item {change.WorkItemId} ({(int)response.StatusCode}). You need Contributor access to its project. Nothing was written."));
+                }
+
                 return Result<WorkItemRevision>.Failure(Error.ExternalRejected("ado.write_rejected", $"Azure DevOps rejected the {change.Op} change ({(int)response.StatusCode})."));
             }
         }

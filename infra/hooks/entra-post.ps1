@@ -11,7 +11,7 @@ $appObjectId = $env:PORTAL_APP_OBJECT_ID
 if (-not $clientId) { throw 'PORTAL_CLIENT_ID is not set. The preprovision hook entra-portal-app.ps1 creates it.' }
 
 # ---- redirect URIs ----------------------------------------------------------------------------------------------------------
-$uris = @("$($env:API_URI)/.auth/login/aad/callback", "$($env:BRIDGE_URI)/.auth/login/aad/callback")
+$uris = @("$($env:API_URI)/.auth/login/aad/callback", "$($env:BRIDGE_URI)/.auth/login/aad/callback", 'https://token.botframework.com/.auth/web/redirect')
 # The SPA (served by the API) signs in with MSAL.js, which needs the single-page-application platform, not the web one.
 Invoke-Graph PATCH "/applications/$appObjectId" @{ web = @{ redirectUris = $uris; implicitGrantSettings = @{ enableIdTokenIssuance = $true } }; spa = @{ redirectUris = @($env:API_URI, "$($env:API_URI)/") } } | Out-Null
 Write-Check PASS 'portal redirect URIs' ($uris -join ', ')
@@ -38,7 +38,9 @@ foreach ($roleName in @('User.Read.All', 'GroupMember.Read.All')) {
 # managed identity through a federated credential on the portal app, so there is no client secret. Teams card actions get the person's
 # token through single sign-on: a Bot Service OAuth connection ("AAD v2 with Federated Credentials") plus a second federated credential
 # for the Bot Service token store.
-# VERIFY: https://learn.microsoft.com/azure/bot-service/bot-builder-authentication-sso and https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust
+# Checked against Learn (microsoft-365/agents-sdk/azure-bot-user-authorization-federated-credentials): issuer https://login.microsoftonline.com/<tenant>/v2.0,
+# subject /eid1/c/pub/t/<base64url tenant>/a/<base64url first-party app>/<unique id> (the Bot Service Token Store app is 9ExAW52n_ky4ZiS_jhpJIQ),
+# audience api://AzureADTokenExchange, provider "AAD v2 with Federated Credentials", single tenant, redirect https://token.botframework.com/.auth/web/redirect.
 function ConvertTo-Base64Url([byte[]]$Bytes) { [Convert]::ToBase64String($Bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_') }
 function Set-FederatedCredential([string]$Name, [string]$Subject, [string]$Description) {
   $existing = (Invoke-Graph GET "/applications/$appObjectId/federatedIdentityCredentials").value | Where-Object { $_.name -eq $Name }

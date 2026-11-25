@@ -15,7 +15,7 @@ $graphUserRead = 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
 # Azure DevOps (ADR 0020): the portal app asks for its delegated user_impersonation scope, so an approval is written as the approver.
 $adoAppId = '499b84ac-1321-427f-aa17-267ca6975798'
 # The Teams desktop/mobile and web clients, pre-authorised so Teams single sign-on for card actions needs no consent prompt.
-# VERIFY: https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-register-aad
+# Checked against Learn (bots/how-to/authentication/bot-sso-register-aad): Teams desktop and mobile 1fec8e78-bce4-4aaf-ab1b-5451cc387264, Teams web 5e3ce6c0-2b1f-4285-8d4b-75ee78787346; standalone bot URI api://botid-<app id>.
 $teamsClients = @('1fec8e78-bce4-4aaf-ab1b-5451cc387264', '5e3ce6c0-2b1f-4285-8d4b-75ee78787346')
 
 $roles = [System.Collections.Generic.List[object]]::new()

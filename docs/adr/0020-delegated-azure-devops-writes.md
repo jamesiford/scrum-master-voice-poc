@@ -31,6 +31,14 @@ the portal and Teams. ADR 0015 S4 showed that a delegated user token creates and
    is no sign-in, so an approve is refused, not faked.
 7. **No ACS secret.** The bridge's connection-string branch is deleted. It signs in to Azure Communication Services with Entra only.
 
+## Additions after review against the full 5A requirements
+
+- `IWorkItemWriter.ApplyAsync(change, target, DelegatedWriteContext, ct)`: the context carries the approver `ActorIdentity` and a token provider, and the port has one method (architecture test).
+- The Azure DevOps client types are `internal` to Infrastructure; an architecture test proves nothing public exposes them and the Api project does not use them. A source scan guards the future agent host (no Azure DevOps credentials).
+- A 401 or 403 from Azure DevOps on a write is `ado.approver_cannot_write`; Entra interaction, consent or Conditional Access answers become `delegation.interaction_required` with an instruction to sign in again. Neither falls back.
+- VERIFY markers resolved against Learn: federated subject format and Bot Service Token Store id (`9ExAW52n_ky4ZiS_jhpJIQ`), tenant encoding (base64url of the GUID bytes, checked against the Learn MSIT example), provider "AAD v2 with Federated Credentials" (ARM provider id `Aadv2WithFic`), Teams client ids, `api://botid-<id>` and the redirect `https://token.botframework.com/.auth/web/redirect` (added to the hook; it was missing).
+- Difference: Learn lets the bot OAuth connection use any single-tenant Entra app, so the portal app is used (not a second bot app); this still needs a live Teams run.
+
 ## Entra objects and hooks (same PR, greenfield)
 
 - `entra-portal-app.ps1`: requests the Azure DevOps delegated scope `user_impersonation` (id looked up by name; the Azure DevOps service principal is created if the

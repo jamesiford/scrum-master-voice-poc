@@ -134,8 +134,11 @@ internal sealed class FakeApproverTokenSource : IApproverTokenSource
 {
     public bool Refuse { get; set; }
 
+    /// <summary>The error returned when refusing; defaults to a consent failure.</summary>
+    public Error RefusalError { get; set; } = Error.ExternalRejected("delegation.exchange_failed", "no consent");
+
     public Task<Result<DelegatedAdoAccess>> ExchangeAsync(UserAssertion assertion, CancellationToken ct) =>
         Task.FromResult(Refuse
-            ? Result<DelegatedAdoAccess>.Failure(Error.ExternalRejected("delegation.exchange_failed", "no consent"))
+            ? Result<DelegatedAdoAccess>.Failure(RefusalError)
             : Result<DelegatedAdoAccess>.Success(new DelegatedAdoAccess($"ado-for-{assertion.ObjectId}")));
 }
