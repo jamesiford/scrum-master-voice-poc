@@ -196,9 +196,9 @@ Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`,
 | Rule and handlers (Domain, Application, real mediator, fakes at the ports) | **Passed.** No token, another person's token and a refused exchange are each refused before a write; an approve with no token is refused before the record is written; a retry by someone else is refused; the approver's retry writes once. |
 | Managed-identity write path | **Removed.** The only writer is built per write from the approver's token. |
 | ACS connection string | **Removed** from the bridge, docs and settings. |
-| Hooks and Bicep | Authored; `entra-post.ps1` and `entra-portal-app.ps1` parse; `main.bicep` builds. **Not run.** |
-| G3 live (approver is the author with the correlation id, portal) | **Not verified.** `azd up` in `zavaw3` stopped at `entra-portal-app.ps1` before anything was provisioned: the deployer `admin@` holds only Global Reader and the Agent ID roles, so every application update returns `Authorization_RequestDenied` (a no-op patch of the app also fails). `verify.ps1` now asserts the author, so the gate closes the first time it passes. |
+| Hooks and Bicep | **Passed in `zavaw3` (westus3).** The second attempt (after Entra roles were restored) stopped once at the bot OAuth connection: the provider name must be `Aadv2WithFic` (fixed). The third `azd up` completed (provision 4m41s, deploy 5m05s). |
+| G3 live, portal | **Passed.** `verify.ps1` 7 of 7 (`m11-p5a-logs/verify-pass.log`): the Azure DevOps comment on #1 is authored by `admin@MngEnvMCAP763514.onmicrosoft.com` (the approver) with `Correlation: zsa-466f0ef309e5`, and the audit chain is complete (revision 43). |
 | G3 Teams | **Not verified.** Needs the Teams app upload (human gate) and a real user. |
 | Latency (G1) | **Not re-measured.** The change adds nothing to the voice turn; no numbers are claimed. |
 
-To close G3: restore Application Administrator (or Cloud Application Administrator) and Privileged Role Administrator to the deployer, then `azd up` in `zavaw3` and `pwsh infra/hooks/verify.ps1`.
+G3 for Teams stays open until a real user approves from a card (human gate).

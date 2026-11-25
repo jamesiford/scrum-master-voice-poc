@@ -1,6 +1,6 @@
 # 0020. Delegated Azure DevOps writes
 
-Status: accepted for the code and the hooks; not yet verified live (see "Measured and not measured"). Prompt 5A.
+Status: accepted. Portal path verified live in `zavaw3`; Teams path not verified (see "Measured and not measured"). Prompt 5A.
 
 ## Context
 
@@ -62,7 +62,5 @@ the portal and Teams. ADR 0015 S4 showed that a delegated user token creates and
 ## Measured and not measured
 
 - Unit and Application tests: Domain 397, Application 148 (through the real mediator, fakes at the ports), Infrastructure 74, Architecture 7, Api 132, bridge 12, all passing, zero warnings.
-- **Not measured: the live portal write and G3.** The `zavaw3` deployment was attempted from a clean commit and stopped at `entra-portal-app.ps1`: the signed-in deployer
-  `admin@` now holds only Global Reader, Agent ID Administrator, Agent ID Developer and Agent Registry Administrator, so any application update returns
-  `Authorization_RequestDenied` (it fails on a no-op patch of the app registration too). Nothing was provisioned or changed in Azure. The Entra roles the deployer needs are in `docs/DEPLOY.md`.
-- **Not measured: Teams SSO, a second Azure DevOps organisation, latency.** The change adds no work to the voice turn, but the gate harness was not re-run against a deployment, so no before and after numbers are claimed.
+- **Measured: the live portal write and G3.** `zavaw3` (westus3) after `azd up`: `verify.ps1` 7 of 7. The Azure DevOps comment on #1 is authored by the approving user (`admin@`), ends `Correlation: zsa-466f0ef309e5`, and the audit chain is complete (`docs/gates/m11-p5a-logs/verify-pass.log`). The first attempt stopped because the deployer had lost its Entra write roles (restored by the owner); the next stopped at the bot OAuth connection, whose provider name must be `Aadv2WithFic` (fixed in the hook).
+- **Not measured: Teams SSO, a second Azure DevOps organisation, latency.** The change adds no work to the voice turn, but the gate harness was not re-run, so no before and after numbers are claimed.

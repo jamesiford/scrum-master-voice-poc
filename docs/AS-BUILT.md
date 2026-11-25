@@ -190,7 +190,7 @@ Built in M11 prompt 3B (ADR 0019).
 
 ## 19. M11: delegated Azure DevOps writes
 
-Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live portal write, Teams single sign-on and G3 are not yet verified (the deployer lost its Entra write roles).
+Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live portal write and G3 (portal) are verified in `zavaw3`; Teams single sign-on is not.
 
 - **Rule.** `ApproverAssertion` (Domain): the token presented at write time must be the recorded approver's (`oid` and `tid`). No token or someone else's token means no write.
 - **Ports.** `IUserAssertionAccessor` (scoped, set by the Api), `IApproverTokenSource` (on-behalf-of exchange), `IWorkItemWriter.ApplyAsync(change, target, DelegatedAdoAccess, ct)`. `DelegatedAccessProvider` is used by the apply handler and the approve handlers (follow-up and plan), so a decision that cannot be written is refused before it is recorded.
