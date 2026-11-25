@@ -1,0 +1,6 @@
+<Project>
+  <!-- Opts out of the repository's central package management and strict settings: it needs a beta SDK the solution does not use. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

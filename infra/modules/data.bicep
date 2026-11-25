@@ -85,6 +85,24 @@ resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   properties: { resource: { id: 'collections', partitionKey: { paths: [ '/id' ], kind: 'Hash' } } }
 }
 
+// One item per standup session, partitioned by team id (ADR 0021). The single sessions document passed the 2 MB item limit; the agent host
+// rehydrates a session from here after an idle sandbox stops, so it must not be a shared document.
+resource sessionsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: cosmosDb
+  name: 'Sessions'
+  properties: { resource: { id: 'Sessions', partitionKey: { paths: [ '/teamId' ], kind: 'Hash' } } }
+}
+
+resource sessionsRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+  parent: cosmos
+  name: guid(cosmos.id, identityPrincipalId, 'data-contributor-sessions')
+  properties: {
+    roleDefinitionId: '${cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002'
+    principalId: identityPrincipalId
+    scope: '${cosmos.id}/dbs/${cosmosDb.name}/colls/${sessionsContainer.name}'
+  }
+}
+
 // The approval trail (ADR 0017): its own container, partitioned by correlation id, written only with create so a record is never replaced.
 resource approvalRecords 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
   parent: cosmosDb

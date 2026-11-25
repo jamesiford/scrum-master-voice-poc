@@ -14,7 +14,9 @@ Teams meeting <-> ACS calling SDK (headless Chromium on the bridge) <-> API voic
                                                                      |-> Domain (flag rules, floor control, classifiers, KPIs)
                                                                      |-> Infrastructure: Azure DevOps REST, Foundry agents, Cosmos, Bot
 Admin portal (React, Tailwind) -> API (served by the same container)
+Optional voice route (VoiceLive:RelayEndpoint): API voice gateway -> Foundry hosted agent (src/Zava.Scrum.AgentHost, invocations_ws relay) -> Azure Voice Live
 ```
+- **Agent host (`src/Zava.Scrum.AgentHost`, prompt 4):** the Foundry hosted agent. Today it carries the stateless voice relay (`invocations_ws`, port 8088) and nothing else; the voice gateway, ceremony agents and Teams handlers are still in the API (section 20 lists what is not moved). Built as an image in the environment registry by `infra/hooks/agent-host.ps1`.
 - **Solution:** Clean Architecture, four projects (`Domain`, `Application`, `Infrastructure`, `Api`), enforced by architecture tests. Hand-rolled mediator with logging, validation and exception-mapping behaviours. No MediatR.
 - **Bridge (`src/meeting-bridge`):** Node 22 + TypeScript. Serves the Simulated Room and the Teams call page, launches Chromium, and holds the ACS identity. Fallback for any live demo: the Simulated Room (scripted cast).
 - **Portal (`src/admin-portal`):** React 19, Vite, Tailwind CSS v4, lucide icons, hash routing, Entra sign-in (Easy Auth).
@@ -186,7 +188,7 @@ Built in M11 prompt 3B (ADR 0019).
 - **Infrastructure.** `realtimeModels` in `infra/main.bicep` is a parameterised list (default one entry) that feeds `foundry.bicep`; `requiredModels` in `infra/hooks/regions.json` is the matching preflight list. `gpt-live-1` is removed from both. The preflight adds back the quota the environment already holds, so a repeat `azd up` passes.
 - **Models page.** Prices are `null` until set under `ModelComparison:Models`; the page shows the pricing tier and "Price unverified". `ModelCostEstimator.PerStandup` returns `null` when a price is unverified.
 - **Measurement aids.** `[pause N]` markers in cast lines (`demo/cast/payments-standup-pauses.yaml`), a `TalkOver` timing event from the voice gateway, transcripts and talk-over counts in the gate harness results, `docs/gates/m11-p3b/bench.ps1`.
-- **Known limit.** All sessions are one Cosmos item (`sessions.json`) and pass the 2 MB item limit after a few dozen standups with transcripts; one item per session is needed before many teams run for long.
+- **Known limit (fixed in prompt 4).** Sessions were one Cosmos item and passed the 2 MB limit; they are now one item each, partitioned by team (section 20, ADR 0021).
 
 ## 19. M11: delegated Azure DevOps writes
 
@@ -200,3 +202,15 @@ Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live
 - **Hooks.** Portal app: Azure DevOps `user_impersonation` consent, `api://botid-<id>`, Teams clients pre-authorised. Post-provision: two federated credentials, the `sso` bot connection, agent settings. Teams manifest `webApplicationInfo`. `verify.ps1` checks the comment author.
 - **Port.** `IWorkItemWriter` has one method and it takes a `DelegatedWriteContext` (approver plus token provider); an architecture test enforces it. The Azure DevOps client types are `internal` to Infrastructure, so no other project can construct one (architecture test); an AgentHost source scan test is in place for prompt 4. A 401 or 403 from Azure DevOps becomes `ado.approver_cannot_write`; an Entra interaction, consent or Conditional Access answer becomes `delegation.interaction_required`.
 - **Known limits.** Teams SSO with a managed-identity bot id and the portal app id in `webApplicationInfo` is unverified. Every approver must be a Contributor in the Azure DevOps project. `IDemoAdoReset` still uses the managed identity (it is not an approved-change write).
+
+## 20. M11: hosted agent voice relay, session storage, pre-warm and canary
+
+Built in M11 prompt 4 (ADR 0021, ADR 0015 S6). Read ADR 0021 for what was measured and what was not moved. **G1 is not met for the hosted route at p95 with the decision model on, so the default voice route stays direct.**
+
+- **Voice relay.** `AgentHost` (`VoiceRelayHandler`, `VoiceRelay`) is a hosted agent with `/invocations_ws`. It opens Voice Live with its own identity and forwards every frame unchanged, refuses a call with no `team` (close 1008), and keeps no state. `VoiceLive:RelayEndpoint` set means the hosted route; empty means Voice Live directly. Both are real adapters of `IVoiceSessionFactory`. `VoiceSessionConfig` carries the team id and the session id (the hosted agent session id, so a reconnect reattaches to the same sandbox).
+- **Sessions.** `Sessions` Cosmos container, partition `/teamId`, one item per session (`ISessionItemStore`, `SessionRepository`). `SessionMigration` (run at API start by `SessionMigrationService`) moves the old `sessions.json` document and deletes it once every session is in; demo reset clears the items.
+- **State and restart.** The host holds nothing a restart could lose. `HostRestartTests` kills the host with a connection open, reads the session back from the store with its events, reconnects to the same hosted session id and continues. The gateway also reconnects on a Voice Live fault (existing `VOICE_RETRYING` path).
+- **Pre-warm.** `PrepareStandupHandler` calls `IAgentHostWarmer` (hosted: one call to the agent on the standup's session id with the team id; direct: nothing to warm) and records `HostWarmUp` on the session (route, warmed, milliseconds, note), shown in `GET /api/sessions/{id}`. "Prepare now" and the scheduler's pre-brief both go through `PrepareStandupCommand`. A failed warm-up never blocks preparing.
+- **Versions and canary.** Each `agent-host.ps1` run adds an immutable agent version. The platform refuses a percentage split on one endpoint, so the stable agent is pinned (`canary.ps1 -Pin`) and the canary is a second agent (`agent-host.ps1 -Canary`) that the API chooses per session and team (`VoiceRoute`, `VoiceLive:CanaryEndpoint`, `CanaryPercent`, `CanaryTeams`); `canary.ps1` has `-Canary`, `-Promote`, `-Rollback` and `-Show`. The warm-up route shows `hosted-canary` for canary sessions.
+- **Greenfield.** `agent-host.ps1` (postdeploy) builds the image, creates the version and assigns the agent identity Cognitive Services User and Azure AI User on the Foundry account. `main.bicep` `voiceRoute` (Direct or Hosted) sets the API's relay endpoint. The registry already gives the project identity AcrPull.
+- **Not moved (see ADR 0021).** The voice gateway, the ceremony agents, the Teams and Copilot handlers (with the 5A single sign-on) and the Activity protocol endpoint stay in the API. The host holds no Azure DevOps credential (architecture test scans `src/Zava.Scrum.AgentHost`).

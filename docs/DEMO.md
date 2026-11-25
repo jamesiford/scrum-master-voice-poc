@@ -144,3 +144,18 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 | project TimeGenerated, Type, AppDisplayName, ResourceDisplayName, ResultType, ResultDescription, ConditionalAccessStatus, CorrelationId
 | order by TimeGenerated desc
 ```
+
+## The hosted voice route, pre-warm and canary (M11 prompt 4)
+
+The voice can run through a Foundry hosted agent (a relay in front of Voice Live) or directly. Both give the same standup; the hosted route is selected by `VoiceLive__RelayEndpoint` on the API (the `voiceRoute` Bicep parameter, `Direct` or `Hosted`).
+
+1. **See which route a session used.** Prepare a standup (Prepare now, or wait for the scheduler's pre-brief). `GET /api/sessions/{id}` shows `hostWarmUp`: `{ route, warmed, milliseconds, note }`. On the hosted route `warmed` is true and `milliseconds` is the cold start the standup no longer pays (about 3.5 to 4 s); on the direct route it says there is no host to warm.
+2. **Switch the route for a demo** without a redeploy: `az containerapp update -g <rg> -n <api app> --set-env-vars "VoiceLive__RelayEndpoint=wss://<foundry>.services.ai.azure.com/api/projects/<project>/agents/zava-voice-relay/endpoint/protocols/invocations_ws"` for hosted, or `--remove-env-vars VoiceLive__RelayEndpoint` for direct. Wait for `/healthz`.
+3. **Canary a new agent version.** The platform does not allow a percentage split on one agent endpoint, so a canary is two agents and the API chooses per session (ADR 0021). First pin the stable agent so a new version does not go live by itself: `pwsh infra/hooks/canary.ps1 -Pin <version>`. Then:
+   - `pwsh infra/hooks/agent-host.ps1 -Canary` builds the candidate into the `zava-voice-relay-canary` agent;
+   - `pwsh infra/hooks/canary.ps1 -Canary -Percent 10 -Teams team-payments` sends 10 % of that team's new sessions to it (omit `-Teams` for every team; the route must be hosted);
+   - `pwsh infra/hooks/canary.ps1 -Promote` makes the canary image a new stable version, pins it and stops the canary;
+   - `pwsh infra/hooks/canary.ps1 -Rollback` is the one-step rollback (stops the canary; with no canary it pins the previous stable version);
+   - `pwsh infra/hooks/canary.ps1 -Show` prints the pin and the canary settings.
+   The API restarts onto a new revision for each change, so a change takes effect in about a minute. A session keeps its agent: the choice is a hash of the session id, and `hostWarmUp.route` shows `hosted-canary` for the sessions that went to the candidate.4. **Kill the host.** A standup survives it: the voice reconnects to the same hosted session and the session is read back from Cosmos. The one-off cold start after an idle stop (15 minutes) is about 4 s longer than a warm reconnect; pre-warm avoids it.
+5. **Measure the hop.** `dotnet run --project tools/VoiceRelayBench -- --mode paired ...` (header comment in the file) alternates direct and relayed turns; `pwsh docs/gates/m11-p4/g1.ps1` runs the gate harness on both routes with the decision model on and off.

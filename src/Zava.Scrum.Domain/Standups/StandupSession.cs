@@ -28,6 +28,7 @@ public sealed class StandupSession : AggregateRoot
         _latency = [.. s.LatencySamplesMs];
         Kind = s.Kind;
         CorrelationId = s.CorrelationId ?? Correlation.ForLegacySession(s.Id);
+        HostWarmUp = s.HostWarmUp;
     }
 
     /// <summary>Gets the session id.</summary>
@@ -38,6 +39,17 @@ public sealed class StandupSession : AggregateRoot
 
     /// <summary>Gets the correlation id (a W3C trace id) created with the session and carried through the join, each turn, the proposal, the approval, the Azure DevOps write and the outbox.</summary>
     public string CorrelationId { get; }
+
+    /// <summary>Gets the result of warming the agent host for this standup, or <see langword="null"/> when none was recorded.</summary>
+    public HostWarmUp? HostWarmUp { get; private set; }
+
+    /// <summary>Records the result of warming the agent host (ADR 0021).</summary>
+    /// <param name="warmUp">What happened.</param>
+    public void RecordHostWarmUp(HostWarmUp warmUp)
+    {
+        ArgumentNullException.ThrowIfNull(warmUp);
+        HostWarmUp = warmUp;
+    }
 
     /// <summary>Gets the ceremony this session runs.</summary>
     public CeremonyKind Kind { get; }
@@ -104,7 +116,7 @@ public sealed class StandupSession : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public StandupSessionSnapshot ToSnapshot() =>
-        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind, CorrelationId);
+        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind, CorrelationId, HostWarmUp);
 
     /// <summary>Starts the standup. A session can start once, and only after it was prepared.</summary>
     /// <param name="mode">Bridge mode.</param>

@@ -15,6 +15,7 @@ namespace Zava.Scrum.Application.Features.Standups;
 /// <param name="Attendance">Attendance by member id.</param>
 /// <param name="P50LatencyMs">Median end-of-speech to first-audio latency.</param>
 /// <param name="P95LatencyMs">95th percentile latency.</param>
+/// <param name="HostWarmUp">What warming the agent host did when the standup was prepared (route, whether it started, milliseconds), or <see langword="null"/>.</param>
 /// <param name="QuestionsAsked">Clarifying questions the agent asked.</param>
 /// <param name="StandupMinutes">Timebox for this run.</param>
 /// <param name="Kind">The ceremony.</param>
@@ -35,4 +36,5 @@ public sealed record SessionDto(
     int QuestionsAsked,
     int StandupMinutes,
     CeremonyKind Kind = CeremonyKind.DailyScrum,
-    string? CorrelationId = null);
+    string? CorrelationId = null,
+    HostWarmUp? HostWarmUp = null);

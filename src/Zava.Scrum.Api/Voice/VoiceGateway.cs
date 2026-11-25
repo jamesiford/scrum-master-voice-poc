@@ -217,7 +217,7 @@ public sealed class VoiceGateway(
 
         try
         {
-            _voice = await voiceFactory.CreateAsync(new VoiceSessionConfig(instructions.Value, tools.FacilitatorDefinitions, 600), ct);
+            _voice = await voiceFactory.CreateAsync(new VoiceSessionConfig(instructions.Value, tools.FacilitatorDefinitions, 600, _session.TeamId, _sessionId), ct);
             _instructions = instructions.Value;
         }
         catch (Exception ex) when (ex is System.Net.WebSockets.WebSocketException or HttpRequestException or Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException or InvalidOperationException)
@@ -340,7 +340,7 @@ public sealed class VoiceGateway(
         try
         {
             await Task.Delay(1500, _run);
-            _voice = await voiceFactory.CreateAsync(new VoiceSessionConfig(_instructions, tools.FacilitatorDefinitions, 600), _run);
+            _voice = await voiceFactory.CreateAsync(new VoiceSessionConfig(_instructions, tools.FacilitatorDefinitions, 600, _session.TeamId, _sessionId), _run);
             await _bridge.SendAsync(new { type = "info", code = "VOICE_RESTORED", message = "Voice Live reconnected" }, _run);
             return true;
         }

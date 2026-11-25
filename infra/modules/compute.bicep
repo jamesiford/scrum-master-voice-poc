@@ -59,6 +59,9 @@ param foundryEndpoint string
 @description('Foundry project name.')
 param foundryProjectName string
 
+@description('The invocations_ws endpoint of the hosted agent that relays to Voice Live (ADR 0021). Empty means Voice Live is called directly.')
+param voiceRelayEndpoint string = ''
+
 @secure()
 @description('Shared secret for API to bridge control calls. Generated at deployment and kept only as a Container Apps secret; nobody passes it in.')
 param bridgeApiKey string = newGuid()
@@ -118,7 +121,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { type: 'Readiness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
             { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }
           ]
-          env: [
+          env: concat([
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
             { name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED', value: 'true' }
             { name: 'Azure__TenantId', value: tenantId }
@@ -136,13 +139,14 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Foundry__ProjectEndpoint', value: 'https://${foundryName}.services.ai.azure.com/api/projects/${foundryProjectName}' }
             { name: 'Ado__Org', value: adoOrgUrl }
             { name: 'Store__Mode', value: 'Cosmos' }
+            { name: 'Cosmos__SessionsContainer', value: 'Sessions' }
             { name: 'Cosmos__Endpoint', value: cosmosEndpoint }
             { name: 'Cosmos__Database', value: cosmosDatabase }
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
-          ]
+          ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ])
         }
       ]
       // One replica: the voice gateway and the scheduler keep session state in the process. PROD: shared state and scale out.

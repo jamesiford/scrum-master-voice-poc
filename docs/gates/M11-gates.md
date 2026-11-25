@@ -204,3 +204,19 @@ Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`,
 G3 second approver without write access refused: covered by Application and Infrastructure tests (403 becomes `ado.approver_cannot_write`, nothing written); **not run live** (needs a second Entra user without project access).
 
 G3 for Teams stays open until a real user approves from a card (human gate).
+
+## Prompt 4: hosted agent (ADR 0021, ADR 0015 S6)
+
+| Item | Result |
+| --- | --- |
+| S6 relay (paired, interleaved, 64 turns per run, two runs, `docs/gates/m11-p4/s6-*.json`) | **Held.** Paired difference in turn time p50 +48.5 and +7.5 ms, p95 of the turn +230 and +178 ms (about 4 % of the baseline p95). Barge-in not slowed. New hosted session connect +2.4 s, first reconnect after the 15-minute idle stop +4 s (6.8 s). Written into ADR 0015 S6. |
+| 0a one Cosmos item per session, partitioned by team, with migration | **Done.** `Sessions` container in Bicep; `SessionMigration` at API start; deployed in `zavaw3`, `verify.ps1` 7 of 7 through the new store. Unit tests for migration, idempotence, per-team items and reset. |
+| Hosted agent and voice relay (`src/Zava.Scrum.AgentHost`), port 8088, `invocations_ws`, team required | **Done and deployed** (agent versions 1 to 4, canary agent version 1). |
+| Voice gateway, ceremony agents, Teams and Copilot handlers moved into the host | **Not done** (ADR 0021, "Not moved"). |
+| Kill the host mid-standup and resume (step 2) | **Test passes** (`HostRestartTests`, loopback sockets). Not run against a real platform stop of the relay carrying a standup. |
+| Pre-warm and the result on the session (step 3) | **Done, deployed.** 3585 ms cold, 2320 ms on a new session of a running agent; `hostWarmUp` in `GET /api/sessions/{id}`. |
+| Versions and rollout (step 4) | **Done with a difference.** The platform refuses a percentage split on one endpoint; canary is two agents chosen per session and team. Live: 50 % canary gave 8 of 14 sessions to the canary (the rest before the revision rolled over), rollback gave 8 of 8 stable once the revision settled. |
+| azd and Bicep (step 6) | Hook, roles, `voiceRoute`, `Sessions` container added; `azd up` and two `azd deploy` ran in `zavaw3`. Destroy and rebuild **not run**. |
+| No Azure DevOps credential in the host | **Test passes** against `src/Zava.Scrum.AgentHost`. |
+| **G1 on the hosted runtime** (three interleaved rounds, 35 to 36 turns per cell) | **p50 holds** (model on +30 ms, +0.9 %; off +65 ms, +2.1 %). **p95 with the model on does not hold:** 5679 against 4720 ms (+20 %), worse in all three rounds; with the model off hosted was lower (4251 against 4594 ms). The slowest hosted turns were orchestration outliers with normal voice latency. Stopped as the prompt requires; default stays direct; options in ADR 0021. |
+| G4 parity | Domain 397, Application 152, Infrastructure 85, Architecture 11, AgentHost 3, Api 132 pass, zero warnings. Bridge suite unchanged. The 10-step Teams rehearsal was **not run**. |

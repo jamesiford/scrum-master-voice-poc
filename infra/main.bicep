@@ -27,6 +27,13 @@ param portalClientId string = ''
 @description('Entra object id of the administrator, resolved by infra/hooks/entra-portal-app.ps1. Not a secret.')
 param adminObjectId string = ''
 
+@allowed([ 'Direct', 'Hosted' ])
+@description('How the voice gateway reaches Voice Live: directly, or through the Foundry hosted agent relay (ADR 0021). Both are real adapters of the same protocol.')
+param voiceRoute string = 'Direct'
+
+@description('The hosted agent that relays voice. Created by infra/hooks/agent-host.ps1 after deploy.')
+param agentHostName string = 'zava-voice-relay'
+
 
 @description('Deployment SKU of the realtime and live models: GlobalStandard, or DataZoneStandard to keep processing inside the data zone and use data zone quota.')
 @allowed([ 'GlobalStandard', 'DataZoneStandard' ])
@@ -129,6 +136,7 @@ module compute 'modules/compute.bicep' = {
     foundryName: foundry.outputs.accountName
     foundryEndpoint: foundry.outputs.endpoint
     foundryProjectName: foundry.outputs.projectName
+    voiceRelayEndpoint: voiceRoute == 'Hosted' ? 'wss://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}/agents/${agentHostName}/endpoint/protocols/invocations_ws' : ''
   }
 }
 

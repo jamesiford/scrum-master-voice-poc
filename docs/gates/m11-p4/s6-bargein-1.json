@@ -1,0 +1,17 @@
+{
+  "bargein": {
+    "description": "ms from sending response.cancel to the last audio frame still received (audio already in flight)",
+    "direct": {
+      "P50": 214.4,
+      "P95": 3250.2,
+      "Mean": 722.5,
+      "N": 12
+    },
+    "relay": {
+      "P50": 156.7,
+      "P95": 2104.4,
+      "Mean": 191.4,
+      "N": 12
+    }
+  }
+}

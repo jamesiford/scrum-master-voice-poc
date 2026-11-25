@@ -92,7 +92,7 @@ Two deployment facts that cost time:
 2. Wait for or ask Azure DevOps for agent identity support, then repeat this spike.
 3. Have the hosted agent act only with delegated user tokens forwarded by a backend, and use no agent-identity access to Azure DevOps. Read then needs a signed-in user, which a scheduled standup does not have.
 
-## S5, S6, S7. Media bot, voice path, board in the meeting
+## S5 and S7. Media bot and board in the meeting
 
 **Not run.** The brief says to stop at a failed spike. They also need a Windows Server VM with a public address, a Graph Communications media bot, and a live Teams meeting with real participants, none of which exist in the demo tenant. Facts from Learn that bear on them, not measured here:
 
@@ -100,13 +100,44 @@ Two deployment facts that cost time:
 - Minimum two cores, four vCPU for non-Dv2 sizes. Video encode and decode are done in software on the CPU (no GPU offload); "one or two concurrent media sessions per CPU core" is quoted for raw RGB24 or NV12 video. That is the figure S7 must replace with a measurement.
 - Supported audio formats include PCM S16LE; the 24 kHz mono rule in the repository's voice section is ours, not the platform's.
 
+## S6. The live voice path through a hosted agent (run in prompt 4, 25 November 2026)
+
+**Question.** Does relaying the Voice Live conversation through a Foundry hosted agent (`invocations_ws`) stay inside the G1 tolerance (5 % p50, 10 % p95)?
+
+**Learn checked first** (build-voice-agent, hosted-agent-contract): the route is `GET /invocations_ws`; the platform proxies the upgrade and relays text and binary frames unchanged, validates the caller's Entra token itself (the container never sees it), consumes `api-version` and the path segments and forwards other query parameters unchanged (so `team` and `model` arrive in the container), caps a frame at 1 MB and a connection at about 30 minutes (close 1001, reconnect with the same `agent_session_id`; the sandbox persists across reconnects), and reads `FOUNDRY_AGENT_SESSION_ID` or the query parameter for the session. No difference from the prompt.
+
+**Method.** `src/Zava.Scrum.AgentHost` is the smallest hosted agent: it opens a Voice Live session with the agent's own identity and forwards every frame both ways (the seed of the voice gateway; see ADR 0021). It runs in the greenfield `zavaw3` environment (westus3), version 1 (no team check yet), identity roles Cognitive Services User and Azure AI User on the Foundry account. `tools/VoiceRelayBench` drives the same Voice Live session two ways through the shipped `VoiceLiveSessionFactory`: directly, and through the relay (`VoiceLive:RelayEndpoint`). The audio is eight spoken questions synthesised with Azure Speech (24 kHz PCM16, 20 s in all, standing in for the recorded Admin lines, which are not in the repository), sent in real time as 20 ms frames, followed by silence until `speech_stopped`; then `response.create` and the wait for the first audio delta. Runs alternate by block (direct then relayed, then relayed then direct, four alternations of eight turns, so 32 turns per path, 64 per run), and the difference is taken per pair (same question, same block position). The client is a laptop outside Azure, so both paths include the same internet legs; the relayed path adds the platform gateway and the container.
+
+**Measured** (milliseconds, `docs/gates/m11-p4/s6-*.json`; failed turns 0):
+
+| | Run 1 | Run 2 |
+| --- | ---: | ---: |
+| Direct, speech end to first audio, p50 / p95 | 1904 / 2155 | 1906 / 2160 |
+| Relayed, speech end to first audio, p50 / p95 | 1968 / 2385 | 1918 / 2339 |
+| **Paired difference** (relayed minus direct), p50 / mean / p95 | **+48.5 / +70.9 / +505** | **+7.5 / +32.6 / +410** |
+| Paired difference, speech detected (`speech_started`), p50 | +16 | not recorded separately |
+| Paired difference, first audio after `response.create`, p50 / p95 | +33 / +447 | +30 / +386 |
+| Relayed p95 minus direct p95 | +230 | +178 |
+
+Run 2 overlapped with .NET builds on the same laptop, which is why it is a second sample and not a replacement. Other measurements, four alternations each:
+
+| Measurement | Direct | Relayed |
+| --- | ---: | ---: |
+| New session, connect and configure, p50 / p95 (s) | 1.9 / 2.8 | 4.3 / 5.7 |
+| Reconnect to the same session id, p50 / p95 (s) | 2.1 / 2.3 | 2.8 / 3.5 |
+| Barge-in: `response.cancel` to the last audio still received, p50 / p95 (ms, n 12) | 214 / 3250 | 157 / 2104 |
+| After 16 minutes idle (the 15-minute stop), same session id | | reconnect 6.8 s, then a normal turn (2.4 s) |
+
+**Reading.** Against the full-turn baseline of about 3.45 s p50 and 4.9 s p95, the tolerance is about 172 ms at p50 and 490 ms at p95. The hop adds 8 to 49 ms at p50 (0.2 to 1.4 %) and 178 to 230 ms to the p95 of the turn (3.6 to 4.7 %): inside both. The p95 of the paired differences (410 to 505 ms) is the tail of individual turns and sits at the edge of the p95 allowance; it comes from a few slow turns, not a shift of the distribution, and it is recorded here, not hidden. Barge-in is not slowed. The cost is at connect time: a new hosted session takes about 2.4 s longer than a direct one (the sandbox starts), and after the idle stop the first reconnect takes about 4 s longer again. That is what pre-warm (ADR 0021) removes from the standup.
+
+**Decision.** The hop holds. The relay is kept as the seed of the voice gateway and ships as an adapter selected by `VoiceLive:RelayEndpoint` (ADR 0021). A laptop is a worse client than the API in the same region, so these figures are an upper bound for the hop; the G1 gate on full standups through the API is in ADR 0021.
 ## Consequences
 
-- M11 cannot proceed as briefed. S4(a) fails, S1 shows direct publishing cannot keep the Teams identity, and S5 to S7 (media bot, voice path, board share) are still unrun. S2 is settled: stay on the Azure-managed bot and take the roster from the media bot.
+- M11 cannot proceed as briefed. S4(a) fails, S1 shows direct publishing cannot keep the Teams identity, and S5 and S7 (media bot, board share) are still unrun. S6 was run in prompt 4 and holds. S2 is settled: stay on the Azure-managed bot and take the roster from the media bot.
 - What is established: hosted agents work in West US 3 with a 4 s cold start, a persistent `$HOME`, and a WebSocket voice path that adds about 80 ms per 20 ms audio frame from a laptop (a laptop figure; it includes the public internet and is not the in-Azure figure S6 needs).
 - Clean-up done: the `s3-spike` agent was force-deleted, the `AcrPull` and `Container Registry Repository Reader` assignments on the registry were removed, the spike image repository was deleted, and the control entitlement was removed. Work item #33 created for S4(b) was destroyed. Nothing in `infra/` changed.
 
 ## What is needed to continue
 
 1. Choose how Azure DevOps writes are authored under S4: the API's managed identity (the approver named only in the comment), or the approver's delegated token through an on-behalf-of exchange (the approver is the revision author). S4(b) showed a delegated token records the person as author.
-2. For S5 to S7: a Windows Server VM in the tenant and a person or test account to join a scheduled meeting as a participant.
+2. For S5 and S7: a Windows Server VM in the tenant and a person or test account to join a scheduled meeting as a participant.

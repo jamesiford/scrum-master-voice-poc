@@ -17,6 +17,7 @@ namespace Zava.Scrum.Domain.Standups;
 /// <param name="LatencySamplesMs">End-of-speech to first-audio samples.</param>
 /// <param name="Kind">The ceremony; the daily scrum for data saved before ceremonies existed.</param>
 /// <param name="CorrelationId">The W3C trace id created with the session; derived from the session id for data saved before correlation existed.</param>
+/// <param name="HostWarmUp">The result of warming the agent host when the standup was prepared; absent for sessions saved before the hosted route.</param>
 public sealed record StandupSessionSnapshot(
     Guid Id,
     string TeamId,
@@ -33,4 +34,5 @@ public sealed record StandupSessionSnapshot(
     IReadOnlyList<StandupEvent> Events,
     IReadOnlyList<int> LatencySamplesMs,
     CeremonyKind Kind = CeremonyKind.DailyScrum,
-    string? CorrelationId = null);
+    string? CorrelationId = null,
+    HostWarmUp? HostWarmUp = null);

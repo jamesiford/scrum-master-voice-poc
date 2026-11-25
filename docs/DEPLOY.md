@@ -13,6 +13,7 @@ Set once with `azd env set`. None is a secret.
 | `ADO_ORG_URL` | yes | For example `https://dev.azure.com/your-org`. The project and seed data are created inside it. |
 | `ADMIN_UPN` | yes | The administrator. Also the calendar organiser. |
 | `REALTIME_SKU` | no | `DataZoneStandard` (default in `main.parameters.json`) or `GlobalStandard`. Global realtime quota is subscription-wide and was used by the original environment, so the default avoids it. |
+| `VOICE_ROUTE` | no | `Direct` (default) or `Hosted`: whether the API reaches Voice Live directly or through the hosted agent relay (ADR 0021). Set it before `azd provision`; the agent itself is created by `agent-host.ps1`. |
 | `CHAT_CAPACITY`, `REALTIME_CAPACITY`, `DECISION_CAPACITY` | no | Deployment capacity. Defaults 100, 10, 100. Below 100 the decision model hits its rate limit. `REALTIME_CAPACITY` applies to each model in the `realtimeModels` list in `infra/main.bicep` (default `gpt-realtime-2.1` only). Quota is one row per model, so a model you do not deploy frees nothing for another. |
 
 ```pwsh
@@ -80,6 +81,12 @@ The platform forces these. Each is named in the script output as `GATE`.
 | Admin consent for Azure DevOps | An Entra Global Administrator or Privileged Role Administrator | `entra-portal-app.ps1` grants the delegated Azure DevOps `user_impersonation` permission for the organisation. If the deployer cannot, do it in Entra admin centre > Enterprise applications > Zava Scrum Portal > Permissions > Grant admin consent. Without it every approval is refused with a consent message. |
 | Deployer Entra roles | A Privileged Role Administrator | The deployer needs Application Administrator (or Cloud Application Administrator) to create the app registration, federated credentials and consents, and Privileged Role Administrator or Global Administrator for the tenant-wide consents. Global Reader is not enough: `entra-portal-app.ps1` stops with `Authorization_RequestDenied`. |
 | Exchange calendar and mail scope | An Exchange administrator | `pwsh infra/hooks/exchange.ps1 -Mode Grant`. It gives the managed identity Application Calendars.ReadWrite and Application Mail.Send on the organiser's mailbox only (RBAC for Applications). Until then the calendar and email run on the outbox. |
+
+## The hosted agent (prompt 4)
+
+`infra/hooks/agent-host.ps1` runs in `postdeploy`: it builds `Dockerfile.agenthost` in the environment registry (`az acr build`, a small context), creates a new immutable version of the hosted agent `zava-voice-relay` (`tools/AgentDeploy`, needs the `Azure.AI.Projects` 3.0 beta) and assigns the agent's own identity Cognitive Services User and Azure AI User on the Foundry account. The agent identity exists only once the agent does, so those roles cannot be in the Bicep that runs first. The project identity already has AcrPull on the registry (the registry uses legacy permissions; Container Registry Repository Reader fails with `ImageError`). `canary.ps1` changes traffic; nothing else does. `voiceRoute=Hosted` (azd env `VOICE_ROUTE`) points the API at the agent.
+
+Human gates for the hosted agent: none new. The greenfield environment's bot id and Teams app package remain the existing gate (Teams app upload, above); the old `mcm` bot id `38a0a184` is not used. The direct Foundry publish route is not used.
 
 ## Capacity and health
 
