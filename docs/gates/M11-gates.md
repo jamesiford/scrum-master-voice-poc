@@ -76,7 +76,7 @@ Measured on the greenfield environment `zavagf` (`eastus2`), built by `azd up` f
 
 Test totals after this change: Domain 348, Application 129, Infrastructure 64, Api 26, Architecture 7; all pass. Build has no warnings.
 
-### G3: chain up to the Azure DevOps comment (passed; author attribution is prompt 5)
+### G3: chain up to the Azure DevOps comment (passed; author attribution is prompt 5A, below)
 
 - **Application tests, real mediator:** `ApprovalIdentityTests.AuditChain_StandupApprovedInTeamsAndInThePortal_IsCompleteBackToTheSession` approves one follow-up as a Teams member and one in the portal and asserts: the session, two proposals with hashes, four append-only records (Approved then Applied for each, the Applied record pointing at its decision and carrying revisions), channels Teams then Portal, and every written attribution ending `Correlation: zsa-<tag>`. Other tests prove the write is refused without a matching approval record, or if the proposal changes after approval, and that a chain with a missing link lists it.
 - **Deployed, `verify.ps1`:** all seven checks pass (`docs/gates/m11-p3-logs/verify-pass.log`), including a follow-up approved through the API with the deployer's token, the comment found on work item 1 with `Correlation: zsa-...`, and `Audit chain complete`: `zsa-31116ae1b878: approved by object id aeaec64b-d720-4996-9022-02fa0dcf043d, revision 31 on #1`. The records are read back from the Cosmos `ApprovalRecords` container.
@@ -188,3 +188,17 @@ Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`,
 | Drift | the same configuration moved about 25 % between time windows, so G1 at 5 % and 10 % cannot be re-confirmed by measurement; the default path is unchanged |
 | Deployments | `gpt-live-1` removed; mini added for the test and removed |
 | Not done | listening to audio; a longer pause test; the westus3 deployed baseline folder (closed by the owner under G8) |
+
+## 5A: delegated Azure DevOps writes (ADR 0020)
+
+| Item | Result |
+| --- | --- |
+| Rule and handlers (Domain, Application, real mediator, fakes at the ports) | **Passed.** No token, another person's token and a refused exchange are each refused before a write; an approve with no token is refused before the record is written; a retry by someone else is refused; the approver's retry writes once. |
+| Managed-identity write path | **Removed.** The only writer is built per write from the approver's token. |
+| ACS connection string | **Removed** from the bridge, docs and settings. |
+| Hooks and Bicep | Authored; `entra-post.ps1` and `entra-portal-app.ps1` parse; `main.bicep` builds. **Not run.** |
+| G3 live (approver is the author with the correlation id, portal) | **Not verified.** `azd up` in `zavaw3` stopped at `entra-portal-app.ps1` before anything was provisioned: the deployer `admin@` holds only Global Reader and the Agent ID roles, so every application update returns `Authorization_RequestDenied` (a no-op patch of the app also fails). `verify.ps1` now asserts the author, so the gate closes the first time it passes. |
+| G3 Teams | **Not verified.** Needs the Teams app upload (human gate) and a real user. |
+| Latency (G1) | **Not re-measured.** The change adds nothing to the voice turn; no numbers are claimed. |
+
+To close G3: restore Application Administrator (or Cloud Application Administrator) and Privileged Role Administrator to the deployer, then `azd up` in `zavaw3` and `pwsh infra/hooks/verify.ps1`.

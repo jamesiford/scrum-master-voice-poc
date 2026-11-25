@@ -82,7 +82,7 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - The utterance classifier recognises English phrasing; unusual wording can be missed by the rules. The M10 decision model (ADR 0014) reads ambiguous speech first and the rules remain the fallback. PROD: tune the model and the thresholds on real standups.
 - Only one API replica is supported (live state is in memory).
 - Cosmos has public network access (Entra-only) because the tenant policy blocked private defaults; PROD: private endpoint.
-- ACS uses a connection string in a secret; PROD: Entra with role assignment.
+- ACS is reached with Entra only (a role on the resource); there is no connection string or key (ADR 0020).
 - `JsonFile*` class names are historical; they sit on `ICollectionStore` (file or Cosmos).
 - Repository contract test: `SessionRepositoryContract` exists for `ISessionRepository` only and runs against the JSON-file store only; there is no Cosmos run.
 - OpenTelemetry to Application Insights is basic (requests, outgoing HTTP, one span per use case, Agent Framework model calls) and is on only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set; it has not been checked in a live Application Insights resource and has no custom metrics, sampling or bridge traces. The gateway logs one structured line per agent turn through `ILogger`.
@@ -159,7 +159,7 @@ Built in M11 prompt 3 (ADR 0017).
 - **Roster.** `Member.EntraObjectId` is resolved from the mapped UPN by Graph (`GraphIdentityDirectory`), stored by `SyncRosterCommand` and re-verified when a standup is prepared.
 - **Approval trail.** Append-only `ApprovalRecord`s (Cosmos `ApprovalRecords`, partition `/correlationId`, create and read only for the managed identity; a JSON-lines file locally): Approved or Rejected, then Applied with the Azure DevOps revisions. `ApplyApprovedChangesHandler` refuses without a matching record.
 - **Correlation.** A W3C trace id per session, carried to follow-ups, approvals, the write, cards and the gateway log scope; every Azure DevOps attribution ends with `Correlation: zsa-<12 hex>`. `GET /api/audit/{correlationId}` returns the chain and what is missing.
-- **Not built.** Author attribution in Azure DevOps revisions (prompt 5). Team-scoped roles are section 17.
+- **Author attribution.** Built in prompt 5A, section 19. Team-scoped roles are section 17.
 
 ## 17. M11: multi-team and multi-organisation
 
@@ -187,3 +187,15 @@ Built in M11 prompt 3B (ADR 0019).
 - **Models page.** Prices are `null` until set under `ModelComparison:Models`; the page shows the pricing tier and "Price unverified". `ModelCostEstimator.PerStandup` returns `null` when a price is unverified.
 - **Measurement aids.** `[pause N]` markers in cast lines (`demo/cast/payments-standup-pauses.yaml`), a `TalkOver` timing event from the voice gateway, transcripts and talk-over counts in the gate harness results, `docs/gates/m11-p3b/bench.ps1`.
 - **Known limit.** All sessions are one Cosmos item (`sessions.json`) and pass the 2 MB item limit after a few dozen standups with transcripts; one item per session is needed before many teams run for long.
+
+## 19. M11: delegated Azure DevOps writes
+
+Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live portal write, Teams single sign-on and G3 are not yet verified (the deployer lost its Entra write roles).
+
+- **Rule.** `ApproverAssertion` (Domain): the token presented at write time must be the recorded approver's (`oid` and `tid`). No token or someone else's token means no write.
+- **Ports.** `IUserAssertionAccessor` (scoped, set by the Api), `IApproverTokenSource` (on-behalf-of exchange), `IWorkItemWriter.ApplyAsync(change, target, DelegatedAdoAccess, ct)`. `DelegatedAccessProvider` is used by the apply handler and the approve handlers (follow-up and plan), so a decision that cannot be written is refused before it is recorded.
+- **Infrastructure.** `OboAdoTokenSource` (`OnBehalfOfCredential`, managed identity as the federated client assertion, no secret). `AdoClientFactory.DelegatedWriterFor` carries only the approver token; the managed-identity writer is gone. Reads, the scope check, the connection test and the demo reset stay on the managed identity.
+- **Api.** `UserAssertionMiddleware` for the portal bearer token. `ScrumAgent` approve routes use the `sso` user-authorisation handler (`autoSignInHandlers`) and `SsoToken` to read `oid` and `tid`; no connection configured means approve is refused.
+- **Bridge.** The ACS connection-string branch is removed.
+- **Hooks.** Portal app: Azure DevOps `user_impersonation` consent, `api://botid-<id>`, Teams clients pre-authorised. Post-provision: two federated credentials, the `sso` bot connection, agent settings. Teams manifest `webApplicationInfo`. `verify.ps1` checks the comment author.
+- **Known limits.** Teams SSO with a managed-identity bot id and the portal app id in `webApplicationInfo` is unverified. Every approver must be a Contributor in the Azure DevOps project. `IDemoAdoReset` still uses the managed identity (it is not an approved-change write).

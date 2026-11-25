@@ -156,7 +156,7 @@ External dependencies:
 | Services | One .NET service plus bridge plus portal | Separate orchestrator, voice gateway and session manager scaled independently; scheduler as Container Apps jobs |
 | Agent runtime | **As built:** Microsoft Agent Framework chat-client agents over the Foundry v2 SDK (`Azure.AI.Projects` 2.x, `Microsoft.Agents.AI.Foundry`) with `DefaultAzureCredential`, behind agent ports (ADR 0009b; ADR 0002 was the earlier `HttpClient` version) | Foundry hosted agents with Entra Agent ID, published to Microsoft 365 |
 | Tools | In-process C# tool classes | Scrum MCP server on Azure Functions behind API Management; Foundry Toolbox with tool policies |
-| Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | Agent identity with least privilege; on-behalf-of for user-initiated actions; Azure DevOps Remote MCP |
+| Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | **As built (M11 5A, ADR 0020):** reads on the managed identity; approved writes on-behalf-of the approver (portal bearer token, Teams single sign-on), no fallback. PROD: agent identity with least privilege (5B); Azure DevOps Remote MCP |
 | Meeting bridge | Simulated Room plus ACS Teams interop | Decision between ACS interop and Graph media bot after the PoC; Work IQ real-time transcripts in parallel |
 | Messaging | In-process channels | Service Bus and Event Grid |
 | Knowledge | Working agreements as Markdown in the repo, injected into prompts | Foundry IQ knowledge base on Azure AI Search |
