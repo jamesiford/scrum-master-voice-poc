@@ -60,7 +60,7 @@ $connection = @{
   location   = 'global'
   properties = @{
     serviceProviderId          = 'c00b44ab-5e16-c44c-af26-2fd5bc55eb18'
-    serviceProviderDisplayName = 'Azure Active Directory v2 with Federated Credentials'
+    serviceProviderDisplayName = 'Microsoft Entra ID v2 with federated credentials'
     clientId                   = $clientId
     scopes                     = "api://botid-$clientId/access_as_user"
     parameters                 = @(
@@ -76,7 +76,7 @@ $tmp = New-TemporaryFile
 az rest --method PUT --url "`"$botUrl`"" --body "@$tmp" -o none
 if ($LASTEXITCODE -ne 0) { Remove-Item $tmp; throw 'The Azure Bot OAuth connection for Teams single sign-on could not be created.' }
 Remove-Item $tmp
-Write-Check PASS 'bot OAuth connection sso' "Azure AD v2 with federated credentials, app $clientId"
+Write-Check PASS 'bot OAuth connection sso' "Entra ID v2 with federated credentials, app $clientId"
 
 # The agent signs card actions in with that connection. Auto sign-in stays off: only the approve actions ask for a token.
 $ssoEnv = @('AgentApplication__UserAuthorization__AutoSignIn=false', 'AgentApplication__UserAuthorization__Handlers__sso__Settings__AzureBotOAuthConnectionName=sso')
