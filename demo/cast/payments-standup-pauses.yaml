@@ -1,0 +1,65 @@
+# Pause variant of payments-standup.yaml (M11 prompt 3B). The three opening updates hold mid-sentence pauses of 550 and 700 ms (see [pause N] in the bridge).
+# Used to measure the voice service's silence setting: 500 ms splits both, 650 ms splits the 700 ms ones, 800 ms splits none. Select it with Demo__CastFile on the bridge.
+# Scripted participants for the Simulated Room (SPEC 7.3).
+# The first line without `when` is a member's opening update. Later lines run only when the agent's question
+# contains one of the `when` keywords (first unused match, in file order), so unrelated agent turns get no reply.
+# A line marked `otherwise: true` answers any question no `when` line matched, once. The agent words its questions
+# freely, so keep a keyword for each flagged item in the seed and an `otherwise` line for anyone who is asked.
+# Do not give a member an `otherwise` line if the agent addresses them while parking a topic. Maya's is a short closing line
+# for the agent's hand-back after the sidebar; her keyword lines match any parking prompt first, so it only runs once they are used up.
+# m-admin is normally the human presenter; those lines are used when the room runs with ?autopilot=1.
+# Nobody is absent in the script: in a real Teams meeting, anyone who does not join is marked absent.
+members:
+  - memberId: m-admin
+    voice: en-US-JennyNeural
+    turns:
+      - say: "Yesterday I finished the refund API tests. [pause 700] Today I'm still working on the payment retry story. [pause 550] No blockers."
+      # The unblocker question is answered in code by matching exactly one other roster member's name, so the answer must name one.
+      - when: ["unblock", "who can help"]
+        say: "Maya can help. She's already chasing the platform team about the sandbox, so I'll sync with her after the standup."
+      - when: ["due", "date", "overdue", "past", "load test", "thursday"]
+        say: "It slipped because the sandbox was down. I should finish it tomorrow."
+      - when: ["track", "stale", "active", "days"]
+        say: "The backoff part is done and I'm testing it now. It should be ready for review today."
+      - otherwise: true
+        say: "Yes, that's right. That's everything from me."
+    confirm: "Yes, that's right."
+  - memberId: m-maya
+    voice: en-US-AriaNeural
+    turns:
+      - say: "Yesterday I reviewed the settlement schema. Today I'm continuing the settlement file validation. [pause 550] I'm blocked on bug 12. The sandbox gateway keeps timing out, [pause 700] and I need access to the platform team's staging gateway."
+      # Naming one roster member resolves the blocker, so the agent does not ask again and moves on.
+      - when: ["unblock", "who can help", "platform", "access", "staging"]
+        say: "Daniel can help. He fixed the same gateway timeouts last sprint, so I'll pair with him on the staging access today."
+      - when: ["pci", "exception", "scan"]
+        say: "The PCI scan exceptions are waiting on the security review. I'll chase them today."
+      - when: ["schema change", "quiet"]
+        say: "The schema review is waiting on the data team. I'll finish it today."
+      # The agent hands the floor back after the parked sidebar in varying words. Closing line has no commitment, so it is not read back.
+      - otherwise: true
+        say: "That's everything from me."
+    confirm: "Yes, that's right."
+  - memberId: m-daniel
+    voice: en-US-GuyNeural
+    turns:
+      - say: "Yesterday I finished card tokenisation and shipped the payment status API version two. [pause 700] Today I'm adding idempotency keys to payment requests. [pause 550] Nothing blocking me."
+      - when: ["reconcil", "audit", "report"]
+        say: "The reconciliation report is at risk. I'll start it right after the idempotency keys, and flag it if it slips."
+      - when: ["logging", "gateway client"]
+        say: "Structured logging is nearly done. I'll finish it today."
+      - when: ["track", "still", "summary", "plan", "active", "days", "status"]
+        say: "Yes, it's on track. I'll pick the summary page back up as soon as the idempotency keys are in."
+      - when: ["slow", "risk", "way", "riskiest", "next", "step"]
+        say: "The riskiest part is how it interacts with retries, so I'll test that first."
+      - otherwise: true
+        say: "Yes, that's right. That's everything from me."
+    confirm: "Yes, that's right."
+
+# After Maya's first line, two teammates start a side discussion. Long enough to cross the parking-lot threshold.
+sidebar:
+  after: m-maya
+  lines:
+    - memberId: m-daniel
+      say: "Sorry to jump in, Maya, but we hit the same gateway timeouts last sprint when we upgraded the TLS library, and it took us days to track down."
+    - memberId: m-admin
+      say: "Right, I think the root cause was the connection pool settings, so we should compare the gateway configuration between sandbox and staging, and also check whether the sandbox certificate was rotated."
