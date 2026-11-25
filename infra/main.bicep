@@ -35,8 +35,14 @@ param realtimeSku string = 'DataZoneStandard'
 @description('Capacity (thousands of tokens per minute) of the chat model deployment.')
 param chatCapacity int = 100
 
-@description('Capacity of each realtime model deployment (gpt-realtime-2.1 and gpt-live-1).')
+@description('Capacity of each realtime model deployment in realtimeModels.')
 param realtimeCapacity int = 10
+
+@description('Realtime models deployed for Voice Live. Keep it in step with requiredModels in infra/hooks/regions.json (the preflight quota check). VoiceLive__Model must name one of these deployments. gpt-live-1 is not listed: it is a separate API surface that nothing here uses (ADR 0019).')
+param realtimeModels array = [
+  { name: 'gpt-realtime-2.1', model: 'gpt-realtime-2.1', version: '2026-07-07' }
+  { name: 'gpt-realtime-2.1-mini', model: 'gpt-realtime-2.1-mini', version: '2026-07-07' }
+]
 
 @description('Capacity of the Microsoft-Decision-1.1 deployment. A live standup needs more than 10 (rate limits are per minute); 100 was measured sufficient.')
 param decisionCapacity int = 100
@@ -82,6 +88,7 @@ module foundry 'modules/foundry.bicep' = {
     realtimeSku: realtimeSku
     chatCapacity: chatCapacity
     realtimeCapacity: realtimeCapacity
+    realtimeModels: realtimeModels
     decisionCapacity: decisionCapacity
   }
 }

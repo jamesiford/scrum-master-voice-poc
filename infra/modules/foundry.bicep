@@ -15,7 +15,7 @@ param tags object
 @description('Principal id of the user-assigned identity the apps run as.')
 param identityPrincipalId string
 
-@description('Deployment SKU of the realtime and live models.')
+@description('Deployment SKU of the realtime models.')
 param realtimeSku string
 
 @description('Chat model capacity.')
@@ -23,6 +23,9 @@ param chatCapacity int
 
 @description('Realtime model capacity.')
 param realtimeCapacity int
+
+@description('Realtime models to deploy, each with name, model and version.')
+param realtimeModels array
 
 @description('Decision model capacity.')
 param decisionCapacity int
@@ -32,12 +35,12 @@ var roleAzureAIUser = '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 
 // Model names, versions and formats are the ones measured in West US 3 (ADR 0014, ADR 0015). Deployment names are what the code and
 // appsettings.json refer to: Foundry:ReasoningDeployment, VoiceLive:Model, UtteranceAnalysis:DecisionDeployment.
-var deployments = [
-  { name: 'scrum-gpt-5.4-mini', format: 'OpenAI', model: 'gpt-5.4-mini', version: '2026-03-17', sku: 'GlobalStandard', capacity: chatCapacity }
-  { name: 'gpt-realtime-2.1', format: 'OpenAI', model: 'gpt-realtime-2.1', version: '2026-07-07', sku: realtimeSku, capacity: realtimeCapacity }
-  { name: 'gpt-live-1', format: 'OpenAI', model: 'gpt-live-1', version: '2026-09-10', sku: realtimeSku, capacity: realtimeCapacity }
-  { name: 'zava-decision', format: 'Microsoft', model: 'Microsoft-Decision-1.1', version: '1', sku: 'GlobalStandard', capacity: decisionCapacity }
-]
+var realtimeDeployments = [for m in realtimeModels: { name: m.name, format: 'OpenAI', model: m.model, version: m.version, sku: realtimeSku, capacity: realtimeCapacity }]
+var deployments = concat(
+  [{ name: 'scrum-gpt-5.4-mini', format: 'OpenAI', model: 'gpt-5.4-mini', version: '2026-03-17', sku: 'GlobalStandard', capacity: chatCapacity }],
+  realtimeDeployments,
+  [{ name: 'zava-decision', format: 'Microsoft', model: 'Microsoft-Decision-1.1', version: '1', sku: 'GlobalStandard', capacity: decisionCapacity }]
+)
 
 resource account 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
   name: 'fdy-${namePrefix}-${token}'
