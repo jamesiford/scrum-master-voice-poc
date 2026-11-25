@@ -11,7 +11,7 @@ namespace Zava.Scrum.Infrastructure.Persistence;
 /// </summary>
 public sealed class FileApprovalRecordStore(IOptions<StoreOptions> options) : IApprovalRecordStore, IDisposable
 {
-    private static readonly JsonSerializerOptions Json = JsonFile.SerializerOptions;
+    private static readonly JsonSerializerOptions Json = new(JsonFile.SerializerOptions) { WriteIndented = false }; // one record per line
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly string _path = Path.Combine(options.Value.DataPath, "approval-records.jsonl");
 
