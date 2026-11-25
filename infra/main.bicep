@@ -38,10 +38,9 @@ param chatCapacity int = 100
 @description('Capacity of each realtime model deployment in realtimeModels.')
 param realtimeCapacity int = 10
 
-@description('Realtime models deployed for Voice Live. Keep it in step with requiredModels in infra/hooks/regions.json (the preflight quota check). VoiceLive__Model must name one of these deployments. gpt-live-1 is not listed: it is a separate API surface that nothing here uses (ADR 0019).')
+@description('Realtime models deployed for Voice Live. Keep it in step with requiredModels in infra/hooks/regions.json (the preflight quota check). VoiceLive__Model must name one of these deployments. gpt-live-1 and gpt-realtime-2.1-mini are not listed: the first is a separate API surface that nothing here uses, the second was measured and rejected (ADR 0019). To test another model, add it here and to requiredModels in regions.json.')
 param realtimeModels array = [
   { name: 'gpt-realtime-2.1', model: 'gpt-realtime-2.1', version: '2026-07-07' }
-  { name: 'gpt-realtime-2.1-mini', model: 'gpt-realtime-2.1-mini', version: '2026-07-07' }
 ]
 
 @description('Capacity of the Microsoft-Decision-1.1 deployment. A live standup needs more than 10 (rate limits are per minute); 100 was measured sufficient.')

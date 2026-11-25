@@ -7,7 +7,6 @@
   "requiredModels": [
     { "deployment": "scrum-gpt-5.4-mini", "name": "gpt-5.4-mini", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-5.4-mini", "sku": "GlobalStandard", "capacityParam": "CHAT_CAPACITY", "capacityDefault": 100 },
     { "deployment": "gpt-realtime-2.1", "name": "gpt-realtime-2.1", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-realtime-2.1", "sku": "{realtimeSku}", "capacityParam": "REALTIME_CAPACITY", "capacityDefault": 10 },
-    { "deployment": "gpt-realtime-2.1-mini", "name": "gpt-realtime-2.1-mini", "format": "OpenAI", "usage": "OpenAI.{sku}.gpt-realtime-2.1-mini", "sku": "{realtimeSku}", "capacityParam": "REALTIME_CAPACITY", "capacityDefault": 10 },
     { "deployment": "zava-decision", "name": "Microsoft-Decision-1.1", "format": "Microsoft", "usage": "AIServices.{sku}.Microsoft-Decision-1.1", "sku": "GlobalStandard", "capacityParam": "DECISION_CAPACITY", "capacityDefault": 100 }
   ],
   "resourceProviders": [
