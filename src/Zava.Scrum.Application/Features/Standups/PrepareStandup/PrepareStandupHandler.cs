@@ -19,6 +19,7 @@ internal sealed class PrepareStandupHandler(
     IWorkItemReader reader,
     IBacklogRiskAgent agent,
     ISessionRepository sessions,
+    IAgentHostWarmer warmer,
     IPublisher publisher,
     IClock clock) : IRequestHandler<PrepareStandupCommand, Result<Guid>>
 {
@@ -58,6 +59,10 @@ internal sealed class PrepareStandupHandler(
         brief = await ApplySuggestionsAsync(brief, sprint.Value, ct);
 
         var session = StandupSession.Prepare(Guid.NewGuid(), team.Id, now, brief);
+
+        // Start the host now, while the pre-brief is fresh, so the standup does not pay the cold start. A failed warm-up never blocks preparing.
+        var warm = await warmer.WarmAsync(team.Id, session.Id, ct);
+        session.RecordHostWarmUp(new HostWarmUp(warm.Route, warm.Warmed, warm.Milliseconds, clock.UtcNow, warm.Note));
         await sessions.SaveAsync(session, ct);
         await session.PublishEventsAsync(publisher, ct);
         return Result<Guid>.Success(session.Id);

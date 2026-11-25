@@ -18,6 +18,8 @@ public sealed class PrepareStandupHandlerTests
     private static readonly DateTimeOffset Now = new(2026, 1, 8, 10, 0, 0, TimeSpan.Zero);
     private static readonly Team Team = new("t1", "Payments", "UTC", 15, new AdoSettings("o", "p", "t", "a"), new TeamBehaviours(), "Goal");
 
+    private static readonly RecordingWarmer Warmer = new();
+
     private static readonly Member[] Roster = [new("m1", "t1", "priya", "Priya", null, "PREE-ya", 1, true)];
 
     private static WorkItem Story(int id, double daysInState) =>
@@ -50,11 +52,35 @@ public sealed class PrepareStandupHandlerTests
         services.AddSingleton<ISessionRepository>(sessions);
         services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(sprint));
         services.AddSingleton<IBacklogRiskAgent>(new FakeBacklogRiskAgent(suggestion));
+        services.AddSingleton<IAgentHostWarmer>(Warmer);
         services.AddSingleton<IClock>(new FixedClock(Now));
         services.AddSingleton<ITeamsMessenger>(new RecordingTeamsMessenger());
         await using var sp = services.BuildServiceProvider();
         var result = await sp.GetRequiredService<ISender>().Send(new PrepareStandupCommand("t1"));
         return (result, sessions);
+    }
+
+    [Fact]
+    public async Task Send_HostedRoute_WarmsTheHostForThisTeamAndSessionAndRecordsTheResultOnTheSession()
+    {
+        Warmer.Next = new HostWarmResult("hosted", true, 3412);
+
+        var (result, sessions) = await RunAsync(Roster, Result<SprintSnapshot>.Success(Sprint()), null);
+
+        var session = (await sessions.GetAsync(result.Value, CancellationToken.None))!;
+        Assert.Equal(new HostWarmUp("hosted", true, 3412, Now), session.HostWarmUp);
+        Assert.Equal(("t1", session.Id), Warmer.LastCall);
+    }
+
+    [Fact]
+    public async Task Send_WarmUpFails_StillPreparesAndRecordsWhy()
+    {
+        Warmer.Next = new HostWarmResult("hosted", false, 10000, "timed out");
+
+        var (result, sessions) = await RunAsync(Roster, Result<SprintSnapshot>.Success(Sprint()), null);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("timed out", (await sessions.GetAsync(result.Value, CancellationToken.None))!.HostWarmUp!.Note);
     }
 
     [Fact]
@@ -132,5 +158,19 @@ public sealed class PrepareStandupHandlerTests
         var m = (await sessions.GetAsync(result.Value, CancellationToken.None))!.PreBrief!.Members.Single();
         Assert.Equal(2, Assert.Single(m.PreviousCommitments!).StandupsAgo);
         Assert.Contains(Flag.MissedCommitment, m.Items.Single().Flags);
+    }
+}
+
+/// <summary>Records the warm-up call and returns what the test sets.</summary>
+internal sealed class RecordingWarmer : IAgentHostWarmer
+{
+    public HostWarmResult Next { get; set; } = new("direct", false, 0, "no host to warm");
+
+    public (string TeamId, Guid SessionId) LastCall { get; private set; }
+
+    public Task<HostWarmResult> WarmAsync(string teamId, Guid sessionId, CancellationToken ct)
+    {
+        LastCall = (teamId, sessionId);
+        return Task.FromResult(Next);
     }
 }
