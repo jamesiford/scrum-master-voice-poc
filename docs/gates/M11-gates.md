@@ -155,3 +155,16 @@ Realtime capacity is the limit. Request, in westus3 (and the chosen production r
 ### Note: bridge health timeout in the first westus3 verify run
 
 The bridge /healthz route does no slow work and no browser work (Chromium launches lazily on the first Teams join, not at start). Probed afterwards it answered 200 in about 0.5 s each time (five probes). The failing check ran about a minute after the new bridge revision was created, so the replica was most likely still starting; this is a hypothesis, not proven. Changes: HTTP startup, readiness and liveness probes on /healthz for both apps, and erify.ps1 retries the health routes for up to three minutes. The G8 rebuild runs erify.ps1 immediately after zd up and will show whether the timeout recurs.
+
+## G8: destroy and rebuild in westus3 (zavaw3): IN PROGRESS, blocked
+
+Build 631f61e, clean tree, REALTIME_CAPACITY=5, REALTIME_SKU=GlobalStandard.
+
+| Step | Result | Time |
+| --- | --- | --- |
+| First zd up (earlier, build c3083b7) | passed | 14m30s |
+| First erify.ps1 (build c3083b7) | 6 of 7 passed; bridge health timed out (see note above) | about 4 min |
+| zd down --purge (run 1) | passed | 27m09s |
+| zd up (run 1, build 631f61e) | **failed in preflight after 56 s**: the Microsoft Graph token was challenged (TokenCreatedWithOutdatedPolicies, continuous access evaluation, interaction required). Nothing was provisioned. | 56 s |
+
+This needs an interactive z logout; az login by the signed-in administrator. It is not a template or code failure. The sequence (zd up, erify.ps1, zd down --purge, zd up, erify.ps1) and the westus3 deployed baseline are therefore **not done**; the environment is currently torn down. G8 stays "first azd up, deploy and verify passed; destroy-and-rebuild pending".
