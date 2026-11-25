@@ -32,6 +32,7 @@ internal sealed class GetSessionHandler(ISessionRepository sessions) : IRequestH
             s.Events.Count(e => e.Type == StandupEventType.Question),
             s.StandupMinutes,
             s.Kind,
-            s.CorrelationId));
+            s.CorrelationId,
+            s.HostWarmUp));
     }
 }

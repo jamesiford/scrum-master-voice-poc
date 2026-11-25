@@ -69,6 +69,7 @@ public sealed class PrepareStandupHandlerTests
 
         var session = (await sessions.GetAsync(result.Value, CancellationToken.None))!;
         Assert.Equal(new HostWarmUp("hosted", true, 3412, Now), session.HostWarmUp);
+        Assert.Equal(session.HostWarmUp, session.ToSnapshot().HostWarmUp);
         Assert.Equal(("t1", session.Id), Warmer.LastCall);
     }
 
