@@ -132,3 +132,22 @@ Raw JSON and `summary.md` are in `docs/gates/baseline-M10-deployed/` (three runs
 | Voice Live first audio | 1440 / 2584 | 1381 / 1894 |
 
 Against the local baseline (3827 / 3116 ms p50) the deployed runtime is faster, and the decision model adds about 0.17 s at p50 (2994 against 2828 ms) rather than 0.7 s.
+
+## G9: concurrent standups across teams (westus3, `zavaw3`, build c3083b7)
+
+Three Simulated Room standups ran at the same time through `tools/GateRunner --teams team-payments,team-g9-b,team-g9-c --check-audit`. The two extra teams were registered through the team registry API as copies of team-payments (same Azure DevOps project and area) and set Active. Ten teams were not run live (decision: three prove concurrency; realtime quota in westus3 is 5 per model).
+
+| Measure | Result |
+| --- | --- |
+| Concurrent standups | 3, all completed, 379 s wall clock |
+| Timed turns | 36 (12 per standup) |
+| Total p50 / p95 | 3400 ms / 4919 ms |
+| Single-standup verify run, same environment | p50 3439 ms / p95 4400 ms (10 turns) |
+| API-reported session p50 | 3544, 3262, 3492 ms |
+| Audit chain per team | complete (session, proposal, approval record), 3 of 3 |
+
+Raw results: `docs/gates/g9-three-concurrent-westus3/`. Not shown by this run: cross-team isolation under load beyond the audit chains, and real Teams or Voice Live capacity beyond three sessions.
+
+### Quota request for ten concurrent standups (to be filed by a subscription owner)
+
+Realtime capacity is the limit. Request, in westus3 (and the chosen production region): `gpt-realtime-2.1` and `gpt-live-1`, GlobalStandard, raise from 5 to at least 10 each (one deployment slot per concurrent standup was assumed; measure before relying on it). Parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: not yet filed.
