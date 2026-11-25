@@ -58,6 +58,7 @@ if (!string.IsNullOrWhiteSpace(tunnelSuffix))
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<UserAssertionMiddleware>();
 app.UseWebSockets();
 // The portal build is copied to wwwroot in the container (M7); locally Vite serves it.
 app.UseDefaultFiles();

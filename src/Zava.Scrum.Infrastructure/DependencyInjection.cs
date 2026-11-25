@@ -99,7 +99,7 @@ public static class DependencyInjection
         // Team:HasSprintReview is a team setting (Rajeev has not confirmed a review), so it is read from the Team section, not Calendar.
         services.AddOptions<CalendarOptions>()
             .Bind(configuration.GetSection(CalendarOptions.SectionName))
-            .Configure(o => o.HasSprintReview = configuration.GetValue<bool>("Team:HasSprintReview"))
+            .Configure<IConfiguration>((o, configuration) => o.HasSprintReview = configuration.GetValue<bool>("Team:HasSprintReview"))
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton<ICalendarSettings>(sp => sp.GetRequiredService<IOptions<CalendarOptions>>().Value);
@@ -159,6 +159,8 @@ public static class DependencyInjection
         });
     }
 
+    private static string? FirstSet(params string?[] values) => values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
+
     private static void AddOptions<T>(IServiceCollection services, IConfiguration configuration, string section)
         where T : class
     {
@@ -175,6 +177,14 @@ public static class DependencyInjection
         services.AddSingleton<IIterationReader>(sp => sp.GetRequiredService<RoutedWorkItemReader>());
         services.AddSingleton<IBacklogReader>(sp => sp.GetRequiredService<RoutedWorkItemReader>());
         services.AddSingleton<IWorkItemWriter, RoutedWorkItemWriter>();
+        services.AddOptions<Delegation.DelegationOptions>().Configure<IConfiguration>((o, configuration) =>
+        {
+            configuration.GetSection(Delegation.DelegationOptions.SectionName).Bind(o);
+            o.TenantId = FirstSet(o.TenantId, IdentityOptions.ResolveTenant(configuration));
+            o.ClientId = FirstSet(o.ClientId, configuration["Portal:ClientId"]);
+            o.ManagedIdentityClientId = FirstSet(o.ManagedIdentityClientId, configuration["AZURE_CLIENT_ID"]);
+        });
+        services.AddSingleton<IApproverTokenSource, Delegation.OboAdoTokenSource>();
         services.AddSingleton<IDemoAdoReset, RoutedDemoReset>();
         services.AddSingleton<IWorkItemScopeReader, AdoWorkItemScopeReader>();
         services.AddSingleton<IAdoConnectionTester, AdoConnectionTester>();

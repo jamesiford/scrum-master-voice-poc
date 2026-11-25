@@ -41,14 +41,22 @@ public sealed class AdoClientFactoryTests
     public void For_NothingIsCreatedUntilAnOrganisationIsUsed() => Assert.Equal(0, NewFactory().OrganisationCount);
 
     [Fact]
-    public void ReaderAndWriter_AreCachedPerOrganisation()
+    public void Reader_IsCachedPerOrganisation()
     {
         using var factory = NewFactory();
 
         Assert.Same(factory.ReaderFor(OrgA), factory.ReaderFor(OrgA));
         Assert.NotSame(factory.ReaderFor(OrgA), factory.ReaderFor(OrgB));
-        Assert.Same(factory.WriterFor(OrgB), factory.WriterFor(OrgB));
-        Assert.NotSame(factory.WriterFor(OrgA), factory.WriterFor(OrgB));
+    }
+
+    [Fact]
+    public void DelegatedWriterFor_CarriesOnlyTheApproversToken_SoThereIsNoCachedWriterToFallBackOn()
+    {
+        using var factory = NewFactory();
+
+        Assert.NotSame(factory.DelegatedWriterFor(OrgA, "token-for-ana"), factory.DelegatedWriterFor(OrgA, "token-for-ben"));
+        Assert.Throws<ArgumentException>(() => factory.DelegatedWriterFor(OrgA, " "));
+        Assert.Throws<ArgumentException>(() => factory.DelegatedWriterFor("https://evil.example.com/x", "token"));
     }
 
     [Theory]

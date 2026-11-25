@@ -12,7 +12,7 @@ namespace Zava.Scrum.Infrastructure.Ado;
 /// unauthenticated one, so a foreign organisation is recognised before any credential is sent to it.
 /// </summary>
 /// <remarks>VERIFY: the header was observed on an unauthenticated request to https://dev.azure.com/{org} (401 with X-VSS-ResourceTenant); it is not in a Learn reference page.</remarks>
-public sealed class AdoConnectionTester(IAdoClientFactory factory, IHttpClientFactory anonymous, ILogger<AdoConnectionTester> logger) : IAdoConnectionTester
+internal sealed class AdoConnectionTester(IAdoClientFactory factory, IHttpClientFactory anonymous, ILogger<AdoConnectionTester> logger) : IAdoConnectionTester
 {
     private const string Version = "api-version=7.1";
 

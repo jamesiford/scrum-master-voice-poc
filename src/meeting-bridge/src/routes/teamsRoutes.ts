@@ -30,7 +30,8 @@ export class TeamsRoutes {
     if (!this.acs)
       return sendJson(res, 503, {
         error: 'acs_not_configured',
-        detail: 'Set ACS_CONNECTION_STRING or Acs__Endpoint on the bridge.',
+        detail:
+          'Set Acs__Endpoint on the bridge (it signs in to Azure Communication Services with Entra; there is no connection string).',
       });
     sendJson(res, 200, await this.acs.issue());
   }

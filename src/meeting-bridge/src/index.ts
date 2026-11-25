@@ -15,7 +15,7 @@ const cast = new CastRoutes(
 );
 const teams = new TeamsRoutes(
   new TeamsLauncher(`http://localhost:${config.port}`, config.chromiumPath),
-  createAcsTokenService(config.acsConnectionString, config.acsEndpoint, config.tenantId),
+  createAcsTokenService(config.acsEndpoint, config.tenantId),
   config.bridgeKey,
 );
 

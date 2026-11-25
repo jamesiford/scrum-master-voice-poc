@@ -12,7 +12,7 @@ namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Reads sprint data from Azure DevOps over REST (SPEC 9.3). Read-only; writes arrive in M3 behind the approval guard.</summary>
 /// <remarks>VERIFY: https://learn.microsoft.com/azure/devops/integrate/previous-apis/work-item-tracking (api-version 7.1).</remarks>
-public sealed class AdoRestClient(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoRestClient> logger) : IWorkItemReader, IIterationReader, IBacklogReader
+internal sealed class AdoRestClient(HttpClient http, IOptions<DemoOptions> demo, ILogger<AdoRestClient> logger) : IWorkItemReader, IIterationReader, IBacklogReader
 {
     private const string ApiVersion = "api-version=7.1";
     private const int BatchSize = 200;

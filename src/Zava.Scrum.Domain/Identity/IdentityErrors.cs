@@ -29,6 +29,12 @@ public static class IdentityErrors
     /// <summary>Gets the error for a Teams user who is neither on the roster for this follow-up nor an administrator.</summary>
     public static Error NotOnRoster { get; } = Error.Forbidden("identity.not_on_roster", "Only the person this follow-up is for, or an administrator, can decide it. Your Entra identity does not match.");
 
+    /// <summary>Gets the error for a write with no delegated token for the approver. There is no fallback to the service identity (ADR 0020).</summary>
+    public static Error DelegatedTokenRequired { get; } = Error.NotApproved("identity.delegated_token_required", "Azure DevOps is written as the approver. Sign in as the approver and apply again; nothing was written.");
+
+    /// <summary>Gets the error for a write attempted with another person's token.</summary>
+    public static Error DelegatedTokenNotApprover { get; } = Error.Forbidden("identity.delegated_token_not_approver", "Only the person who approved this follow-up can apply it, because Azure DevOps records them as the author.");
+
     /// <summary>Gets the error for a legacy follow-up with no verified identity.</summary>
     public static Error LegacyUnverified { get; } = Error.NotApproved("identity.legacy_unverified", "This follow-up was approved before identities were recorded (unverified, legacy). It is never written.");
 }

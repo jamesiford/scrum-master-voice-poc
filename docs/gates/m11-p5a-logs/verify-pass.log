@@ -1,0 +1,8 @@
+PASS  API health route  200
+PASS  Bridge health route  200
+PASS  API accepts an Entra bearer token  team team-payments
+PASS  Bot endpoint rejects unauthenticated calls  401
+PASS  Simulated Room standup with the cast (gate harness subset)  session 63f9ada6-0caf-4ae2-b449-4cd4e142973f
+PASS  Follow-up approved in the portal API and written to Azure DevOps  comment verify-78c811eb on #1 authored by admin@MngEnvMCAP763514.onmicrosoft.com (the approver), with the correlation id
+PASS  Audit chain complete (session, proposal, approval record, Azure DevOps write)  zsa-466f0ef309e5: approved by object id aeaec64b-d720-4996-9022-02fa0dcf043d, revision 43 on #1
+All checks passed.

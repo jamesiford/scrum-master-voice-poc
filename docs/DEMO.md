@@ -120,3 +120,27 @@ The portal serves every team. The switcher in the sidebar lists only the teams y
 
 ## Comparing a realtime model or the silence setting (M11 prompt 3B)
 `docs/gates/m11-p3b/bench.ps1` sets the model, the analyser mode, the silence setting and the cast on the deployed API and bridge, then runs the gate harness with three Simulated Room standups at once (one per team) and saves the results. Example: `pwsh docs/gates/m11-p3b/bench.ps1 -Configs rt21-model,rt21-rules`. The valid analyser modes are `Model` (the decision model reads each utterance) and `Rules`. `Demo__CastFile=demo/cast/payments-standup-pauses.yaml` on the bridge plays the cast with mid-sentence pauses (`[pause N]` in a line). Compare only batches run next to each other: the same configuration moved by about 25 % between time windows. `GateRunner` prints the number of times the agent spoke over a person and the transcript pieces per run. If `prepare` returns 500 after many runs, see the Cosmos item limit in `docs/gates/m11-p3b/README.md` and use `POST /api/demo/reset`.
+
+## Approving as yourself (M11 prompt 5A)
+
+An approval is written to Azure DevOps as the person who approved it, so the revision shows their name, not the service identity.
+
+1. Sign in to the portal as a person who holds the Approver role and is a Contributor of the Azure DevOps project, and approve a follow-up. In Azure DevOps the comment's author is that person, and the text ends `Correlation: zsa-<id>`.
+2. In Teams the first Approve shows a sign-in prompt once (single sign-on); press Approve again. If Teams single sign-on is not set up, Approve says so and nothing is written.
+3. If the write fails because your token was not accepted (consent, multi-factor) or you are not in the project, the follow-up stays approved and unapplied with the reason; sign in again and press Retry. Someone else pressing Retry is refused.
+4. `pwsh infra/hooks/verify.ps1` fails unless the comment author is the approver.
+
+### Entra sign-in log queries for an approval (5A)
+
+An approval produces two sign-in entries for the approver's account: the interactive sign-in to the portal (or Teams single sign-on), and a non-interactive one for the on-behalf-of exchange.
+
+- Entra admin centre > Monitoring > Sign-in logs > **User sign-ins (non-interactive)**: filter Application = `Zava Scrum Portal (<env>)`, Resource = `Azure DevOps` (499b84ac-1321-427f-aa17-267ca6975798). The row at the approval time is the exchange; a failure code here (50076 multi-factor, 53003 Conditional Access, 65001 consent) explains a refused approval.
+- Log Analytics (if sign-in logs are exported), approver and exchange:
+
+```kusto
+union SigninLogs, AADNonInteractiveUserSignInLogs
+| where TimeGenerated > ago(1h) and UserPrincipalName =~ "<approver upn>"
+| where AppDisplayName startswith "Zava Scrum Portal" and (ResourceDisplayName == "Azure DevOps" or ResourceDisplayName startswith "Zava Scrum Portal")
+| project TimeGenerated, Type, AppDisplayName, ResourceDisplayName, ResultType, ResultDescription, ConditionalAccessStatus, CorrelationId
+| order by TimeGenerated desc
+```

@@ -1,6 +1,7 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Application.Features.Teams;
 using Zava.Scrum.Domain.FollowUps;
 using Zava.Scrum.Domain.Teams;
@@ -13,7 +14,7 @@ namespace Zava.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
 /// unless the approval record exists and its proposal hash matches the follow-up, so no write is ever ahead of or different from
 /// its audit trail (ADR 0017); afterwards it appends the record of what was written.
 /// </summary>
-internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps, ITeamRepository teams, IWorkItemScopeReader scope, IWorkItemWriter writer, IApprovalRecordStore records, IPublisher publisher, IClock clock) : IRequestHandler<ApplyApprovedChangesCommand, Result>
+internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps, ITeamRepository teams, IWorkItemScopeReader scope, IWorkItemWriter writer, DelegatedAccessProvider delegated, IApprovalRecordStore records, IPublisher publisher, IClock clock) : IRequestHandler<ApplyApprovedChangesCommand, Result>
 {
     public async Task<Result> Handle(ApplyApprovedChangesCommand request, CancellationToken ct)
     {
@@ -41,6 +42,17 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
             return Result.Failure(FollowUpErrors.ApprovalRecordMissing);
         }
 
+        // The write is made as the approver, with their own token, and never with the service identity (ADR 0020). Refusing here leaves
+        // the follow-up approved and unapplied, so the approver can retry after signing in.
+        var access = await delegated.AcquireAsync(decision.Actor, ct);
+        if (!access.IsSuccess)
+        {
+            followUp.MarkApplyFailed(access.Error!.Message);
+            await followUps.SaveAsync(followUp, ct);
+            return Result.Failure(access.Error);
+        }
+
+        var context = new DelegatedWriteContext(decision.Actor, _ => Task.FromResult(access));
         var team = await teams.GetAsync(followUp.TeamId, ct);
         if (team is null)
         {
@@ -60,7 +72,7 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
         var revisions = new List<AdoRevision>();
         foreach (var change in changes.Value)
         {
-            var written = await writer.ApplyAsync(change, team.Ado, ct);
+            var written = await writer.ApplyAsync(change, team.Ado, context, ct);
             if (!written.IsSuccess)
             {
                 followUp.MarkApplyFailed(written.Error!.Message);
@@ -111,4 +123,5 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
         }
 
         return Result.Success();
-    }}
+    }
+}

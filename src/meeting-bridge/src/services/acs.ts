@@ -11,24 +11,21 @@ export interface AcsTokenService {
 }
 
 /**
- * Creates the token service. A connection string (Container Apps secret) wins; otherwise the endpoint is used with Entra.
- * @param connectionString - `ACS_CONNECTION_STRING`.
+ * Creates the token service. It signs in with Entra (the app's managed identity holds a role on the Communication Services resource), so no
+ * ACS access key or connection string exists anywhere in the deployment (ADR 0020).
  * @param endpoint - `Acs__Endpoint`.
  * @param tenantId - Entra tenant to sign in to.
  * @returns The service, or `undefined` when ACS is not configured.
  */
 export function createAcsTokenService(
-  connectionString: string | undefined,
   endpoint: string | undefined,
   tenantId: string | undefined,
 ): AcsTokenService | undefined {
-  // PROD: use the Entra path only, with a role assignment, and drop the connection string.
-  const client = connectionString
-    ? new CommunicationIdentityClient(connectionString)
-    : endpoint
-      ? new CommunicationIdentityClient(endpoint, new DefaultAzureCredential({ tenantId }))
-      : undefined;
-  if (!client) return undefined;
+  if (!endpoint) return undefined;
+  const client = new CommunicationIdentityClient(
+    endpoint,
+    new DefaultAzureCredential({ tenantId }),
+  );
   return {
     async issue() {
       const { user, token, expiresOn } = await client.createUserAndToken(['voip']);

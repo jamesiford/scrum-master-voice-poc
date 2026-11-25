@@ -12,7 +12,7 @@ namespace Zava.Scrum.Infrastructure.Ado;
 /// Reads the work tracker for whichever organisation the team belongs to. It holds no organisation of its own: each call takes the
 /// team and goes to <c>team.Ado.Org</c> through the factory (ADR 0018).
 /// </summary>
-public sealed class RoutedWorkItemReader(IAdoClientFactory factory) : IWorkItemReader, IIterationReader, IBacklogReader
+internal sealed class RoutedWorkItemReader(IAdoClientFactory factory) : IWorkItemReader, IIterationReader, IBacklogReader
 {
     /// <inheritdoc />
     public Task<Result<SprintSnapshot>> GetCurrentSprintAsync(Team team, CancellationToken ct) => Reader(team).GetCurrentSprintAsync(team, ct);
@@ -33,19 +33,28 @@ public sealed class RoutedWorkItemReader(IAdoClientFactory factory) : IWorkItemR
     }
 }
 
-/// <summary>Writes an approved change to the organisation of the team it belongs to.</summary>
-public sealed class RoutedWorkItemWriter(IAdoClientFactory factory) : IWorkItemWriter
+/// <summary>Writes an approved change to the organisation of the team it belongs to, as the approver (ADR 0020).</summary>
+internal sealed class RoutedWorkItemWriter(IAdoClientFactory factory) : IWorkItemWriter
 {
     /// <inheritdoc />
-    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, CancellationToken ct)
+    public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(target);
-        return factory.WriterFor(target.Org).ApplyAsync(change, ct);
+        ArgumentNullException.ThrowIfNull(context);
+        return ApplyAsDelegateAsync(change, target, context, ct);
+    }
+
+    private async Task<Result<WorkItemRevision>> ApplyAsDelegateAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
+    {
+        var access = await context.GetAccessAsync(ct);
+        return access.IsSuccess
+            ? await factory.DelegatedWriterFor(target.Org, access.Value.AccessToken).ApplyAsync(change, ct)
+            : Result<WorkItemRevision>.Failure(access.Error!);
     }
 }
 
 /// <summary>Removes the agent's comments in the team's project, in the team's organisation.</summary>
-public sealed class RoutedDemoReset(IAdoClientFactory factory) : IDemoAdoReset
+internal sealed class RoutedDemoReset(IAdoClientFactory factory) : IDemoAdoReset
 {
     /// <inheritdoc />
     public Task<int> RemoveAgentCommentsAsync(AdoSettings ado, CancellationToken ct)
@@ -56,7 +65,7 @@ public sealed class RoutedDemoReset(IAdoClientFactory factory) : IDemoAdoReset
 }
 
 /// <summary>Reads where a work item lives, so a write aimed at another team's item can be refused (<see cref="WorkItemScope"/>).</summary>
-public sealed class AdoWorkItemScopeReader(IAdoClientFactory factory) : IWorkItemScopeReader
+internal sealed class AdoWorkItemScopeReader(IAdoClientFactory factory) : IWorkItemScopeReader
 {
     /// <inheritdoc />
     public async Task<Result<WorkItemLocation>> GetLocationAsync(AdoSettings ado, int workItemId, CancellationToken ct)

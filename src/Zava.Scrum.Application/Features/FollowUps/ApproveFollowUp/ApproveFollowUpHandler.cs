@@ -10,7 +10,7 @@ namespace Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 /// Authorises, approves, saves and appends the approval record; the raised <c>FollowUpApproved</c> event then triggers the Azure DevOps
 /// write. The record is appended before the event is published, so a write can never be ahead of its audit trail.
 /// </summary>
-internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, ApprovalGate gate, IApprovalRecordStore records, IPublisher publisher, IClock clock) : IRequestHandler<ApproveFollowUpCommand, Result>
+internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, ApprovalGate gate, DelegatedAccessProvider delegated, IApprovalRecordStore records, IPublisher publisher, IClock clock) : IRequestHandler<ApproveFollowUpCommand, Result>
 {
     public async Task<Result> Handle(ApproveFollowUpCommand request, CancellationToken ct)
     {
@@ -25,6 +25,16 @@ internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, Appr
         if (!allowed.IsSuccess)
         {
             return allowed;
+        }
+
+        // A decision that cannot be written as the approver is refused now, so nothing is left approved but unwritable (ADR 0020).
+        if (followUp.Changes.Count > 0)
+        {
+            var access = await delegated.AcquireAsync(decision.Actor, ct);
+            if (!access.IsSuccess)
+            {
+                return Result.Failure(access.Error!);
+            }
         }
 
         var now = clock.UtcNow;

@@ -13,7 +13,8 @@ public interface IWorkItemWriter
     /// <summary>Applies one approved change and records who approved it.</summary>
     /// <param name="change">The change.</param>
     /// <param name="target">The team's Azure DevOps connection the change is written to.</param>
+    /// <param name="context">The approver and their delegated token provider, so the revision is authored by the approver (ADR 0020).</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The revision the write produced, or an <see cref="ErrorType.ExternalRejected"/> failure.</returns>
-    Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, CancellationToken ct);
+    Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct);
 }

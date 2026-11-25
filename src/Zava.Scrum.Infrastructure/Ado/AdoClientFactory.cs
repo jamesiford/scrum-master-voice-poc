@@ -8,7 +8,7 @@ using Zava.Scrum.Infrastructure.Http;
 namespace Zava.Scrum.Infrastructure.Ado;
 
 /// <summary>Gives each Azure DevOps organisation its own <see cref="HttpClient"/> and credential (ADR 0018).</summary>
-public interface IAdoClientFactory
+internal interface IAdoClientFactory
 {
     /// <summary>Gets the client for an organisation, created on first use and cached.</summary>
     /// <param name="organisationUrl">The organisation URL; normalised, and refused unless it is a Microsoft-hosted Azure DevOps address.</param>
@@ -20,10 +20,11 @@ public interface IAdoClientFactory
     /// <returns>The reader, cached with its client.</returns>
     AdoRestClient ReaderFor(string organisationUrl);
 
-    /// <summary>Gets the work item writer for an organisation.</summary>
+    /// <summary>Gets a work item writer that calls the organisation with one person's own access token.</summary>
     /// <param name="organisationUrl">The organisation URL.</param>
-    /// <returns>The writer, cached with its client.</returns>
-    AdoWorkItemWriter WriterFor(string organisationUrl);
+    /// <param name="accessToken">The approver's delegated Azure DevOps token. It is used for this writer only and is never cached.</param>
+    /// <returns>A writer for one write; dispose nothing, it shares the factory's connection pool.</returns>
+    AdoWorkItemWriter DelegatedWriterFor(string organisationUrl, string accessToken);
 }
 
 /// <summary>
@@ -36,13 +37,13 @@ public interface IAdoClientFactory
 /// <param name="demo">Demo options.</param>
 /// <param name="loggers">Logger factory.</param>
 /// <param name="transport">Creates the innermost handler; <see langword="null"/> uses the network. Tests pass a fake here.</param>
-/// <remarks>PROD (prompt 5): writes use the approver's delegated token against the team's organisation.</remarks>
-public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
+/// <remarks>Writes never use this credential: <see cref="DelegatedWriterFor"/> carries the approver's own token (ADR 0020).</remarks>
+internal sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
 {
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
     private readonly ConcurrentDictionary<string, Lazy<HttpClient>> _clients = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, Lazy<AdoRestClient>> _readers = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, Lazy<AdoWorkItemWriter>> _writers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Lazy<HttpMessageHandler> _delegatedTransport = new(() => transport?.Invoke() ?? new SocketsHttpHandler());
 
     /// <inheritdoc />
     public HttpClient For(string organisationUrl) => _clients.GetOrAdd(Normalise(organisationUrl), Create).Value;
@@ -55,10 +56,13 @@ public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOpt
     }
 
     /// <inheritdoc />
-    public AdoWorkItemWriter WriterFor(string organisationUrl)
+    public AdoWorkItemWriter DelegatedWriterFor(string organisationUrl, string accessToken)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(accessToken);
         var org = Normalise(organisationUrl);
-        return _writers.GetOrAdd(org, o => new Lazy<AdoWorkItemWriter>(() => new AdoWorkItemWriter(For(o), demo, loggers.CreateLogger<AdoWorkItemWriter>()))).Value;
+        var client = new HttpClient(_delegatedTransport.Value, disposeHandler: false) { BaseAddress = new Uri(org + "/"), Timeout = TimeSpan.FromSeconds(100) };
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        return new AdoWorkItemWriter(client, demo, loggers.CreateLogger<AdoWorkItemWriter>());
     }
 
     /// <summary>Gets how many organisations have a client (for tests and diagnostics).</summary>
@@ -70,6 +74,11 @@ public sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOpt
         foreach (var client in _clients.Values.Where(c => c.IsValueCreated))
         {
             client.Value.Dispose();
+        }
+
+        if (_delegatedTransport.IsValueCreated)
+        {
+            _delegatedTransport.Value.Dispose();
         }
     }
 

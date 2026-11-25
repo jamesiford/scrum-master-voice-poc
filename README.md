@@ -84,7 +84,7 @@ Runbook and storyboard: [docs/DEMO.md](docs/DEMO.md).
 - The utterance classifier recognises English phrasing; unusual wording can be missed.
 - Only one API replica is supported (live state is in memory).
 - Cosmos has public network access (Entra-only) because the tenant policy blocked private defaults.
-- ACS uses a connection string in a secret.
+- ACS is reached with Entra only; there is no connection string.
 - `JsonFile*` class names are historical; they sit on `ICollectionStore` (file or Cosmos).
 - `SessionRepositoryContract` exists for `ISessionRepository` only and runs against the JSON-file store only; there is no Cosmos run.
 - OpenTelemetry to Application Insights is basic and on only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set; it has not been checked in a live Application Insights resource.

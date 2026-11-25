@@ -60,7 +60,13 @@ Check 'Follow-up approved in the portal API and written to Azure DevOps' {
   $project = (Get-Content (Join-Path $PSScriptRoot '../../demo/seed-ado.json') -Raw | ConvertFrom-Json).project
   for ($i = 0; $i -lt 6; $i++) {
     $c = Invoke-RestMethod "https://dev.azure.com/$org/$project/_apis/wit/workItems/1/comments?api-version=7.1-preview.4" -Headers $h
-    if ($c.comments | Where-Object { ($_.text -like "*$marker*" -and $_.text -like '*Correlation: zsa-*') }) { $script:approvedFollowUp = $id; return "comment $marker on #1 after approval by $($env:ADMIN_UPN)" }
+    $mine = $c.comments | Where-Object { $_.text -like "*$marker*" -and $_.text -like '*Correlation: zsa-*' } | Select-Object -First 1
+    if ($mine) {
+      # G3 (ADR 0020): Azure DevOps records the approver as the author, not the managed identity.
+      if ($mine.createdBy.uniqueName -ine $env:ADMIN_UPN) { throw "comment $marker was authored by '$($mine.createdBy.uniqueName)', not the approver $($env:ADMIN_UPN)" }
+      $script:approvedFollowUp = $id
+      return "comment $marker on #1 authored by $($mine.createdBy.uniqueName) (the approver), with the correlation id"
+    }
     if ($i -eq 2) { Invoke-RestMethod -Method Post "$api/api/followups/$id/apply" -Headers $auth -TimeoutSec 60 | Out-Null }
     Start-Sleep -Seconds 3
   }

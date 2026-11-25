@@ -18,6 +18,7 @@ internal sealed class ApprovePlanHandler(
     IFollowUpRepository followUps,
     IApprovalRecordStore records,
     ApprovalGate gate,
+    DelegatedAccessProvider delegated,
     ITeamsMessenger messenger,
     IPublisher publisher,
     IClock clock) : IRequestHandler<ApprovePlanCommand, Result<Guid>>
@@ -35,6 +36,12 @@ internal sealed class ApprovePlanHandler(
         if (!allowed.IsSuccess)
         {
             return Result<Guid>.Failure(allowed.Error!);
+        }
+
+        var access = await delegated.AcquireAsync(decision.Actor, ct);
+        if (!access.IsSuccess)
+        {
+            return Result<Guid>.Failure(access.Error!);
         }
 
         var now = clock.UtcNow;
