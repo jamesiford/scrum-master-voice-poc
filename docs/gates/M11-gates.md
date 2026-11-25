@@ -156,15 +156,18 @@ Realtime capacity is the limit. Request, in westus3 (and the chosen production r
 
 The bridge /healthz route does no slow work and no browser work (Chromium launches lazily on the first Teams join, not at start). Probed afterwards it answered 200 in about 0.5 s each time (five probes). The failing check ran about a minute after the new bridge revision was created, so the replica was most likely still starting; this is a hypothesis, not proven. Changes: HTTP startup, readiness and liveness probes on /healthz for both apps, and erify.ps1 retries the health routes for up to three minutes. The G8 rebuild runs erify.ps1 immediately after zd up and will show whether the timeout recurs.
 
-## G8: destroy and rebuild in westus3 (zavaw3): IN PROGRESS, blocked
+## G8: destroy and rebuild in westus3 (`zavaw3`): closed by the owner after one rebuild
 
-Build 631f61e, clean tree, REALTIME_CAPACITY=5, REALTIME_SKU=GlobalStandard.
+Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStandard`. Build 090bf4d (the Graph `--resource` fix on top of 3A).
 
 | Step | Result | Time |
 | --- | --- | --- |
-| First zd up (earlier, build c3083b7) | passed | 14m30s |
-| First erify.ps1 (build c3083b7) | 6 of 7 passed; bridge health timed out (see note above) | about 4 min |
-| zd down --purge (run 1) | passed | 27m09s |
-| zd up (run 1, build 631f61e) | **failed in preflight after 56 s**: the Microsoft Graph token was challenged (TokenCreatedWithOutdatedPolicies, continuous access evaluation, interaction required). Nothing was provisioned. | 56 s |
+| First `azd up` (build c3083b7) | passed | 14m30s |
+| First `verify.ps1` | 6 of 7; bridge health timed out once | about 4 min |
+| `azd down --purge` | passed | 27m09s |
+| Rebuild `azd up` from an empty group, build 090bf4d | **passed** | 15m25s |
+| `verify.ps1` on the rebuild | **7 of 7 passed** (both health routes 200, bearer token, bot 401, Simulated Room standup, follow-up written to Azure DevOps, audit chain complete). Single-standup p50 3470 ms, questions only p50 3730 ms and p95 6427 ms (n 9). | 6m50s |
 
-This needs an interactive z logout; az login by the signed-in administrator. It is not a template or code failure. The sequence (zd up, erify.ps1, zd down --purge, zd up, erify.ps1) and the westus3 deployed baseline are therefore **not done**; the environment is currently torn down. G8 stays "first azd up, deploy and verify passed; destroy-and-rebuild pending".
+Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
+
+Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. `zavaw3` is torn down.
