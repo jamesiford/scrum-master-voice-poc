@@ -2,6 +2,8 @@
 
 Status: **accepted, 24 November 2026**. Built in M11 prompt 3. Evidence for gates G2 and G3 is in `docs/gates/M11-gates.md`.
 
+> **Amended by ADR 0018.** Route authorisation in decision 5 is now team-scoped: the three app roles remain, but a route is allowed by the caller's role in the team the request is about (Admin sees every team). Identity, approval records and correlation are unchanged.
+
 ## Context
 
 Until now an approval was a display name: the portal asked a person to type one, and the Teams card action used `Activity.From.Name`. The Azure DevOps comment said "Approved by Dana", but nothing proved Dana was Dana, nothing tied the decision to what was proposed, and a write could not be followed back to the meeting that produced it. Chat commands also decided who was the Scrum Master from a list of names.

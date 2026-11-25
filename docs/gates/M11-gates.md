@@ -150,4 +150,8 @@ Raw results: `docs/gates/g9-three-concurrent-westus3/`. Not shown by this run: c
 
 ### Quota request for ten concurrent standups (to be filed by a subscription owner)
 
-Realtime capacity is the limit. Request, in westus3 (and the chosen production region): `gpt-realtime-2.1` and `gpt-live-1`, GlobalStandard, raise from 5 to at least 10 each (one deployment slot per concurrent standup was assumed; measure before relying on it). Parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: not yet filed.
+Realtime capacity is the limit. Request, in westus3 (and the chosen production region): `gpt-realtime-2.1` and `gpt-live-1`, GlobalStandard, raise from 5 to at least 10 each (one deployment slot per concurrent standup was assumed; measure before relying on it). Parameters stay `realtimeCapacity` and `realtimeSku` in `infra/main.bicep`. Status: **to be filed by the owner** (a subscription owner; not filed by this work).
+
+### Note: bridge health timeout in the first westus3 verify run
+
+The bridge /healthz route does no slow work and no browser work (Chromium launches lazily on the first Teams join, not at start). Probed afterwards it answered 200 in about 0.5 s each time (five probes). The failing check ran about a minute after the new bridge revision was created, so the replica was most likely still starting; this is a hypothesis, not proven. Changes: HTTP startup, readiness and liveness probes on /healthz for both apps, and erify.ps1 retries the health routes for up to three minutes. The G8 rebuild runs erify.ps1 immediately after zd up and will show whether the timeout recurs.

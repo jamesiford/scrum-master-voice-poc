@@ -105,3 +105,15 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 To drive a deployed API behind Easy Auth, pass `--api <url> --token <bearer>` (or `GATE_TOKEN`); the bridge room must be reachable from the machine running the runner. A run takes about six and a half minutes.
 
 To stand the whole environment up from nothing, and to check it afterwards, see `docs/DEPLOY.md` (`azd up`, then `pwsh infra/hooks/verify.ps1`). Run the gate runner against the deployed API with a token from `az account get-access-token --scope api://<PORTAL_CLIENT_ID>/access_as_user`; `docs/gates/baseline-M10-deployed/` holds the deployed M10 baseline.
+
+## Teams, onboarding and roles (M11 prompt 3A)
+The portal serves every team. The switcher in the sidebar lists only the teams you belong to and remembers your choice; an Admin sees all of them and gets an **Administration** group (Fleet, Teams, Onboard a team).
+
+- **Roles.** Admin (the Entra app role) manages the registry and sees every team. In each team a person is a **team lead** (approve, schedule, edit prompts, manage members), a **member** or a **reader** (read only). A person in no team sees "You are not in a team yet". Add people on the Team page by Entra object id, or set an Entra group on the team and press **Sync from Entra group**.
+- **Onboard a team.** Administration > Onboard a team: name and id, the Azure DevOps organisation (press **Load projects**, then pick the project and team), **Run test** (every step must pass), create and sync the roster, schedule, an optional Teams channel id, then **Enable**. The team stays a draft until the last step. Adding a new Azure DevOps organisation first needs the human gate in `docs/DEPLOY.md`.
+- **Bind a Teams channel.** In a channel the bot is installed in but no team is bound to, the bot answers with a card and nothing else. An Admin or that team's lead types the team id and presses **Bind**. Or add the channel id on the team's edit panel.
+- **Three demo teams.** `dotnet run --project tools\SeedAdo` seeds Payments, Identity and Catalogue (one project each). The API registers them from `Demo:Teams`. For the film set `Demo:PaymentsOnly=true` and seed with `--payments-only`: one team, as before.
+- **Prompts.** The Prompts page edits the selected team's override and says whether the default, a deployment override or the team's own is in effect.
+- **Pause and archive.** Pause stops a team's ceremonies from starting; archive makes it read-only. Neither deletes anything.
+- **Capacity.** If more standups are due than the host allows, the extra ones wait and the schedule shows why; after the grace the team's recap channel is told.
+- **Three at once.** `dotnet run --project tools\GateRunner -- --label g9 --teams team-payments,team-b,team-c --api <url> --token <bearer> --out docs\gates\g9 --check-audit` runs three Simulated Room standups together (it registers the extra teams as copies of the first). `--summarise <dir> --only-team <id>` filters the summary by team.

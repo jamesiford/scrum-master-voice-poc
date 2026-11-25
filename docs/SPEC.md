@@ -249,6 +249,8 @@ zava-scrum-agent/
 └─ .github/copilot-instructions.md
 ```
 
+**Multi-team (M11, ADR 0018).** Team model and pure rules live in `Domain/Teams` (`TeamAccess`, `WorkItemScope`, `AdoOrganisation`, `TeamsBinding`) and `Domain/Capacity` (`CapacityGovernor`); use cases in `Application/Features/Teams`; `Infrastructure/Ado` holds the per-organisation client factory; `Api/Auth` holds the team filter; `Api/Seeding` the demo team seeder.
+
 ### 6.1 Architecture and coding standards
 
 The PoC is demo-first in **scope**, not in **code quality**. It is built to the same engineering standards as the production system so that the code that wins the demo can be carried forward. `.github/copilot-instructions.md` holds the full rule set; this section is the design it applies to.
@@ -330,7 +332,7 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 | Area | Commands (change state) | Queries (read only) | Domain events -> handlers |
 |---|---|---|---|
-| Teams | `UpdateTeamSettingsCommand`, `SyncRosterCommand`, `SetRecapChannelCommand` (M9-R5), `UpdateMemberAvailabilityCommand` (M9a) | `GetTeamQuery`, `GetRosterQuery`, `ListCardsQuery` | |
+| Teams | `UpdateTeamSettingsCommand`, `SyncRosterCommand`, `SetRecapChannelCommand` (M9-R5), `UpdateMemberAvailabilityCommand` (M9a); **M11 (ADR 0018)** `CreateTeamCommand`, `UpdateTeamCommand`, `ArchiveTeamCommand`, `BindTeamsConversationCommand`, `SetMembershipCommand`, `RemoveMembershipCommand`, `SyncMembershipsFromGroupCommand` | `GetTeamQuery`, `GetRosterQuery`, `ListCardsQuery`; **M11** `ListTeamsQuery`, `TestTeamConnectionQuery`, `GetFleetQuery`, `ListAdoProjectsQuery`, `ListAdoTeamsQuery`, `ListMembershipsQuery` | |
 | Sprint calendar (M9d) | `ProposeSprintCalendarCommand`, `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand` | `GetSprintCalendarQuery`, `ListSprintCalendarsQuery` | `SprintCalendarProposed` -> `SendCalendarCardOnSprintCalendarProposed` |
 | Schedules and prompts | `UpdateScheduleCommand`, `UpdatePromptCommand`, `RunScheduleTickCommand` | `GetScheduleQuery`, `GetPromptQuery`, `ListPromptsQuery` | |
 | Voice | `AnalyseUtteranceQuery` (intent, items and comment kinds for one utterance; model first, rules as fallback) |
@@ -701,6 +703,10 @@ Implement it as a pure, table-tested class with no I/O.
 
 ---
 
+### 11.4 Teams and capacity (M11)
+
+A session carries its team id, and the floor, the gateway and the bridge never read a global team. Concurrent standups are limited per host by `CapacityGovernor` (default 3, a 5 s stagger); a standup that cannot start waits with a reason and the team is notified, and the gateway log scope carries `TeamId`. Three concurrent Simulated Room standups measured p50 3400 ms and p95 4919 ms (G9).
+
 ## 12. Teams and Microsoft 365 Copilot
 
 - One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/zava-scrum-agent.zip` for the demo users.
@@ -735,7 +741,8 @@ Implement it as a pure, table-tested class with no I/O.
 | Team | Azure DevOps org, project, team and area; time zone; standup length; stale days; escalation days; human Scrum Master; Teams channel |
 | Roster | Members pulled from the Azure DevOps team; Teams identity mapping; pronunciation; speaking order; active or absent today |
 | Schedule | Standup time, days and Teams join URL; bridge mode (`simulated` or `acs`); "Prepare now" and "Start now" buttons |
-| Prompts | Edit any file in `agents/instructions/` (text editor, **Save prompt**). **As built:** one set of prompts for the whole deployment (not per team) and no version numbers; saved edits are stored as overrides (`prompt-overrides.json` or Cosmos) |
+| Prompts | Edit any file in `agents/instructions/` (text editor, **Save prompt**). **As built (ADR 0018):** the selected team's override, then a deployment override, then the default file; the page shows which is in effect. No version numbers |
+| Team switcher, Teams, Onboard a team, Fleet | **M11 (ADR 0018).** The switcher lists only the caller's teams. Admin only: the Teams page (status, next standup, last run, open follow-ups, connection health; edit, test, roster sync, schedule, binding, ceremonies, pause, archive), the onboarding wizard, and the fleet dashboard |
 | Live console | Current state, current speaker, time remaining, captions, events as they are recorded, latency p50; buttons: Begin, Skip speaker, Mute agent, Unmute, Take over, Hand back, End standup, Reset demo, Start in Teams |
 | Sessions | List; detail with transcript, events, pre-brief, follow-ups and their status |
 | Reports | Sprint summary and monthly report; KPI charts with the "illustrative" label when fixture-backed |
@@ -749,10 +756,18 @@ Implement it as a pure, table-tested class with no I/O.
 
 ## 14. API (Zava.Scrum.Api)
 
+**Authorisation (ADR 0018).** Every route is behind sign-in and the team filter: it finds the team the request is about (route, query, body, or the team of the session, follow-up, plan, calendar or audit chain named) and checks the caller's role in that team. A team the caller is not in is 404; a role that is too low is 403. Registry routes need the Admin app role. `/api/health` and `/api/teams` (which filters its own answer) name no team. A route that names no team is refused.
+
 | Method | Route | Endpoint file | Sends |
 |---|---|---|---|
 | GET | `/api/teams/{id}` | `TeamsEndpoints.cs` | `GetTeamQuery` |
-| PUT | `/api/teams/{id}` | `TeamsEndpoints.cs` | `UpdateTeamSettingsCommand` |
+| GET, POST | `/api/teams` | `TeamsEndpoints.cs` | `ListTeamsQuery` (the caller's teams; every team for an Admin), `CreateTeamCommand` (Admin; starts as a draft) |
+| PUT, DELETE | `/api/teams/{id}` | `TeamsEndpoints.cs` | `UpdateTeamCommand` (Admin: connection, ceremonies, bindings, status), `ArchiveTeamCommand` (Admin; never a hard delete) |
+| PUT | `/api/teams/{id}/settings` | `TeamsEndpoints.cs` | `UpdateTeamSettingsCommand` (team lead; cannot change the Azure DevOps fields) |
+| POST | `/api/teams/{id}/test-connection` | `TeamsEndpoints.cs` | `TestTeamConnectionQuery`; reports the step that failed |
+| GET, PUT, DELETE, POST | `/api/teams/{id}/memberships`, `/{objectId}`, `/sync` | `TeamsEndpoints.cs` | `ListMembershipsQuery`, `SetMembershipCommand`, `RemoveMembershipCommand`, `SyncMembershipsFromGroupCommand` |
+| GET | `/api/fleet` | `TeamsEndpoints.cs` | `GetFleetQuery` (Admin) |
+| GET, POST | `/api/ado/projects`, `/api/ado/teams`, `/api/ado/test-connection` | `TeamsEndpoints.cs` | Azure DevOps discovery for the onboarding wizard (Admin) |
 | GET | `/api/teams/{id}/members` | `TeamsEndpoints.cs` | `GetRosterQuery` |
 | POST | `/api/teams/{id}/members/sync` | `TeamsEndpoints.cs` | `SyncRosterCommand` |
 | GET, PUT | `/api/teams/{teamId}/schedule` | `ScheduleEndpoints.cs` | `GetScheduleQuery`, `UpdateScheduleCommand` |
@@ -813,7 +828,8 @@ Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends on
 
 | Collection document | Contents |
 |---|---|
-| `teams.json` | Team settings (`behaviours` adds `AtRiskDays` and `AtRiskRemainingPct`; `RecapChannelKey`) |
+| `teams.json` | Team registry (`behaviours` adds `AtRiskDays` and `AtRiskRemainingPct`; `RecapChannelKey`; **M11** `Status`, `Ado` (organisation, project, team, area path), `TeamsBindings`, `Ceremonies`, `EntraGroupId`, reserved `KnowledgeBaseIds` and `WorkSignalsEnabled`) |
+| `memberships.json` | **M11.** Who is in which team and in what role (TeamLead, Member, Reader), keyed by Entra object id |
 | `members.json` | Roster |
 | `schedules.json` | Schedules |
 | `sessions.json` | Sessions of every ceremony (`Kind`, default `DailyScrum`), including their events (a blocker carries `UnblockerMemberId`) and latency samples |
