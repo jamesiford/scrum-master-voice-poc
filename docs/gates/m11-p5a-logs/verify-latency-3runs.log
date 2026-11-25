@@ -1,0 +1,12 @@
+PASS  API health route  200
+PASS  Bridge health route  200
+PASS  API accepts an Entra bearer token  team team-payments
+PASS  Bot endpoint rejects unauthenticated calls  401
+| Hop | p50 ms | p95 ms | n |
+| Total (speech end to first audio) | 3806 | 4626 | 32 |
+Questions only (Clarify and Unblocker turns): p50 3870 ms, p95 4553 ms, n 25.
+API-reported session p50 per run: 3858, 3724, 3922 ms.
+PASS  Simulated Room standup with the cast (gate harness subset)  session 1bb0ca80-424a-43ae-afbf-1b1aef9414d1
+PASS  Follow-up approved in the portal API and written to Azure DevOps  comment verify-4221aeed on #1 authored by admin@MngEnvMCAP763514.onmicrosoft.com (the approver), with the correlation id
+PASS  Audit chain complete (session, proposal, approval record, Azure DevOps write)  zsa-c0fa687e0246: approved by object id aeaec64b-d720-4996-9022-02fa0dcf043d, revision 45 on #1
+All checks passed.

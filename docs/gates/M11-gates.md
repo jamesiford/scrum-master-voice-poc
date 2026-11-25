@@ -199,7 +199,7 @@ Evidence in `docs/gates/m11-p3b/` (start with its README). Environment `zavaw3`,
 | Hooks and Bicep | **Passed in `zavaw3` (westus3).** The second attempt (after Entra roles were restored) stopped once at the bot OAuth connection: the provider name must be `Aadv2WithFic` (fixed). The third `azd up` completed (provision 4m41s, deploy 5m05s). |
 | G3 live, portal | **Passed.** `verify.ps1` 7 of 7 (`m11-p5a-logs/verify-pass.log`): the Azure DevOps comment on #1 is authored by `admin@MngEnvMCAP763514.onmicrosoft.com` (the approver) with `Correlation: zsa-466f0ef309e5`, and the audit chain is complete (revision 43). |
 | G3 Teams | **Not verified.** Needs the Teams app upload (human gate) and a real user. |
-| Latency (G1) | **Not re-measured.** The change adds nothing to the voice turn; no numbers are claimed. |
+| Latency (G1), deployed `zavaw3`, three runs, n 32 (`m11-p5a-logs/verify-latency-3runs.log`) | **Total p50 3806 ms, p95 4626 ms** against the westus3 figures of 3439 to 3470 ms p50 (G8 and 3B baselines): about +10 % p50. The change adds no work to the voice turn (the exchange runs at approval, not in a turn), and the same build varied about 25 % between time windows in 3B, so this is recorded as within that drift, not proven equal; the 5 % and 10 % tolerances cannot be confirmed by measurement. `verify.ps1` also passed 7 of 7 again (comment authored by the approver, revision 45). |
 
 G3 second approver without write access refused: covered by Application and Infrastructure tests (403 becomes `ado.approver_cannot_write`, nothing written); **not run live** (needs a second Entra user without project access).
 
