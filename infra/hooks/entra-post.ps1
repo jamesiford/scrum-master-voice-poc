@@ -33,6 +33,55 @@ foreach ($roleName in @('User.Read.All', 'GroupMember.Read.All')) {
   }
   else { Write-Check PASS "managed identity Graph permission $roleName" 'already granted' }
 }
+# ---- Delegated Azure DevOps writes (ADR 0020): no client secret anywhere ---------------------------------------------------------
+# An approval is written as the approver. The API exchanges the person's token on their behalf (OBO) and proves itself to Entra with the
+# managed identity through a federated credential on the portal app, so there is no client secret. Teams card actions get the person's
+# token through single sign-on: a Bot Service OAuth connection ("AAD v2 with Federated Credentials") plus a second federated credential
+# for the Bot Service token store.
+# VERIFY: https://learn.microsoft.com/azure/bot-service/bot-builder-authentication-sso and https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust
+function ConvertTo-Base64Url([byte[]]$Bytes) { [Convert]::ToBase64String($Bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_') }
+function Set-FederatedCredential([string]$Name, [string]$Subject, [string]$Description) {
+  $existing = (Invoke-Graph GET "/applications/$appObjectId/federatedIdentityCredentials").value | Where-Object { $_.name -eq $Name }
+  $body = @{ name = $Name; issuer = "https://login.microsoftonline.com/$tenant/v2.0"; subject = $Subject; audiences = @('api://AzureADTokenExchange'); description = $Description }
+  if (-not $existing) { Invoke-Graph POST "/applications/$appObjectId/federatedIdentityCredentials" $body | Out-Null; Write-Check PASS "federated credential $Name" 'created' }
+  elseif ($existing.subject -ne $Subject) { Invoke-Graph PATCH "/applications/$appObjectId/federatedIdentityCredentials/$($existing.id)" @{ subject = $Subject } | Out-Null; Write-Check PASS "federated credential $Name" 'subject updated' }
+  else { Write-Check PASS "federated credential $Name" 'already configured' }
+}
+Set-FederatedCredential 'zava-api-managed-identity' $mi 'The API managed identity proves the portal app for the on-behalf-of exchange to Azure DevOps.'
+
+if (-not $env:BOT_SSO_UNIQUE_ID) { Set-AzdValue BOT_SSO_UNIQUE_ID ([guid]::NewGuid().ToString()); Import-AzdEnvironment }
+# The Bot Service token store first-party application id, and the tenant, encoded as the federated subject documents describe.
+$tokenStoreApp = '9ExAW52n_ky4ZiS_jhpJIQ'
+$tenantPart = ConvertTo-Base64Url ([Guid]$tenant).ToByteArray()
+Set-FederatedCredential 'zava-bot-token-store' "/eid1/c/pub/t/$tenantPart/a/$tokenStoreApp/$($env:BOT_SSO_UNIQUE_ID)" 'The Azure Bot token store acts for the portal app in the single sign-on OAuth connection.'
+
+$botUrl = "https://management.azure.com/subscriptions/$($env:AZURE_SUBSCRIPTION_ID)/resourceGroups/$rg/providers/Microsoft.BotService/botServices/$($env:BOT_NAME)/connections/sso?api-version=2022-09-15"
+$connection = @{
+  location   = 'global'
+  properties = @{
+    serviceProviderId          = 'c00b44ab-5e16-c44c-af26-2fd5bc55eb18'
+    serviceProviderDisplayName = 'Azure Active Directory v2 with Federated Credentials'
+    clientId                   = $clientId
+    scopes                     = "api://botid-$clientId/access_as_user"
+    parameters                 = @(
+      @{ key = 'ClientId'; value = $clientId }
+      @{ key = 'UniqueIdentifier'; value = $env:BOT_SSO_UNIQUE_ID }
+      @{ key = 'TokenExchangeUrl'; value = "api://botid-$clientId" }
+      @{ key = 'TenantId'; value = $tenant }
+    )
+  }
+}
+$tmp = New-TemporaryFile
+($connection | ConvertTo-Json -Depth 10) | Set-Content $tmp -Encoding utf8
+az rest --method PUT --url "`"$botUrl`"" --body "@$tmp" -o none
+if ($LASTEXITCODE -ne 0) { Remove-Item $tmp; throw 'The Azure Bot OAuth connection for Teams single sign-on could not be created.' }
+Remove-Item $tmp
+Write-Check PASS 'bot OAuth connection sso' "Azure AD v2 with federated credentials, app $clientId"
+
+# The agent signs card actions in with that connection. Auto sign-in stays off: only the approve actions ask for a token.
+$ssoEnv = @('AgentApplication__UserAuthorization__AutoSignIn=false', 'AgentApplication__UserAuthorization__Handlers__sso__Settings__AzureBotOAuthConnectionName=sso')
+az containerapp update -n $env:API_APP_NAME -g $rg --set-env-vars @ssoEnv -o none
+Write-Check PASS 'API delegated writes' 'Teams single sign-on handler applied (the on-behalf-of client id is Portal__ClientId)'
 # ---- Portal sign-in values for the API (idempotent) ---------------------------------------------------------------------------
 # Bicep takes these as optional parameters, but azd may resolve them before preprovision has created the app, so they are applied here too.
 $cur = az containerapp show -n $env:API_APP_NAME -g $rg --query "properties.template.containers[0].env[?name=='Portal__ClientId'].value | [0]" -o tsv

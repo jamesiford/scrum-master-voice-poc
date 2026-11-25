@@ -17,6 +17,11 @@ New-Item -ItemType Directory -Force $dist | Out-Null
 $manifest = Get-Content (Join-Path $src 'manifest.json') -Raw | ConvertFrom-Json
 $manifest.id = $botId
 $manifest.bots[0].botId = $botId
+# Teams single sign-on for card actions (ADR 0020): the Entra app that holds the Azure DevOps delegated permission and the bot OAuth connection.
+# VERIFY: https://learn.microsoft.com/microsoftteams/platform/resources/bot-v3/bots-auth-aad
+if ($env:PORTAL_CLIENT_ID) {
+  $manifest | Add-Member -NotePropertyName webApplicationInfo -NotePropertyValue ([ordered]@{ id = $env:PORTAL_CLIENT_ID; resource = "api://botid-$($env:PORTAL_CLIENT_ID)" }) -Force
+}
 if ($env:TEAMS_APP_VERSION) { $manifest.version = $env:TEAMS_APP_VERSION }
 $stage = Join-Path ([IO.Path]::GetTempPath()) "zava-teams-$([guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory $stage | Out-Null
