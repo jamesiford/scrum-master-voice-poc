@@ -28,8 +28,9 @@ export function ModelsPage() {
           error={models.error ?? emails.error}
         />
         <Alert tone="info">
-          Cost is estimated from list prices and a standard standup length. Latency is measured only
-          for the model in use.
+          Cost is estimated from list prices and a standard standup length; a model whose price has
+          not been verified shows its Voice Live pricing tier instead of a number. Latency is
+          measured only for the model in use.
         </Alert>
         {models.data && (
           <Card title="Realtime models">
@@ -48,7 +49,11 @@ export function ModelsPage() {
                     <td className="py-2 font-medium">
                       {m.name} {m.isCurrent && <Badge tone="ok">In use</Badge>}
                     </td>
-                    <td>${m.costPerStandupUsd.toFixed(3)}</td>
+                    <td>
+                      {m.costPerStandupUsd === null
+                        ? `Price unverified${m.pricingTier ? ` (${m.pricingTier} tier)` : ''}`
+                        : `$${m.costPerStandupUsd.toFixed(3)}`}
+                    </td>
                     <td>
                       {m.measuredP50Ms === null
                         ? 'n/a'
