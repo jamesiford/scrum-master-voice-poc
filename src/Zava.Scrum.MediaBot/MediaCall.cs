@@ -83,31 +83,36 @@ public sealed class MediaCall : IAsyncDisposable
         }
 
         await _stop.CancelAsync();
-        if (_run is not null)
+        try
         {
-            await _run;
-        }
-
-        _media.AudioSocket.AudioMediaReceived -= OnAudio;
-        _media.AudioSocket.AudioSendStatusChanged -= OnSendStatus;
-        if (_call is not null)
-        {
-            _call.OnUpdated -= OnCallUpdated;
-            _call.Participants.OnUpdated -= OnRosterUpdated;
-            foreach (var participant in _call.Participants)
+            if (_run is not null)
             {
-                participant.OnUpdated -= OnParticipantUpdated;
+                await _run;
             }
         }
-
-        lock (_audioGate)
+        finally
         {
-            _outgoing.Clear();
-        }
+            _media.AudioSocket.AudioMediaReceived -= OnAudio;
+            _media.AudioSocket.AudioSendStatusChanged -= OnSendStatus;
+            if (_call is not null)
+            {
+                _call.OnUpdated -= OnCallUpdated;
+                _call.Participants.OnUpdated -= OnRosterUpdated;
+                foreach (var participant in _call.Participants)
+                {
+                    participant.OnUpdated -= OnParticipantUpdated;
+                }
+            }
 
-        while (_incoming.Reader.TryRead(out _)) { }
-        _media.Dispose();
-        _stop.Dispose();
+            lock (_audioGate)
+            {
+                _outgoing.Clear();
+            }
+
+            while (_incoming.Reader.TryRead(out _)) { }
+            _media.Dispose();
+            _stop.Dispose();
+        }
     }
 
     private void OnAudio(object? sender, AudioMediaReceivedEventArgs args)
@@ -126,6 +131,7 @@ public sealed class MediaCall : IAsyncDisposable
             var pcm = new byte[960];
             Marshal.Copy(audio.Data, pcm, 0, pcm.Length);
             _sources.TryGetValue(audio.ActiveSpeakerId, out var identity);
+            if (identity is not null && identity.ParticipantId == _call?.Resource.MyParticipantId) { continue; }
             frames.Add(new
             {
                 participantId = identity?.ParticipantId ?? $"source-{audio.ActiveSpeakerId}",
@@ -173,7 +179,7 @@ public sealed class MediaCall : IAsyncDisposable
             ReadParticipant(participant);
         }
 
-        Enqueue(new { type = "participants", items = _participants.Values.ToArray() });
+        Enqueue(new { type = "participants", items = HumanParticipants() });
     }
 
     private void AddParticipant(IParticipant participant)
@@ -238,7 +244,7 @@ public sealed class MediaCall : IAsyncDisposable
                 }.Uri;
                 await socket.ConnectAsync(uri, _stop.Token);
                 Enqueue(new { type = "callState", state = CallStateText(), message = "Connected to the non-recording gateway." });
-                Enqueue(new { type = "participants", items = _participants.Values.ToArray() });
+                Enqueue(new { type = "participants", items = HumanParticipants() });
                 using var connected = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
                 var tasks = new[] { SendAsync(socket, connected.Token), ReceiveAsync(socket, connected.Token), PlayAsync(connected.Token) };
                 await Task.WhenAny(tasks);
@@ -374,4 +380,7 @@ public sealed class MediaCall : IAsyncDisposable
     private sealed record ParticipantIdentity(string ParticipantId, Guid? ObjectId, string DisplayName);
 
     private string CallStateText() => _inLobby ? "Lobby" : _call?.Resource.State?.ToString() ?? "Joining";
+
+    private ParticipantIdentity[] HumanParticipants() =>
+        _participants.Values.Where(p => p.ParticipantId != _call?.Resource.MyParticipantId).ToArray();
 }

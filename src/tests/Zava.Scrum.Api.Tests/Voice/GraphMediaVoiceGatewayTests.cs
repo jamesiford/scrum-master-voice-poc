@@ -34,6 +34,48 @@ public sealed class GraphMediaVoiceGatewayTests
     }
 
     [Fact]
+    public async Task RunAsync_MalformedProducerMessage_ReleasesTheSessionClaim()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        fixture.Socket.BrokenJson();
+
+        await Assert.ThrowsAnyAsync<JsonException>(() => fixture.Completion);
+        fixture.FaultObserved = true;
+
+        Assert.Null(fixture.Live.GetState(fixture.Context.Session.Id));
+    }
+
+    [Fact]
+    public async Task RunAsync_GuestCrossTalk_HoldsSilenceWithoutSendingGuestAudio()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        fixture.Socket.Input(new { type = "callState", state = "Established" });
+        await WaitAsync(() => fixture.Voice.Responses.Count == 1);
+        fixture.Voice.Emit(new AgentResponseStarted());
+        fixture.Socket.Input(new { type = "agentAudioState", state = "idle", playedMs = 20 });
+        await WaitAsync(() => fixture.Voice.Responses.Count == 2);
+        fixture.Voice.Emit(new AgentResponseStarted());
+        fixture.Socket.Input(new { type = "agentAudioState", state = "idle", playedMs = 20 });
+        fixture.Audio(Fixture.ObjectId);
+        await WaitAsync(() => fixture.Voice.Audio.Any(b => b.Any(value => value != 0)));
+        fixture.Voice.Emit(new UserSpeechStarted());
+        fixture.Voice.Emit(new UserSpeechStopped());
+        await Task.Delay(50);
+        var guestId = Guid.NewGuid();
+        for (var i = 0; i < 55; i++)
+        {
+            fixture.Clock.Advance(TimeSpan.FromMilliseconds(20));
+            fixture.Audio(guestId);
+            await Task.Delay(20);
+        }
+
+        Assert.Equal(2, fixture.Voice.Responses.Count);
+        Assert.Single(fixture.Voice.Audio, b => b.Any(value => value != 0));
+    }
+
+    [Fact]
     public async Task RunAsync_SustainedSpeech_CancelsDropsAudioAndTruncatesAtPlayedPosition()
     {
         await using var fixture = new Fixture();
@@ -101,6 +143,10 @@ public sealed class GraphMediaVoiceGatewayTests
 
         public LiveSessionRegistry Live { get; } = new();
 
+        public Task<bool> Completion => _run;
+
+        public bool FaultObserved { get; set; }
+
         public Task ReadyAsync() => WaitAsync(() => Socket.HasType("hello"));
 
         public void Audio(Guid id) => Socket.Input(new
@@ -112,7 +158,7 @@ public sealed class GraphMediaVoiceGatewayTests
         public async ValueTask DisposeAsync()
         {
             await _stop.CancelAsync();
-            await _run;
+            if (!FaultObserved) { await _run; }
             _bridge.Dispose();
             Socket.Dispose();
             _stop.Dispose();
@@ -176,6 +222,8 @@ public sealed class GraphMediaVoiceGatewayTests
         public ConcurrentQueue<(WebSocketMessageType Type, byte[] Bytes)> Sent { get; } = new();
 
         public void Input(object message) => _input.Writer.TryWrite(JsonSerializer.SerializeToUtf8Bytes(message));
+
+        public void BrokenJson() => _input.Writer.TryWrite([(byte)'{']);
 
         public bool HasType(string type) => Sent.Any(s => s.Type == WebSocketMessageType.Text
             && JsonDocument.Parse(s.Bytes).RootElement.GetProperty("type").GetString() == type);

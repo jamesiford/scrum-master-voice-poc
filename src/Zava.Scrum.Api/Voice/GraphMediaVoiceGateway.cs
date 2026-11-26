@@ -35,6 +35,7 @@ public sealed class GraphMediaVoiceGateway(
     private string? _itemId;
     private string? _interruptedItemId;
     private DateTimeOffset? _speechAt;
+    private DateTimeOffset? _vadStartedAt;
     private DateTimeOffset _lastInput;
     private bool _discard;
     private bool _finished;
@@ -108,10 +109,19 @@ public sealed class GraphMediaVoiceGateway(
         finally
         {
             await stop.CancelAsync();
-            try { await Task.WhenAll(tasks); }
-            catch (OperationCanceledException) when (stop.IsCancellationRequested) { }
-            catch (WebSocketException) { logger.LogWarning("Media transport ended for {TeamId}/{SessionId}", context.Session.TeamId, context.Session.Id); }
-            live.Unregister(context.Session.Id);
+            try
+            {
+                try { await Task.WhenAll(tasks); }
+                catch (OperationCanceledException) when (stop.IsCancellationRequested) { }
+                catch (WebSocketException) { logger.LogWarning("Media transport ended for {TeamId}/{SessionId}", context.Session.TeamId, context.Session.Id); }
+            }
+            finally
+            {
+                while (_events.Reader.TryRead(out _)) { }
+                _participants = [];
+                _parkingLot.Clear();
+                live.Unregister(context.Session.Id);
+            }
         }
 
         return _finished;
@@ -166,18 +176,17 @@ public sealed class GraphMediaVoiceGateway(
                 {
                     _speaker = member.Id;
                     _lastInput = clock.UtcNow;
-                    _guestSpeechAt = null;
+                    await SetGuestSpeechAsync(null);
                     await _voice.SendAudioAsync(pcm, _ct);
                 }
                 else if (frame.GetProperty("amplitude").GetInt32() >= 300)
                 {
                     var guest = "guest:" + frame.GetProperty("participantId").GetString();
-                    if (_guestSpeaker != guest) { _guestSpeechAt = null; }
-                    _guestSpeaker = guest;
+                    await SetGuestSpeechAsync(guest);
                     _lastGuestInput = clock.UtcNow;
                     _guestSpeechAt ??= clock.UtcNow;
                 }
-                else { _guestSpeechAt = null; }
+                else { await SetGuestSpeechAsync(null); }
 
                 break;
             case "participants":
@@ -246,13 +255,16 @@ public sealed class GraphMediaVoiceGateway(
             case ResponseDone when !_discard: await _bridge.SendAsync(new { type = "responseDone" }, _ct); break;
             case UserSpeechStarted:
                 _speechAt = clock.UtcNow;
+                _vadStartedAt = clock.UtcNow;
                 _speechSpeaker = _speaker;
                 await ExecuteAsync(_floor.Handle(new SpeechActive(_speechSpeaker, true, clock.UtcNow)));
                 break;
             case UserSpeechStopped:
                 _speechAt = null;
+                var duration = _vadStartedAt is { } began ? (int)Math.Clamp((clock.UtcNow - began).TotalMilliseconds, 0, int.MaxValue) : 0;
+                _vadStartedAt = null;
                 await ExecuteAsync(_floor.Handle(new SpeechActive(_speechSpeaker, false, clock.UtcNow)));
-                await ExecuteAsync(_floor.Handle(new MemberSpoke(_speechSpeaker, 20, clock.UtcNow)));
+                await ExecuteAsync(_floor.Handle(new MemberSpoke(_speechSpeaker, duration, clock.UtcNow)));
                 break;
             case VoiceFault:
                 logger.LogError("Voice service failed for {TeamId}/{SessionId}", _context.Session.TeamId, _context.Session.Id);
@@ -262,7 +274,7 @@ public sealed class GraphMediaVoiceGateway(
 
     private async Task OnTickAsync(DateTimeOffset now)
     {
-        if (now - _lastGuestInput > TimeSpan.FromMilliseconds(40)) { _guestSpeechAt = null; }
+        if (now - _lastGuestInput > TimeSpan.FromMilliseconds(40)) { await SetGuestSpeechAsync(null); }
         if (now - _lastInput > TimeSpan.FromMilliseconds(40))
         {
             await _voice.SendAudioAsync(new byte[960], _ct);
@@ -271,12 +283,14 @@ public sealed class GraphMediaVoiceGateway(
         if (_speechAt is { } start && _floor.AgentHasFloor && now - start >= TimeSpan.FromMilliseconds(options.Value.BargeInMs))
         {
             await ExecuteAsync(_floor.Handle(new BargeIn(_speechSpeaker, IsHuman: false, Sustained: true)));
+            await ExecuteAsync(_floor.Handle(new SpeechActive(_speechSpeaker, true, now)));
             _speechAt = null;
         }
 
         if (_guestSpeechAt is { } guestStart && _floor.AgentHasFloor && now - guestStart >= TimeSpan.FromMilliseconds(options.Value.BargeInMs))
         {
             await ExecuteAsync(_floor.Handle(new BargeIn(_guestSpeaker!, IsHuman: false, Sustained: true)));
+            await ExecuteAsync(_floor.Handle(new SpeechActive(_guestSpeaker!, true, now)));
             _guestSpeechAt = null;
         }
 
@@ -297,6 +311,21 @@ public sealed class GraphMediaVoiceGateway(
             _ => Array.Empty<FloorAction>(),
         };
         await ExecuteAsync(actions);
+    }
+
+    private async Task SetGuestSpeechAsync(string? guest)
+    {
+        if (_guestSpeaker is { } previous && previous != guest)
+        {
+            await ExecuteAsync(_floor.Handle(new SpeechActive(previous, false, clock.UtcNow)));
+            _guestSpeechAt = null;
+        }
+
+        _guestSpeaker = guest;
+        if (guest is not null)
+        {
+            await ExecuteAsync(_floor.Handle(new SpeechActive(guest, true, clock.UtcNow)));
+        }
     }
 
     private async Task ExecuteAsync(IReadOnlyList<FloorAction> actions)

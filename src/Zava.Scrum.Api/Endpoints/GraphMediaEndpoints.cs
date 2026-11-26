@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Net.WebSockets;
 using Zava.Scrum.Api.Auth;
 using Zava.Scrum.Api.Voice;
 using Zava.Scrum.Application.Abstractions.Messaging;
@@ -33,7 +34,12 @@ public static class GraphMediaEndpoints
             using var bridge = new BridgeConnection(socket);
             if (await gateway.RunAsync(bridge, context.Value, http.RequestAborted))
             {
-                await sender.Send(new EndStandupCommand(sessionId), CancellationToken.None);
+                var ended = await sender.Send(new EndStandupCommand(sessionId), CancellationToken.None);
+                if (!ended.IsSuccess)
+                {
+                    await socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError,
+                        $"Session end failed ({ended.Error!.Code}).", http.RequestAborted);
+                }
             }
 
             return Results.Empty;
