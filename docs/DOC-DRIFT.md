@@ -161,7 +161,7 @@ Routes in the old SPEC 14 that **do not exist in code**: `PUT /api/teams/{id}/me
 | Card actions | Approve, Edit, Reject (SPEC 2, 12; `ITeamsMessenger.cs` doc comment) | Approve and Reject only |
 | Writes | General change proposals (SPEC 9.4) | `ChangeOp` supports Comment, State and Tag; `FollowUpPlanner` proposes comments only |
 | Recap and pre-brief | Routed to meeting chat and channel | `TeamsBotMessenger` sends to every stored conversation (ADR 0005); `// PROD:` route to meeting chat, channel and Scrum Master |
-| Microsoft 365 Copilot | Copilot Q&A (SPEC 2 scene 10, 12, M6) | `appPackage/manifest.json` declares a bot only; Copilot Q&A is not built |
+| Microsoft 365 Copilot | Copilot Q&A (SPEC 2 scene 10, 12, M6) | M11 8 implements five membership/OBO read-only skills and custom-engine manifest 1.1.0 (ADR 0025); live G5 remains gated by catalogue upload and consenting users |
 | Shared board | "Verified" (SPEC 16) | Not confirmed in a live meeting; AS-BUILT wording kept |
 | Agents stack | Microsoft Agent Framework, `Azure.AI.Projects` | Neither is referenced; Foundry chat over `HttpClient` with `DefaultAzureCredential` (ADR 0002) |
 | Portal stack | Fluent UI v9, MSAL.js | Tailwind CSS v4, lucide-react, Container Apps Easy Auth |

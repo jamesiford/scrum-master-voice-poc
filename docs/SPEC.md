@@ -46,7 +46,7 @@ v0.1 mixed PoC and production concerns. v0.2 is rewritten around one question: *
   - a recap posted to the meeting chat and team channel;
   - a pre-brief card for the human Scrum Master;
   - the monthly three-to-six sprint report;
-  - Microsoft 365 Copilot packaging;
+  - public-store Microsoft 365 Copilot certification (the later M11 8 adds tenant packaging);
   - a requirements traceability matrix;
   - a list of what is needed from Zava before each milestone.
 
@@ -95,7 +95,7 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 | 7. Approval writes back | The presenter approves a state change and a comment. Azure DevOps shows the change with "Approved by ..." in history | F3, N7 | M3 |
 | 8. Real Teams meeting | Scenes 2 to 5 again, with the agent joined to a real Teams meeting | F1 | M4 |
 | 9. Admin portal | Team, roster and schedule configuration, the live session console (mute, next speaker, end, "I'll take it from here"), the session timeline with transcript and events | F10 | M5 |
-| 10. Ask the agent | In Teams chat: "What is blocking sprint 42?", "Summarise yesterday's standup", "Show the last six sprints". **Not built:** Microsoft 365 Copilot (the app package declares a bot only) | F7 | M6 |
+| 10. Ask the agent | Legacy reporting questions in Teams remain. M11 8 adds five delegated Teams/Copilot skills (section 12); package 1.1.0 is built, but real Copilot G5 discovery/sign-in/acceptance awaits rollout | F7 | M6; M11 8 |
 | 11. Reporting | Sprint summary card in the team channel, plus a monthly report covering three to six sprints: velocity, say/do ratio, carry-over and blocker age | F7 | M6 |
 
 **As built, scenes 2 to 6.**
@@ -156,7 +156,7 @@ External dependencies:
 | Services | One .NET service plus bridge plus portal | Separate orchestrator, voice gateway and session manager scaled independently; scheduler as Container Apps jobs |
 | Agent runtime | **As built:** Microsoft Agent Framework chat-client agents over the Foundry v2 SDK (`Azure.AI.Projects` 2.x, `Microsoft.Agents.AI.Foundry`) with `DefaultAzureCredential`, behind agent ports (ADR 0009b; ADR 0002 was the earlier `HttpClient` version) | Foundry hosted agents with Entra Agent ID, published to Microsoft 365 |
 | Tools | In-process C# tool classes | Scrum MCP server on Azure Functions behind API Management; Foundry Toolbox with tool policies |
-| Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | **As built (M11 5A, ADR 0020):** reads on the managed identity; approved writes on-behalf-of the approver (portal bearer token, Teams single sign-on), no fallback. PROD: agent identity with least privilege (5B); Azure DevOps Remote MCP |
+| Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | **As built (M11 5A/8, ADRs 0020/0025):** scheduled voice reads use the managed identity; approved writes use the approver and five Copilot reads use the asker through OBO, no fallback. PROD: agent identity with least privilege (5B); Azure DevOps Remote MCP |
 | Meeting bridge | Simulated Room plus ACS Teams interop | Decision between ACS interop and Graph media bot after the PoC; Work IQ real-time transcripts in parallel |
 | Messaging | In-process channels | Service Bus and Event Grid |
 | Knowledge | Working agreements as Markdown in the repo, injected into prompts | Foundry IQ knowledge base on Azure AI Search |
@@ -338,7 +338,7 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 | Voice | `AnalyseUtteranceQuery` (intent, items and comment kinds for one utterance; model first, rules as fallback) |
 | Standups | `PrepareStandupCommand` (creates session and pre-brief), `StartStandupCommand`, `JoinMeetingCommand`, `ControlStandupCommand`, `RecordStandupEventCommand`, `RetractStandupEventCommand`, `MarkAbsentCommand`, `ResolveUnblockerCommand` (M9-R2), `ParkTopicCommand`, `CompleteSpeakerTurnCommand`, `RecordAgentLatencyCommand`, `EndStandupCommand` | `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetWorkItemDetailsQuery`, `GetTimeRemainingQuery`, `GetTurnInstructionQuery`, `GetFacilitatorInstructionsQuery`, `GetLiveStateQuery`, `ListSessionsQuery`, `GetSessionQuery` (includes the pre-brief), `GetSessionEventsQuery` | `StandupPrepared` -> `SendPreBriefCardOnStandupPrepared`; `StandupEnded` -> `PostRecapOnStandupEnded` (routed to the recap channel and meeting chat), `SendFollowUpsOnStandupEnded` (sends `SendFollowUpsCommand`), `LeaveMeetingOnStandupEnded` |
 | Follow-ups | `ProposeAdoChangeCommand`, `SendFollowUpsCommand` (also plans escalation, absent and no-response follow-ups), `ApproveFollowUpCommand` (carries a `DecisionContext`: the verified `ActorIdentity`, channel, authentication claims and roles; refused unless `ApprovalAuthority` allows it, and it appends an `ApprovalRecord`), `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListEmailsQuery` | `FollowUpApproved` -> `ApplyOnFollowUpApproved` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `FollowUpRejected`, `FollowUpApplied` -> `UpdateFollowUpCardHandler` |
-| Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (Teams chat Q&A) | |
+| Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (legacy Teams chat Q&A), `AnswerCopilotQuestionQuery(asker, skill, chosenTeamId)` (five delegated read-only skills, M11 8) | |
 | Ceremonies (M9) | `CreateCeremonyPackCommand` (builds the review or retrospective pack and sends it as a Scrum Master follow-up) | | |
 | Sprint planning (M9a) | `PreparePlanningCommand`, `ApprovePlanCommand`, `RejectPlanCommand` | `GetPlanningPackQuery` | `PlanningPrepared` -> `SendPlanningCardOnPlanningPrepared` |
 | Audit (M11) | none (the approval trail is appended by `ApproveFollowUpCommand`, `RejectFollowUpCommand` and `ApplyApprovedChangesHandler`) | `GetAuditChainQuery` | none |
@@ -602,7 +602,7 @@ Speak in short sentences. Do not read lists aloud. Warm, professional tone.
   - agent-run standups;
   - average standup duration.
 - **The model writes:** the narrative of a sprint summary (Adaptive Card plus Markdown) and of a monthly report covering three to six sprints (Markdown and an HTML page in the portal, plus a card to the channel).
-- **Q&A:** in Teams chat (and `POST /api/ask`), `AnswerTeamQuestionQuery` answers from the same facts (KPIs, current pre-brief, last standup). Microsoft 365 Copilot is not built.
+- **Q&A:** legacy Teams reporting (and `POST /api/ask`) uses `AnswerTeamQuestionQuery` over KPI/pre-brief facts. The five Teams/Copilot skills use the asker's live OBO Azure DevOps access instead, through `AnswerCopilotQuestionQuery` (section 12).
 
 ---
 
@@ -738,11 +738,16 @@ subscriptions. Live event delivery remains n=0.
 
 > **Approval and sign-in (M11 5A, ADR 0020), applies to sections 11 to 13.** A decision made by voice is only a proposal; nothing is written until a person approves it in the portal or on a Teams card, and the write is made as that person (Azure DevOps shows them as author). The voice path never holds an Azure DevOps credential.
 
+**Copilot boundary (M11 8, ADR 0025).** The five chat skills are not voice
+tools. They resolve the asker's membership team and read through OBO, never
+the voice/scheduler managed-identity reader. Native non-recording sessions
+contribute only ordinary lifecycle metadata, not saved meeting commitments.
+
 ## 12. Teams and Microsoft 365 Copilot
 
 **Teams approval (M11 5A).** Approve and Approve plan card actions sign the person in with Teams single sign-on (Azure Bot OAuth connection, Entra ID v2 with federated credentials; bot Entra app exposes `access_as_user`, Teams clients pre-authorised, `webApplicationInfo` in the manifest). If sign-in is pending the Agents SDK shows the real sign-in card; with no token the approve is refused. Reject needs no token.
 
-- One bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.0.3). Scopes are personal, team and groupChat. **As built:** the manifest declares a bot only; it does **not** declare a custom engine agent for Microsoft 365 Copilot, so **Copilot Q&A is not built**. Sideload `appPackage/zava-scrum-agent.zip` for the demo users.
+- One Azure-managed bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.1.0). Scopes are personal, team, groupChat and copilot; `copilotAgents.customEngineAgents` references that same bot id. The deployment hook fills the environment's app/bot/Copilot ids together, SSO information, legal URLs and exact valid domains. Use `appPackage/dist/zava-scrum-agent-<env>-1.1.0.zip`, not the historical root zip. No personal board tab was built in prompt 7, so none or any additional tab RSC is declared. Live G5 rollout remains gated in DEPLOY.md.
 - **Approver identity (M11, ADR 0017).** A card action's approver is `Activity.From.AadObjectId` with the activity's tenant, never `From.Name`. The decision is accepted only when the tenant is the deployment's and the object id is a configured administrator (`Identity:AdminObjectIds`) or the roster member (`Member.EntraObjectId`) the follow-up is for; plans, calendars and ceremony packs are administrator only. The chat command "prepare sprint planning" is decided the same way.
 - Proactive messages use conversation references captured when a user messages the bot or it is added (`ScrumAgent` stores them). The portal does not show who has the app installed. `TeamsBotMessenger` sends every card to **every stored conversation** and updates the card in place (ADR 0005). `// PROD: route to the meeting chat, the team channel and the Scrum Master by Entra object id.`
 
@@ -763,7 +768,26 @@ subscriptions. Live event delivery remains n=0.
 
 **Recap routing (M9-R5).** `Team.RecapChannelKey` holds the Teams conversation id of the channel; `ScrumAgent` captures it when the bot is added in a channel (`SetRecapChannelCommand`; also `PUT /api/teams/{id}/recap-channel`). `CardRouting.Select` sends the recap to that channel and to any stored meeting chat (conversation id starting `19:meeting_`), and falls back to every stored conversation when neither exists. `// PROD: route by Entra object id.`
 
-**Chat.** **As built:** any message sent to the bot is answered by `AnswerTeamQuestionQuery` (the Reporting agent, falling back to the KPI table when no model is available). There are no separate chat commands: "start standup now" and "my open items" are not implemented.
+**Chat skills (M11 8).** `AnswerCopilotQuestionQuery` answers "What is blocked
+on my team?", "What did I commit to?", "What is at risk in this sprint?",
+"What is the standup status today?" and "Show my items and their state." The
+five command titles are also executable conversation starters under schema
+1.25, which does not support the newer prompt/type fields.
+`ITeamResolver.ForUserAsync` requires an open membership, with no administrator
+bypass; multiple teams require `team <id>: <question>`, rechecked on every turn.
+The activity actor and SSO assertion must match this tenant before OBO.
+`IDelegatedWorkItemReader` uses only the asker's uncached token and the team's
+area/current iteration; refusals explain missing sign-in, consent, roster
+mapping or Azure DevOps access. Personal items match actual assignee, never
+demo owner tags. Commitments include only the asker's unretracted, fully
+readable current-sprint references in this team. Today uses the team time zone.
+Domain computes counts/flags and shows at most five lines; model phrasing is
+only a guarded introduction. Source URLs are generated by code, and the source
+card is attached to the same final SDK streaming response. Unsupported channels
+receive one ordinary message. No partial unvalidated model token is streamed.
+Unknown Copilot requests show the starters and cannot use legacy cached facts.
+Other Teams messages still use `AnswerTeamQuestionQuery`; "prepare sprint
+planning" and all existing approval/rejection actions remain.
 
 ---
 
@@ -859,6 +883,10 @@ The two native media routes require `Bridge:Mode=GraphMedia`, `x-bridge-key` and
 
 Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends one command or query from section 6.1.4 (`POST /api/sessions/{id}/start` sends two) and returns `result.ToHttpResult()`.
 
+M11 8 adds no portal data route: the five skills enter the existing authenticated
+`POST /api/messages`. `/privacy.html` and `/terms.html` are public static legal
+pages, not team data endpoints.
+
 ---
 
 ## 15. Data model
@@ -953,7 +981,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
   - KPI maths with unit tests (Analytics or fixture);
   - the sprint summary and monthly report;
   - the portal Reports page;
-  - chat Q&A in Teams (**Microsoft 365 Copilot: not built**).
+  - chat Q&A in Teams (the later M11 8 adds five delegated Copilot skills; live rollout remains gated).
 - Demo check: storyboard scenes 10 and 11; KPI numbers match a hand calculation on the fixture.
 
 **M7 Deploy to Azure.**

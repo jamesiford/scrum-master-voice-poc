@@ -1,5 +1,53 @@
 # M11 gates
 
+## Copilot channel (conductor 8, 2026-11-26)
+
+ADR 0025 implements five real-mediator skills using membership resolution and
+the asker's OBO token, never the service reader. Toolkit schema/rules pass on
+both source and generated 1.25/version 1.1.0 manifests. The actual generated
+zavaw3 app/bot/Copilot ids all match `bed81a44-b97d-4687-9ad3-c4cf546f6689`;
+portal SSO is `265790b8-88a7-4975-bb8f-3fe381bb19ea`. There is no personal tab
+or new RSC. Existing Azure DevOps AllPrincipals `user_impersonation` consent
+was read back, not assumed from app declarations.
+
+The signed-in Graph catalogue read returned Forbidden for missing AppCatalog
+scopes after the administrator window expired. No authentication loop or
+tenant policy/role change. DEPLOY.md/DEMO.md give the exact tenant upload,
+admin review and consenting-user acceptance steps. Eligible user update
+consent can propagate between contexts according to current Learn; an
+administrator cannot force the user update.
+
+| Gate/check | Step 8 result | Sample and evidence |
+| --- | --- | --- |
+| G1 native conversational latency | Not run | n=0 native; the Direct before/after harness is fallback regression only |
+| G2 native attribution | Not run | n=0 new live samples; prior failures/prerequisites unchanged |
+| G3 approver-authored writes | Pending mandatory deployment verification | Not a new write path or Copilot approval skill |
+| G4 full parity / rehearsal | Not run in step 8 | Prior checkpoint 849 .NET / 24 bridge passes retained; exact board parity still failed |
+| G5 real Copilot skills, permission-negative and streaming | Not run | n=0 authorised Copilot turns; local tests/package validation are separate evidence |
+| G6 stored-link native joins | Not run | n=0; existing catalogue/calendar/verified-roster/organiser-RSC gates unchanged |
+| G7 observability / decision goldens | Not run | n=0 new live acceptance samples |
+| G9 live multi-team matrix / concurrency | Not run | n=0 live; local membership/no-team/multi-team/isolation checks pass |
+| G10 Foundry IQ grounding | Not run in step 8 | No new source or acceptance sample |
+| G11 Work IQ consent / privacy | Not run in step 8 | Native non-recording and existing consent boundary unchanged |
+| Local skill / permission / manifest checks | Pass | Domain 4, real-mediator Application 16, Infrastructure 11, Api 9, architecture 14: 54/54 |
+
+All three builds, both TypeScript typechecks/linters and full C# formatting
+pass. Focused tests cover actual-assignee selection, unretracted/readable
+commitments, team-local dates, no-team/admin/multi-team/roster/consent refusals,
+cross-credential HTTP isolation and model/id guards. Custom title/state labels
+with unknown references are omitted; cards offer at most five source actions.
+No full suite rerun before the post-prompt-10 checkpoint. Added fixed cost
+USD 0/hour.
+
+### Step 8 Direct Simulated Room regression
+
+Before: one deployed run, **12 timed turns**, **387 s**, **19 transcript
+pieces**, **zero talk-overs**, API/native source `0d07e83`, bridge `c25287f`.
+Total p50/p95 **3272/4379 ms**; analyser **26/27**, decision **160/240**,
+orchestration **1522/2449**, Voice Live first audio **1718/2646**.
+Decision model used **10/12** turns. After evidence follows deployment;
+no native or Copilot latency claim is inferred from this baseline.
+
 ## Full test checkpoint after prompt 7 (tests-1, 2026-11-26)
 
 One aggregate `dotnet test ZavaScrum.slnx --no-build --no-restore` run passed

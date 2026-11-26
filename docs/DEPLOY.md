@@ -77,6 +77,55 @@ The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, se
 
 The platform forces these. Each is named in the script output as `GATE`.
 
+### COPILOT-ROLLOUT and COPILOT-G5 (prompt 8, ADR 0025)
+
+Only zavaw3 is in scope. The authorised Global Administrator window ended at
+14:27 PT on 26 November 2026, before prompt 8 started. The signed-in Azure CLI
+catalogue read was attempted with explicit Graph resource and refused:
+`Forbidden: Missing scope permissions on the request. API requires one of
+'AppCatalog.Submit, AppCatalog.Read.All, AppCatalog.ReadWrite.All,
+Directory.Read.All, Directory.ReadWrite.All'.`
+No authentication loop, new tenant policy or unrelated role was attempted.
+
+**Teams administrator:** in **Teams admin centre > Teams apps > Manage apps**,
+open Zava Scrum Agent for bot/app id `bed81a44-b97d-4687-9ad3-c4cf546f6689`,
+choose **Upload file**, and upload
+`appPackage\dist\zava-scrum-agent-zavaw3-1.1.0.zip`. If absent, **Upload new
+app**. Review/approve the permissions under existing policy, upgrading 1.0.5
+or 1.0.4 without changing app id. Alternatively run
+`pwsh infra\hooks\teams-app.ps1 -Interactive` as an allowed uploader, completing
+the explicit AppCatalog.Submit device-code sign-in yourself. The unattended
+conductor cannot complete it. Do not touch the old mcm bot.
+
+**Each demo user / team lead:** accept the consent-required **Update** prompt,
+install/open the updated app and select it in Microsoft 365 Copilot. Complete
+the one-time sign-in in that context. A team lead must add each test user's
+Entra membership and unique roster mapping; an Azure DevOps project
+administrator must give the positive user project read access. Use a second
+consenting team member without that project access for the negative test,
+and a membership-free user plus a multi-team user for isolation. Ask all five
+questions, verify source-card ids against that user's sprint and record
+streaming, response time and refusals as G5 samples. No guest approval or
+native meeting recording is authorised.
+
+**Entra Global Administrator / Privileged Role Administrator, only if needed:**
+verify/grant the existing Zava Scrum Portal (zavaw3) Azure DevOps delegated
+`user_impersonation` consent in **Enterprise applications > Permissions**.
+This is the same permission and federated OBO configuration from prompt 5A,
+not a new permission or agent-identity grant. Prompt 8 readback confirms the
+existing AllPrincipals `user_impersonation` grant on the portal service
+principal, so no new Entra consent is needed or attempted in zavaw3.
+No change to tenant consent policy. Evidence is retained in the run log.
+An admin cannot force the user's Teams update or replace their user consent.
+
+Greenfield owns the same runtime in the existing API image and existing
+Entra hooks; no component is manually provisioned. `public-pages.ps1` adds
+only `/privacy.html` and `/terms.html` to the existing API Easy Auth exclusions
+without changing secrets/providers/protected routes, and runs in postdeploy.
+`teams-app.ps1` fills all three bot/app/Copilot ids, SSO, legal URLs and exact
+API/bridge domains and rejects a stale `TEAMS_APP_VERSION` downgrade.
+Run `atk validate --package-file <zip> --telemetry false` before upload.
+
 | Gate | Who | Action |
 | --- | --- | --- |
 | Deployer permissions | Subscription Owner (or Contributor plus User Access Administrator); Entra Application Administrator and Privileged Role Administrator (or Global Administrator) for the tenant-wide `User.Read` consent; Azure DevOps Project Collection Administrator | Checked by `preflight.ps1`. |
