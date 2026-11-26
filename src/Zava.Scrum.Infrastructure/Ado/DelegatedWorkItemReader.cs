@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Behaviors;
 using Zava.Scrum.Application.Features.Reports.AnswerCopilotQuestion;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Teams;
@@ -17,6 +19,7 @@ internal sealed class DelegatedWorkItemReader(IAdoClientFactory factory, IOption
     {
         ArgumentNullException.ThrowIfNull(team);
         ArgumentNullException.ThrowIfNull(access);
+        Activity.Current?.SetTag(ScrumTelemetry.TeamTag, team.Id);
         using var http = factory.DelegatedClientFor(team.Ado.Org, access.AccessToken);
         try
         {

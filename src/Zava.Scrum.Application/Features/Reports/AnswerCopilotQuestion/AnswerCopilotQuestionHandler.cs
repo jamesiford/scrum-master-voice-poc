@@ -65,7 +65,7 @@ internal sealed class AnswerCopilotQuestionHandler(
         var history = request.Skill is CopilotSkill.Commitments or CopilotSkill.StandupStatus
             ? await sessions.ListAsync(ct) : [];
         var facts = CopilotFactsBuilder.Build(team, request.Skill, sprint.Value, member, history, clock.UtcNow);
-        var intro = await phraser.PhraseAsync(facts.Summary, ct);
+        var intro = await phraser.PhraseAsync(team.Id, facts.Summary, ct);
         var fromModel = CopilotPhrasing.IsSafe(intro);
         if (intro is not null && !fromModel)
         {

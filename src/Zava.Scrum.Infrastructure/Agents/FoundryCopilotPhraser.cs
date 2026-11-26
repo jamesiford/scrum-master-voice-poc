@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Infrastructure.Agents;
 
@@ -9,14 +11,15 @@ public sealed class FoundryCopilotPhraser(FoundryChat chat, IPromptStore prompts
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     /// <inheritdoc />
-    public async Task<string?> PhraseAsync(string summary, CancellationToken ct)
+    public async Task<string?> PhraseAsync(string teamId, string summary, CancellationToken ct)
     {
+        Activity.Current?.SetTag(ScrumTelemetry.TeamTag, teamId);
         if (!chat.IsConfigured || await prompts.GetAsync("copilot-qa", ct) is not { } instructions)
         {
             return null;
         }
 
-        var content = await chat.TryCompleteJsonAsync(instructions, JsonSerializer.Serialize(new { summary }), ct);
+        var content = await chat.TryCompleteJsonAsync(instructions, JsonSerializer.Serialize(new { teamId, summary }), ct);
         if (content is null)
         {
             return null;

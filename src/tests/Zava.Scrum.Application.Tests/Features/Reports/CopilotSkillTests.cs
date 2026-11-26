@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Zava.Scrum.Application.Abstractions.Ports;
+using Zava.Scrum.Application.Behaviors;
 using Zava.Scrum.Application.Features.Reports.AnswerCopilotQuestion;
 using Zava.Scrum.Application.Tests.TestDoubles;
 using Zava.Scrum.Domain.Common;
@@ -25,7 +27,8 @@ public sealed class CopilotSkillTests
     public async Task Answer_SupportedSkill_UsesRealMediatorAndOnlyAskerAccess(CopilotSkill skill, string expected)
     {
         var reader = new Reader();
-        await using var h = await CreateAsync(reader);
+        var phraser = new Phraser();
+        await using var h = await CreateAsync(reader, phraser);
         var actor = Who.Actor(AskerId, "Priya", Domain.Identity.ActorSource.Teams);
         var session = await h.LoadAsync();
         session.RecordEvent(StandupEventType.Commitment, AskerMember.Id, [1], "Finish #1", StandupHarness.Now);
@@ -36,7 +39,34 @@ public sealed class CopilotSkillTests
         Assert.Contains(expected, result.Value.Text, StringComparison.Ordinal);
         Assert.Equal($"ado-for-{AskerId}", reader.Token);
         Assert.Equal("t1", reader.TeamId);
+        Assert.Equal("t1", phraser.TeamId);
         Assert.All(result.Value.ItemLinks, link => Assert.StartsWith("https://dev.azure.com/zava/p/_workitems/edit/", link, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Answer_AutomaticallyResolvedTeam_TagsTheRealMediatorSpan()
+    {
+        string? taggedTeam = null;
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == ScrumTelemetry.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.OperationName == nameof(AnswerCopilotQuestionQuery))
+                {
+                    taggedTeam = activity.GetTagItem(ScrumTelemetry.TeamTag) as string;
+                }
+            },
+        };
+        ActivitySource.AddActivityListener(listener);
+        await using var h = await CreateAsync(new Reader());
+        var actor = Who.Actor(AskerId, "Priya", Domain.Identity.ActorSource.Teams);
+
+        var result = await h.Sender.Send(new AnswerCopilotQuestionQuery(actor, CopilotSkill.Blocked));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("t1", taggedTeam);
     }
 
     [Fact]
@@ -188,10 +218,12 @@ public sealed class CopilotSkillTests
     {
         public string? Text { get; init; } = "Here is the information available with your access.";
         public int Calls { get; private set; }
+        public string? TeamId { get; private set; }
 
-        public Task<string?> PhraseAsync(string summary, CancellationToken ct)
+        public Task<string?> PhraseAsync(string teamId, string summary, CancellationToken ct)
         {
             Calls++;
+            TeamId = teamId;
             return Task.FromResult(Text);
         }
     }

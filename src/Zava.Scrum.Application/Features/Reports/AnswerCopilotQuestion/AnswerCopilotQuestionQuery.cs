@@ -9,4 +9,10 @@ namespace Zava.Scrum.Application.Features.Reports.AnswerCopilotQuestion;
 /// <param name="Asker">Identity from the authenticated channel activity.</param>
 /// <param name="Skill">The bounded read-only skill.</param>
 /// <param name="ChosenTeamId">The user's explicit team choice, not a conversation binding.</param>
-public sealed record AnswerCopilotQuestionQuery(ActorIdentity Asker, CopilotSkill Skill, string? ChosenTeamId = null) : IQuery<CopilotAnswerDto>;
+public sealed record AnswerCopilotQuestionQuery(ActorIdentity Asker, CopilotSkill Skill, string? ChosenTeamId = null)
+    : IQuery<CopilotAnswerDto>, IResolvedTeamRequest<Result<CopilotAnswerDto>>
+{
+    /// <inheritdoc />
+    public string? GetResolvedTeamId(Result<CopilotAnswerDto> response) =>
+        response.IsSuccess ? response.Value.TeamId : ChosenTeamId;
+}
