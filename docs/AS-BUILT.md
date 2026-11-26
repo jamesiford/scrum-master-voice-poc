@@ -50,6 +50,25 @@ Each utterance is read by `AnalyseUtteranceQuery` (ADR 0014): a decision model (
 ### 3.2 Shared board
 The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at the start, then the current speaker's items (state, flags, owner, a highlight on the item being asked about, a tick when covered) and per-member coverage with a status (away, no response, update by someone). Frames are forced from a canvas attached to the page. Sharing is best effort and supervised: it retries until Teams confirms, and every status change appears as a Bridge event on the Live tab and in the bridge log (`[share]`). **Status:** observed working in a real Teams meeting on 23 November 2026 (the recorded take).
 
+**M11 prompt 7, ADR 0024:** `Board:Mode=Share` retains that ACS canvas.
+`MediaShare` selects native VBSS on the GraphMedia call: a browser-free SkiaSharp
+1280x720 renderer, draw on changed state and cached one-fps keep-alive, automatic
+sharer/viewer lifecycle and reconnect renegotiation independent of voice.
+Team/session-owned snapshots, coverage and retro notes/actions remain ephemeral;
+native completion never promises saved follow-ups. The shared meeting view is
+visible to its participants, not a guest query/approval grant. The portal shows
+share failures. No personal tab is built because ADR 0015 S7 did not run.
+Native visibility/encoder CPU/G1 and live meeting events remain n=0; ACS/Direct
+remain defaults. Golden-image evidence and deployed checks are in the gate table.
+
+The Azure-managed SSO bot handles typed Teams start/end events using scheduled
+meeting `OnlineMeeting.ReadBasic.Chat` consent. It resolves tenant and bound team,
+correlates channel-data meeting id with the stored join link, records lifecycle
+metadata, and ends only the matching live ceremony idempotently through existing
+end events. It does not start a new ceremony from an unbound event. Participant
+join/leave is authoritative media call roster data, not Teams-managed subscriptions.
+Catalogue upload/RSC and a real meeting are still required to verify delivery.
+
 ## 4. Safety rules that are enforced in code
 1. No Azure DevOps write without an approved follow-up (`FollowUp.GetApprovedChanges`, `ApplyApprovedChangesHandler`, unit tested). Approval is a card button in Teams or the portal.
 2. Work item ids are never invented: ids in recorded events, follow-ups, cards, generated questions, summaries and the board are checked against the sprint in code (`WorkItemIdGuard`, `RecordStandupEventHandler`). The facilitator model's free speech is constrained by its prompt and checked only by the end-to-end test "never mentions a work item id outside the sprint".

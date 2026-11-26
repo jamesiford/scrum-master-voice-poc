@@ -1,5 +1,63 @@
 # M11 gates
 
+## Board share and meeting events (conductor 7, 2026-11-26)
+
+ADR 0024 adds a genuine selectable native VBSS adapter and typed scheduled
+meeting events. ACS canvas, Acs and Direct remain defaults. The administrator
+attempted publication of the updated messaging package; Graph refused missing
+delegated catalogue scopes despite the active admin role. Actual-calendar,
+verified member identities, organiser RSC and real participants remain gates
+in DEPLOY.md. No personal tab without positive S7 evidence.
+
+| Gate/check | Step 7 result | Sample and evidence |
+| --- | --- | --- |
+| G1 native share latency | Not run | n=0 native; Direct Simulated Room before/after is fallback-only |
+| G2 native attribution | Not run | n=0 live; join/leave/guest ownership is covered by focused gateway tests |
+| G3 approver-authored writes | Pending deployment verification | Existing approved-write and audit checks in mandatory verify.ps1, not a native speech write |
+| G4 parity / rehearsal | Failed exact board parity; live rehearsal not run | n=11 genuine Chromium/native board states; all differ; n=0 live native rehearsal |
+| G5 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G6 stored-link native joins | Not run | n=0; live meeting prerequisites absent |
+| G7 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G9 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G10 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G11 | Not run in step 7 | No new sample; preserve historical evidence below |
+| Board automatically visible to every participant/guest <=2 s | Not run | n=0; renderer/socket readiness is not participant delivery |
+| Board change visible <=2 s | Not run | n=0 native |
+| Encoder CPU per meeting / cap | Not run | n=0; cap remains 1, not a measured capacity |
+| Scheduled meeting start/end delivery | Not run | n=0 live; real-mediator tests verify isolation/idempotence, not delivery |
+
+Eleven golden fixtures use the actual existing Chromium canvas: waiting, empty,
+agenda, speaker-highlight, covered-clipped-six, standup-complete,
+retro-round-empty, retro-round-notes, retro-themes, retro-actions, retro-complete.
+Their captured PNGs, native output, provenance, hashes and regional
+measurements are in `src/tests/Zava.Scrum.MediaBot.Tests/BoardGoldens`.
+Worst channel MAE **2.273/255**, changed pixels **4.988%**, geometry maximum
+channel difference **1**. Tests use explicit 2.5/255 MAE and 6% regional change
+tolerance for browser/Skia text shaping; **exact identity fails all eleven**. Do not
+remove ACS or mark the native visual gate passed. Native non-recording completion
+intentionally changes saved-follow-up wording, tested separately.
+
+Focused checks: board renderer 5/5, board lifecycle/failure isolation 3/3,
+native gateway/ephemeral retro 13/13, Application meeting events/normal end
+19/19, Domain session/lifecycle 10/10, SDK presentation 3/3 and dependency
+architecture 14/14 (including the dependency subset). These are local code checks, not native meeting samples.
+
+### Step 7 deployed fallback regression, Direct Simulated Room
+
+Before: one run, **12 timed turns**, 382 s, 19 transcript pieces, zero
+talk-overs. The deployed API/bridge images are `m11-6b-1b7a614`; the
+runner source label is not an image hash. After measurements are recorded
+following committed-source deployment and mandatory verification.
+
+| Hop | Before p50 / p95 ms | After p50 / p95 ms |
+| --- | --- | --- |
+| Total turn | 3230 / 3958 | Pending deployment |
+| Transcript | 0 / 192 | Pending deployment |
+| Analyser | 27 / 27 | Pending deployment |
+| Decision model | 152 / 167 | Pending deployment |
+| Orchestration | 1520 / 1967 | Pending deployment |
+| First Voice Live audio | 1564 / 2292 | Pending deployment |
+
 ## Native media hosting checkpoint (conductor 6a/6b, 2026-11-26)
 
 The Windows host and trusted Azure DNS-label certificate are deployed in zavaw3/westus3. Native acceptance remains unrun: the catalogue POST lacked delegated OAuth scopes, the disabled/simulated schedule contains no real meeting links, Daniel/Maya lack roster Entra object ids, and organiser RSC/real voices are outstanding. The rows below refer only to GraphMedia; historical ACS, Simulated Room and hosted-relay evidence is not native-media evidence.
