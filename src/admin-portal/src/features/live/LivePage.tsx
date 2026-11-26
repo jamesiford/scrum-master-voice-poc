@@ -150,6 +150,25 @@ export function LivePage() {
                   <Alert tone={bridgeTone}>Bridge: {bridge}</Alert>
                 </div>
               )}
+              {live?.recording === false && (
+                <div className="mt-4 grid gap-3">
+                  <Alert tone={live.callState === 'Established' ? 'info' : 'warn'}>
+                    Teams-native media: {live.callState ?? 'Joining'}. Audio, transcripts and
+                    meeting-derived follow-ups are not saved.
+                  </Alert>
+                  <div className="flex flex-wrap gap-2" aria-label="Meeting participants">
+                    {live.participants?.map((participant) => (
+                      <Badge
+                        key={participant.participantId}
+                        tone={participant.guest ? 'warn' : 'ok'}
+                      >
+                        {participant.displayName}
+                        {participant.guest ? ' (guest, no work or approval access)' : ''}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Card>
             <Card
               title="Floor"
@@ -176,7 +195,7 @@ export function LivePage() {
                     <div>
                       <p className="text-xs text-muted">Latency p50 / p95</p>
                       <p className="text-lg font-semibold">
-                        {live.p50} / {live.p95} ms
+                        {live.recording === false ? 'Not retained' : `${live.p50} / ${live.p95} ms`}
                       </p>
                     </div>
                   </div>

@@ -6,6 +6,7 @@
     <Project Path="src/Zava.Scrum.Application/Zava.Scrum.Application.csproj" />
     <Project Path="src/Zava.Scrum.Domain/Zava.Scrum.Domain.csproj" />
     <Project Path="src/Zava.Scrum.Infrastructure/Zava.Scrum.Infrastructure.csproj" />
+    <Project Path="src/Zava.Scrum.MediaBot/Zava.Scrum.MediaBot.csproj" />
   </Folder>
   <Folder Name="/src/tests/">
     <Project Path="src/tests/Zava.Scrum.AgentHost.Tests/Zava.Scrum.AgentHost.Tests.csproj" />
@@ -14,6 +15,7 @@
     <Project Path="src/tests/Zava.Scrum.ArchitectureTests/Zava.Scrum.ArchitectureTests.csproj" />
     <Project Path="src/tests/Zava.Scrum.Domain.Tests/Zava.Scrum.Domain.Tests.csproj" />
     <Project Path="src/tests/Zava.Scrum.Infrastructure.Tests/Zava.Scrum.Infrastructure.Tests.csproj" />
+    <Project Path="src/tests/Zava.Scrum.MediaBot.Tests/Zava.Scrum.MediaBot.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/GateRunner/GateRunner.csproj" />

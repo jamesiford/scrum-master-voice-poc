@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.25",
+  "version": "1.0.0",
+  "id": "{{MEDIA_APP_ID}}",
+  "developer": {
+    "name": "Zava",
+    "websiteUrl": "https://{{MEDIA_FQDN}}",
+    "privacyUrl": "https://{{MEDIA_FQDN}}/privacy",
+    "termsOfUseUrl": "https://{{MEDIA_FQDN}}/terms"
+  },
+  "name": { "short": "Zava Scrum Media", "full": "Zava Scrum Agent non-recording media bot" },
+  "description": {
+    "short": "Live voice facilitation without recording.",
+    "full": "Teams-native Scrum facilitation. Audio and derived transcripts are transient; no meeting-derived data is stored. Guests receive no roster work or approval rights."
+  },
+  "icons": { "color": "color.png", "outline": "outline.png" },
+  "accentColor": "#2563EB",
+  "bots": [
+    {
+      "botId": "{{MEDIA_APP_ID}}",
+      "scopes": [ "groupChat" ],
+      "supportsCalling": true,
+      "supportsVideo": false,
+      "isNotificationOnly": true
+    }
+  ],
+  "permissions": [ "identity" ],
+  "validDomains": [ "{{MEDIA_FQDN}}" ],
+  "webApplicationInfo": { "id": "{{MEDIA_APP_ID}}", "resource": "api://{{MEDIA_APP_ID}}" },
+  "authorization": {
+    "permissions": {
+      "resourceSpecific": [
+        { "name": "Calls.JoinGroupCalls.Chat", "type": "Application" }
+      ]
+    }
+  }
+}

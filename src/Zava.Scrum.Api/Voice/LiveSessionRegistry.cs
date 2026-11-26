@@ -16,6 +16,12 @@ public sealed class LiveSessionRegistry : ILiveSessions
     /// <param name="send">Delivers a control action to its gateway.</param>
     public void Register(Guid sessionId, Action<string> send) => _entries[sessionId] = new Entry(send, "{}");
 
+    /// <summary>Claims a session without displacing an existing gateway.</summary>
+    /// <param name="sessionId">The standup.</param>
+    /// <param name="send">Delivers control to the owning gateway.</param>
+    /// <returns>Whether this gateway owns the session.</returns>
+    public bool TryRegister(Guid sessionId, Action<string> send) => _entries.TryAdd(sessionId, new Entry(send, "{}"));
+
     /// <summary>Stores the latest state pushed by the gateway.</summary>
     /// <param name="sessionId">The standup.</param>
     /// <param name="stateJson">The state as JSON.</param>

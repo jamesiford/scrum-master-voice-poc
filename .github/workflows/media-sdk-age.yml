@@ -1,0 +1,21 @@
+name: Media SDK freshness
+on:
+  pull_request:
+    paths:
+      - Directory.Packages.props
+      - src/Zava.Scrum.MediaBot/**
+      - eng/check-media-sdk.ps1
+      - .github/workflows/media-sdk-age.yml
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  freshness:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require newest media SDK or publication within three months
+        shell: pwsh
+        run: ./eng/check-media-sdk.ps1

@@ -13,6 +13,11 @@ public sealed class HttpMeetingBridge(HttpClient http, IOptions<BridgeOptions> o
     public async Task<Result> JoinAsync(MeetingJoinRequest request, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(request);
+        if (options.Value.Mode == "Simulated")
+        {
+            return Result.Failure(Error.Invalid("bridge.simulated_room", "Open the Simulated Room instead of joining a Teams meeting."));
+        }
+
         try
         {
             using var message = new HttpRequestMessage(HttpMethod.Post, "teams/join") { Content = JsonContent.Create(request) };
@@ -37,6 +42,7 @@ public sealed class HttpMeetingBridge(HttpClient http, IOptions<BridgeOptions> o
     /// <inheritdoc />
     public async Task LeaveAsync(Guid sessionId, CancellationToken ct)
     {
+        if (options.Value.Mode == "Simulated") { return; }
         try
         {
             using var message = new HttpRequestMessage(HttpMethod.Delete, $"teams/{sessionId}");

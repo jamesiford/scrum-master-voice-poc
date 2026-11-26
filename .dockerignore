@@ -4,6 +4,7 @@
 **/dist/
 .git/
 .azure/
+.m11-plan/
 .vs/
 data/
 appPackage/*.zip

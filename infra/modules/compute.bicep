@@ -62,6 +62,12 @@ param foundryProjectName string
 @description('The invocations_ws endpoint of the hosted agent that relays to Voice Live (ADR 0021). Empty means Voice Live is called directly.')
 param voiceRelayEndpoint string = ''
 
+@description('Selectable real meeting adapter.')
+param bridgeMode string = 'Acs'
+
+@description('HTTPS control origin of the opt-in Windows media host.')
+param graphMediaBaseUrl string = ''
+
 @secure()
 @description('Shared secret for API to bridge control calls. Generated at deployment and kept only as a Container Apps secret; nobody passes it in.')
 param bridgeApiKey string = newGuid()
@@ -145,6 +151,8 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
+            { name: 'Bridge__Mode', value: bridgeMode }
+            { name: 'Bridge__GraphMediaBaseUrl', value: graphMediaBaseUrl }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
           ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ])
         }

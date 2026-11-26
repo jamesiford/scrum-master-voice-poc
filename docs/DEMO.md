@@ -20,6 +20,8 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 8. **Retrospective**, **Story Writer** (pick a parked topic) and **Models and email** tabs for the stretch features.
 
 ## Real Teams meeting
+
+For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a/6b)" below. The existing ACS path remains the default for the full follow-up demo.
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live console** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "Zava Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
@@ -145,6 +147,25 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 | order by TimeGenerated desc
 ```
 
+## Teams-native media (6a/6b)
+
+This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the catalogue upload, stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md. Native G6/G2/G1 and real-human barge-in currently have n=0.
+
+After those prerequisites, persist the choice and apply it to the existing API (an image-only deployment does not change its environment):
+
+```pwsh
+azd env select zavaw3
+azd env set BRIDGE_MODE GraphMedia
+az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=GraphMedia"
+pwsh infra\hooks\verify-media.ps1 -RequireReady
+```
+
+The media hook sets `Bridge:GraphMediaBaseUrl` to the verified HTTPS origin and preserves the existing secret `Bridge:ApiKey`. Direct and Hosted voice routes both work through the existing factory; retain Direct unless separately testing the optional hosted route. Prepare a session for the chosen team and start it in Teams with its stored calendar link; the session's `mode` remains `acs`. The calling app must already be installed and consented in that meeting chat.
+
+The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no work facts or approval rights. Synthetic stop was dispatched 29.6 ms after the 350 ms threshold (n=1), with truncation at 120 played ms, **not measured in Teams**. Opening-state speech sustained for 600 ms did not cancel; shared opening/recap exceptions remain. Test these explicitly, rather than claiming unconditional barge-in.
+
+Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Restore the complete close-the-loop story with `azd env set BRIDGE_MODE Acs` and `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs"`, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected. The native board/video path is deferred to prompt 7.
+
 ## The hosted voice route, pre-warm and canary (M11 prompt 4)
 
 The voice can run through a Foundry hosted agent (a relay in front of Voice Live) or directly. Both give the same standup; the hosted route is selected by `VoiceLive__RelayEndpoint` on the API (the `voiceRoute` Bicep parameter, `Direct` or `Hosted`).
@@ -162,6 +183,8 @@ The voice can run through a Foundry hosted agent (a relay in front of Voice Live
 6. **Measure the hop.** `dotnet run --project tools/VoiceRelayBench -- --mode paired ...` (header comment in the file) alternates direct and relayed turns; `pwsh docs/gates/m11-p4/g1.ps1` runs the gate harness on both routes with the decision model on and off.
 
 ### Agent identity sign-ins (5B)
+
+For the separate calling application, see the native-media instructions below; it is not the hosted agent's Entra Agent ID.
 
 The hosted agent signs in as its own Entra Agent ID. Evidence, after a standup or a warm-up:
 
