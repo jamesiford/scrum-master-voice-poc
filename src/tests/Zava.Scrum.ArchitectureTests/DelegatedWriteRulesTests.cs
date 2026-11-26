@@ -57,6 +57,26 @@ public sealed class DelegatedWriteRulesTests
         Assert.Empty(hits);
     }
 
+    [Fact]
+    public void AgentHost_WhenItExists_HoldsNoSecretOfItsOwn()
+    {
+        var host = Path.Combine(FindRepositoryRoot(), "src", "Zava.Scrum.AgentHost");
+        if (!Directory.Exists(host))
+        {
+            return;
+        }
+
+        // The hosted agent signs in as its own Entra Agent ID (ADR 0022): no client secret, key or connection string in its source or settings.
+        var forbidden = new[] { "ClientSecret", "client_secret", "AccountKey", "ConnectionString", "SharedAccessKey", "ApiKey", "api-key" };
+        var hits = Directory.EnumerateFiles(host, "*.*", SearchOption.AllDirectories)
+            .Where(f => f.EndsWith(".cs", StringComparison.Ordinal) || f.EndsWith(".json", StringComparison.Ordinal))
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") && !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+            .Where(f => forbidden.Any(token => File.ReadAllText(f).Contains(token, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        Assert.Empty(hits);
+    }
+
     private static string FindRepositoryRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

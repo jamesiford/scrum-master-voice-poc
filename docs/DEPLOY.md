@@ -111,3 +111,12 @@ azd down --purge
 - `eastus2` hosted-agent support is documented on Learn but was measured only in West US 3 (ADR 0015 S3). The current application does not use hosted agents.
 - The destroy-and-rebuild proof is incomplete (G8): the second `azd up` stopped at preprovision because the deployer's privileged Entra role had lapsed. See docs/gates/M11-gates.md.
 - A new-subscription run was not possible: the work used one subscription and tenant.
+
+## Agent identity governance (prompt 5B, ADR 0022)
+
+`infra/hooks/agent-identity.ps1` (postdeploy) checks the hosted agent's Entra Agent ID: it is an agent identity, holds no secret or certificate, has a sponsor, and prints its recent sign-ins. Human gates, for a Conditional Access administrator (nothing in the deployment can create tenant policy):
+
+| Gate | Who | Action |
+| --- | --- | --- |
+| Conditional Access for agents | Conditional Access Administrator | Entra admin centre > Protection > Conditional Access > New policy > Target resources > Agents (agent identities): (1) block agent identities with high risk (Agent ID Protection risk); (2) block agent identities tagged non-production from production resources. Test in report-only first. |
+| Sponsor attestation | The agent's sponsor (`admin@` by default) | Quarterly: Entra admin centre > Agent ID > the agent > Sponsors and Access reviews; confirm the agent is still needed and its roles (Cognitive Services User and Azure AI User on the Foundry account) are still right. Replace the sponsor when they leave. |

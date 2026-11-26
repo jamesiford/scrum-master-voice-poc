@@ -232,3 +232,13 @@ G3 for Teams stays open until a real user approves from a card (human gate).
 | Decision | Hosted is a **documented option**; **direct stays the default**. Switch: `azd env set VOICE_ROUTE Hosted` and `azd provision`, or `VoiceLive__RelayEndpoint` on the API (docs/DEMO.md). |
 | Defects found | Cards, follow-ups and bot activities are still single Cosmos documents and fail with 413 after about 90 standups (both routes); the harness missed the end of a standup in about a third of long runs (fixed in `RoomRun`). See ADR 0021. |
 | 10-step Teams rehearsal | **Not run.** It needs the Teams app of this environment uploaded (a human gate in `docs/DEPLOY.md`; the app catalogue cannot be read with the current Graph permissions, so I could not confirm it) and people in a real meeting. Nothing was substituted. |
+
+## Prompt 5B: agent identity (ADR 0022)
+
+| Item | Result |
+| --- | --- |
+| Agent identity adopted (agentIdentity, blueprint) | **Verified live** in `zavaw3` by `agent-identity.ps1`. |
+| No secret on the identity; none in the host source | **Verified** (Graph: no credentials; architecture test over `src/Zava.Scrum.AgentHost`). |
+| Sponsor | **Verified** (`admin@`). |
+| Agent sign-ins with agentType | **Verified** (5 recent rows, `agenticAppInstance`). |
+| Conditional Access policies | **Not created, not tested** (human gate, DEPLOY.md). |
