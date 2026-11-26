@@ -67,7 +67,7 @@ public sealed class MediaCall : IAsyncDisposable
         _call = call;
         if (_media.VbssSocket is { } vbss)
         {
-            _boardTransport = new MediaBoardTransport(call, vbss, _logger);
+            _boardTransport = new MediaBoardTransport(call, vbss, _logger, _join.TeamId, _join.SessionId);
             _boardShare = new BoardShareSession(_boardTransport, TimeProvider.System, _logger, _join.TeamId, _join.SessionId,
                 (state, message) => Enqueue(new { type = "boardStatus", state, message }));
             _boardShare.SetEstablished(call.Resource.State == CallState.Established && !_inLobby);

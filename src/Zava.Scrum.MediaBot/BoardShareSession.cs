@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using Microsoft.Graph.Communications.Core.Exceptions;
+using Microsoft.Skype.Bots.Media;
 using Zava.Scrum.MediaBot.Board;
 
 namespace Zava.Scrum.MediaBot;
@@ -47,7 +48,9 @@ public sealed class BoardShareSession(
         {
             _pending = board.Clone();
             _dirty = true;
-            _wanted = board.GetProperty("opened").GetBoolean() && !board.GetProperty("ended").GetBoolean();
+            var wanted = board.GetProperty("opened").GetBoolean() && !board.GetProperty("ended").GetBoolean();
+            if (_wanted != wanted) { _reshare = true; }
+            _wanted = wanted;
         }
     }
 
@@ -70,8 +73,17 @@ public sealed class BoardShareSession(
     private async Task RunAsync()
     {
         var sharing = false;
+        var blocked = false;
+        string? lastStatus = null;
         byte[]? frame = null;
         var nextFrame = DateTimeOffset.MinValue;
+        void Report(string state, string? message = null)
+        {
+            if (state == lastStatus) { return; }
+            lastStatus = state;
+            status(state, message);
+        }
+
         try
         {
             using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100), time);
@@ -89,51 +101,66 @@ public sealed class BoardShareSession(
                     _reshare = false;
                 }
 
-                if ((!wanted || reshare) && sharing)
-                {
-                    await transport.StopAsync(_stop.Token);
-                    sharing = false;
-                    status("Stopped", null);
-                }
+                if (blocked && !reshare) { continue; }
 
-                if (wanted && !sharing)
+                try
                 {
-                    await transport.StartAsync(_stop.Token);
-                    sharing = true;
-                    status("Negotiating", null);
-                    nextFrame = DateTimeOffset.MinValue;
-                }
+                    if ((!wanted || reshare) && (sharing || blocked))
+                    {
+                        await transport.StopAsync(_stop.Token);
+                        sharing = false;
+                        Report("Stopped");
+                    }
 
-                if (dirty)
-                {
-                    var began = Stopwatch.GetTimestamp();
-                    frame = _renderer.RenderRgb24(board, time.GetUtcNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture));
-                    nextFrame = DateTimeOffset.MinValue;
-                    logger.LogInformation("Board rendered for {TeamId}/{SessionId} in {LatencyMs} ms",
-                        teamId, sessionId, Stopwatch.GetElapsedTime(began).TotalMilliseconds);
-                }
+                    if (wanted && !sharing)
+                    {
+                        await transport.StartAsync(_stop.Token);
+                        sharing = true;
+                        Report("Negotiating");
+                        nextFrame = DateTimeOffset.MinValue;
+                    }
 
-                if (sharing && transport.Active && frame is not null && time.GetUtcNow() >= nextFrame)
+                    if (dirty)
+                    {
+                        var began = Stopwatch.GetTimestamp();
+                        frame = _renderer.RenderRgb24(board, time.GetUtcNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture));
+                        nextFrame = DateTimeOffset.MinValue;
+                        logger.LogInformation("Board rendered for {TeamId}/{SessionId} in {LatencyMs} ms",
+                            teamId, sessionId, Stopwatch.GetElapsedTime(began).TotalMilliseconds);
+                    }
+
+                    if (sharing && frame is not null && time.GetUtcNow() >= nextFrame)
+                    {
+                        if (transport.TrySend(frame))
+                        {
+                            Report("Sharing");
+                            nextFrame = time.GetUtcNow().AddSeconds(1);
+                        }
+                        else { Report("Negotiating"); }
+                    }
+
+                    blocked = false;
+                }
+                catch (Exception ex) when (!_stop.IsCancellationRequested
+                    && ex is ServiceException or SkypeMediaException or HttpRequestException
+                        or InvalidOperationException or ArgumentException or OperationCanceledException)
                 {
-                    transport.Send(frame);
-                    status("Sharing", null);
-                    nextFrame = time.GetUtcNow().AddSeconds(1);
+                    // Wait for reconnect or ceremony close, rather than retrying a failed role every 100 ms.
+                    blocked = true;
+                    logger.LogError(ex, "Native board sharing failed for {TeamId}/{SessionId}; voice remains independent", teamId, sessionId);
+                    Report("Failed", "Native board sharing failed. Voice remains connected; inspect the media host diagnostics.");
                 }
             }
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }
-        catch (Exception ex) when (ex is ServiceException or HttpRequestException or InvalidOperationException or ArgumentException)
-        {
-            logger.LogError(ex, "Native board sharing failed for {TeamId}/{SessionId}; voice remains independent", teamId, sessionId);
-            status("Failed", "Native board sharing failed. Voice remains connected; inspect the media host diagnostics.");
-        }
         finally
         {
             if (sharing)
             {
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 try { await transport.StopAsync(timeout.Token); }
-                catch (Exception ex) when (ex is ServiceException or HttpRequestException or OperationCanceledException)
+                catch (Exception ex) when (ex is ServiceException or SkypeMediaException or HttpRequestException
+                    or InvalidOperationException or ArgumentException or OperationCanceledException)
                 {
                     logger.LogError(ex, "Native board stop failed for {TeamId}/{SessionId}", teamId, sessionId);
                 }
