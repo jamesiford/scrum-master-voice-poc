@@ -1,6 +1,6 @@
 # 0021. Hosted agent split and state
 
-Status: partly built. The voice relay, session storage, pre-warm, rollout and team context are built and measured. The decision model's p95 gate (G1) is **not met** on the hosted route, so the hosted route ships as a selectable adapter and the default stays direct. Moving the voice gateway, the ceremony agents and the Teams handlers into the host is **not done** (see "Not moved"). Prompt 4.
+Status: partly built. The voice relay, session storage, pre-warm, rollout and team context are built and measured. **G1 was settled in prompt 4A (see "G1 settled"): the hosted route holds on the point estimates in all four cells, with intervals that do not rule out a small overrun.** It ships as a documented, selectable option; the default stays direct. Moving the voice gateway, the ceremony agents and the Teams handlers into the host is **not done** (see "Not moved"). Prompt 4.
 
 ## Context
 
@@ -39,10 +39,38 @@ Paired by round (hosted minus direct, model on): p50 -176, -370, +218 ms; p95 +9
 - **What the tail is made of:** the two slowest hosted turns with the model on (5823 and 5679 ms) were orchestration outliers (4311 and 3880 ms) with a normal voice first audio (1330 and 1360 ms), not slow voice; a direct run with the model off has the same kind of outlier (orchestration 3985 ms, total 5822 ms). The voice component the hop affects has medians of 1499 against 1535 ms (model on) and 1485 against 1458 ms (off). I did not find the cause of the orchestration outliers.
 - **What cannot be said:** with 36 turns the p95 is the second slowest turn, so one or two outliers decide it. The S6 bench (64 paired turns per run) put the hop's own p95 cost at about 4 % of the baseline. The two measurements disagree about the tail and neither is large enough to settle it.
 
-**G1 is therefore not passed for the hosted route at p95 with the decision model on.** By the rule of the prompt I stop and write the options, not tune the gate:
+**This first result (36 turns per cell) was too small to settle the p95; prompt 4A reran it (next section) and it is superseded there.** The options written at the time:
 1. Keep `Direct` as the default (`voiceRoute`) and ship the hosted route as a selectable adapter; run the gate again with at least 100 turns per cell before changing the default.
 2. Find and fix the orchestration outliers (3.9 to 4.3 s) that appear on both routes; they, not the relay, set the tail.
 3. Remove the extra hop by moving the voice gateway into the host, so the bridge connects to the host and the host to Voice Live. That needs the host to read Azure DevOps through the API for every read and write (no credential in the host), which is the larger change not made here.
+
+## G1 settled (prompt 4A, 26 November 2026)
+
+**Method.** Same deployed `zavaw3` (westus3), same build, `docs/gates/m11-p4a/g1.ps1`: six rounds, each round runs direct and hosted with the decision model on and off, alternating which route goes first, **three concurrent Simulated Room standups per run** (one per team, the G9 shape), so each cell has about 200 turns (201 to 211) and each hosted run has a direct run minutes away. Raw results in `docs/gates/m11-p4a/g1/`, analysis in `analysis.txt` (`analyse.ps1`: pooled percentiles, a 3000-sample bootstrap 95 % interval, per-round paired differences, composition of the slowest 5 %). Rounds 1 and 2 ran first, rounds 3 to 6 after the fixes below, so the six rounds span a few hours, not one window; the pairing is within a round.
+
+| Decision model | Route | Turns | Total p50 | Total p95 |
+| --- | --- | ---: | ---: | ---: |
+| On | Direct | 201 | 3197 | 4269 |
+| On | Hosted | 210 | 3239 | 4504 |
+| Off | Direct | 203 | 2990 | 4604 |
+| Off | Hosted | 211 | 3041 | 4246 |
+
+| Hosted minus direct | Pooled difference (95 % interval) | Per-round mean (sd, rounds hosted slower) |
+| --- | --- | --- |
+| Model on, p50 | +42 ms, +1.3 % (-3.1 to +5.7 %) | +67 ms (93, 5 of 6) |
+| Model on, p95 | +235 ms, +5.5 % (-6.1 to +16.2 %) | +410 ms (1012, 5 of 6) |
+| Model off, p50 | +51 ms, +1.7 % (-1.9 to +6.0 %) | +60 ms (157, 4 of 6) |
+| Model off, p95 | -358 ms, -7.8 % (-16.3 to +18.9 %) | -84 ms (1105, 2 of 6) |
+
+**The earlier 20 % p95 was noise.** With 36 turns the p95 was one or two turns; with about 200 it is +5.5 % (model on) and -7.8 % (off).
+
+**Decision.** By the rule of the gate (p50 within 5 %, p95 within 10 %, no tuning) the hosted route **holds in all four cells on the point estimates**: p50 +1.3 % and +1.7 %, p95 +5.5 % and -7.8 %. I do not claim more than that: the bootstrap intervals are wide at p95 (up to +16 % and +19 %) and the upper end of the p50 interval is just over 5 % (5.7 % and 6.0 %), so a real overrun of a few percent cannot be excluded at this sample size, and the hosted run was slower than direct in 5 of 6 rounds with the model on. So hosted is a **documented option, not the default**: direct stays the default (it avoids the sandbox cost and the extra connect time, and the gate evidence for hosted is a pass without margin). To switch: `azd env set VOICE_ROUTE Hosted` then `azd provision` (the hook has already created the agent), or without a redeploy set `VoiceLive__RelayEndpoint` on the API (docs/DEMO.md, "The hosted voice route"); to go back, remove it.
+
+**What the slowest turns are.** Slowest 5 % of turns, model on: direct 4937 ms mean, orchestration 42 % and Voice Live first audio 54 % of the turn; hosted 5666 ms, orchestration 33 % and voice 62 %; the voice median of those turns is 3152 ms hosted against 2667 ms direct (+485 ms), the orchestration median 1579 against 1656. Voice first audio p95 is 2708 against 2476 ms (+9 %). Model off: direct orchestration 51 % and voice 48 %, hosted 58 % and 42 %, with orchestration medians 2772 against 2569 ms. So with the decision model on the hosted tail is **voice-dominated, which is where the hop sits (consistent with S6: +180 to +230 ms at p95)**, not orchestration; with the model off the tail is orchestration-dominated on both routes. This corrects the reading in the first run, which called the slowest hosted turns orchestration outliers: that was true of the few turns in that sample and not of the larger one. The hop adds a tail cost of a few hundred milliseconds to the slowest voice turns; it does not change the median.
+
+**Defects found while measuring (not caused by the hosted route; both routes failed).**
+1. **Cards, follow-ups and bot activities are still whole-collection Cosmos documents.** After about 90 standups of three teams the card outbox passed 2 MB and `SendPreBriefCardOnStandupPrepared` failed with Cosmos 413 (`RequestEntityTooLarge`), after which runs failed on both routes. Step 0a moved only sessions. The driver now resets the demo before each run (`POST /api/demo/reset`). The fix is the same as 0a for `cards.json`, `followups.json` and `bot-activities.json`; not done here.
+2. **The gate harness could miss the end of a standup.** It waited for the page to show "Closed"; in about a third of long multi-team runs the page never repainted although the session had ended on the server minutes earlier, so the run timed out at 25 minutes. `RoomRun` now also treats the server session status `Ended` as the end (the timings come from the server). Results of runs that were lost or interrupted are kept in `docs/gates/m11-p4a/incomplete/` and are not in the analysis; rounds 3 to 6 were rerun in full after the fix.
 
 ## Not moved (differences from the prompt, and why)
 
@@ -54,15 +82,15 @@ Paired by round (hosted minus direct, model on): p50 -176, -370, +218 ms; p95 +9
 
 ## Consequences
 
-- The default voice route is direct. The hosted route is available with `VOICE_ROUTE=Hosted` or a `VoiceLive__RelayEndpoint` setting, and costs the sandbox's allocated CPU and memory per active session.
+- The default voice route is direct, and stays so after prompt 4A. The hosted route is available with `VOICE_ROUTE=Hosted` or a `VoiceLive__RelayEndpoint` setting, and costs the sandbox's allocated CPU and memory per active session.
 - Session storage no longer limits the number of standups. The migration runs at every API start and is safe to repeat.
 - `azd deploy` runs the postdeploy hook, which creates a new version of the stable agent; while the selector is unpinned (the default `@latest`) a new version is live at once. Pin first (`canary.ps1 -Pin <version>`) to keep a version stable while a candidate is tried.
 - The hosted-agent administration SDK is the 3.0 beta (`tools/AgentDeploy`), separate from the 2.x line the solution uses.
 
 ## Not verified
 
-- G1 at p95 with the decision model on (above), and any sample larger than 36 turns per cell.
-- The 10-step Teams rehearsal and the Teams path on the hosted route (the Teams handlers did not move).
+- G1 intervals: the p95 intervals reach +16 % and +19 % and the p50 intervals +5.7 % and +6.0 %; a larger sample or a client inside Azure would narrow them. Concurrent three-team standups, not a single-team standup, were measured.
+- The 10-step Teams rehearsal (prompt 4A: **not run**, see `docs/gates/M11-gates.md`) and the Teams path on the hosted route (the Teams handlers did not move).
 - G8 destroy and rebuild with this change: `azd up` and `azd deploy` ran on the existing environment and the new hook created the agent (versions 2 to 4 and the canary), but `azd down --purge` and a rebuild were not run.
 - A canary with real traffic: the live test used 14 prepares (8 to the canary at 50 %, then a rollback to 8 of 8 stable), not voice turns through the canary agent.
 - The host after a real platform stop (the 16-minute idle test was the relay only, and ran before the team check was added).

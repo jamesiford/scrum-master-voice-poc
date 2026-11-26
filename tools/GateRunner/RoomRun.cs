@@ -37,7 +37,7 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
         await page.GotoAsync($"{start.RoomUrl}&autopilot=1");
         await page.WaitForFunctionAsync("() => !document.getElementById('start').disabled", null, new PageWaitForFunctionOptions { Timeout = 30_000 });
         await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Start standup" }).ClickAsync();
-        await page.WaitForFunctionAsync("() => document.getElementById('floor')?.textContent?.startsWith('Closed')", null, new PageWaitForFunctionOptions { Timeout = (float)timeout.TotalMilliseconds });
+        await WaitForCloseAsync(page, sessionId, timeout, ct);
 
         var session = await _http.GetFromJsonAsync<JsonElement>($"/api/sessions/{sessionId}", Json, ct);
         var turns = ReadTurns(session);
@@ -48,6 +48,30 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
             TalkOvers: turns.Count(t => t.Reason == "TalkOver"),
             HumanSegments: exchanges.Count(e => e.MemberId is not null),
             Exchanges: exchanges);
+    }
+
+    // The page shows "Closed" when the standup ends, but in a long multi-team run a page sometimes never repaints it (seen in prompt 4A: the
+    // session had ended on the server minutes earlier). The timings come from the server session, so the end is also read from there.
+    private async Task WaitForCloseAsync(IPage page, string sessionId, TimeSpan timeout, CancellationToken ct)
+    {
+        var deadline = DateTimeOffset.UtcNow + timeout;
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            if (await page.EvaluateAsync<bool>("() => document.getElementById('floor')?.textContent?.startsWith('Closed') === true"))
+            {
+                return;
+            }
+
+            var session = await _http.GetFromJsonAsync<JsonElement>($"/api/sessions/{sessionId}", Json, ct);
+            if (session.TryGetProperty("status", out var status) && status.ToString() == "Ended")
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(5), ct);
+        }
+
+        throw new TimeoutException($"The standup {sessionId} did not close within {timeout.TotalMinutes:F0} minutes.");
     }
 
     /// <inheritdoc />
