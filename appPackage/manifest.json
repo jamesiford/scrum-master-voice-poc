@@ -1,18 +1,18 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
   "manifestVersion": "1.25",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "id": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
   "developer": {
     "name": "Zava Scrum PoC",
     "websiteUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
-    "privacyUrl": "https://github.com/jamesiford/scrum-master-voice-poc",
-    "termsOfUseUrl": "https://github.com/jamesiford/scrum-master-voice-poc"
+    "privacyUrl": "https://ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io/privacy.html",
+    "termsOfUseUrl": "https://ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io/terms.html"
   },
   "name": { "short": "Zava Scrum Agent", "full": "Zava Scrum Agent (PoC)" },
   "description": {
-    "short": "Junior Scrum Master that posts standup recaps and follow-ups.",
-    "full": "Runs the daily standup, posts the recap, and sends each person a follow-up card. Approving a card writes the agreed update to Azure DevOps."
+    "short": "Permission-scoped sprint questions, standup recaps and approved follow-ups.",
+    "full": "Answers five read-only sprint questions with your own Azure DevOps permissions: blockers, your commitments, sprint risk, today's standup status and your assigned items. Runs the daily standup, posts the recap and sends follow-up cards. Approving a card writes the agreed update to Azure DevOps as the approver."
   },
   "icons": { "color": "color.png", "outline": "outline.png" },
   "accentColor": "#005FB8",
@@ -20,13 +20,34 @@
   "bots": [
     {
       "botId": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
-      "scopes": ["personal", "team", "groupChat"],
+      "scopes": ["personal", "team", "groupChat", "copilot"],
+      "commandLists": [
+        {
+          "scopes": ["personal", "team", "groupChat", "copilot"],
+          "commands": [
+            { "title": "What is blocked on my team?", "description": "Readable sprint blockers, with work item links." },
+            { "title": "What did I commit to?", "description": "Your recorded commitments linked to readable sprint items." },
+            { "title": "What is at risk in this sprint?", "description": "At-risk and overdue items computed by the sprint rules." },
+            { "title": "What is the standup status today?", "description": "Today's standup lifecycle in the team's time zone." },
+            { "title": "Show my items and their state.", "description": "Current-sprint items assigned to your verified Azure DevOps identity." }
+          ]
+        }
+      ],
       "supportsFiles": false,
       "isNotificationOnly": false
     }
   ],
+  "copilotAgents": {
+    "customEngineAgents": [
+      {
+        "type": "bot",
+        "id": "38a0a184-e4b8-4864-8d87-bde05a6ae7e9",
+        "disclaimer": { "text": "AI phrases the introduction; sprint facts and citations come from code with your Azure DevOps access. Changes require an approved follow-up." }
+      }
+    ]
+  },
   "permissions": ["identity", "messageTeamMembers"],
-  "validDomains": [],
+  "validDomains": ["ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io", "ca-bridge-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io"],
   "authorization": {
     "permissions": {
       "resourceSpecific": [
