@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zava Scrum Agent privacy notice</title>
+  </head>
+  <body>
+    <main>
+      <h1>Zava Scrum Agent privacy notice</h1>
+      <p>
+        This is a demonstration proof of concept operated by James Ford, not a production service.
+        Use demonstration data only.
+      </p>
+      <p>
+        The agent uses your Entra identity to resolve team membership. Copilot sprint questions read
+        Azure DevOps using your own delegated permissions. Access tokens are not written to the
+        application store or included in model prompts.
+      </p>
+      <p>
+        The application stores team settings, roster identities, session lifecycle, approved
+        follow-ups and an approval audit trail in the deployment's Cosmos DB. The ACS and Simulated
+        Room paths can store transcripts, commitments and recaps. The native Graph media path does
+        not store meeting-derived audio, transcripts, attendance or proposals.
+      </p>
+      <p>
+        Foundry models process authorised prompts to phrase answers and facilitate ceremonies.
+        Copilot introductions receive only a computed summary; cited work item content is rendered
+        by code. Teams messages and Azure DevOps data also remain subject to those services'
+        retention policies.
+      </p>
+      <p>
+        No data is sold or used for advertising. A deployment administrator controls access and demo
+        reset; demo reset is not deletion of the approval audit trail. Contact the repository owner
+        through
+        <a href="https://github.com/jamesiford/scrum-master-voice-poc/issues"
+          >the project issue tracker</a
+        >
+        for access, correction or deletion requests. Do not post private data in public issues.
+      </p>
+      <p><a href="terms.html">Terms of use</a></p>
+    </main>
+  </body>
+</html>
