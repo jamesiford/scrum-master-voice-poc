@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Graph.Communications.Client;
+using Microsoft.Extensions.Options;
 using Zava.Scrum.MediaBot;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,12 @@ app.Use(async (context, next) =>
 
     await next();
 });
-app.MapGet("/healthz", () => Results.Ok(new { service = "media-bot", recording = false }));
+app.MapGet("/healthz", (IOptions<MediaBotOptions> options) => Results.Ok(new
+{
+    service = "media-bot",
+    recording = false,
+    maxConcurrentMeetings = options.Value.MaxConcurrentMeetings,
+}));
 app.MapGet("/privacy", () => Results.Text("Audio and audio-derived content are used transiently during the meeting and are not recorded or stored. This bot has no approval or Azure DevOps write capability."));
 app.MapGet("/terms", () => Results.Text("Preview non-recording Scrum facilitation. Use the existing signed-in portal approval flow for work item changes."));
 app.MapPost("/teams/join", async (MeetingJoin join, MediaBotService bot, CancellationToken ct) =>
