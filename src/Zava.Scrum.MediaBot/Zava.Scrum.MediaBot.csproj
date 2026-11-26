@@ -7,6 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Graph.Communications.Calls.Media" />
+    <!-- Native payload uses build assets, not buildTransitive; keep the central pin aligned with the calling SDK. -->
+    <PackageReference Include="Microsoft.Skype.Bots.Media" />
     <PackageReference Include="Azure.Identity" />
   </ItemGroup>
 </Project>

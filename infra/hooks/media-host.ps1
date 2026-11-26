@@ -64,6 +64,9 @@ try {
   $build = Join-Path $work 'publish'
   dotnet publish "$PSScriptRoot\..\..\src\Zava.Scrum.MediaBot\Zava.Scrum.MediaBot.csproj" -c Release -r win-x64 --self-contained true -o $build --verbosity quiet
   if ($LASTEXITCODE -ne 0) { throw 'Media host publish failed.' }
+  if (-not (Test-Path (Join-Path $build 'NativeMedia.dll'))) {
+    throw 'The media publish is missing the SDK native payload. Check the aligned Microsoft.Skype.Bots.Media reference.'
+  }
   $zip = Join-Path $work 'media.zip'
   Compress-Archive -Path "$build\*" -DestinationPath $zip
   $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
