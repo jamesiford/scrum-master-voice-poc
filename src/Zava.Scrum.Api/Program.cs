@@ -15,10 +15,14 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks();
 builder.AddPortalAuthentication();
+builder.Services.AddAuthentication().AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, MediaHostAuthenticationHandler>(
+    MediaHostAuthenticationHandler.SchemeName, _ => { });
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddOptions<VoiceGatewayOptions>().Bind(builder.Configuration.GetSection(VoiceGatewayOptions.SectionName)).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<BridgeTokenService>();
 builder.Services.AddTransient<VoiceGateway>();
+builder.Services.AddTransient<GraphMediaVoiceGateway>();
+builder.Services.AddTransient<MediaSessionLoader>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.ILiveSessions>(sp => sp.GetRequiredService<LiveSessionRegistry>());
 builder.Services.AddSingleton<Zava.Scrum.Application.Abstractions.Ports.IBridgeAccess, BridgeAccess>();
@@ -92,6 +96,7 @@ api.MapAuditEndpoints();
 
 // The bridge websocket authenticates with its own short-lived, session-bound token, not a portal bearer token.
 app.MapBridgeEndpoints();
+app.MapGraphMediaEndpoints();
 app.MapFallbackToFile("index.html");
 
 app.Run();

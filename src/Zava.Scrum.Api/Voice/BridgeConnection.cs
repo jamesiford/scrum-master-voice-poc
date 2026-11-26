@@ -43,6 +43,10 @@ public sealed class BridgeConnection(WebSocket socket) : IDisposable
             }
 
             message.Write(buffer, 0, result.Count);
+            if (message.Length > 1024 * 1024)
+            {
+                throw new WebSocketException("The bridge message exceeded the 1 MB protocol limit.");
+            }
         }
         while (!result.EndOfMessage);
 

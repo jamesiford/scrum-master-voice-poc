@@ -38,7 +38,14 @@ public static class DependencyInjection
         AddOptions<FoundryOptions>(services, configuration, FoundryOptions.SectionName);
         AddOptions<UtteranceAnalysisOptions>(services, configuration, UtteranceAnalysisOptions.SectionName);
         AddOptions<VoiceLiveOptions>(services, configuration, VoiceLiveOptions.SectionName);
-        services.AddOptions<BridgeOptions>().Bind(configuration.GetSection(BridgeOptions.SectionName));
+        services.AddOptions<BridgeOptions>().Bind(configuration.GetSection(BridgeOptions.SectionName))
+            .Validate(o => o.Mode is "Acs" or "Simulated" or "GraphMedia", "Bridge:Mode must be Acs, Simulated or GraphMedia.")
+            .Validate(o => o.Mode != "GraphMedia" || Uri.TryCreate(o.GraphMediaBaseUrl, UriKind.Absolute, out var uri)
+                && uri.Scheme == Uri.UriSchemeHttps && !string.IsNullOrWhiteSpace(o.ApiKey),
+                "GraphMedia requires an HTTPS GraphMediaBaseUrl and a secret ApiKey.")
+            .Validate(o => o.Mode != "GraphMedia" || !string.IsNullOrWhiteSpace(configuration["VoiceLive:RelayEndpoint"]),
+                "GraphMedia requires the hosted VoiceLive:RelayEndpoint (ADR 0015 S6).")
+            .ValidateOnStart();
         AddOptions<BotOptions>(services, configuration, BotOptions.SectionName);
         AddOptions<TeamDefaultsOptions>(services, configuration, TeamDefaultsOptions.SectionName);
         AddOptions<FlagsOptions>(services, configuration, FlagsOptions.SectionName);
@@ -80,12 +87,24 @@ public static class DependencyInjection
         services.AddSingleton<ITeamsMessenger, TeamsBotMessenger>();
         services.AddSingleton<ICardOutbox>(sp => sp.GetRequiredService<OutboxTeamsMessenger>());
 
-        services.AddHttpClient<IMeetingBridge, HttpMeetingBridge>((sp, client) =>
+        services.AddHttpClient<HttpMeetingBridge>((sp, client) =>
         {
             var bridge = sp.GetRequiredService<IOptions<BridgeOptions>>().Value;
             client.BaseAddress = new Uri((bridge.BaseUrl ?? bridge.RoomBaseUrl).TrimEnd('/') + "/");
             client.Timeout = TimeSpan.FromSeconds(60);
         });
+        services.AddHttpClient<GraphMediaBridge>((sp, client) =>
+        {
+            var bridge = sp.GetRequiredService<IOptions<BridgeOptions>>().Value;
+            if (!string.IsNullOrWhiteSpace(bridge.GraphMediaBaseUrl))
+            {
+                client.BaseAddress = new Uri(bridge.GraphMediaBaseUrl.TrimEnd('/') + "/");
+            }
+
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
+        services.AddTransient<IMeetingBridge>(sp => sp.GetRequiredService<IOptions<BridgeOptions>>().Value.Mode == "GraphMedia"
+            ? sp.GetRequiredService<GraphMediaBridge>() : sp.GetRequiredService<HttpMeetingBridge>());
         AddAdoClient(services);
         AddFoundry(services);
         services.AddSingleton<IVoiceSessionFactory, VoiceLiveSessionFactory>();

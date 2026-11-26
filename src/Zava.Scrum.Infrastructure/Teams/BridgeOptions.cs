@@ -6,6 +6,12 @@ public sealed class BridgeOptions
     /// <summary>The configuration section name.</summary>
     public const string SectionName = "Bridge";
 
+    /// <summary>Gets or sets the real meeting adapter: Acs (default), Simulated or GraphMedia.</summary>
+    public string Mode { get; set; } = "Acs";
+
+    /// <summary>Gets or sets the HTTPS control address of the Windows media host.</summary>
+    public string GraphMediaBaseUrl { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the address the browser opens the Simulated Room on.</summary>
     public string RoomBaseUrl { get; set; } = "http://localhost:5090";
 
