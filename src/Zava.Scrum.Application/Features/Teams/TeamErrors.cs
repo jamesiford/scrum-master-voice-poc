@@ -47,4 +47,5 @@ public static class TeamErrors
         $"Could not confirm that '{organisation}' belongs to this Entra tenant. Check the organisation URL and try again.");
 
     /// <summary>Gets the error for an organisation URL that is not an Azure DevOps organisation.</summary>
-    public static Error BadOrganisation { get; } = Error.Invalid("team.org_invalid", "The Azure DevOps organisation must be https://dev.azure.com/{name} or https://{name}.visualstudio.com.");}
+    public static Error BadOrganisation { get; } = Error.Invalid("team.org_invalid", "The Azure DevOps organisation must be https://dev.azure.com/{name} or https://{name}.visualstudio.com.");
+}
