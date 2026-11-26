@@ -246,6 +246,51 @@
     }
   },
   {
+    "name": "retro-themes",
+    "gatewayPhase": "RetroThemes",
+    "state": {
+      "kind": "retro",
+      "recording": false,
+      "ended": false,
+      "sprint": "Sprint 43",
+      "phase": "Actions",
+      "speaker": null,
+      "columns": [
+        {
+          "key": "Continue",
+          "label": "What went well",
+          "notes": [
+            { "text": "Pairing improved delivery", "member": "Maya Lin" },
+            { "text": "Reviews were quick", "member": "Daniel Park" }
+          ]
+        },
+        {
+          "key": "Stop",
+          "label": "Do better",
+          "notes": [
+            { "text": "Earlier dependency checks", "member": "Maya Lin" }
+          ]
+        },
+        {
+          "key": "Start",
+          "label": "What's missing",
+          "notes": [{ "text": "Operational visibility", "member": "Admin" }]
+        }
+      ],
+      "themes": [
+        { "name": "Collaboration", "count": 2 },
+        { "name": "Dependencies", "count": 1 },
+        { "name": "Observability", "count": 1 }
+      ],
+      "actions": [],
+      "team": [
+        { "name": "Maya Lin" },
+        { "name": "Daniel Park" },
+        { "name": "Admin" }
+      ]
+    }
+  },
+  {
     "name": "retro-actions",
     "state": {
       "kind": "retro",

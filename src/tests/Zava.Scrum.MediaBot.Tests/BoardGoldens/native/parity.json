@@ -481,6 +481,80 @@
       ]
     },
     {
+      "name": "retro-themes",
+      "exactPixelIdentity": false,
+      "nativePngSha256": "accdecd8aa0202f97a48d8f55909abbc4df7c13b631391db38bd1e0a066cbcc5",
+      "chromiumPngSha256": "4bc4537e6a87f20ba0ff672b393f0aaf5c767a12eb5cdba19cc828144e6d9c5a",
+      "nativeRgb24Sha256": "3d5a35276a95019e9d523cf045412e5fd476e13eb1785031080f02ce74bdcbee",
+      "regions": [
+        {
+          "Name": "header",
+          "ChangedPixels": 3852,
+          "ChangedPixelPercent": 1.880859375,
+          "MeanAbsoluteChannelError": 0.46923828125,
+          "MaximumChannelError": 181
+        },
+        {
+          "Name": "columns",
+          "ChangedPixels": 7142,
+          "ChangedPixelPercent": 1.74365234375,
+          "MeanAbsoluteChannelError": 0.6387996419270834,
+          "MaximumChannelError": 207
+        },
+        {
+          "Name": "actions",
+          "ChangedPixels": 2900,
+          "ChangedPixelPercent": 0.9440104166666666,
+          "MeanAbsoluteChannelError": 0.10790256076388889,
+          "MaximumChannelError": 107
+        }
+      ],
+      "geometry": [
+        {
+          "Name": "column 0 accent",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        },
+        {
+          "Name": "column 0 background",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        },
+        {
+          "Name": "column 1 accent",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        },
+        {
+          "Name": "column 1 background",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        },
+        {
+          "Name": "column 2 accent",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        },
+        {
+          "Name": "column 2 background",
+          "ChangedPixels": 0,
+          "ChangedPixelPercent": 0,
+          "MeanAbsoluteChannelError": 0,
+          "MaximumChannelError": 0
+        }
+      ]
+    },
+    {
       "name": "retro-actions",
       "exactPixelIdentity": false,
       "nativePngSha256": "4352cff68fae3a9feddf5d6aec7bcdee3427c2001e94977232a5b754d0e26682",

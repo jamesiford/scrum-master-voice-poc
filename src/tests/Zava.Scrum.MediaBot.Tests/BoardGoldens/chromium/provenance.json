@@ -5,7 +5,7 @@
   "clock": "1:23:45 PM",
   "locale": "en-US",
   "sourceSha256": "523b05a0eb7af8a4ba194d4dec6785528ac6b89f3ab5cff5a34ef82bb0ef0d71",
-  "fixturesSha256": "3ef370d41d706a1f03882882d6e6df895fd212ccd85eb02edeb8b8663414440d",
+  "fixturesSha256": "67281c40fd0d3643c1a2e3a0caa5205c80b7068670d9fff61e21a85ffa8ac67a",
   "fixtures": [
     {
       "name": "waiting",
@@ -38,6 +38,10 @@
     {
       "name": "retro-round-notes",
       "sha256": "4c6ee9175e7273fcb7878227b0fd873bb1fd94073095f579c71bb647f475038e"
+    },
+    {
+      "name": "retro-themes",
+      "sha256": "4bc4537e6a87f20ba0ff672b393f0aaf5c767a12eb5cdba19cc828144e6d9c5a"
     },
     {
       "name": "retro-actions",
