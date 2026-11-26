@@ -247,6 +247,8 @@ public static class DependencyInjection
             ? sp.GetRequiredService<DecisionUtteranceAnalyser>()
             : sp.GetRequiredService<FoundryUtteranceAnalyser>());
         services.AddTransient<IReportingAgent, FoundryReportingAgent>();
+        services.AddTransient<ICopilotPhraser, FoundryCopilotPhraser>();
+        services.AddTransient<IDelegatedWorkItemReader, DelegatedWorkItemReader>();
         services.AddTransient<IDraftingAgent, FoundryDraftingAgent>();
         services.AddSingleton<IKpiHistorySource, Reports.FixtureKpiHistorySource>();
     }

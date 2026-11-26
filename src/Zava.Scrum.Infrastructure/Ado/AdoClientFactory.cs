@@ -25,6 +25,12 @@ internal interface IAdoClientFactory
     /// <param name="accessToken">The approver's delegated Azure DevOps token. It is used for this writer only and is never cached.</param>
     /// <returns>A writer for one write; dispose nothing, it shares the factory's connection pool.</returns>
     AdoWorkItemWriter DelegatedWriterFor(string organisationUrl, string accessToken);
+
+    /// <summary>Creates an uncached client with only the asker's token; the caller disposes it.</summary>
+    /// <param name="organisationUrl">The validated Azure DevOps organisation.</param>
+    /// <param name="accessToken">The asker's delegated token.</param>
+    /// <returns>A client sharing only the connection pool, not credentials.</returns>
+    HttpClient DelegatedClientFor(string organisationUrl, string accessToken);
 }
 
 /// <summary>
@@ -37,13 +43,14 @@ internal interface IAdoClientFactory
 /// <param name="demo">Demo options.</param>
 /// <param name="loggers">Logger factory.</param>
 /// <param name="transport">Creates the innermost handler; <see langword="null"/> uses the network. Tests pass a fake here.</param>
-/// <remarks>Writes never use this credential: <see cref="DelegatedWriterFor"/> carries the approver's own token (ADR 0020).</remarks>
+/// <remarks>Writes and Copilot reads never use this credential: the delegated clients carry one person's own token (ADRs 0020 and 0025).</remarks>
 internal sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoOptions> options, IOptions<DemoOptions> demo, ILoggerFactory loggers, Func<HttpMessageHandler>? transport = null) : IAdoClientFactory, IDisposable
 {
     private const string AdoScope = "499b84ac-1321-427f-aa17-267ca6975798/.default";
     private readonly ConcurrentDictionary<string, Lazy<HttpClient>> _clients = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, Lazy<AdoRestClient>> _readers = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Lazy<HttpMessageHandler> _delegatedTransport = new(() => transport?.Invoke() ?? new SocketsHttpHandler());
+    // A shared connection pool must not share authentication cookies between people.
+    private readonly Lazy<HttpMessageHandler> _delegatedTransport = new(() => transport?.Invoke() ?? new SocketsHttpHandler { UseCookies = false });
 
     /// <inheritdoc />
     public HttpClient For(string organisationUrl) => _clients.GetOrAdd(Normalise(organisationUrl), Create).Value;
@@ -57,12 +64,16 @@ internal sealed class AdoClientFactory(TokenCredential credential, IOptions<AdoO
 
     /// <inheritdoc />
     public AdoWorkItemWriter DelegatedWriterFor(string organisationUrl, string accessToken)
+        => new(DelegatedClientFor(organisationUrl, accessToken), demo, loggers.CreateLogger<AdoWorkItemWriter>());
+
+    /// <inheritdoc />
+    public HttpClient DelegatedClientFor(string organisationUrl, string accessToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(accessToken);
         var org = Normalise(organisationUrl);
         var client = new HttpClient(_delegatedTransport.Value, disposeHandler: false) { BaseAddress = new Uri(org + "/"), Timeout = TimeSpan.FromSeconds(100) };
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-        return new AdoWorkItemWriter(client, demo, loggers.CreateLogger<AdoWorkItemWriter>());
+        return client;
     }
 
     /// <summary>Gets how many organisations have a client (for tests and diagnostics).</summary>

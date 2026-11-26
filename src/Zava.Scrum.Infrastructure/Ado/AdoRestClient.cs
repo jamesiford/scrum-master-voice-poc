@@ -155,7 +155,7 @@ internal sealed class AdoRestClient(HttpClient http, IOptions<DemoOptions> demo,
         }
 
         var (path, start, finish) = iteration.Value;
-        var ids = await QueryIdsAsync(teamPath, team.Ado.Project, path, ct);
+        var ids = await QueryIdsAsync(teamPath, team.Ado.Project, team.Ado.AreaPath, path, ct);
         var items = new List<WorkItem>();
         foreach (var chunk in ids.Chunk(BatchSize))
         {
@@ -181,10 +181,11 @@ internal sealed class AdoRestClient(HttpClient http, IOptions<DemoOptions> demo,
             attributes.GetProperty("finishDate").GetDateTimeOffset());
     }
 
-    private async Task<List<int>> QueryIdsAsync(string teamPath, string project, string iterationPath, CancellationToken ct)
+    private async Task<List<int>> QueryIdsAsync(string teamPath, string project, string areaPath, string iterationPath, CancellationToken ct)
     {
         // Deviation from SPEC 9.3: no State filter except Removed, because burndown needs completed items too.
         var wiql = $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = '{Escape(project)}' " +
+                   $"AND [System.AreaPath] UNDER '{Escape(areaPath)}' " +
                    $"AND [System.IterationPath] = '{Escape(iterationPath)}' " +
                    "AND [System.WorkItemType] IN ('User Story','Product Backlog Item','Bug','Task') AND [System.State] <> 'Removed'";
         using var response = await http.PostAsJsonAsync($"{teamPath}/_apis/wit/wiql?{ApiVersion}", new { query = wiql }, ct);
