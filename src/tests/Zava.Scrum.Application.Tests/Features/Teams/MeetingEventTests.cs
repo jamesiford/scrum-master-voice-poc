@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Features.Standups.EndStandup;
+using Zava.Scrum.Application.Features.Standups.StartStandup;
 using Zava.Scrum.Application.Features.Teams.ReceiveMeetingEvent;
 using Zava.Scrum.Application.Tests.TestDoubles;
 using Zava.Scrum.Domain.Common;
@@ -49,6 +50,37 @@ public sealed class MeetingEventTests
         Assert.Null((await h.LoadAsync()).MeetingLifecycle);
         Assert.Single(await h.Sessions.ListAsync(default));
         Assert.Empty(h.Get<RecordingTeamsMessenger>().Sent);
+    }
+
+    [Fact]
+    public async Task Receive_MeetingStartsBeforeHumanStartsPreparedCeremony_MatchingEndFinishesOnce()
+    {
+        // Arrange
+        await using var h = await CreateAsync(start: false);
+
+        // Act: Teams starts the meeting, but only the presenter's normal command starts the ceremony.
+        Assert.True((await h.Sender.Send(Event(MeetingEventKind.Started))).IsSuccess);
+        Assert.Equal(StandupStatus.Prepared, (await h.LoadAsync()).Status);
+        Assert.Null((await h.LoadAsync()).MeetingLifecycle);
+        Assert.Empty(h.Get<RecordingTeamsMessenger>().Sent);
+        Assert.True((await h.Sender.Send(new StartStandupCommand(h.SessionId, "acs", JoinUrl))).IsSuccess);
+        (await h.LoadAsync()).MarkAbsent("m-marcus", StandupHarness.Now);
+        Assert.True((await h.Sender.Send(Event(MeetingEventKind.Ended))).IsSuccess);
+        Assert.True((await h.Sender.Send(Event(MeetingEventKind.Ended))).IsSuccess);
+        Assert.True((await h.Sender.Send(new EndStandupCommand(h.SessionId))).IsSuccess);
+
+        // Assert
+        var session = await h.LoadAsync();
+        Assert.Equal(StandupStatus.Ended, session.Status);
+        Assert.Equal(MeetingId, session.MeetingLifecycle!.MeetingId);
+        Assert.Equal(Conversation, session.MeetingLifecycle.ConversationId);
+        Assert.Null(session.MeetingLifecycle.StartedAt);
+        Assert.Equal(StandupHarness.Now, session.MeetingLifecycle.EndedAt);
+        Assert.Single(await h.Sessions.ListAsync(default));
+        Assert.Single(h.Get<RecordingBridge>().Left);
+        Assert.Single(h.Get<RecordingTeamsMessenger>().Sent, c => c.Kind == CardKind.Recap);
+        Assert.Single(h.Get<RecordingTeamsMessenger>().Sent, c => c.Kind == CardKind.Absent && c.MemberId == "m-marcus");
+        Assert.NotEmpty(await h.Get<IFollowUpRepository>().ListBySessionAsync(h.SessionId, default));
     }
 
     [Theory]
