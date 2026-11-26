@@ -1,17 +1,35 @@
 # M11 gates
 
-## Native media code checkpoint (conductor 6a, 2026-11-26)
+## Native media hosting checkpoint (conductor 6a/6b, 2026-11-26)
 
-No deployment or live native gates in this step. The rows below refer only to GraphMedia; historical ACS, Simulated Room and hosted-relay evidence later in this document is unchanged and is not native-media evidence.
+The Windows host and trusted Azure DNS-label certificate are deployed in zavaw3/westus3. Native acceptance remains unrun: the catalogue POST lacked delegated OAuth scopes, the disabled/simulated schedule contains no real meeting links, Daniel/Maya lack roster Entra object ids, and organiser RSC/real voices are outstanding. The rows below refer only to GraphMedia; historical ACS, Simulated Room and hosted-relay evidence is not native-media evidence.
+
+Real SDK/HTTPS readiness reports no recording and cap 1; it survived an idle VM reboot with no manual task start. The running SYSTEM task has one at-startup trigger. Scoped VM vault/container roles read back correctly. This is hosting readiness, not media handshake or capacity acceptance.
 
 | Gate | Native status | Sample size / evidence |
 | --- | --- | --- |
-| G1 latency with extra media hop | Not run | n=0; step 6b owns harness before/after and per-hop tolerance |
-| G2 participant attribution >=95% | Not run | n=0 live; four Domain identity cases pass, including duplicate/cross-team/unknown identities |
-| G6 ten stored-link joins | Not run | n=0; VM, trusted TLS and per-meeting app/RSC prerequisites deferred to 6b |
-| Live barge-in <=500 ms, cancel/truncate/answer | Not run | n=0 live; local fake-transport case verifies cancel, discarded late audio and truncation at 120 played ms, not the Teams stop time or spoken answer |
+| G1 latency with extra media hop | Not run | n=0 native; fallback before/after harness is not an extra-hop measurement |
+| G2 participant attribution >=95% | Not run | n=0 live; 90/90 already identity-tagged synthetic frames (30 per identity) prove routing, not SDK attribution or voice recognition |
+| G6 ten stored-link joins | Not run | n=0; TLS and tenant media consent completed, catalogue/stored calendar/organiser RSC remain |
+| Live barge-in <=500 ms, cancel/truncate/answer | Not run | n=0 human; synthetic stop dispatch 29.6 ms after the 350 ms threshold, n=1, with cancellation/truncation at 120 played ms; not audible cessation or a spoken answer |
+| Unconditional barge-in, synthetic opening state | Failed | n=1 state probe; sustained 600 ms speech does not cancel because the shared opening exception remains |
 
-Local Windows parser/amplitude tests: 8/8; real-mediator adapter: 3/3; ephemeral guest/cross-talk/cancel/producer-cleanup gateway: 4/4; media capability/ownership: 3/3; existing API sign-in classification: 1/1; architecture: 14/14. These are code checks, not gate measurements. Shared floor opening/recap/absent-announcement exceptions remain and must be exercised in 6b. GraphMedia saves no audio-derived transcript/follow-up and has no native board share yet. ACS stays the default. See ADR 0023 and DEPLOY.md.
+Local Windows parser/amplitude tests: 8/8; real-mediator adapter: 3/3; expanded ephemeral gateway: 7/7; media capability/ownership: 3/3; existing API sign-in classification: 1/1; architecture: 14/14. These are code checks, not gate measurements. Strongest-guest overlap suppresses quieter member audio; opening/recap/absent-announcement exceptions remain. GraphMedia saves no audio-derived transcript/follow-up and has no native board share yet. ACS and Direct voice stay the defaults. See ADR 0023 and DEPLOY.md.
+
+### 6b deployed fallback regression, Direct Simulated Room
+
+Before: one run, 11 timed turns, 373 s wall, 17 transcript pieces, zero talk-overs. The runner label `0619189` names its source checkout, not the old deployed API image (`api-zavaw3:azd-deploy-1795640105`, revision `--0000077`). After: one run, 11 timed turns, 381 s wall, 17 transcript pieces, zero talk-overs; runner checkout `e1a1f78`, API/bridge images `m11-6b-1b7a614`. Mandatory `verify.ps1` passed all eight checks, including approver-authored Azure DevOps comment and complete audit chain. This comparison preserves the fallback path; it cannot pass native G1.
+
+| Hop | Before p50 / p95 ms | After p50 / p95 ms |
+| --- | --- | --- |
+| Total turn | 3419 / 4435 | 3311 / 5115 |
+| Transcript | 0 / 195 | 0 / 192 |
+| Analyser | 28 / 33 | 27 / 62 |
+| Decision model | 215 / 410 | 164 / 368 |
+| Orchestration | 1536 / 1966 | 1601 / 3813 |
+| First Voice Live audio | 1670 / 2164 | 1364 / 2407 |
+
+Total p50 fell 108 ms; p95 rose 680 ms (15.3%), with a larger orchestration tail. The fallback p95 point estimate exceeds the historical G1 10% tolerance, so this fallback latency comparison is **failed on that point estimate**, not a pass. These are nearest-rank estimates over 11 turns per run, not confidence bounds or proof of a native-hop regression; native G1 remains not run. The harness's printed Teams rehearsal checklist is unchecked historical ACS guidance, not evidence of a native rehearsal or native saved follow-ups.
 
 Status after prompt 1. A gate is **open** until its evidence is recorded in ADR 0015. Numbers are measured, not expected.
 

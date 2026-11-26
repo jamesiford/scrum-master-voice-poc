@@ -21,7 +21,7 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 
 ## Real Teams meeting
 
-For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a)" below. The existing ACS path remains the default for the full follow-up demo.
+For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a/6b)" below. The existing ACS path remains the default for the full follow-up demo.
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live console** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "Zava Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
@@ -147,15 +147,24 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 | order by TimeGenerated desc
 ```
 
-## Teams-native media (6a)
+## Teams-native media (6a/6b)
 
-This is a built but not live-verified alternative, not the full saved-follow-up demo. Conductor step 6a deploys nothing and runs no live native gate. Step 6b performs the TLS/bootstrap and RSC actions in DEPLOY.md, then measures G6, G2, barge-in and G1.
+This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the catalogue upload, stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md. Native G6/G2/G1 and real-human barge-in currently have n=0.
 
-After those prerequisites, set API `Bridge:Mode=GraphMedia`, `Bridge:GraphMediaBaseUrl=https://<MEDIA_FQDN>` and the existing secret `Bridge:ApiKey`, with `VoiceLive:RelayEndpoint` pointing at the hosted agent. In azd these are `BRIDGE_MODE=GraphMedia`, `MEDIA_HOST_ENABLED=true` and `VOICE_ROUTE=Hosted`. Restart/deploy the API to apply the selection. Prepare a session for the chosen team and start it in Teams with its stored calendar link; the session's `mode` remains `acs`. The calling app must already be installed and consented in that meeting chat.
+After those prerequisites, persist the choice and apply it to the existing API (an image-only deployment does not change its environment):
 
-The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no work facts or approval rights. Stop/cancel/truncate is unit tested against played milliseconds, **not measured in Teams**. The shared floor's opening/recap exceptions remain; include them in the 6b check.
+```pwsh
+azd env select zavaw3
+azd env set BRIDGE_MODE GraphMedia
+az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=GraphMedia"
+pwsh infra\hooks\verify-media.ps1 -RequireReady
+```
 
-Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Use **Acs** for the complete close-the-loop story: change `BRIDGE_MODE=Acs` (API `Bridge:Mode=Acs`) and redeploy/restart, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected. The native board/video path is deferred to prompt 7.
+The media hook sets `Bridge:GraphMediaBaseUrl` to the verified HTTPS origin and preserves the existing secret `Bridge:ApiKey`. Direct and Hosted voice routes both work through the existing factory; retain Direct unless separately testing the optional hosted route. Prepare a session for the chosen team and start it in Teams with its stored calendar link; the session's `mode` remains `acs`. The calling app must already be installed and consented in that meeting chat.
+
+The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no work facts or approval rights. Synthetic stop was dispatched 29.6 ms after the 350 ms threshold (n=1), with truncation at 120 played ms, **not measured in Teams**. Opening-state speech sustained for 600 ms did not cancel; shared opening/recap exceptions remain. Test these explicitly, rather than claiming unconditional barge-in.
+
+Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Restore the complete close-the-loop story with `azd env set BRIDGE_MODE Acs` and `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs"`, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected. The native board/video path is deferred to prompt 7.
 
 ## The hosted voice route, pre-warm and canary (M11 prompt 4)
 
