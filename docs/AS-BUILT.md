@@ -117,7 +117,19 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-227 Domain, 80 Application, 39 Infrastructure and 7 architecture tests; `dotnet format` clean; lint and typecheck for bridge and portal; an end-to-end Simulated Room standup (6 checks) via `npm run e2e --prefix src/meeting-bridge`. A scripted "messy standup" exercised chime-ins, step-away, circle-back, silence, what-to-report, correction and proxy against the real gateway.
+The M11 checkpoint after prompt 7 (26 November 2026) passes 849 .NET tests:
+403 Domain, 170 Application, 88 Infrastructure, 151 Api, 14 architecture,
+3 AgentHost and 20 Windows MediaBot. Bridge unit tests pass 12/12. All three
+builds and both TypeScript lint/typecheck checks pass. The portal has no
+configured test suite; build/lint is not reported as a test pass.
+Full solution formatting passes after whitespace-only corrections. Both real
+Simulated Room E2E suites pass 6/6 each, in one aggregate invocation:
+standup 366.4 s, retrospective 298.3 s. Measured evidence is recorded in
+`gates/M11-gates.md`. The existing Simulated Room standup has six checks via
+`npm run e2e --prefix src/meeting-bridge`; the retrospective has six via
+`npm run e2e:retro --prefix src/meeting-bridge`. A scripted "messy standup"
+previously exercised chime-ins, step-away, circle-back, silence, what-to-report,
+correction and proxy against the real gateway.
 
 ## 10. Decision records
 0001 domain events; 0002 to 0006 deviations by milestone (M1 to M7, Teams bridge, scheduler, reports, Cosmos); 0007 M8 stretch features, shared board, Teams audio; 0008 goal-driven orchestration; 0009 documentation baseline (which document wins, and the `StandupSession` naming debt); 0009b Agent Framework and OpenTelemetry; 0010 ceremony kinds, packs and carry-over (M9); 0011 sprint planning pack (M9a). `DOC-DRIFT.md` lists the differences found between the documents and the code.

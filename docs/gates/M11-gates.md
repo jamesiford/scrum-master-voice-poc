@@ -1,5 +1,58 @@
 # M11 gates
 
+## Full test checkpoint after prompt 7 (tests-1, 2026-11-26)
+
+One aggregate `dotnet test ZavaScrum.slnx --no-build --no-restore` run passed
+**849/849**, with zero failures or skips. Counts exceed every required G4
+baseline; hosted and Windows-native projects are included rather than omitted.
+
+| Suite | G4 baseline | Checkpoint passed / total |
+| --- | ---: | ---: |
+| Domain | 388 | 403 / 403 |
+| Application | 143 | 170 / 170 |
+| Infrastructure | 73 | 88 / 88 |
+| Api | 132 | 151 / 151 |
+| Architecture | 7 | 14 / 14 |
+| AgentHost | Not specified | 3 / 3 |
+| MediaBot (Windows) | Not specified | 20 / 20 |
+| Bridge unit tests | Not specified | 12 / 12 |
+| Bridge standup E2E | Not specified | 6 / 6 |
+| Bridge retrospective E2E | Not specified | 6 / 6 |
+| Portal tests | Not configured | 0 configured; no test runner or test script |
+
+All three builds pass; solution build has zero warnings/errors. Both
+TypeScript typechecks and ESLint/Prettier checks pass. The existing portal
+bundle-size advisory is not a build failure. Full C# formatting exposed
+16 pre-existing whitespace-only files; these are corrected on the tip branch
+and full `dotnet format --verify-no-changes` passes, without changing runtime
+behaviour. Ownership is earlier prompts 3/3A and 5A, not prompt 7.
+
+Real bridge E2E passed **12/12**, zero failed/cancelled/skipped: one
+retrospective in **298.3 s** and one standup in **366.4 s**, **666.4 s**
+for the aggregate invocation. They used an isolated local Json store on
+ports 5089/5099 with actual zavaw3 Azure services.
+Initial setup cancelled all 12 assertions before execution because the local
+credential chain stopped at inaccessible IMDS; valid Azure CLI tokens were
+confirmed and the documented local credential selector was applied. A local
+HTTPS/websocket invocation mistake was also corrected before the passing run;
+neither required a shipped-code or test change. Helpers and temporary data
+were removed after completion. No full .NET suite was rerun for whitespace.
+No native participant, encoder, meeting-event delivery or latency gate is
+inferred from these tests. Existing failed exact board parity and fallback
+latency point estimates below remain failed. No resources or deployment
+settings changed; added fixed cost is USD 0/hour.
+
+Commands: `dotnet build ZavaScrum.slnx --no-restore`;
+`dotnet test ZavaScrum.slnx --no-build --no-restore`;
+`dotnet format ZavaScrum.slnx --verify-no-changes --no-restore`.
+For each TypeScript project, run its existing `build`, `typecheck` and `lint`
+scripts. Bridge unit checks use `npm test --prefix src\meeting-bridge`.
+The two real E2E suites run once together from `src\meeting-bridge` with
+`node --import tsx --test --test-concurrency=1 e2e\standup.e2e.ts e2e\retro.e2e.ts`;
+local configuration prerequisites are in DEMO.md. Retained TRX and complete E2E
+output are in the untracked `.m11-plan\run-log\tests-1-results` and
+`tests-1-e2e-configured.txt`.
+
 ## Board share and meeting events (conductor 7, 2026-11-26)
 
 ADR 0024 adds a genuine selectable native VBSS adapter and typed scheduled

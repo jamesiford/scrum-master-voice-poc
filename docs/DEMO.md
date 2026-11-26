@@ -96,6 +96,16 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 7. Delete the meetings from the agent's calendar before the next run.
 
 ## Gate runner (latency and traceability)
+For the bridge's automated `e2e` and `e2e:retro` checks, run the local API and
+bridge with a dedicated Json data folder and the intended environment's Foundry,
+Azure DevOps and Speech configuration. Leave `VoiceLive:Endpoint` empty to derive
+the websocket URL from `Foundry:ProjectEndpoint`; an explicit endpoint must use
+`wss://`, not HTTPS. Set `E2E_API` when using a non-default local API port.
+If valid `az` tokens exist but local `DefaultAzureCredential` stops at IMDS,
+set `AZURE_TOKEN_CREDENTIALS=AzureCliCredential` in the local API process only,
+as documented by [Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/credential-chains#use-a-specific-credential).
+Do not change deployed managed-identity credentials for a local test.
+
 `tools/GateRunner` plays the Simulated Room cast (`demo/cast/payments-standup.yaml`, autopilot) through the real API in Edge and records, for every agent reply that follows someone speaking, the time from the end of their speech to the first audio, split into: speech end to transcript, analyser, decision model, orchestration (floor control, the wait for silence, the reconcile) and Voice Live first audio. Each run is saved as JSON; `summary.md` gives p50, p95 and n per hop (nearest-rank, no interpolation) and the build id. Every later change re-runs it and pastes the summary into the pull request and `docs/gates/M11-gates.md`.
 
 1. Start the API and the bridge (`dotnet run --project src\Zava.Scrum.Api --urls http://localhost:5080`; `npm run start --prefix src\meeting-bridge`). The configuration under test is set on the API: the default is the decision model (`UtteranceAnalysis__Engine=Decision`); for the rules-only run set `UtteranceAnalysis__Mode=Rules` before starting it.

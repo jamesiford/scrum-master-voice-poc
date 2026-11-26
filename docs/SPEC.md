@@ -1074,6 +1074,7 @@ Keep Acs/Share until real meeting acceptance. No extra secret or resource.
 - **As built:** a repository contract exists for `ISessionRepository` only (`SessionRepositoryContract`), and it runs against the JSON-file implementation only. There is no Cosmos run and no contract for the other repositories. This is a known gap.
 - One Playwright test that runs a scripted standup in the Simulated Room using the demo cast, and asserts that the session completes with events, an absent mark and follow-ups created.
 - **As built** (see `AS-BUILT.md` 9 for the current counts): Added: utterance classification, item linking, deferral and circle-back, retraction, reporting priorities, no-response follow-ups. The Playwright Simulated Room test passes (6 checks) and a scripted "messy standup" exercised every reactive path against the real gateway. The Cosmos repository contract test is not yet automated.
+- **M11 test checkpoint:** all seven .NET suites, including AgentHost and Windows MediaBot, run together; bridge unit and both Simulated Room E2E suites are counted separately. The portal has no configured test suite: its build, typecheck and lint are checks, not test counts. Measured checkpoint results are in `gates/M11-gates.md`.
 - No evaluation pipeline in the PoC. The human Scrum Master's judgement in the demo is the quality bar; collect transcripts for production evaluations.
 
 ---
