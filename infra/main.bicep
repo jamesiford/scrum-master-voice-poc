@@ -34,6 +34,20 @@ param voiceRoute string = 'Direct'
 @description('The hosted agent that relays voice. Created by infra/hooks/agent-host.ps1 after deploy.')
 param agentHostName string = 'zava-voice-relay'
 
+@allowed([ 'false', 'true' ])
+@description('Opt-in Windows media hosting. Step 6a generates code only; 6b enables this in zavaw3.')
+param mediaHostEnabled string = 'false'
+
+@description('The media VM SKU. Four vCPU is the initial floor for audio and board encoding.')
+param mediaVmSize string = 'Standard_D3_v2'
+
+@description('Optional owned DNS name for the trusted media certificate. Point it at the output public IP before bootstrap.')
+param mediaServiceFqdn string = ''
+
+@allowed([ 'Acs', 'Simulated', 'GraphMedia' ])
+@description('Real meeting adapter. Keep Acs until the media host is provisioned and its gates have run.')
+param bridgeMode string = 'Acs'
+
 
 @description('Deployment SKU of the realtime and live models: GlobalStandard, or DataZoneStandard to keep processing inside the data zone and use data zone quota.')
 @allowed([ 'GlobalStandard', 'DataZoneStandard' ])
@@ -137,6 +151,21 @@ module compute 'modules/compute.bicep' = {
     foundryEndpoint: foundry.outputs.endpoint
     foundryProjectName: foundry.outputs.projectName
     voiceRelayEndpoint: voiceRoute == 'Hosted' ? 'wss://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}/agents/${agentHostName}/endpoint/protocols/invocations_ws' : ''
+    bridgeMode: bridgeMode
+    graphMediaBaseUrl: mediaHostEnabled == 'true' ? 'https://${mediaHost!.outputs.fqdn}' : ''
+  }
+}
+
+module mediaHost 'modules/media-host.bicep' = if (mediaHostEnabled == 'true') {
+  name: 'media-host'
+  scope: rg
+  params: {
+    location: location
+    token: token
+    tags: tags
+    adminObjectId: adminObjectId
+    vmSize: mediaVmSize
+    serviceFqdn: mediaServiceFqdn
   }
 }
 
@@ -156,3 +185,9 @@ output FOUNDRY_PROJECT_NAME string = foundry.outputs.projectName
 output FOUNDRY_PROJECT_ENDPOINT string = 'https://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}'
 output COSMOS_ACCOUNT_NAME string = data.outputs.cosmosName
 output ACS_ENDPOINT string = data.outputs.acsEndpoint
+output MEDIA_HOST_ENABLED string = mediaHostEnabled
+output MEDIA_VM_NAME string = mediaHostEnabled == 'true' ? mediaHost!.outputs.vmName : ''
+output MEDIA_PUBLIC_IP string = mediaHostEnabled == 'true' ? mediaHost!.outputs.publicIpAddress : ''
+output MEDIA_FQDN string = mediaHostEnabled == 'true' ? mediaHost!.outputs.fqdn : ''
+output MEDIA_VAULT_NAME string = mediaHostEnabled == 'true' ? mediaHost!.outputs.vaultName : ''
+output MEDIA_STORAGE_NAME string = mediaHostEnabled == 'true' ? mediaHost!.outputs.storageName : ''

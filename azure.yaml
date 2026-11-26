@@ -55,6 +55,10 @@ hooks:
       interactive: false
       continueOnError: false
     - shell: pwsh
+      run: ./infra/hooks/media-host.ps1
+      interactive: false
+      continueOnError: false
+    - shell: pwsh
       run: ./infra/hooks/teams-app.ps1
       interactive: false
       continueOnError: false

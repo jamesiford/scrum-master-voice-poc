@@ -13,6 +13,10 @@
     "chatCapacity": { "value": "${CHAT_CAPACITY=100}" },
     "realtimeCapacity": { "value": "${REALTIME_CAPACITY=10}" },
     "decisionCapacity": { "value": "${DECISION_CAPACITY=100}" },
-    "voiceRoute": { "value": "${VOICE_ROUTE=Direct}" }
+    "voiceRoute": { "value": "${VOICE_ROUTE=Direct}" },
+    "mediaHostEnabled": { "value": "${MEDIA_HOST_ENABLED=false}" },
+    "mediaVmSize": { "value": "${MEDIA_VM_SIZE=Standard_D3_v2}" },
+    "mediaServiceFqdn": { "value": "${MEDIA_SERVICE_FQDN=}" },
+    "bridgeMode": { "value": "${BRIDGE_MODE=Acs}" }
   }
 }
