@@ -350,6 +350,8 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 **Tools.** The Voice Live tools (section 7.2) call these use cases through `ISender`: `get_next_speaker` -> `GetNextSpeakerQuery`, `get_member_brief` -> `GetMemberBriefQuery`, `reconcile_update` -> `ReconcileUpdateQuery`, `record_event` -> `RecordStandupEventCommand`, `park_topic` -> `ParkTopicCommand`, `mark_absent` -> `MarkAbsentCommand`, `get_time_remaining` -> `GetTimeRemainingQuery`, `end_standup` -> `EndStandupCommand`, `get_work_item_details` -> `GetWorkItemDetailsQuery`.
 
+**M11 6a:** no Application use case or port is added. The native media presentation routes reuse `GetSessionQuery`, `GetRosterQuery` and the normal `EndStandupCommand`; `GraphMediaBridge` implements the existing `IMeetingBridge`. The ephemeral audio path intentionally bypasses commands and has no writable tool surface (ADR 0023).
+
 #### 6.1.5 Code standards summary
 
 | Standard | How it shows up in this repo | Checked by |
@@ -707,6 +709,8 @@ Implement it as a pure, table-tested class with no I/O.
 
 A session carries its team id, and the floor, the gateway and the bridge never read a global team. Concurrent standups are limited per host by `CapacityGovernor` (default 3, a 5 s stagger); a standup that cannot start waits with a reason and the team is notified, and the gateway log scope carries `TeamId`. Three concurrent Simulated Room standups measured p50 3400 ms and p95 4919 ms (G9).
 
+**Native media alternative (M11 6a, ADR 0023).** `GraphMediaVoiceGateway` uses team/session capabilities and unique roster Entra object ids, not display-name attribution. Unmatched users remain visible guests and their audio is not sent to the model. PCM24K stays in bounded memory and uses the hosted voice relay. No meeting-derived transcript, attendance or proposal is stored; ordinary session lifecycle metadata is separate. The shared floor-control rules, including opening/recap exceptions, are unchanged. Stop/cancel drops queued and late audio and truncates at acknowledged played milliseconds. First-audio request latency is logged only, not retained as meeting data or reported as a measured live gate. Live native acceptance belongs to step 6b.
+
 > **Approval and sign-in (M11 5A, ADR 0020), applies to sections 11 to 13.** A decision made by voice is only a proposal; nothing is written until a person approves it in the portal or on a Teams card, and the write is made as that person (Azure DevOps shows them as author). The voice path never holds an Azure DevOps credential.
 
 ## 12. Teams and Microsoft 365 Copilot
@@ -820,9 +824,13 @@ A session carries its team id, and the floor, the gateway and the bridge never r
 | GET | `/api/health` | `HealthEndpoints.cs` | `GetHealthQuery` |
 | POST | `/api/messages` | `Program.cs` | Bot endpoint (`RequireAuthorization`; the card actions and chat run through `ScrumAgent`) |
 | WS | `/ws/bridge/{sessionId}?token=` | `BridgeEndpoints.cs` | Runs `VoiceGateway` (no mediator on the audio path) |
+| GET | `/api/media/context?sessionId=&teamId=` | `GraphMediaEndpoints.cs` | `GetSessionQuery`, `GetRosterQuery`; validates live session ownership and stored link before returning metadata |
+| WS | `/invocations_ws?sessionId=&teamId=` | `GraphMediaEndpoints.cs` | Ephemeral `GraphMediaVoiceGateway`; normal completion sends `EndStandupCommand` outside the audio path |
 | GET | `/healthz` | `Program.cs` | Health check (probe) |
 
 The bridge service has its own routes (`/room/{id}`, `/teams/{id}`, `/teams/join`, `/acs/token`, `/cast/script`, `/cast/line`, `/healthz`, `/static/*`; `router.ts`). Not built: `PUT /api/teams/{id}/members` and a `next` control action.
+
+The two native media routes require `Bridge:Mode=GraphMedia`, `x-bridge-key` and the session-bound `x-bridge-token` headers; the explicit team must own the live session. Tokens are not put in their query strings. The Windows host exposes secret-protected `POST /teams/join` (body includes team), `DELETE /teams/{sessionId}?teamId=` and SDK-authenticated `POST /callback`, plus public health/privacy/terms. A session still starts with `mode: acs`; `Bridge:Mode` selects which Teams adapter receives `JoinMeetingCommand`.
 
 Each route is a thin endpoint in `Endpoints/<Feature>Endpoints.cs` that sends one command or query from section 6.1.4 (`POST /api/sessions/{id}/start` sends two) and returns `result.ToHttpResult()`.
 
@@ -947,6 +955,8 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts: it needs delegated sign-in, a Work IQ MCP connection and the Teams admin setting `EnableWorkIQTranscriptAccess`, and the real-time delivery contract is not documented enough to code against.
 
+**M11 6a status (Teams-native media alternative).** The Windows Graph media host, selectable bridge, identity-tagged ephemeral gateway, focused tests and opt-in hosting code are built. Application stays unchanged and ACS remains the default. No VM deployment or G1/G2/G6/live barge-in run in this step: 6b owns those acceptance checks. The native path saves no audio-derived transcript or follow-up; TLS/RSC gates and limitations are in ADR 0023 and DEPLOY.md.
+
 ---
 
 ## 17. Configuration
@@ -968,6 +978,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Store:Mode` (`Json` or `Cosmos`), `Store:DataPath` | Persistence | `Json`, `data` |
 | `Cosmos:Endpoint`, `Cosmos:Database`, `Cosmos:Container` | Cosmos (Entra only, no keys) | `zavascrum`, `collections` |
 | `Bridge:RoomBaseUrl`, `Bridge:BaseUrl`, `Bridge:ApiPublicUrl`, `Bridge:ApiKey` (**secret**) | Room URL, bridge control URL, public API URL, shared secret for API-to-bridge calls | `RoomBaseUrl` defaults to `http://localhost:5090` |
+| `Bridge:Mode`, `Bridge:GraphMediaBaseUrl` | `Acs`, `Simulated` or `GraphMedia`; HTTPS control origin for the Windows host | `Acs`; native mode requires a secret API key and hosted `VoiceLive:RelayEndpoint` |
 | `Bot:AppId`, `Bot:TenantId`, `Bot:TunnelHostSuffix` | Teams bot (an empty `Bot:AppId` turns the bot off); dev-tunnel guard | `.devtunnels.ms` locally, empty in Azure |
 | `Connections:ServiceConnection:Settings:ClientId`, `:ClientSecret` (**secret**), `:TenantId`, `:AuthorityEndpoint`, `:AuthType`, `:Scopes`; `ConnectionsMap` | Microsoft 365 Agents SDK connection | `AuthType` `ClientSecret` |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` (environment variable) | Turns on OpenTelemetry export to Application Insights; empty means no telemetry | Set by Bicep in Azure; empty locally |
@@ -1002,6 +1013,8 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 **Removed from the earlier list because the code does not read them:** `Bridge__DisplayName` (the display name is `Zava Scrum Agent` unless the call page URL has `name=`), `Bot__AuthType`, `Features__WorkIqTranscripts`, `Acs__Endpoint` on the API, `Demo__CastFile` on the API. `API_URL` is set by Aspire and Bicep but the bridge does not read it.
 
 Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secrets (local) or Container Apps secrets (Azure), never in the repo.
+
+**Windows media host (`Zava.Scrum.MediaBot`, ADR 0023).** Protected machine settings: `MediaBot:TenantId`, `AppId`, `CertificateThumbprint` (LocalMachine/My), `ServiceFqdn`, `PublicIp`, `MediaPort` (8445), `ApiBase` (trusted HTTPS origin), `ApiKey` (**secret**, from Key Vault) and `MaxConcurrentMeetings` (1 until measured). The certificate also authenticates the separate calling application to Graph. No private key or control secret is exported as a deployment parameter. azd opt-in values are `MEDIA_HOST_ENABLED=false`, `MEDIA_VM_SIZE=Standard_D3_v2`, optional `MEDIA_SERVICE_FQDN` (owned certificate-covered DNS name) and `BRIDGE_MODE=Acs`; `VOICE_ROUTE=Hosted` is required before selecting native media.
 
 ---
 

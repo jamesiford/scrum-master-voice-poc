@@ -14,6 +14,9 @@ Set once with `azd env set`. None is a secret.
 | `ADMIN_UPN` | yes | The administrator. Also the calendar organiser. |
 | `REALTIME_SKU` | no | `DataZoneStandard` (default in `main.parameters.json`) or `GlobalStandard`. Global realtime quota is subscription-wide and was used by the original environment, so the default avoids it. |
 | `VOICE_ROUTE` | no | `Direct` (default) or `Hosted`: whether the API reaches Voice Live directly or through the hosted agent relay (ADR 0021). Set it before `azd provision`; the agent itself is created by `agent-host.ps1`. |
+| `MEDIA_HOST_ENABLED`, `MEDIA_VM_SIZE` | no | `false` by default; opt-in public Windows media VM, initially `Standard_D3_v2` with hard call cap 1. Enable only in step 6b, `zavaw3`/`westus3`. |
+| `MEDIA_SERVICE_FQDN` | no | Optional owned DNS name covered by a trusted media certificate. Empty uses the Azure public IP DNS name; obtaining a trusted certificate for that name is an operator gate, not assumed automatic. |
+| `BRIDGE_MODE` | no | `Acs` (default), `Simulated`, or `GraphMedia`. Select native media only after its HTTPS bootstrap and RSC installation; it also requires `VOICE_ROUTE=Hosted`. |
 | `CHAT_CAPACITY`, `REALTIME_CAPACITY`, `DECISION_CAPACITY` | no | Deployment capacity. Defaults 100, 10, 100. Below 100 the decision model hits its rate limit. `REALTIME_CAPACITY` applies to each model in the `realtimeModels` list in `infra/main.bicep` (default `gpt-realtime-2.1` only). Quota is one row per model, so a model you do not deploy frees nothing for another. |
 
 ```pwsh
@@ -40,6 +43,7 @@ Resources are named with the `zava-scrum` prefix. The original environment (`mcm
 | postprovision | `infra/hooks/exchange.ps1 -Mode Apply` | Switches calendar and email to Graph once the Exchange grant exists. |
 | deploy | azd | Remote ACR builds of both images, then the revisions. |
 | postdeploy | `infra/hooks/teams-app.ps1` | Builds `appPackage/dist/zava-scrum-agent-<env>-<version>.zip` with the deployed bot id. |
+| postdeploy | `infra/hooks/media-host.ps1` | Opt-in only: separate calling app/Bot registration, minimum media permission, artefact upload, vault delivery, Windows startup task and native Teams package; reports TLS/RSC gates. |
 
 Every script is idempotent; re-running `azd up` creates no duplicates.
 
@@ -111,6 +115,36 @@ azd down --purge
 - `eastus2` hosted-agent support is documented on Learn but was measured only in West US 3 (ADR 0015 S3). The current application does not use hosted agents.
 - The destroy-and-rebuild proof is incomplete (G8): the second `azd up` stopped at preprovision because the deployer's privileged Entra role had lapsed. See docs/gates/M11-gates.md.
 - A new-subscription run was not possible: the work used one subscription and tenant.
+
+## Native media preparation and human gates (6a/6b, ADR 0023)
+
+**Do not execute the following in step 6a.** Step 6b alone enables/provisions the VM in `zavaw3`, `westus3`; never use `mcm` or its Entra objects. Keep `BRIDGE_MODE=Acs` while bringing up the alternative. No new resources or hourly cost were added in 6a; obtain the actual Windows VM/public IP/disk/vault/storage price in 6b, not an unverified estimate.
+
+```pwsh
+azd env select zavaw3
+azd env set MEDIA_HOST_ENABLED true
+azd env set MEDIA_VM_SIZE Standard_D3_v2
+azd env set VOICE_ROUTE Hosted
+azd env set BRIDGE_MODE Acs
+# Optional: an owned DNS name for which a trusted certificate can be issued.
+azd env set MEDIA_SERVICE_FQDN <owned-media-fqdn>
+# Provision/deploy only in step 6b. Follow its validation/deployment contract.
+```
+
+The opt-in module uses the pinned AVM Windows VM resource with four vCPU, one-call cap, a public IP and TCP 443/8445 only. The subnet exists solely for the Azure NIC; there are no private endpoints. The VM identity gets Key Vault Secrets User on its media vault and Blob Reader on its artefact container. The named deployer gets certificate/secret operator roles on that vault and Blob Contributor on that container. No RDP ingress, tenant-wide joining role or extra tenant policy is added.
+
+The postdeploy hook creates the dedicated `zava-media-zavaw3` calling app/service principal, Azure Bot and Teams calling webhook; it never changes the existing messaging bot identity. An Entra Privileged Role Administrator/Global Administrator must be able to consent to the minimum `Calls.AccessMedia.All` grant; if automation is refused, grant that **application** permission on the dedicated calling app only in Entra admin centre > App registrations > the calling app > API permissions > Microsoft Graph, then Grant admin consent. Do not add `Calls.JoinGroupCall.All` as a workaround. Per-meeting joining is the package's RSC permission, not this tenant-wide media permission.
+
+| Gate | Who | Exact action |
+| --- | --- | --- |
+| `MEDIA-TLS` | Owner of the chosen DNS name and a Key Vault certificate operator for `MEDIA_VAULT_NAME` | Point the owned `MEDIA_SERVICE_FQDN` at output `MEDIA_PUBLIC_IP`. Obtain a CA-trusted, exportable PFX including its private key and chain, with `MEDIA_FQDN` as its primary DNS name and more than 14 days remaining. Keep the local PFX in a protected operator folder, never the repo. Import with `az keyvault certificate import --vault-name <MEDIA_VAULT_NAME> --name media-tls --file <protected-empty-password-PFX>`. If using the default Azure DNS name, first prove that the certificate issuer can validate that name; no automatic issuance is assumed. |
+| Calling-app consent | Entra Privileged Role Administrator or Global Administrator | If the scripted `Calls.AccessMedia.All` grant is refused, perform the dedicated-app consent described above, then rerun the hook. Never grant a broader join role. |
+| `MEDIA-RSC` | Teams custom-app administrator/uploader and each meeting's organiser, permitted by existing tenant policy | Publish/approve generated `appPackage\dist\zava-media-bot.zip` through Teams admin centre > Teams apps > Manage apps > Upload new app if the organiser cannot sideload. In each scheduled meeting's Teams chat, add the **Zava Scrum Media** app and accept its resource-specific `Calls.JoinGroupCalls.Chat` permission for that chat. Do this before the ten unattended G6 joins. Do not alter tenant policy if installation is prohibited; record the gate and retain ACS. |
+| Lobby admission | Meeting organiser | If existing meeting policy still sends the bot to the lobby, admit **Zava Scrum Media** from the meeting's lobby. Record that as a failed no-manual-step G6 case, not a successful unattended join. Do not relax tenant policy. |
+
+After importing the certificate, rerun `pwsh infra\hooks\media-host.ps1` in the selected `zavaw3` environment. It publishes win-x64, uploads a hash-addressed private blob with Entra, delivers the existing bridge key to Key Vault, bootstraps the VM using IMDS tokens, verifies the ZIP hash/trusted certificate/hostname, installs the signed Microsoft VC++ runtime if needed, registers the public certificate on the calling app and creates a SYSTEM startup task. Only the public certificate is returned by run-command. Secrets/private keys are not parameters or printed. It produces the Teams ZIP and checks `https://<MEDIA_FQDN>/healthz`. Task restarts are configured; a failure is explicit, not a successful fallback.
+
+Keep `BRIDGE_MODE=Acs` until HTTPS readiness and meeting RSC are verified. Then select `GraphMedia` and redeploy the API in step 6b. Its media routes are Easy Auth exclusions but have an independent ASP.NET authentication scheme requiring both `x-bridge-key` and `x-bridge-token`; the loader checks explicit team ownership and the stored link. A portal bearer token alone is insufficient. Run `infra\hooks\verify.ps1` as required by 6b, and the native G6/G2/barge-in/G1 checks; do not apply old ACS/relay numbers to the native path. Preserve ACS if any gate fails. No native meeting-derived data is saved.
 
 ## Agent identity governance (prompt 5B, ADR 0022)
 

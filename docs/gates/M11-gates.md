@@ -1,5 +1,18 @@
 # M11 gates
 
+## Native media code checkpoint (conductor 6a, 2026-11-26)
+
+No deployment or live native gates in this step. The rows below refer only to GraphMedia; historical ACS, Simulated Room and hosted-relay evidence later in this document is unchanged and is not native-media evidence.
+
+| Gate | Native status | Sample size / evidence |
+| --- | --- | --- |
+| G1 latency with extra media hop | Not run | n=0; step 6b owns harness before/after and per-hop tolerance |
+| G2 participant attribution >=95% | Not run | n=0 live; four Domain identity cases pass, including duplicate/cross-team/unknown identities |
+| G6 ten stored-link joins | Not run | n=0; VM, trusted TLS and per-meeting app/RSC prerequisites deferred to 6b |
+| Live barge-in <=500 ms, cancel/truncate/answer | Not run | n=0 live; local fake-transport case verifies cancel, discarded late audio and truncation at 120 played ms, not the Teams stop time or spoken answer |
+
+Local Windows parser/amplitude tests: 8/8; real-mediator adapter: 3/3; ephemeral guest/cross-talk/cancel/producer-cleanup gateway: 4/4; media capability/ownership: 3/3; existing API sign-in classification: 1/1; architecture: 14/14. These are code checks, not gate measurements. Shared floor opening/recap/absent-announcement exceptions remain and must be exercised in 6b. GraphMedia saves no audio-derived transcript/follow-up and has no native board share yet. ACS stays the default. See ADR 0023 and DEPLOY.md.
+
 Status after prompt 1. A gate is **open** until its evidence is recorded in ADR 0015. Numbers are measured, not expected.
 
 | Gate | Question | Status | Evidence |

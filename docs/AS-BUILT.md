@@ -67,7 +67,7 @@ The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at
 - **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are not set (they were placeholders): the page shows the Voice Live pricing tier from Learn and "Price unverified" until real rates are configured (ADR 0019).
 - **Teams chat Q&A:** any message to the bot is answered by `AnswerTeamQuestionQuery`. Microsoft 365 Copilot is **not built**: the app manifest declares a bot only.
 - **Foundry agent mode (M8):** `VoiceLive:AgentName` and `AgentProjectName` bind the session to a Foundry voice agent instead of a model. Implemented, not exercised against a live agent; parameter names need verifying.
-- **Not built:** Work IQ real-time transcripts (needs delegated sign-in, a Work IQ MCP connection and a tenant setting; delivery contract not documented enough); Graph media bot; API Management, Service Bus, private networking, on-behalf-of, evaluation pipelines.
+- **Not built:** Work IQ real-time transcripts (needs delegated sign-in, a Work IQ MCP connection and a tenant setting; delivery contract not documented enough); API Management, Service Bus, private networking, on-behalf-of, evaluation pipelines. The Graph media alternative is built but not deployed or live-verified (section 22).
 
 ## 6. Portal
 Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Reports, Planning, Retrospective, Story Writer, Models and email, Schedule, Prompts, Team, Roster. Light and dark themes, responsive.
@@ -218,3 +218,15 @@ Built in M11 prompt 4 (ADR 0021, ADR 0015 S6). Read ADR 0021 for what was measur
 ## 21. M11: agent identity (5B)
 
 Built in M11 prompt 5B (ADR 0022). The hosted agent `zava-voice-relay` signs in as the Entra Agent ID Foundry created for it (agentIdentity, no secret, named sponsor, sign-ins visible with `agentType agenticAppInstance`); `infra/hooks/agent-identity.ps1` checks this after each deploy and an architecture test keeps secrets out of `src/Zava.Scrum.AgentHost`. It is used for Voice Live and the Foundry account only; Azure DevOps reads stay on the API's managed identity and writes on the approver's token. Conditional Access and sponsor attestation are human gates (DEPLOY.md). No user account is created for the agent.
+
+## 22. M11: Teams-native media alternative (6a)
+
+Built as code, not deployed or verified in Teams (ADR 0023). `Bridge:Mode` is `Acs` by default; `GraphMedia` selects the real Windows Graph SDK host; `Simulated` retains the browser room and refuses Teams joins. Application commands and `IMeetingBridge` are unchanged. A session started as `acs` uses the configured meeting adapter.
+
+The host validates the session/team/stored link at the API, uses authenticated Graph callbacks, maps unmixed sources to tenant-checked Entra object ids, follows own-participant lobby state, caps calls at one and leaves on the existing lifecycle event. The API's separate `/invocations_ws` checks both a secret header and the session capability before loading team facts. The hosted Voice Live route is required. The live portal displays native call state and guests; guest audio is not sent to the model. Unmatched, duplicate or cross-team object ids receive no member facts or approval rights.
+
+**Non-recording boundary:** the ephemeral gateway has no mediator, repositories or executable tools. It saves no PCM, transcript, spoken update, voice-derived attendance or follow-up proposal. Parking, live participants and the conversation are memory-only. Existing metadata-only lifecycle cards may still be emitted on completion, but contain no learned meeting updates. ACS and the Simulated Room retain the complete saved follow-up/approval demo. Recording in a future feature needs successful `updateRecordingStatus` first and the applicable recording requirements.
+
+Barge-in clears queued audio, drops late response output and truncates at the host's played-frame acknowledgement. Shared floor-control exceptions for opening/recap/absent announcements are unchanged. A bounded transport reconnect retains the real call but restarts the ephemeral conversation. No native board share is built until prompt 7.
+
+Opt-in Bicep/azd code adds a public four-vCPU Windows Server 2022 D3_v2 host, HTTPS/TCP 8445, certificate vault, artefact storage, scoped roles and startup task. A separate calling Entra app gets `Calls.AccessMedia.All`; meeting join uses RSC `Calls.JoinGroupCalls.Chat`. Daily SDK-age CI enforces newest-or-within-three-months. TLS and meeting installation are named gates in DEPLOY.md. Local focused tests pass; G1/G2/G6/live barge-in are not run in 6a, and added resource cost is USD 0/hour.

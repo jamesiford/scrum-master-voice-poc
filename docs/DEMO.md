@@ -20,6 +20,8 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 8. **Retrospective**, **Story Writer** (pick a parked topic) and **Models and email** tabs for the stretch features.
 
 ## Real Teams meeting
+
+For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a)" below. The existing ACS path remains the default for the full follow-up demo.
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live console** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "Zava Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
@@ -145,6 +147,16 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 | order by TimeGenerated desc
 ```
 
+## Teams-native media (6a)
+
+This is a built but not live-verified alternative, not the full saved-follow-up demo. Conductor step 6a deploys nothing and runs no live native gate. Step 6b performs the TLS/bootstrap and RSC actions in DEPLOY.md, then measures G6, G2, barge-in and G1.
+
+After those prerequisites, set API `Bridge:Mode=GraphMedia`, `Bridge:GraphMediaBaseUrl=https://<MEDIA_FQDN>` and the existing secret `Bridge:ApiKey`, with `VoiceLive:RelayEndpoint` pointing at the hosted agent. In azd these are `BRIDGE_MODE=GraphMedia`, `MEDIA_HOST_ENABLED=true` and `VOICE_ROUTE=Hosted`. Restart/deploy the API to apply the selection. Prepare a session for the chosen team and start it in Teams with its stored calendar link; the session's `mode` remains `acs`. The calling app must already be installed and consented in that meeting chat.
+
+The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no work facts or approval rights. Stop/cancel/truncate is unit tested against played milliseconds, **not measured in Teams**. The shared floor's opening/recap exceptions remain; include them in the 6b check.
+
+Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Use **Acs** for the complete close-the-loop story: change `BRIDGE_MODE=Acs` (API `Bridge:Mode=Acs`) and redeploy/restart, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected. The native board/video path is deferred to prompt 7.
+
 ## The hosted voice route, pre-warm and canary (M11 prompt 4)
 
 The voice can run through a Foundry hosted agent (a relay in front of Voice Live) or directly. Both give the same standup; the hosted route is selected by `VoiceLive__RelayEndpoint` on the API (the `voiceRoute` Bicep parameter, `Direct` or `Hosted`).
@@ -162,6 +174,8 @@ The voice can run through a Foundry hosted agent (a relay in front of Voice Live
 6. **Measure the hop.** `dotnet run --project tools/VoiceRelayBench -- --mode paired ...` (header comment in the file) alternates direct and relayed turns; `pwsh docs/gates/m11-p4/g1.ps1` runs the gate harness on both routes with the decision model on and off.
 
 ### Agent identity sign-ins (5B)
+
+For the separate calling application, see the native-media instructions below; it is not the hosted agent's Entra Agent ID.
 
 The hosted agent signs in as its own Entra Agent ID. Evidence, after a standup or a warm-up:
 

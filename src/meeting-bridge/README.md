@@ -2,6 +2,8 @@
 
 Node 22 + TypeScript bridge (SPEC 7.3). M2 serves the **Simulated Room** and the **demo cast**; ACS interop arrives in M4.
 
+M11 6a adds a separate Windows-native alternative in `src\Zava.Scrum.MediaBot` (ADR 0023). API `Bridge:Mode=Acs` remains the default; `Simulated` uses this project's browser room and refuses Teams joins; `GraphMedia` uses the Windows host, not Chromium. The session API still accepts `simulated` or `acs`: the latter selects the configured Teams adapter. The Simulated Room remains available with every adapter selection. Unlike this bridge's existing saved-update path, GraphMedia does not save audio-derived transcripts or follow-ups. See `docs\DEMO.md` and `docs\DEPLOY.md` for switching and the TLS/RSC gates.
+
 - **Layout:** `src/domain` (pure cast planner), `src/services` (cast file loader, Azure Speech over REST with an Entra token), `src/routes` (HTTP), `src/web` (browser code: room page, audio, microphone worklet; bundled by esbuild into `public/`).
 - **Routes:** `/room/{sessionId}` (the room), `/static/*`, `GET /cast/script`, `POST /cast/line`, `/healthz`.
 - **Run:** `npm install && npm start` (port 5090, or `PORT`). `npm start` bundles the browser code first. Settings come from environment variables: `Demo__CastFile`, `SPEECH_ENDPOINT` (Azure Speech resource endpoint), `AZURE_TENANT_ID`.
