@@ -36,6 +36,7 @@ public sealed class MediaBotService : BackgroundService
         var graphLogger = new GraphLogger("ZavaMedia", redirectToTrace: false);
         _client = new CommunicationsClientBuilder("Zava Scrum Agent", _options.AppId, graphLogger)
             .SetAuthentication(_options.AppId, new GraphTokenProvider(credential, _options.TenantId))
+            .SetServiceBaseUrl(new Uri("https://graph.microsoft.com/v1.0"))
             .SetNotificationUrl(new Uri($"https://{_options.ServiceFqdn}/callback"))
             .SetMediaPlatformSettings(new MediaPlatformSettings
             {
