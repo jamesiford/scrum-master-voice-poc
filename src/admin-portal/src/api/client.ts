@@ -548,6 +548,14 @@ export async function savePrompt(teamId: string, name: string, text: string): Pr
 
 /** Live floor and timebox state of a running standup. */
 export interface LiveState {
+  recording?: boolean;
+  callState?: string;
+  participants?: ReadonlyArray<{
+    participantId: string;
+    memberId: string | null;
+    displayName: string;
+    guest: boolean;
+  }>;
   floor: string;
   currentSpeaker: string | null;
   agentSpeaking: boolean;
