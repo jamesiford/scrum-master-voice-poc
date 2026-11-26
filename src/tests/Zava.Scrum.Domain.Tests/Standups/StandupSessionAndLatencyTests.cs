@@ -66,4 +66,36 @@ public sealed class StandupSessionAndLatencyTests
         Assert.Equal([1234], copy.LatencySamplesMs);
         Assert.Equal(2, copy.Events.Count);
     }
+
+    [Fact]
+    public void RecordMeetingEvent_MatchedLiveMeeting_PreservesFirstStartAndRoundTripsIdentity()
+    {
+        var session = StandupSession.Prepare(Guid.NewGuid(), "t", Now, null);
+        session.Start("acs", "https://teams.microsoft.com/l/meetup-join/chat/0", 15, Now);
+
+        Assert.True(session.RecordMeetingEvent("meeting-id", "chat", session.JoinUrl!, false, Now));
+        Assert.False(session.RecordMeetingEvent("meeting-id", "chat", session.JoinUrl!, false, Now.AddMinutes(1)));
+        var copy = StandupSession.Restore(session.ToSnapshot());
+
+        Assert.Equal(Now, copy.MeetingLifecycle!.StartedAt);
+        Assert.False(copy.MatchesMeeting("other-id", "chat", session.JoinUrl!));
+        Assert.False(copy.MatchesMeeting("meeting-id", "other-chat", session.JoinUrl!));
+        Assert.False(copy.MatchesMeeting("meeting-id", "chat", "https://teams.microsoft.com/l/meetup-join/two/0"));
+        Assert.Equal(session.MeetingLifecycle, copy.MeetingLifecycle);
+    }
+
+    [Fact]
+    public void RecordMeetingEvent_PreparedOrEndedSession_DoesNotChangeMetadataOrLifecycle()
+    {
+        var session = StandupSession.Prepare(Guid.NewGuid(), "t", Now, null);
+        const string url = "https://teams.microsoft.com/l/meetup-join/chat/0";
+
+        Assert.False(session.RecordMeetingEvent("meeting-id", "chat", url, false, Now));
+        Assert.Equal(StandupStatus.Prepared, session.Status);
+        session.Start("acs", url, 15, Now);
+        session.End(Now);
+        Assert.False(session.RecordMeetingEvent("meeting-id", "chat", url, true, Now.AddMinutes(1)));
+        Assert.Null(session.MeetingLifecycle);
+        Assert.Equal(Now, session.EndedAt);
+    }
 }
