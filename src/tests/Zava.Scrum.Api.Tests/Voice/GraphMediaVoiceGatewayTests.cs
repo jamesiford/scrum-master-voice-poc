@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -11,11 +12,81 @@ using Zava.Scrum.Application.Features.Standups;
 using Zava.Scrum.Domain.Kpis;
 using Zava.Scrum.Domain.Members;
 using Zava.Scrum.Domain.Standups;
+using Xunit.Abstractions;
 
 namespace Zava.Scrum.Api.Tests.Voice;
 
-public sealed class GraphMediaVoiceGatewayTests
+public sealed class GraphMediaVoiceGatewayTests(ITestOutputHelper output)
 {
+    [Fact]
+    public async Task RunAsync_ThreeSyntheticIdentityStreams_AttributesEverySelectedFrame()
+    {
+        var identities = new[] { Fixture.ObjectId, Guid.NewGuid(), Guid.NewGuid() };
+        await using var fixture = new Fixture(identities);
+        await fixture.ReadyAsync();
+        fixture.Socket.Input(new
+        {
+            type = "participants",
+            items = identities.Select((id, i) => new { participantId = $"speaker-{i}", objectId = id, displayName = $"Voice {i}" }).ToArray(),
+        });
+        await WaitAsync(() => fixture.Live.GetState(fixture.Context.Session.Id)?.Contains("\"memberId\":\"admin\"", StringComparison.Ordinal) == true);
+
+        for (var i = 0; i < 90; i++)
+        {
+            fixture.Audio(identities[i % 3], marker: (byte)(i % 3 + 1));
+        }
+
+        await WaitAsync(() => fixture.Voice.Audio.Count(b => b.Any(value => value != 0)) == 90);
+        var frames = fixture.Voice.Audio.Where(b => b.Any(value => value != 0)).ToArray();
+        Assert.Equal(Enumerable.Range(0, 90).Select(i => (byte)(i % 3 + 1)), frames.Select(b => b[0]));
+        foreach (var marker in new byte[] { 1, 2, 3 })
+        {
+            Assert.Equal(30, frames.Count(b => b[0] == marker));
+        }
+
+        output.WriteLine("Synthetic identity-tagged PCM: 90/90 selected frames, 30 per roster identity. This is not SDK/Teams attribution or voice recognition.");
+    }
+
+    [Fact]
+    public async Task RunAsync_OverlappingGuestIsLouder_DoesNotForwardQuieterMemberAudio()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        fixture.Socket.Input(new
+        {
+            type = "audio",
+            items = new[]
+            {
+                new { participantId = "member", participantObjectId = Fixture.ObjectId, displayName = "Daniel", amplitude = 500, pcm = Convert.ToBase64String(Enumerable.Repeat((byte)1, 960).ToArray()) },
+                new { participantId = "guest", participantObjectId = Guid.NewGuid(), displayName = "Daniel", amplitude = 1000, pcm = Convert.ToBase64String(Enumerable.Repeat((byte)2, 960).ToArray()) },
+            },
+        });
+        fixture.Audio(Fixture.ObjectId, marker: 3);
+        await WaitAsync(() => fixture.Voice.Audio.Any(b => b[0] == 3));
+
+        Assert.DoesNotContain(fixture.Voice.Audio, b => b[0] is 1 or 2);
+        output.WriteLine("Overlap probe: strongest guest suppresses the simultaneous quieter member frame; only subsequent member PCM is forwarded.");
+    }
+
+    [Fact]
+    public async Task RunAsync_SustainedSpeechDuringOpening_RetainsSharedFloorException()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        fixture.Socket.Input(new { type = "callState", state = "Established" });
+        await WaitAsync(() => fixture.Voice.Responses.Count == 1);
+        fixture.Voice.Emit(new AgentResponseStarted());
+        fixture.Audio(Fixture.ObjectId);
+        fixture.Voice.Emit(new UserSpeechStarted());
+        await Task.Delay(50);
+        fixture.Clock.Advance(TimeSpan.FromMilliseconds(600));
+        await Task.Delay(100);
+
+        Assert.Equal(0, fixture.Voice.Cancels);
+        Assert.False(fixture.Socket.HasType("stopAudio"));
+        output.WriteLine("Opening exception: sustained 600 ms synthetic speech does not cancel. Unconditional barge-in requirement is not satisfied in this state.");
+    }
+
     [Fact]
     public async Task RunAsync_SameNameGuest_ReceivesNoMemberAudioOrWork()
     {
@@ -92,8 +163,10 @@ public sealed class GraphMediaVoiceGatewayTests
         fixture.Audio(Fixture.ObjectId);
         fixture.Voice.Emit(new UserSpeechStarted());
         await Task.Delay(50);
+        var stopLatency = Stopwatch.StartNew();
         fixture.Clock.Advance(TimeSpan.FromMilliseconds(400));
         await WaitAsync(() => fixture.Socket.HasType("stopAudio"));
+        stopLatency.Stop();
         await WaitAsync(() => fixture.Voice.Cancels == 1);
         fixture.Voice.Emit(new AgentAudio(new byte[] { 9, 9 }));
         fixture.Socket.Input(new { type = "agentAudioState", state = "idle", interrupted = true, playedMs = 120 });
@@ -101,6 +174,7 @@ public sealed class GraphMediaVoiceGatewayTests
 
         Assert.Equal(("interrupted-item", 120), fixture.Voice.Truncations.Single());
         Assert.DoesNotContain(fixture.Socket.Sent, s => s.Type == WebSocketMessageType.Binary && s.Bytes.SequenceEqual(new byte[] { 9, 9 }));
+        output.WriteLine($"Synthetic CallingOn: stop command observed {stopLatency.Elapsed.TotalMilliseconds:F1} ms after clock crossed 350 ms threshold; cancelled once and truncated at 120 ms. Not a Teams playback measurement.");
     }
 
     private static async Task WaitAsync(Func<bool> condition)
@@ -119,14 +193,17 @@ public sealed class GraphMediaVoiceGatewayTests
         private readonly BridgeConnection _bridge;
         private readonly Task<bool> _run;
 
-        public Fixture()
+        public Fixture(Guid[]? identities = null)
         {
+            identities ??= [ObjectId];
+            var ids = new[] { "daniel", "maya", "admin" };
+            var roster = identities.Select((id, i) => new Member(ids[i], "team-one", ids[i], ids[i], null, "", i + 1, true, EntraObjectId: id)).ToArray();
             var brief = new PreBrief("team-one", "sprint", "goal", 5, new Burndown(1, 1, 0, 5, false),
-                [new MemberBrief("daniel", "Daniel", [], "Progress?")], [], [], "summary");
+                roster.Select(m => new MemberBrief(m.Id, m.DisplayName, [], "Progress?")).ToArray(), [], [], "summary");
             var session = new SessionDto(Guid.NewGuid(), "team-one", StandupStatus.Live, Clock.UtcNow, brief, "acs", Clock.UtcNow, null, [],
                 new Dictionary<string, Attendance>(), 0, 0, 0, 15);
             Context = new MediaSessionContext(session,
-                [new Member("daniel", "team-one", "daniel", "Daniel", null, "", 1, true, EntraObjectId: ObjectId)], "Instructions", "https://teams.microsoft.com/meet/123");
+                roster, "Instructions", "https://teams.microsoft.com/meet/123");
             _bridge = new BridgeConnection(Socket);
             var gateway = new GraphMediaVoiceGateway(Voice, Clock, Live, Options.Create(new VoiceGatewayOptions { BargeInMs = 350 }),
                 NullLogger<GraphMediaVoiceGateway>.Instance);
@@ -149,10 +226,10 @@ public sealed class GraphMediaVoiceGatewayTests
 
         public Task ReadyAsync() => WaitAsync(() => Socket.HasType("hello"));
 
-        public void Audio(Guid id) => Socket.Input(new
+        public void Audio(Guid id, byte marker = 1) => Socket.Input(new
         {
             type = "audio",
-            items = new[] { new { participantId = "speaker", participantObjectId = id, displayName = "Daniel", amplitude = 500, pcm = Convert.ToBase64String(Enumerable.Repeat((byte)1, 960).ToArray()) } },
+            items = new[] { new { participantId = "speaker", participantObjectId = id, displayName = "Daniel", amplitude = 500, pcm = Convert.ToBase64String(Enumerable.Repeat(marker, 960).ToArray()) } },
         });
 
         public async ValueTask DisposeAsync()
