@@ -550,6 +550,8 @@ export async function savePrompt(teamId: string, name: string, text: string): Pr
 export interface LiveState {
   recording?: boolean;
   callState?: string;
+  boardState?: string;
+  boardFailure?: string | null;
   participants?: ReadonlyArray<{
     participantId: string;
     memberId: string | null;
