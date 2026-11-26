@@ -160,3 +160,12 @@ The voice can run through a Foundry hosted agent (a relay in front of Voice Live
    The API restarts onto a new revision for each change, so a change takes effect in about a minute. A session keeps its agent: the choice is a hash of the session id, and `hostWarmUp.route` shows `hosted-canary` for the sessions that went to the candidate.4. **Kill the host.** A standup survives it: the voice reconnects to the same hosted session and the session is read back from Cosmos. The one-off cold start after an idle stop (15 minutes) is about 4 s longer than a warm reconnect; pre-warm avoids it.
 5. **Which route to use.** Direct is the default. The hosted route held the latency gate on the point estimates (ADR 0021, "G1 settled") but not with margin, so it is an option for demonstrating the hosted agent. Switch with `azd env set VOICE_ROUTE Hosted` then `azd provision`, or with the `az containerapp update` command in step 2; go back by removing the setting.
 6. **Measure the hop.** `dotnet run --project tools/VoiceRelayBench -- --mode paired ...` (header comment in the file) alternates direct and relayed turns; `pwsh docs/gates/m11-p4/g1.ps1` runs the gate harness on both routes with the decision model on and off.
+
+### Agent identity sign-ins (5B)
+
+The hosted agent signs in as its own Entra Agent ID. Evidence, after a standup or a warm-up:
+
+- Entra admin centre > Monitoring > Sign-in logs > **Service principal sign-ins**: filter Service principal = the agent (`<foundry>-<project>-zava-voice-relay-AgentIdentity`). The Agent column shows type `agenticAppInstance` and the blueprint as parent.
+- Graph: `az rest --resource https://graph.microsoft.com --method get --url "https://graph.microsoft.com/beta/auditLogs/signIns?`$filter=signInEventTypes/any(t: t eq 'servicePrincipal') and servicePrincipalId eq '<AGENT_HOST_PRINCIPAL_ID>'&`$top=5"` (the filter without the event type times out).
+- Log Analytics (if exported): `AADServicePrincipalSignInLogs | where ServicePrincipalId == "<AGENT_HOST_PRINCIPAL_ID>" | project TimeGenerated, ResourceDisplayName, ResultType, IPAddress`.
+- `pwsh infra/hooks/agent-identity.ps1` prints the identity, its (absent) credentials, the blueprint, the sponsor and the latest sign-ins.
