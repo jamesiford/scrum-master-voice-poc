@@ -19,7 +19,7 @@ try {
   $context = Join-Path $work 'context'
   Expand-Archive -Path $zip -DestinationPath $context
   $registry = ($env:AZURE_CONTAINER_REGISTRY_ENDPOINT -split '\.')[0]
-  $tag = "m11-6b-$head"
+  $tag = "m11-7-$head"
   $image = "zava-scrum-agent/$Service-$($env:AZURE_ENV_NAME):$tag"
   $dockerfile = if ($Service -eq 'api') { 'Dockerfile.api' } else { 'Dockerfile.bridge' }
   az acr build --registry $registry --image $image --file $dockerfile $context --no-logs -o none

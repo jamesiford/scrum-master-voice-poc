@@ -1,7 +1,7 @@
 # Post-deploy verification. Prints PASS or FAIL per check and exits non-zero if any check fails.
 #   pwsh infra/hooks/verify.ps1 [-Runs 1]
 # Needs the deployer to be signed in to az and to hold Azure DevOps access (the same sign-in as azd up).
-param([int]$Runs = 1)
+param([int]$Runs = 1, [string]$GateOutput)
 . "$PSScriptRoot/lib.ps1"
 Import-AzdEnvironment
 $failed = 0
@@ -40,7 +40,7 @@ Check 'Bot endpoint rejects unauthenticated calls' {
   '401'
 }
 
-$out = Join-Path ([IO.Path]::GetTempPath()) "zava-verify-$([guid]::NewGuid().ToString('N'))"
+$out = if ($GateOutput) { [IO.Path]::GetFullPath($GateOutput) } else { Join-Path ([IO.Path]::GetTempPath()) "zava-verify-$([guid]::NewGuid().ToString('N'))" }
 $sessionId = $null
 Check 'Simulated Room standup with the cast (gate harness subset)' {
   $build = (git -C $PSScriptRoot rev-parse --short HEAD 2>$null)
@@ -91,6 +91,6 @@ Check 'Audit chain complete (session, proposal, approval record, Azure DevOps wr
   if (-not $applied -or $applied.adoRevisions.Count -eq 0) { throw 'no write record with a work item revision' }
   "$($chain.tag): approved by object id $oid, revision $($applied.adoRevisions[0].revision) on #$($applied.adoRevisions[0].workItemId)"
 }
-Remove-Item $out -Recurse -Force -ErrorAction SilentlyContinue
+if (-not $GateOutput) { Remove-Item $out -Recurse -Force -ErrorAction SilentlyContinue }
 if ($failed) { Write-Host "`n$failed check(s) failed." -ForegroundColor Red; exit 1 }
 Write-Host "`nAll checks passed." -ForegroundColor Green
