@@ -52,6 +52,7 @@ public sealed partial class ScrumAgent : AgentApplication
         _scopes = scopes;
         _conversations = conversations;
         _identity = identity;
+        RegisterMeetingEvents();
         OnConversationUpdate("membersAdded", OnMembersAddedAsync);
         OnActivity(ActivityTypes.Message, OnMessageAsync);
         AdaptiveCards.OnActionExecute("bind-team", (ctx, _, data, ct) => BindAsync(ctx, data, ct));

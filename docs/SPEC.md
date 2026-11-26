@@ -352,6 +352,13 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 **M11 6a:** no Application use case or port is added. The native media presentation routes reuse `GetSessionQuery`, `GetRosterQuery` and the normal `EndStandupCommand`; `GraphMediaBridge` implements the existing `IMeetingBridge`. The ephemeral audio path intentionally bypasses commands and has no writable tool surface (ADR 0023).
 
+**M11 7 (ADR 0024):** `ReceiveMeetingEventCommand` is the Teams use case for
+authenticated scheduled meeting start/end metadata. It resolves tenant and bound
+conversation, matches the stored meeting, records metadata and publishes the
+existing ceremony end events exactly once. No new portal endpoint or voice tool.
+Native board snapshots reuse Domain `ItemMentions`, `RetroInterpreter`,
+`RetroAgenda` and `RetroSummary` without persistence or model-computed numbers.
+
 #### 6.1.5 Code standards summary
 
 | Standard | How it shows up in this repo | Checked by |
@@ -711,6 +718,24 @@ A session carries its team id, and the floor, the gateway and the bridge never r
 
 **Native media alternative (M11 6a/6b, ADR 0023).** `GraphMediaVoiceGateway` uses team/session capabilities and unique roster Entra object ids, not display-name attribution. Unmatched users remain visible guests and their audio is not sent to the model. PCM24K stays in bounded memory and uses the existing Direct/Hosted voice factory; Direct remains the deployed default. No meeting-derived transcript, attendance or proposal is stored; ordinary session lifecycle metadata is separate. The shared floor-control rules, including opening/recap exceptions, are unchanged. Stop/cancel drops queued and late audio and truncates at acknowledged played milliseconds. First-audio request latency is logged only, not retained as meeting data or reported as a measured live gate. Hosting is deployed; live native acceptance remains n=0 pending the documented meeting prerequisites.
 
+**Native board (M11 7, ADR 0024).** `Board:Mode=Share` retains the ACS canvas;
+`MediaShare` negotiates send-only VBSS on the same GraphMedia call. Windows
+SkiaSharp renders 1280x720 RGB24 only when state changes; cached one-fps frames
+keep the stream alive. Open/end/reconnect own the sharing role independently
+of voice; failures appear in live state. Messages carry authenticated team and
+session ids; coverage and retro notes/actions are ephemeral and completion
+says they are not saved. The organiser-selected shared view is visible to all
+meeting participants, not a guest query/approval grant. No personal tab without
+positive S7 evidence. Native visibility/encode CPU/G1 remain n=0.
+
+**Meeting events (M11 7).** The existing Azure-managed SSO bot uses the Agents
+SDK Teams extension and `OnlineMeeting.ReadBasic.Chat`. Start records only
+matched live-session metadata; end is an idempotent additional trigger for the
+normal end path. Channel-data meeting id, tenant, bound conversation and stored
+join URL identify the session; payload Id and display names do not. Native
+participant join/leave comes from call roster updates, not Teams-managed event
+subscriptions. Live event delivery remains n=0.
+
 > **Approval and sign-in (M11 5A, ADR 0020), applies to sections 11 to 13.** A decision made by voice is only a proposal; nothing is written until a person approves it in the portal or on a Teams card, and the write is made as that person (Azure DevOps shows them as author). The voice path never holds an Azure DevOps credential.
 
 ## 12. Teams and Microsoft 365 Copilot
@@ -803,7 +828,7 @@ A session carries its team id, and the floor, the gateway and the bridge never r
 | POST | `/api/sessions/{id}/start` | `SessionsEndpoints.cs` | `StartStandupCommand`; for `mode: acs`, then `JoinMeetingCommand`. Body `{mode: simulated or acs, joinUrl?, standupMinutes?}`; returns a bridge token and room URL |
 | POST | `/api/sessions/{id}/analyse` | `SessionsEndpoints.cs` | `AnalyseUtteranceQuery`; body `{speakerId, text, holderId?, asked?, focusItemId?}`; shows how the decision model reads a sentence (intent, items, comment kinds, `source` Model or Rules) |
 | POST | `/api/sessions/{id}/control` | `SessionsEndpoints.cs` | `ControlStandupCommand`. Actions: `begin`, `mute`, `unmute`, `skip`, `takeover`, `release`, `end` |
-| GET | `/api/sessions/{id}/live` | `SessionsEndpoints.cs` | `GetLiveStateQuery` (server-sent events) |
+| GET | `/api/sessions/{id}/live` | `SessionsEndpoints.cs` | `GetLiveStateQuery` (server-sent events); native includes `boardState`, `boardFailure`, call roster and non-recording flag |
 | POST | `/api/sessions/{id}/followups` | `FollowUpsEndpoints.cs` | `SendFollowUpsCommand` |
 | GET | `/api/followups?teamId=&status=` | `FollowUpsEndpoints.cs` | `ListFollowUpsQuery` |
 | GET | `/api/followups/{id}` | `FollowUpsEndpoints.cs` | `GetFollowUpQuery` |
@@ -1016,6 +1041,13 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 
 **Windows media host (`Zava.Scrum.MediaBot`, ADR 0023).** Protected machine settings: `MediaBot:TenantId`, `AppId`, `CertificateThumbprint` (LocalMachine/My), `ServiceFqdn`, `PublicIp`, `MediaPort` (8445), `ApiBase` (trusted HTTPS origin), `ApiKey` (**secret**, from Key Vault) and `MaxConcurrentMeetings` (1 until measured). The certificate also authenticates the separate calling application to Graph. No private key or control secret is exported as a deployment parameter. azd opt-in defaults are `MEDIA_HOST_ENABLED=false`, `MEDIA_VM_SIZE=Standard_D4s_v5`, optional `MEDIA_SERVICE_FQDN` (otherwise the Azure public-IP DNS label) and `BRIDGE_MODE=Acs`. Direct and Hosted voice routes are independent. HTTP-01 certificate acquisition/import is automated; rerun the hook monthly for renewal. Existing-environment image-only deployment preserves settings, so switching also requires the API `Bridge__Mode` environment update shown in DEMO.md.
 
+**Board (ADR 0024).** `Board:Mode` is `Share` (default) or `MediaShare`, validated
+at API startup. `BOARD_MODE` is its azd/Bicep input and `Board__Mode` its deployed
+API variable. The authenticated API context supplies the mode to the native host;
+there is no independent, potentially stale host selector. Share with GraphMedia
+means audio without VBSS; MediaShare needs GraphMedia to deliver a native board.
+Keep Acs/Share until real meeting acceptance. No extra secret or resource.
+
 ---
 
 ## 18. Azure resources (PoC)
@@ -1042,6 +1074,7 @@ Use `DefaultAzureCredential` for Azure resources. Secrets go only in user secret
 - **As built:** a repository contract exists for `ISessionRepository` only (`SessionRepositoryContract`), and it runs against the JSON-file implementation only. There is no Cosmos run and no contract for the other repositories. This is a known gap.
 - One Playwright test that runs a scripted standup in the Simulated Room using the demo cast, and asserts that the session completes with events, an absent mark and follow-ups created.
 - **As built** (see `AS-BUILT.md` 9 for the current counts): Added: utterance classification, item linking, deferral and circle-back, retraction, reporting priorities, no-response follow-ups. The Playwright Simulated Room test passes (6 checks) and a scripted "messy standup" exercised every reactive path against the real gateway. The Cosmos repository contract test is not yet automated.
+- **M11 test checkpoint:** all seven .NET suites, including AgentHost and Windows MediaBot, run together; bridge unit and both Simulated Room E2E suites are counted separately. The portal has no configured test suite: its build, typecheck and lint are checks, not test counts. Measured checkpoint results are in `gates/M11-gates.md`.
 - No evaluation pipeline in the PoC. The human Scrum Master's judgement in the demo is the quality bar; collect transcripts for production evaluations.
 
 ---

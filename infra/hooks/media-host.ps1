@@ -67,6 +67,9 @@ try {
   if (-not (Test-Path (Join-Path $build 'NativeMedia.dll'))) {
     throw 'The media publish is missing the SDK native payload. Check the aligned Microsoft.Skype.Bots.Media reference.'
   }
+  if (-not (Get-ChildItem -Path $build -Filter 'libSkiaSharp.dll' -Recurse)) {
+    throw 'The media publish is missing the native SkiaSharp renderer payload.'
+  }
   $zip = Join-Path $work 'media.zip'
   Compress-Archive -Path "$build\*" -DestinationPath $zip
   $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
@@ -111,7 +114,7 @@ try {
   New-Item -ItemType Directory -Path (Split-Path $package) -Force | Out-Null
   Compress-Archive -Path (Join-Path $work 'manifest.json'), (Join-Path $work 'color.png'), (Join-Path $work 'outline.png') -DestinationPath $package -Force
   $health = Invoke-RestMethod "https://$($env:MEDIA_FQDN)/healthz" -TimeoutSec 30
-  if ($health.service -ne 'media-bot' -or $health.recording -ne $false -or $health.maxConcurrentMeetings -ne 1) { throw 'The media host did not pass HTTPS readiness with the one-meeting cap.' }
+  if ($health.service -ne 'media-bot' -or $health.recording -ne $false -or $health.maxConcurrentMeetings -ne 1 -or $health.boardRendererReady -ne $true) { throw 'The media host did not pass HTTPS and native-renderer readiness with the one-meeting cap.' }
   Write-Check PASS 'Windows media host ready' "https://$($env:MEDIA_FQDN); concurrent call cap 1; no recording."
   az containerapp update -g $env:AZURE_RESOURCE_GROUP -n $env:API_APP_NAME `
     --set-env-vars "Bridge__GraphMediaBaseUrl=https://$($env:MEDIA_FQDN)" -o none

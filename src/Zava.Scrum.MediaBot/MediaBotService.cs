@@ -8,6 +8,7 @@ using Microsoft.Graph.Communications.Calls.Media;
 using Microsoft.Graph.Communications.Client;
 using Microsoft.Graph.Communications.Common.Telemetry;
 using Microsoft.Skype.Bots.Media;
+using Zava.Scrum.MediaBot.Board;
 
 namespace Zava.Scrum.MediaBot;
 
@@ -31,6 +32,10 @@ public sealed class MediaBotService : BackgroundService
         _options = options.Value;
         _logs = logs;
         _http = http;
+        using (var renderer = new BoardRenderer())
+        {
+            BoardRendererReady = renderer.RenderRgb24(default, "00:00:00").Length == 1280 * 720 * 3;
+        }
         _certificate = LoadCertificate(_options.CertificateThumbprint);
         var credential = new ClientCertificateCredential(_options.TenantId, _options.AppId, _certificate);
         var graphLogger = new GraphLogger("ZavaMedia", redirectToTrace: false);
@@ -54,6 +59,9 @@ public sealed class MediaBotService : BackgroundService
 
     /// <summary>Gets the communications client for authenticated notification processing.</summary>
     public ICommunicationsClient Client => _client;
+
+    /// <summary>Gets whether the real native renderer and fonts passed the startup frame check.</summary>
+    public bool BoardRendererReady { get; }
 
     /// <summary>Validates the team at the API, then starts a real Graph call with unmixed PCM24K.</summary>
     /// <param name="join">Team-scoped request from the API.</param>
@@ -97,12 +105,18 @@ public sealed class MediaBotService : BackgroundService
                 return Results.Json(new { error = "media.capacity", detail = "The media VM's concurrent meeting cap has been reached." }, statusCode: 409);
             }
 
+            if (verified.BoardMode is not ("Share" or "MediaShare"))
+            {
+                return Results.BadRequest(new { error = "media.board_mode", detail = "The API returned an unsupported board adapter." });
+            }
+
             var media = _client.CreateMediaSession(new AudioSocketSettings
             {
                 StreamDirections = StreamDirection.Sendrecv,
                 SupportedAudioFormat = AudioFormat.Pcm24K,
                 ReceiveUnmixedMeetingAudio = true,
-            });
+            }, videoSocketSettings: (VideoSocketSettings?)null,
+                vbssSocketSettings: verified.BoardMode == "MediaShare" ? MediaBoardTransport.SocketSettings() : null);
             var stream = new MediaCall(join, _options.TenantId, media, _logs.CreateLogger<MediaCall>(), _options.ApiKey);
             try
             {
@@ -199,5 +213,5 @@ public sealed class MediaBotService : BackgroundService
         return certificate ?? throw new InvalidOperationException("A valid media TLS certificate with a private key is required in LocalMachine/My.");
     }
 
-    private sealed record MeetingContext(Guid SessionId, string TeamId, string JoinUrl);
+    private sealed record MeetingContext(Guid SessionId, string TeamId, string JoinUrl, string BoardMode);
 }

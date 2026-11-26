@@ -8,4 +8,5 @@ namespace Zava.Scrum.Api.Voice;
 /// <param name="Roster">Its team's verified roster.</param>
 /// <param name="Instructions">The non-recording facilitation prompt.</param>
 /// <param name="JoinUrl">The session's stored calendar link.</param>
-public sealed record MediaSessionContext(SessionDto Session, IReadOnlyList<Member> Roster, string Instructions, string JoinUrl);
+/// <param name="BoardMode">The configured real board adapter.</param>
+public sealed record MediaSessionContext(SessionDto Session, IReadOnlyList<Member> Roster, string Instructions, string JoinUrl, string BoardMode = "Share");

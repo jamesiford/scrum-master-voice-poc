@@ -10,5 +10,6 @@
     <!-- Native payload uses build assets, not buildTransitive; keep the central pin aligned with the calling SDK. -->
     <PackageReference Include="Microsoft.Skype.Bots.Media" />
     <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="SkiaSharp" />
   </ItemGroup>
 </Project>

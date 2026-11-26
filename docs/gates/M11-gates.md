@@ -1,5 +1,139 @@
 # M11 gates
 
+## Full test checkpoint after prompt 7 (tests-1, 2026-11-26)
+
+One aggregate `dotnet test ZavaScrum.slnx --no-build --no-restore` run passed
+**849/849**, with zero failures or skips. Counts exceed every required G4
+baseline; hosted and Windows-native projects are included rather than omitted.
+
+| Suite | G4 baseline | Checkpoint passed / total |
+| --- | ---: | ---: |
+| Domain | 388 | 403 / 403 |
+| Application | 143 | 170 / 170 |
+| Infrastructure | 73 | 88 / 88 |
+| Api | 132 | 151 / 151 |
+| Architecture | 7 | 14 / 14 |
+| AgentHost | Not specified | 3 / 3 |
+| MediaBot (Windows) | Not specified | 20 / 20 |
+| Bridge unit tests | Not specified | 12 / 12 |
+| Bridge standup E2E | Not specified | 6 / 6 |
+| Bridge retrospective E2E | Not specified | 6 / 6 |
+| Portal tests | Not configured | 0 configured; no test runner or test script |
+
+All three builds pass; solution build has zero warnings/errors. Both
+TypeScript typechecks and ESLint/Prettier checks pass. The existing portal
+bundle-size advisory is not a build failure. Full C# formatting exposed
+16 pre-existing whitespace-only files; these are corrected on the tip branch
+and full `dotnet format --verify-no-changes` passes, without changing runtime
+behaviour. Ownership is earlier prompts 3/3A and 5A, not prompt 7.
+
+Real bridge E2E passed **12/12**, zero failed/cancelled/skipped: one
+retrospective in **298.3 s** and one standup in **366.4 s**, **666.4 s**
+for the aggregate invocation. They used an isolated local Json store on
+ports 5089/5099 with actual zavaw3 Azure services.
+Initial setup cancelled all 12 assertions before execution because the local
+credential chain stopped at inaccessible IMDS; valid Azure CLI tokens were
+confirmed and the documented local credential selector was applied. A local
+HTTPS/websocket invocation mistake was also corrected before the passing run;
+neither required a shipped-code or test change. Helpers and temporary data
+were removed after completion. No full .NET suite was rerun for whitespace.
+No native participant, encoder, meeting-event delivery or latency gate is
+inferred from these tests. Existing failed exact board parity and fallback
+latency point estimates below remain failed. No resources or deployment
+settings changed; added fixed cost is USD 0/hour.
+
+Commands: `dotnet build ZavaScrum.slnx --no-restore`;
+`dotnet test ZavaScrum.slnx --no-build --no-restore`;
+`dotnet format ZavaScrum.slnx --verify-no-changes --no-restore`.
+For each TypeScript project, run its existing `build`, `typecheck` and `lint`
+scripts. Bridge unit checks use `npm test --prefix src\meeting-bridge`.
+The two real E2E suites run once together from `src\meeting-bridge` with
+`node --import tsx --test --test-concurrency=1 e2e\standup.e2e.ts e2e\retro.e2e.ts`;
+local configuration prerequisites are in DEMO.md. Retained TRX and complete E2E
+output are in the untracked `.m11-plan\run-log\tests-1-results` and
+`tests-1-e2e-configured.txt`.
+
+## Board share and meeting events (conductor 7, 2026-11-26)
+
+ADR 0024 adds a genuine selectable native VBSS adapter and typed scheduled
+meeting events. ACS canvas, Acs and Direct remain defaults. The administrator
+attempted publication of the updated messaging package; Graph refused missing
+delegated catalogue scopes despite the active admin role. Actual-calendar,
+verified member identities, organiser RSC and real participants remain gates
+in DEPLOY.md. No personal tab without positive S7 evidence.
+
+| Gate/check | Step 7 result | Sample and evidence |
+| --- | --- | --- |
+| G1 native share latency | Not run | n=0 native; Direct Simulated Room before/after is fallback-only |
+| G2 native attribution | Not run | n=0 live; join/leave/guest ownership is covered by focused gateway tests |
+| G3 approver-authored writes | Measured portal subset | n=1 approved comment and complete audit chain; mandatory verify.ps1 passes, not a native speech write or Teams SSO proof |
+| G4 parity / rehearsal | Failed exact board parity; live rehearsal/full suites not run | n=11 genuine Chromium/native board states; all differ; n=0 live native rehearsal; checkpoint owns full suites |
+| G5 Copilot | Not run in step 7 | No new sample; preserve historical evidence below |
+| G6 stored-link native joins | Not run | n=0; live meeting prerequisites absent |
+| G7 observability / decision goldens | Not run in step 7 | Board images are not decision/trace acceptance |
+| G9 multi-team matrix / concurrency | Not run in step 7 | Focused isolation tests are not the full live matrix |
+| G10 Foundry IQ grounding | Not run in step 7 | No new sample; preserve historical evidence below |
+| G11 Work IQ consent / privacy | Not run in step 7 | No new sample; preserve historical evidence below |
+| Board automatically visible to every participant/guest <=2 s | Not run | n=0; renderer/socket readiness is not participant delivery |
+| Board change visible <=2 s | Not run | n=0 native |
+| Encoder CPU per meeting / cap | Not run | n=0; cap remains 1, not a measured capacity |
+| Scheduled meeting start/end delivery | Not run | n=0 live; real-mediator tests verify isolation/idempotence, not delivery |
+| Fallback latency point estimates | Failed p95 tolerance | n=12 turns per run; total p50 +3.34%, p95 +39.16%; not formal/native G1 |
+
+Eleven golden fixtures use the actual existing Chromium canvas: waiting, empty,
+agenda, speaker-highlight, covered-clipped-six, standup-complete,
+retro-round-empty, retro-round-notes, retro-themes, retro-actions, retro-complete.
+Their captured PNGs, native output, provenance, hashes and regional
+measurements are in `src/tests/Zava.Scrum.MediaBot.Tests/BoardGoldens`.
+Worst compared region (retro-complete/header): channel MAE **2.273/255**,
+changed pixels **4.988%**, geometry maximum
+channel difference **1**. Tests use explicit 2.5/255 MAE and 6% regional change
+tolerance for browser/Skia text shaping; **exact identity fails all eleven**. Do not
+remove ACS or mark the native visual gate passed. Native non-recording completion
+intentionally changes saved-follow-up wording, tested separately.
+
+Focused checks: board renderer 5/5, board lifecycle/failure recovery 7/7,
+native gateway/ephemeral retro 13/13, Application meeting events/normal end
+20/20, Domain session/lifecycle 10/10, SDK presentation 3/3 and dependency
+architecture 14/14 (including the dependency subset). These are local code checks, not native meeting samples.
+
+The deployed native DLL hash matches the local published Release DLL and its
+product version contains source0d07e83. SYSTEM task Running, one boot trigger,
+last run2026-11-26T22:09:09Z; real renderer readiness passes. This is artifact/
+hosting proof, not encoder load, meeting-event delivery or participant visibility.
+
+### Step 7 deployed fallback regression, Direct Simulated Room
+
+Before: one run, **12 timed turns**, 382 s, 19 transcript pieces, zero
+talk-overs; API/bridge images `m11-6b-1b7a614`. After: one run, **12 timed
+turns**, 398 s, 19 transcript pieces, zero talk-overs. API/native source
+`0d07e83`, API image `m11-7-0d07e83`, bridge image `m11-7-c25287f`.
+API/bridge ready revisions are `--0000080` / `--0000007`. The runner source
+label is not an image hash; the final documentation-only commit does not
+change deployed runtime. Mandatory `verify.ps1` passes all eight checks,
+including native renderer/capability protection, approver-authored comment
+and complete audit chain. Raw before/after and summaries are in `m11-p7`.
+
+| Hop | Before p50 / p95 ms | After p50 / p95 ms |
+| --- | --- | --- |
+| Total turn | 3230 / 3958 | 3338 / 5508 |
+| Transcript | 0 / 192 | 0 / 198 |
+| Analyser | 27 / 27 | 27 / 40 |
+| Decision model | 152 / 167 | 144 / 236 |
+| Orchestration | 1520 / 1967 | 1576 / 3798 |
+| First Voice Live audio | 1564 / 2292 | 1459 / 1908 |
+
+Total p50 rises 108 ms (3.34%); p95 rises 1550 ms (39.16%), exceeding the
+historical 10% tolerance. The orchestration tail is larger. Question-only
+before/after is 3350/3958 versus 3642/5508 ms, **n=9 each**, with p50 +8.72%.
+Each run uses the decision model on 10/12 turns. These nearest-rank one-run
+estimates fail the fallback latency point comparison; they neither establish
+causality nor pass formal G1's >=30 questions/3 runs and model-on/off matrix.
+Simulated transcript p50 zero does not exercise speech-to-text. Native G1
+remains **not run, n=0**; preserve defaults, not a speculative timing fix.
+The printed, unchecked Teams checklist is historical ACS guidance, not native
+roster/share/rehearsal or native saved-follow-up evidence.
+
 ## Native media hosting checkpoint (conductor 6a/6b, 2026-11-26)
 
 The Windows host and trusted Azure DNS-label certificate are deployed in zavaw3/westus3. Native acceptance remains unrun: the catalogue POST lacked delegated OAuth scopes, the disabled/simulated schedule contains no real meeting links, Daniel/Maya lack roster Entra object ids, and organiser RSC/real voices are outstanding. The rows below refer only to GraphMedia; historical ACS, Simulated Room and hosted-relay evidence is not native-media evidence.

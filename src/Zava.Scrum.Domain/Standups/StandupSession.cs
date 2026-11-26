@@ -29,6 +29,7 @@ public sealed class StandupSession : AggregateRoot
         Kind = s.Kind;
         CorrelationId = s.CorrelationId ?? Correlation.ForLegacySession(s.Id);
         HostWarmUp = s.HostWarmUp;
+        MeetingLifecycle = s.MeetingLifecycle;
     }
 
     /// <summary>Gets the session id.</summary>
@@ -68,6 +69,57 @@ public sealed class StandupSession : AggregateRoot
 
     /// <summary>Gets the Teams join URL, if any.</summary>
     public string? JoinUrl { get; private set; }
+
+    /// <summary>Gets correlated Teams lifecycle metadata. This contains no participant or meeting content.</summary>
+    public MeetingLifecycle? MeetingLifecycle { get; private set; }
+
+    /// <summary>Checks an event against this session's stored meeting and any previously correlated identity.</summary>
+    /// <param name="meetingId">The id from channel data, never the payload's id.</param>
+    /// <param name="conversationId">The unambiguous bound conversation.</param>
+    /// <param name="joinUrl">The join URL in the typed meeting details.</param>
+    /// <returns>Whether the event belongs to this session.</returns>
+    public bool MatchesMeeting(string meetingId, string conversationId, string joinUrl) =>
+        !string.IsNullOrWhiteSpace(meetingId) &&
+        !string.IsNullOrWhiteSpace(conversationId) &&
+        Uri.TryCreate(JoinUrl, UriKind.Absolute, out var stored) &&
+        Uri.TryCreate(joinUrl, UriKind.Absolute, out var received) &&
+        stored.Scheme == Uri.UriSchemeHttps &&
+        stored.Equals(received) &&
+        MatchesMeetingConversation(stored, conversationId) &&
+        (MeetingLifecycle is null ||
+            MeetingLifecycle.MeetingId == meetingId && MeetingLifecycle.ConversationId == conversationId);
+
+    private static bool MatchesMeetingConversation(Uri joinUrl, string conversationId)
+    {
+        // Scheduled Teams join links name their meeting chat. A different bound chat on the same team cannot end this ceremony.
+        var segments = joinUrl.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        return segments is ["l", "meetup-join", var thread, ..] &&
+            string.Equals(Uri.UnescapeDataString(thread), conversationId.Split(";messageid=", 2)[0], StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Records a matched meeting event without starting an unprepared ceremony. Duplicate events change nothing.</summary>
+    /// <param name="meetingId">The id from Teams channel data.</param>
+    /// <param name="conversationId">The bound conversation.</param>
+    /// <param name="joinUrl">The meeting's join URL.</param>
+    /// <param name="ended">Whether this is an end event.</param>
+    /// <param name="now">When the event was received.</param>
+    /// <returns>Whether metadata changed.</returns>
+    public bool RecordMeetingEvent(string meetingId, string conversationId, string joinUrl, bool ended, DateTimeOffset now)
+    {
+        if (Status != StandupStatus.Live || !MatchesMeeting(meetingId, conversationId, joinUrl))
+        {
+            return false;
+        }
+
+        var current = MeetingLifecycle ?? new MeetingLifecycle(meetingId, conversationId, null, null);
+        if (ended ? current.EndedAt is not null : current.StartedAt is not null)
+        {
+            return false;
+        }
+
+        MeetingLifecycle = ended ? current with { EndedAt = now } : current with { StartedAt = now };
+        return true;
+    }
 
     /// <summary>Gets the timebox in minutes for this run.</summary>
     public int StandupMinutes { get; private set; }
@@ -116,7 +168,7 @@ public sealed class StandupSession : AggregateRoot
     /// <summary>Captures the state for persistence.</summary>
     /// <returns>The snapshot.</returns>
     public StandupSessionSnapshot ToSnapshot() =>
-        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind, CorrelationId, HostWarmUp);
+        new(Id, TeamId, CreatedAt, Status, PreBrief, Mode, JoinUrl, StandupMinutes, StartedAt, EndedAt, new Dictionary<string, Attendance>(_attendance), [.. _handled], [.. _events], [.. _latency], Kind, CorrelationId, HostWarmUp, MeetingLifecycle);
 
     /// <summary>Starts the standup. A session can start once, and only after it was prepared.</summary>
     /// <param name="mode">Bridge mode.</param>

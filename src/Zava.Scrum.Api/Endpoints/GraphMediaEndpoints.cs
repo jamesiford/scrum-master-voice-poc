@@ -20,7 +20,7 @@ public static class GraphMediaEndpoints
         {
             var context = await loader.LoadAsync(sessionId, teamId, ct);
             return context.IsSuccess
-                ? Results.Ok(new { sessionId, teamId, context.Value.JoinUrl })
+                ? Results.Ok(new { sessionId, teamId, context.Value.JoinUrl, context.Value.BoardMode })
                 : context.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = MediaHostAuthenticationHandler.SchemeName }).NoTeamScope();
         app.Map("/invocations_ws", async (Guid sessionId, string teamId,

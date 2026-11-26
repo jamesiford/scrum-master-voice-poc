@@ -133,7 +133,9 @@ async function pipeRemoteAudio(c: Call, worklet: AudioWorkletNode): Promise<void
       const rms = Math.sqrt(sum / buf.length);
       // Log only on activity (and a periodic heartbeat) so the container log stays readable.
       if (rms > 0.002 || ++quiet % 15 === 0)
-        console.log(`[audio] remote rms=${rms.toFixed(4)} ctx=${context.state} track=${track?.readyState}/${track?.muted}`);
+        console.log(
+          `[audio] remote rms=${rms.toFixed(4)} ctx=${context.state} track=${track?.readyState}/${track?.muted}`,
+        );
     }, 1000);
   };
   const attach = (): void => {

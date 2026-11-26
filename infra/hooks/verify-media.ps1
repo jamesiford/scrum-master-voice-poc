@@ -35,7 +35,11 @@ $health = Invoke-RestMethod "https://$($env:MEDIA_FQDN)/healthz" -TimeoutSec 30
 if ($health.service -ne 'media-bot' -or $health.recording -ne $false -or $health.maxConcurrentMeetings -ne 1) {
   throw 'Native HTTPS readiness must report media-bot, no recording and the one-meeting cap.'
 }
+if ($health.boardRendererReady -ne $true -or $health.boardWidth -ne 1280 -or $health.boardHeight -ne 720) {
+  throw 'The native browser-free board renderer did not pass the real 1280x720 startup check.'
+}
 Write-Check PASS 'Native HTTPS readiness' "https://$($env:MEDIA_FQDN)/healthz; no recording; cap 1"
+Write-Check PASS 'Native board renderer readiness' 'Real SkiaSharp startup frame succeeded at 1280x720; not a VBSS encoder or live participant sample.'
 $uri = "$($env:API_URI)/api/media/context?sessionId=$([Guid]::NewGuid())&teamId=verification"
 $status = (Invoke-WebRequest $uri -SkipHttpErrorCheck -MaximumRedirection 0 -TimeoutSec 30).StatusCode
 if ($status -ne 401) { throw "Native API route must reject unauthenticated requests with 401, not $status or an Easy Auth redirect." }

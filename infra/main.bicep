@@ -48,6 +48,10 @@ param mediaServiceFqdn string = ''
 @description('Real meeting adapter. Keep Acs until the media host is provisioned and its gates have run.')
 param bridgeMode string = 'Acs'
 
+@allowed([ 'Share', 'MediaShare' ])
+@description('Board adapter: ACS canvas by default, or VBSS on the native media call.')
+param boardMode string = 'Share'
+
 
 @description('Deployment SKU of the realtime and live models: GlobalStandard, or DataZoneStandard to keep processing inside the data zone and use data zone quota.')
 @allowed([ 'GlobalStandard', 'DataZoneStandard' ])
@@ -152,6 +156,7 @@ module compute 'modules/compute.bicep' = {
     foundryProjectName: foundry.outputs.projectName
     voiceRelayEndpoint: voiceRoute == 'Hosted' ? 'wss://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}/agents/${agentHostName}/endpoint/protocols/invocations_ws' : ''
     bridgeMode: bridgeMode
+    boardMode: boardMode
     graphMediaBaseUrl: mediaHostEnabled == 'true' ? 'https://${mediaHost!.outputs.fqdn}' : ''
   }
 }

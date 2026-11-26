@@ -50,6 +50,27 @@ Each utterance is read by `AnalyseUtteranceQuery` (ADR 0014): a decision model (
 ### 3.2 Shared board
 The agent shares a 1280x720 canvas as its screen: the agenda of flagged items at the start, then the current speaker's items (state, flags, owner, a highlight on the item being asked about, a tick when covered) and per-member coverage with a status (away, no response, update by someone). Frames are forced from a canvas attached to the page. Sharing is best effort and supervised: it retries until Teams confirms, and every status change appears as a Bridge event on the Live tab and in the bridge log (`[share]`). **Status:** observed working in a real Teams meeting on 23 November 2026 (the recorded take).
 
+**M11 prompt 7, ADR 0024:** `Board:Mode=Share` retains that ACS canvas.
+`MediaShare` selects native VBSS on the GraphMedia call: a browser-free SkiaSharp
+1280x720 renderer, draw on changed state and cached one-fps keep-alive, automatic
+sharer/viewer lifecycle and reconnect renegotiation independent of voice.
+Team/session-owned snapshots, coverage and retro notes/actions remain ephemeral;
+native completion never promises saved follow-ups. The shared meeting view is
+visible to its participants, not a guest query/approval grant. The portal shows
+share failures and reports Sharing only after SDK frame submission; known
+failures/timeouts remain recoverable on reconnect. No personal tab is built
+because ADR 0015 S7 did not run.
+Native visibility/encoder CPU/G1 and live meeting events remain n=0; ACS/Direct
+remain defaults. Golden-image evidence and deployed checks are in the gate table.
+
+The Azure-managed SSO bot handles typed Teams start/end events using scheduled
+meeting `OnlineMeeting.ReadBasic.Chat` consent. It resolves tenant and bound team,
+correlates channel-data meeting id with the stored join link, records lifecycle
+metadata, and ends only the matching live ceremony idempotently through existing
+end events. It does not start a new ceremony from an unbound event. Participant
+join/leave is authoritative media call roster data, not Teams-managed subscriptions.
+Catalogue upload/RSC and a real meeting are still required to verify delivery.
+
 ## 4. Safety rules that are enforced in code
 1. No Azure DevOps write without an approved follow-up (`FollowUp.GetApprovedChanges`, `ApplyApprovedChangesHandler`, unit tested). Approval is a card button in Teams or the portal.
 2. Work item ids are never invented: ids in recorded events, follow-ups, cards, generated questions, summaries and the board are checked against the sprint in code (`WorkItemIdGuard`, `RecordStandupEventHandler`). The facilitator model's free speech is constrained by its prompt and checked only by the end-to-end test "never mentions a work item id outside the sprint".
@@ -96,7 +117,19 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-227 Domain, 80 Application, 39 Infrastructure and 7 architecture tests; `dotnet format` clean; lint and typecheck for bridge and portal; an end-to-end Simulated Room standup (6 checks) via `npm run e2e --prefix src/meeting-bridge`. A scripted "messy standup" exercised chime-ins, step-away, circle-back, silence, what-to-report, correction and proxy against the real gateway.
+The M11 checkpoint after prompt 7 (26 November 2026) passes 849 .NET tests:
+403 Domain, 170 Application, 88 Infrastructure, 151 Api, 14 architecture,
+3 AgentHost and 20 Windows MediaBot. Bridge unit tests pass 12/12. All three
+builds and both TypeScript lint/typecheck checks pass. The portal has no
+configured test suite; build/lint is not reported as a test pass.
+Full solution formatting passes after whitespace-only corrections. Both real
+Simulated Room E2E suites pass 6/6 each, in one aggregate invocation:
+standup 366.4 s, retrospective 298.3 s. Measured evidence is recorded in
+`gates/M11-gates.md`. The existing Simulated Room standup has six checks via
+`npm run e2e --prefix src/meeting-bridge`; the retrospective has six via
+`npm run e2e:retro --prefix src/meeting-bridge`. A scripted "messy standup"
+previously exercised chime-ins, step-away, circle-back, silence, what-to-report,
+correction and proxy against the real gateway.
 
 ## 10. Decision records
 0001 domain events; 0002 to 0006 deviations by milestone (M1 to M7, Teams bridge, scheduler, reports, Cosmos); 0007 M8 stretch features, shared board, Teams audio; 0008 goal-driven orchestration; 0009 documentation baseline (which document wins, and the `StandupSession` naming debt); 0009b Agent Framework and OpenTelemetry; 0010 ceremony kinds, packs and carry-over (M9); 0011 sprint planning pack (M9a). `DOC-DRIFT.md` lists the differences found between the documents and the code.

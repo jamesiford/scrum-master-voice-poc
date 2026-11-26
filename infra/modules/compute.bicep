@@ -65,6 +65,10 @@ param voiceRelayEndpoint string = ''
 @description('Selectable real meeting adapter.')
 param bridgeMode string = 'Acs'
 
+@allowed([ 'Share', 'MediaShare' ])
+@description('Selectable existing canvas or native VBSS board adapter.')
+param boardMode string = 'Share'
+
 @description('HTTPS control origin of the opt-in Windows media host.')
 param graphMediaBaseUrl string = ''
 
@@ -152,6 +156,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bridge__ApiPublicUrl', value: 'https://${apiFqdn}' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
             { name: 'Bridge__Mode', value: bridgeMode }
+            { name: 'Board__Mode', value: boardMode }
             { name: 'Bridge__GraphMediaBaseUrl', value: graphMediaBaseUrl }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
           ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ])

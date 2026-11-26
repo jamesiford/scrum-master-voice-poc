@@ -156,6 +156,12 @@ export function LivePage() {
                     Teams-native media: {live.callState ?? 'Joining'}. Audio, transcripts and
                     meeting-derived follow-ups are not saved.
                   </Alert>
+                  {live.boardState && (
+                    <Alert tone={live.boardState === 'Failed' ? 'warn' : 'info'}>
+                      Native board: {live.boardState}.
+                      {live.boardFailure ? ` ${live.boardFailure}` : ''}
+                    </Alert>
+                  )}
                   <div className="flex flex-wrap gap-2" aria-label="Meeting participants">
                     {live.participants?.map((participant) => (
                       <Badge
@@ -163,7 +169,7 @@ export function LivePage() {
                         tone={participant.guest ? 'warn' : 'ok'}
                       >
                         {participant.displayName}
-                        {participant.guest ? ' (guest, no work or approval access)' : ''}
+                        {participant.guest ? ' (guest, no query or approval access)' : ''}
                       </Badge>
                     ))}
                   </div>

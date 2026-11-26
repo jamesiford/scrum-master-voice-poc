@@ -1,0 +1,358 @@
+[
+  { "name": "waiting", "state": null },
+  {
+    "name": "agenda",
+    "state": {
+      "ended": false,
+      "sprint": "Sprint 43",
+      "goal": "Ship resilient payments",
+      "daysLeft": 4,
+      "speaker": null,
+      "focus": null,
+      "items": [
+        {
+          "id": 4521,
+          "owner": "Maya Lin",
+          "title": "Retry failed payments",
+          "type": "User Story",
+          "state": "Active",
+          "flags": ["Overdue", "Blocked"],
+          "covered": false
+        },
+        {
+          "id": 4522,
+          "owner": "Daniel Park",
+          "title": "Payment telemetry",
+          "type": "Task",
+          "state": "New",
+          "flags": [],
+          "covered": false
+        }
+      ],
+      "team": [
+        { "name": "Maya Lin", "total": 3, "covered": 1 },
+        { "name": "Daniel Park", "total": 2, "covered": 0, "status": "away" },
+        { "name": "Admin", "total": 0, "covered": 0 }
+      ]
+    }
+  },
+  {
+    "name": "speaker-highlight",
+    "state": {
+      "ended": false,
+      "sprint": "Sprint 43",
+      "goal": "Ship resilient payments",
+      "daysLeft": 4,
+      "speaker": "Maya Lin",
+      "focus": 4521,
+      "items": [
+        {
+          "id": 4521,
+          "owner": "Maya Lin",
+          "title": "Retry failed payments",
+          "type": "User Story",
+          "state": "Active",
+          "flags": ["Overdue"],
+          "covered": false
+        }
+      ],
+      "team": [
+        { "name": "Maya Lin", "total": 3, "covered": 1 },
+        {
+          "name": "Daniel Park",
+          "total": 2,
+          "covered": 0,
+          "status": "no response"
+        }
+      ]
+    }
+  },
+  {
+    "name": "covered-clipped-six",
+    "state": {
+      "ended": false,
+      "sprint": "Sprint 43",
+      "goal": "Ship a resilient and observable payments service with safe retries and operational visibility for the whole team",
+      "daysLeft": 4,
+      "speaker": "Maya Lin",
+      "focus": 4521,
+      "items": [
+        {
+          "id": 4521,
+          "owner": "Maya Lin",
+          "title": "Retry failed payments with a deliberately long title that must end in an ellipsis rather than overflow",
+          "type": "User Story",
+          "state": "Active",
+          "flags": ["Overdue"],
+          "covered": true
+        },
+        {
+          "id": 4522,
+          "title": "Payment telemetry",
+          "type": "Task",
+          "state": "Closed",
+          "flags": [],
+          "covered": true
+        },
+        {
+          "id": 4523,
+          "title": "Alerting",
+          "type": "Task",
+          "state": "New",
+          "flags": [],
+          "covered": false
+        },
+        {
+          "id": 4524,
+          "title": "Dashboards",
+          "type": "Task",
+          "state": "Active",
+          "flags": ["Stale"],
+          "covered": false
+        },
+        {
+          "id": 4525,
+          "title": "Runbook",
+          "type": "Task",
+          "state": "New",
+          "flags": [],
+          "covered": false
+        },
+        {
+          "id": 4526,
+          "title": "Release checklist",
+          "type": "Task",
+          "state": "Active",
+          "flags": [],
+          "covered": false
+        },
+        {
+          "id": 4527,
+          "title": "SEVENTH ITEM MUST NOT APPEAR",
+          "type": "Task",
+          "state": "New",
+          "flags": [],
+          "covered": false
+        }
+      ],
+      "team": [
+        { "name": "Maya Lin", "total": 3, "covered": 3 },
+        { "name": "Daniel Park", "total": 3, "covered": 1 },
+        { "name": "Admin", "total": 0, "covered": 0, "status": "away" }
+      ]
+    }
+  },
+  {
+    "name": "standup-complete",
+    "state": {
+      "ended": true,
+      "sprint": "Sprint 43",
+      "goal": "",
+      "daysLeft": 4,
+      "speaker": null,
+      "focus": null,
+      "items": [
+        {
+          "id": 4521,
+          "title": "Must not be painted after completion",
+          "type": "Task",
+          "state": "Closed",
+          "flags": [],
+          "covered": true
+        }
+      ],
+      "team": [{ "name": "Maya Lin", "total": 3, "covered": 3 }]
+    }
+  },
+  {
+    "name": "empty",
+    "state": {
+      "ended": false,
+      "sprint": "Sprint 43",
+      "goal": "",
+      "daysLeft": 0,
+      "speaker": "Admin",
+      "focus": null,
+      "items": [],
+      "team": [{ "name": "Admin", "total": 0, "covered": 0 }]
+    }
+  },
+  {
+    "name": "retro-round-empty",
+    "state": {
+      "kind": "retro",
+      "ended": false,
+      "sprint": "Sprint 43",
+      "phase": "Round",
+      "speaker": null,
+      "columns": [
+        { "key": "well", "label": "What went well", "notes": [] },
+        { "key": "better", "label": "Do better", "notes": [] },
+        { "key": "missing", "label": "What's missing", "notes": [] }
+      ],
+      "themes": [],
+      "actions": [],
+      "team": []
+    }
+  },
+  {
+    "name": "retro-round-notes",
+    "state": {
+      "kind": "retro",
+      "ended": false,
+      "sprint": "Sprint 43",
+      "phase": "Round",
+      "speaker": "Daniel Park",
+      "columns": [
+        {
+          "key": "well",
+          "label": "What went well",
+          "notes": [
+            { "text": "OLDEST NOTE MUST NOT APPEAR", "member": "Admin" },
+            {
+              "text": "Pairing helped unblock the release",
+              "member": "Maya Lin"
+            },
+            {
+              "text": "A deliberately long note wraps across two lines and then discards every additional line from the board",
+              "member": "Daniel Park"
+            },
+            { "text": "Deployments stayed predictable", "member": "Admin" },
+            { "text": "Reviews were quick", "member": "Maya Lin" },
+            { "text": "Shared ownership worked", "member": "Daniel Park" }
+          ]
+        },
+        {
+          "key": "better",
+          "label": "Do better",
+          "notes": [
+            { "text": "Earlier dependency checks", "member": "Maya Lin" }
+          ]
+        },
+        {
+          "key": "missing",
+          "label": "What's missing",
+          "notes": [
+            {
+              "text": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ a very long unbroken token",
+              "member": "Admin"
+            }
+          ]
+        }
+      ],
+      "themes": [],
+      "actions": [],
+      "team": []
+    }
+  },
+  {
+    "name": "retro-themes",
+    "gatewayPhase": "RetroThemes",
+    "state": {
+      "kind": "retro",
+      "recording": false,
+      "ended": false,
+      "sprint": "Sprint 43",
+      "phase": "Actions",
+      "speaker": null,
+      "columns": [
+        {
+          "key": "Continue",
+          "label": "What went well",
+          "notes": [
+            { "text": "Pairing improved delivery", "member": "Maya Lin" },
+            { "text": "Reviews were quick", "member": "Daniel Park" }
+          ]
+        },
+        {
+          "key": "Stop",
+          "label": "Do better",
+          "notes": [
+            { "text": "Earlier dependency checks", "member": "Maya Lin" }
+          ]
+        },
+        {
+          "key": "Start",
+          "label": "What's missing",
+          "notes": [{ "text": "Operational visibility", "member": "Admin" }]
+        }
+      ],
+      "themes": [
+        { "name": "Collaboration", "count": 2 },
+        { "name": "Dependencies", "count": 1 },
+        { "name": "Observability", "count": 1 }
+      ],
+      "actions": [],
+      "team": [
+        { "name": "Maya Lin" },
+        { "name": "Daniel Park" },
+        { "name": "Admin" }
+      ]
+    }
+  },
+  {
+    "name": "retro-actions",
+    "state": {
+      "kind": "retro",
+      "ended": false,
+      "sprint": "Sprint 43",
+      "phase": "Actions",
+      "speaker": null,
+      "columns": [
+        {
+          "key": "well",
+          "label": "What went well",
+          "notes": [
+            { "text": "Pairing improved delivery", "member": "Maya Lin" }
+          ]
+        },
+        {
+          "key": "better",
+          "label": "Do better",
+          "notes": [
+            { "text": "More predictable reviews", "member": "Daniel Park" }
+          ]
+        },
+        { "key": "missing", "label": "What's missing", "notes": [] }
+      ],
+      "themes": [
+        { "name": "Collaboration", "count": 3 },
+        { "name": "Flow", "count": 2 }
+      ],
+      "actions": [
+        { "owner": "Maya Lin", "text": "Start the day with dependency checks" },
+        {
+          "owner": "Daniel Park",
+          "text": "Rotate review ownership with a deliberately long action description so the browser's hundred-character clipping is exercised honestly"
+        },
+        { "owner": "Admin", "text": "Track review time" },
+        { "owner": "Admin", "text": "FOURTH ACTION MUST NOT APPEAR" }
+      ],
+      "team": []
+    }
+  },
+  {
+    "name": "retro-complete",
+    "state": {
+      "kind": "retro",
+      "ended": true,
+      "sprint": "Sprint 43",
+      "phase": "Actions",
+      "speaker": null,
+      "columns": [
+        { "key": "well", "label": "What went well", "notes": [] },
+        { "key": "better", "label": "Do better", "notes": [] },
+        { "key": "missing", "label": "What's missing", "notes": [] }
+      ],
+      "themes": [
+        {
+          "name": "A long theme name to exercise comma-separated theme clipping at one hundred and ten characters",
+          "count": 4
+        },
+        { "name": "Another theme", "count": 2 }
+      ],
+      "actions": [{ "owner": "Admin", "text": "Publish the agreed actions" }],
+      "team": []
+    }
+  }
+]

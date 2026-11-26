@@ -21,7 +21,7 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 
 ## Real Teams meeting
 
-For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a/6b)" below. The existing ACS path remains the default for the full follow-up demo.
+For the M11 native-media alternative and its non-recording limitation, see "Teams-native media (6a/6b)" and "Native board and meeting events (7)" below. The existing ACS path remains the default for the full follow-up demo.
 1. Create a Teams meeting in the demo tenant and copy the join link.
 2. **Live console** tab > pick a prepared session > paste the link > **Start in Teams**.
 3. Admit "Zava Scrum Agent" from the lobby. The bridge status line shows Joining, Lobby, Connected, Live.
@@ -96,6 +96,16 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 7. Delete the meetings from the agent's calendar before the next run.
 
 ## Gate runner (latency and traceability)
+For the bridge's automated `e2e` and `e2e:retro` checks, run the local API and
+bridge with a dedicated Json data folder and the intended environment's Foundry,
+Azure DevOps and Speech configuration. Leave `VoiceLive:Endpoint` empty to derive
+the websocket URL from `Foundry:ProjectEndpoint`; an explicit endpoint must use
+`wss://`, not HTTPS. Set `E2E_API` when using a non-default local API port.
+If valid `az` tokens exist but local `DefaultAzureCredential` stops at IMDS,
+set `AZURE_TOKEN_CREDENTIALS=AzureCliCredential` in the local API process only,
+as documented by [Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/credential-chains#use-a-specific-credential).
+Do not change deployed managed-identity credentials for a local test.
+
 `tools/GateRunner` plays the Simulated Room cast (`demo/cast/payments-standup.yaml`, autopilot) through the real API in Edge and records, for every agent reply that follows someone speaking, the time from the end of their speech to the first audio, split into: speech end to transcript, analyser, decision model, orchestration (floor control, the wait for silence, the reconcile) and Voice Live first audio. Each run is saved as JSON; `summary.md` gives p50, p95 and n per hop (nearest-rank, no interpolation) and the build id. Every later change re-runs it and pastes the summary into the pull request and `docs/gates/M11-gates.md`.
 
 1. Start the API and the bridge (`dotnet run --project src\Zava.Scrum.Api --urls http://localhost:5080`; `npm run start --prefix src\meeting-bridge`). The configuration under test is set on the API: the default is the decision model (`UtteranceAnalysis__Engine=Decision`); for the rules-only run set `UtteranceAnalysis__Mode=Rules` before starting it.
@@ -162,9 +172,48 @@ pwsh infra\hooks\verify-media.ps1 -RequireReady
 
 The media hook sets `Bridge:GraphMediaBaseUrl` to the verified HTTPS origin and preserves the existing secret `Bridge:ApiKey`. Direct and Hosted voice routes both work through the existing factory; retain Direct unless separately testing the optional hosted route. Prepare a session for the chosen team and start it in Teams with its stored calendar link; the session's `mode` remains `acs`. The calling app must already be installed and consented in that meeting chat.
 
-The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no work facts or approval rights. Synthetic stop was dispatched 29.6 ms after the 350 ms threshold (n=1), with truncation at 120 played ms, **not measured in Teams**. Opening-state speech sustained for 600 ms did not cancel; shared opening/recap exceptions remain. Test these explicitly, rather than claiming unconditional barge-in.
+The live console shows native call/lobby state, the current floor and participants. Missing/cross-team/duplicate object identities are guests, including a guest with the same name as a roster member. Guests receive no query or approval rights; an organiser-selected shared screen is visible to all meeting participants. Synthetic stop was dispatched 29.6 ms after the 350 ms threshold (n=1), with truncation at 120 played ms, **not measured in Teams**. Opening-state speech sustained for 600 ms did not cancel; shared opening/recap exceptions remain. Test these explicitly, rather than claiming unconditional barge-in.
 
-Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Restore the complete close-the-loop story with `azd env set BRIDGE_MODE Acs` and `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs"`, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected. The native board/video path is deferred to prompt 7.
+Native media saves no PCM, transcript, spoken update or meeting-derived proposal. Do not demonstrate a saved follow-up from native meeting speech. Restore the complete close-the-loop story with `azd env set BRIDGE_MODE Acs` and `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs"`, leaving the Windows host intact. **Simulated** retains the browser room and refuses Teams joins; the room remains available even when `GraphMedia` is selected.
+
+### Native board and meeting events (7)
+
+Keep the working **Acs / Share / Direct** default. Only after the organiser and
+administrator complete the catalogue, actual calendar/roster and meeting RSC
+actions in DEPLOY.md, prepare a fresh session and select native screen sharing:
+
+```pwsh
+azd env select zavaw3
+azd env set BRIDGE_MODE GraphMedia
+azd env set BOARD_MODE MediaShare
+az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=GraphMedia" "Board__Mode=MediaShare"
+pwsh infra\hooks\verify-media.ps1 -RequireReady
+```
+
+The bot automatically requests the screen-sharing role at ceremony opening,
+updates the same agenda/current-speaker/coverage or retro board, and gives up
+the role when it ends. Observe **Board** state in the Live console; a share
+failure must not stop speech. Native completion explicitly says notes are not
+saved. Disconnect/reconnect and observe resumption; end the actual Teams meeting
+and verify the matching session's single normal end path. An unbound, other-team
+or duplicate event must not end a different session. Participant changes come
+from the media roster, not display names or polling.
+
+These live checks remain **not run, n=0**, including automatic guest visibility,
+two-second updates, encoder CPU/cap and native G1 with share. Local real-Chromium
+goldens do not match pixel-for-pixel: worst mean channel error 2.273/255 and
+4.988% changed pixels, n=11 board states. Bounded text-rendering tolerances pass,
+but do not call this exact parity. No personal side-panel tab is present (S7
+was unrun). Restore the full saved-follow-up demo without tearing down the host:
+
+```pwsh
+azd env set BRIDGE_MODE Acs
+azd env set BOARD_MODE Share
+az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs" "Board__Mode=Share"
+```
+
+`Share` with GraphMedia selects audio without native sharing; it does not
+silently start Chromium. Simulated Room keeps its existing canvas.
 
 ## The hosted voice route, pre-warm and canary (M11 prompt 4)
 

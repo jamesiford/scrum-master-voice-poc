@@ -17,6 +17,7 @@ Set once with `azd env set`. None is a secret.
 | `MEDIA_HOST_ENABLED`, `MEDIA_VM_SIZE` | no | `false` by default; opt-in public Windows media VM, `Standard_D4s_v5` (four vCPU), hard call cap 1. `D3_v2` was unavailable in `zavaw3`/`westus3`. |
 | `MEDIA_SERVICE_FQDN` | no | Optional certificate-covered DNS name. Empty uses the Azure public IP DNS label; the hook obtains a Let's Encrypt HTTP-01 certificate and imports directly from the VM to Key Vault. |
 | `BRIDGE_MODE` | no | `Acs` (default), `Simulated`, or `GraphMedia`. Select native media only after HTTPS bootstrap and per-meeting RSC installation. The voice factory supports Direct or Hosted; preserve the working route until measured. |
+| `BOARD_MODE` | no | `Share` (ACS canvas, default) or `MediaShare` (VBSS on GraphMedia). Bicep sets API `Board__Mode`; image-only updates preserve the current setting. No native browser or additional resource. |
 | `CHAT_CAPACITY`, `REALTIME_CAPACITY`, `DECISION_CAPACITY` | no | Deployment capacity. Defaults 100, 10, 100. Below 100 the decision model hits its rate limit. `REALTIME_CAPACITY` applies to each model in the `realtimeModels` list in `infra/main.bicep` (default `gpt-realtime-2.1` only). Quota is one row per model, so a model you do not deploy frees nothing for another. |
 
 ```pwsh
@@ -146,6 +147,9 @@ The postdeploy hook creates the dedicated `zava-media-zavaw3` calling app/servic
 | `MEDIA-RSC` | Each meeting's organiser, permitted by existing tenant policy | In the stored scheduled meeting's Teams chat, add the published **Zava Scrum Media** app and accept its resource-specific `Calls.JoinGroupCalls.Chat` permission for that chat before the ten unattended G6 joins. Catalogue publication and tenant media consent do not grant this meeting consent. If installation is prohibited, record the gate and retain ACS; do not alter tenant policy. |
 | Lobby admission | Meeting organiser | If existing meeting policy still sends the bot to the lobby, admit **Zava Scrum Media** from the meeting's lobby. Record that as a failed no-manual-step G6 case, not a successful unattended join. Do not relax tenant policy. |
 | Native voice acceptance | Meeting organiser plus Daniel, Maya and Admin as distinct signed-in Teams participants | Use the stored calendar link; perform ten joins without admission/manual steps, label each participant's speech and overlaps for >=95% G2, and interrupt the agent with >=350 ms real speech. Measure audio cessation <=500 ms, cancellation/truncation and the spoken answer, including opening/recap states. Run native per-hop G1 before changing the default. Synthetic identity-tagged bytes are not these acceptance samples. |
+| `MEETING-EVENT-CATALOGUE` | Teams administrator | Upload `appPackage\dist\zava-scrum-agent-zavaw3-1.0.5.zip` (or the explicitly configured later version) through Teams admin centre > Teams apps > Manage apps > Upload new app; approve under existing policy. The 7 updated-package POST was attempted during the active Global Administrator window and refused for missing delegated catalogue scopes, request `6cba8a7e-81ae-460f-a1b8-27abb7fe93ca` at 2026-11-26T21:20:16Z. No new unrelated scopes/policies are added. |
+| `MEETING-EVENT-RSC` | Scheduled meeting organiser and team administrator/lead | Add the published **Zava Scrum Agent** to the actual stored meeting chat and accept `OnlineMeeting.ReadBasic.Chat`. Bind that exact conversation to the correct team using the existing Bind card as a team lead/admin. The messaging bot keeps SSO; the media app's join consent alone does not grant event delivery. Start and end a real meeting, verify the API's matched lifecycle metadata and exactly one end/recap path; an unbound/other-team event must not end it. |
+| `NATIVE-BOARD-ACCEPTANCE` | Meeting organiser, members and a guest | After both apps are installed and a fresh session uses the stored meeting/verified roster, select GraphMedia/MediaShare as in DEMO.md. Without participant action, time the board's first appearance and each change to <=2 seconds for every participant, including the guest. Observe share stop/reconnect; sample VM process encoder CPU throughout one meeting against the unchanged cap 1, and run native G1 with the share running. Record sample sizes and failures. Renderer startup/goldens or Simulated Room are not these samples. |
 
 After importing the certificate, rerun `pwsh infra\hooks\media-host.ps1` in the selected `zavaw3` environment. It publishes win-x64, uploads a hash-addressed private blob with Entra, delivers the existing bridge key to Key Vault, bootstraps the VM using IMDS tokens, verifies the ZIP hash/trusted certificate/hostname, installs the signed Microsoft VC++ runtime if needed, registers the public certificate on the calling app and creates a SYSTEM startup task. Only the public certificate is returned by run-command. Secrets/private keys are not parameters or printed. It produces the Teams ZIP and checks `https://<MEDIA_FQDN>/healthz`. Task restarts are configured; a failure is explicit, not a successful fallback.
 
@@ -158,6 +162,24 @@ For this existing environment, `pwsh infra\hooks\deploy-service.ps1 -Service api
 Keep `BRIDGE_MODE=Acs` until HTTPS readiness and meeting RSC are verified. Then persist `azd env set BRIDGE_MODE GraphMedia` and apply `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=GraphMedia"`; image-only deployment does not apply Bicep environment values. Restore `Acs` with the same two commands, leaving the VM intact. Direct/Hosted voice selection is independent; Direct remains deployed. The media routes are Easy Auth exclusions but have an independent ASP.NET authentication scheme requiring both `x-bridge-key` and `x-bridge-token`; the loader checks explicit team ownership and the stored link. A portal bearer token alone is insufficient. Native unauthenticated context returned 401 in 6b, not an Easy Auth redirect. Run `infra\hooks\verify.ps1` and native G6/G2/barge-in/G1 checks; do not apply old ACS/relay or fallback regression numbers to the native path. Preserve ACS if any gate fails. No native meeting-derived data is saved.
 
 The inspected `team-payments` schedule is disabled/simulated with no stored meeting links, and Daniel/Maya have no roster Entra object ids (Admin does). The team's administrator/lead must approve a real sprint calendar through **Schedule > Proposed sprint calendar > Propose calendar > Approve**, or configure a real stored meeting link through the normal schedule flow. For this seed-backed roster, the deployment operator maps actual signed-in tenant accounts with `az containerapp update -g rg-zava-scrum-zavaw3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Demo__MemberEmails__daniel=<real-Daniel-UPN>" "Demo__MemberEmails__maya=<real-Maya-UPN>"`; do not use the `m-` prefix in those mapping keys. Then the team administrator/lead invokes authenticated `POST /api/teams/team-payments/members/sync` and verifies non-null distinct `entraObjectId` values through `GET /api/teams/team-payments/members` before preparing a fresh session. These are actual-account choices, not invented object ids or scripted cast labels. Other seed-backed teams use their own configured seed file/mappings.
+
+Prompt 7 adds no resources or roles. `media-host.ps1` checks both NativeMedia and
+SkiaSharp payloads before uploading; the actual VM renders a real waiting frame
+at startup. `/healthz` must report `boardRendererReady:true`, `boardWidth:1280`
+and `boardHeight:720`; `verify-media.ps1` checks them without claiming an encoder
+or participant sample. `teams-app.ps1` preserves the deployment's SSO resource
+and adds only scheduled meeting event RSC. Empty-environment hooks/templates
+include the same changes. No manual private keys, parameters or portal resources.
+
+**Step 7 deployment proof:** API/native source `0d07e83`; API image
+`m11-7-0d07e83` (ready revision `--0000080`), bridge `m11-7-c25287f`
+(`--0000007`). Actual native DLL hash matches the local published Release DLL;
+its product version includes `0d07e83` and the running SYSTEM task retains one
+boot trigger. Mandatory `verify.ps1 -GateOutput docs\gates\m11-p7\after` passes
+all eight checks, including the signed-in approver's Azure DevOps comment and
+audit chain. One-run fallback p95 worsens 39.16% over 12 turns; native board/
+event/encoder/G1 acceptance remains n=0. No resources or roles were added,
+no default was switched, and all deployed services remain running.
 
 ## Agent identity governance (prompt 5B, ADR 0022)
 

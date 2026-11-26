@@ -17,6 +17,7 @@
     "mediaHostEnabled": { "value": "${MEDIA_HOST_ENABLED=false}" },
     "mediaVmSize": { "value": "${MEDIA_VM_SIZE=Standard_D4s_v5}" },
     "mediaServiceFqdn": { "value": "${MEDIA_SERVICE_FQDN=}" },
-    "bridgeMode": { "value": "${BRIDGE_MODE=Acs}" }
+    "bridgeMode": { "value": "${BRIDGE_MODE=Acs}" },
+    "boardMode": { "value": "${BOARD_MODE=Share}" }
   }
 }

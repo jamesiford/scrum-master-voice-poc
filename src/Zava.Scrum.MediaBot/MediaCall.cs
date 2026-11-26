@@ -28,6 +28,8 @@ public sealed class MediaCall : IAsyncDisposable
     private readonly ConcurrentDictionary<string, ParticipantIdentity> _participants = new();
     private Task? _run;
     private ICall? _call;
+    private MediaBoardTransport? _boardTransport;
+    private BoardShareSession? _boardShare;
     private volatile bool _sendActive;
     private volatile bool _inLobby;
     private bool _responseDone;
@@ -63,6 +65,14 @@ public sealed class MediaCall : IAsyncDisposable
     public void Start(ICall call)
     {
         _call = call;
+        if (_media.VbssSocket is { } vbss)
+        {
+            _boardTransport = new MediaBoardTransport(call, vbss, _logger, _join.TeamId, _join.SessionId);
+            _boardShare = new BoardShareSession(_boardTransport, TimeProvider.System, _logger, _join.TeamId, _join.SessionId,
+                (state, message) => Enqueue(new { type = "boardStatus", state, message }));
+            _boardShare.SetEstablished(call.Resource.State == CallState.Established && !_inLobby);
+            _boardShare.Start();
+        }
         call.OnUpdated += OnCallUpdated;
         call.Participants.OnUpdated += OnRosterUpdated;
         foreach (var participant in call.Participants)
@@ -92,6 +102,8 @@ public sealed class MediaCall : IAsyncDisposable
         }
         finally
         {
+            if (_boardShare is not null) { await _boardShare.DisposeAsync(); }
+            _boardTransport?.Dispose();
             _media.AudioSocket.AudioMediaReceived -= OnAudio;
             _media.AudioSocket.AudioSendStatusChanged -= OnSendStatus;
             if (_call is not null)
@@ -150,6 +162,7 @@ public sealed class MediaCall : IAsyncDisposable
 
     private void OnCallUpdated(ICall sender, ResourceEventArgs<Call> args)
     {
+        _boardShare?.SetEstablished(args.NewResource.State == CallState.Established && !_inLobby);
         Enqueue(new { type = "callState", state = CallStateText(), message = "Teams call state changed." });
         if (args.NewResource.State == CallState.Terminated)
         {
@@ -188,13 +201,18 @@ public sealed class MediaCall : IAsyncDisposable
         ReadParticipant(participant);
     }
 
-    private void OnParticipantUpdated(IParticipant sender, ResourceEventArgs<Participant> args) => ReadParticipant(sender);
+    private void OnParticipantUpdated(IParticipant sender, ResourceEventArgs<Participant> args)
+    {
+        ReadParticipant(sender);
+        Enqueue(new { type = "participants", items = HumanParticipants() });
+    }
 
     private void ReadParticipant(IParticipant participant)
     {
         if (participant.Id == _call?.Resource.MyParticipantId)
         {
             _inLobby = participant.Resource.IsInLobby == true;
+            _boardShare?.SetEstablished(_call?.Resource.State == CallState.Established && !_inLobby);
             Enqueue(new { type = "callState", state = CallStateText(), message = _inLobby ? "Waiting in Teams lobby." : "Teams admission updated." });
         }
 
@@ -243,6 +261,7 @@ public sealed class MediaCall : IAsyncDisposable
                     Query = $"sessionId={_join.SessionId}&teamId={Uri.EscapeDataString(_join.TeamId)}",
                 }.Uri;
                 await socket.ConnectAsync(uri, _stop.Token);
+                _boardShare?.Reconnect();
                 Enqueue(new { type = "callState", state = CallStateText(), message = "Connected to the non-recording gateway." });
                 Enqueue(new { type = "participants", items = HumanParticipants() });
                 using var connected = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
@@ -324,7 +343,18 @@ public sealed class MediaCall : IAsyncDisposable
             {
                 using var json = JsonDocument.Parse(message.ToArray());
                 var type = json.RootElement.GetProperty("type").GetString();
-                if (type == "stopAudio")
+                if (type == "board")
+                {
+                    var board = json.RootElement;
+                    if (board.GetProperty("teamId").GetString() != _join.TeamId
+                        || board.GetProperty("sessionId").GetGuid() != _join.SessionId)
+                    {
+                        throw new InvalidOperationException("The board belongs to another team or session.");
+                    }
+
+                    _boardShare?.Update(board);
+                }
+                else if (type == "stopAudio")
                 {
                     long playedMs;
                     lock (_audioGate) { _outgoing.Clear(); _playing = false; playedMs = _playedFrames * 20; _playedFrames = 0; }
