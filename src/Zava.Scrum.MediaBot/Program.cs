@@ -30,11 +30,14 @@ app.Use(async (context, next) =>
 
     await next();
 });
-app.MapGet("/healthz", (IOptions<MediaBotOptions> options) => Results.Ok(new
+app.MapGet("/healthz", (IOptions<MediaBotOptions> options, MediaBotService bot) => Results.Ok(new
 {
     service = "media-bot",
     recording = false,
     maxConcurrentMeetings = options.Value.MaxConcurrentMeetings,
+    boardRendererReady = bot.BoardRendererReady,
+    boardWidth = 1280,
+    boardHeight = 720,
 }));
 app.MapGet("/privacy", () => Results.Text("Audio and audio-derived content are used transiently during the meeting and are not recorded or stored. This bot has no approval or Azure DevOps write capability."));
 app.MapGet("/terms", () => Results.Text("Preview non-recording Scrum facilitation. Use the existing signed-in portal approval flow for work item changes."));

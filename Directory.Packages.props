@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="Microsoft.Agents.Hosting.AspNetCore" Version="1.9.205" />
+    <PackageVersion Include="Microsoft.Agents.Extensions.MSTeams" Version="1.9.205" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.64.0" />
     <PackageVersion Include="Microsoft.Agents.Builder" Version="1.9.205" />
@@ -14,6 +15,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.13" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
+    <PackageVersion Include="SkiaSharp" Version="3.119.1" />
     <PackageVersion Include="Microsoft.Graph.Communications.Calls.Media" Version="1.2.0.18742" />
     <PackageVersion Include="Microsoft.Skype.Bots.Media" Version="1.33.0.258-preview" />
     <PackageVersion Include="Azure.AI.AgentServer.Invocations" Version="1.0.0-beta.8" />

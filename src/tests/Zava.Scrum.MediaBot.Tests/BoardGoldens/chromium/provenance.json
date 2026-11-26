@@ -1,0 +1,51 @@
+{
+  "generator": "Actual unchanged meeting-bridge board.ts, bundled with esbuild and painted on an Edge Chromium canvas",
+  "browser": "158.0.4370.33",
+  "platform": "win32",
+  "clock": "1:23:45 PM",
+  "locale": "en-US",
+  "sourceSha256": "523b05a0eb7af8a4ba194d4dec6785528ac6b89f3ab5cff5a34ef82bb0ef0d71",
+  "fixturesSha256": "3ef370d41d706a1f03882882d6e6df895fd212ccd85eb02edeb8b8663414440d",
+  "fixtures": [
+    {
+      "name": "waiting",
+      "sha256": "b525e1dbfaad4ebefdffc6f03ca8b689d266320624efc45488472150728a9f3f"
+    },
+    {
+      "name": "agenda",
+      "sha256": "55ed790848ed7764a22bef7e0e606b2af60b668bc3bc375cedc0a214d99ffb05"
+    },
+    {
+      "name": "speaker-highlight",
+      "sha256": "ee1657507d7802e71069e13ee497ce65b121a2383e82039168a18dfd286cecf9"
+    },
+    {
+      "name": "covered-clipped-six",
+      "sha256": "53ceec6118fc0521f198c65c39a0aa7be56c9c91c15c01d613840e01c7e22064"
+    },
+    {
+      "name": "standup-complete",
+      "sha256": "f1e399342cb4c3052dd4054feb2838eaeb67dc0cfb007c7e9d3c763fd1a24da7"
+    },
+    {
+      "name": "empty",
+      "sha256": "d95efd196605e5de13bfb4ffc723160fa117beb959b603bfec635a54068f009f"
+    },
+    {
+      "name": "retro-round-empty",
+      "sha256": "0185043811b3cc669ccbedf87cb627d103db371f7265f6eaaddf0a4ceea0dc9c"
+    },
+    {
+      "name": "retro-round-notes",
+      "sha256": "4c6ee9175e7273fcb7878227b0fd873bb1fd94073095f579c71bb647f475038e"
+    },
+    {
+      "name": "retro-actions",
+      "sha256": "fad823851fe55dacf9edb7717f7767d9f537bb9e28d4aebd0e684111e616f0e2"
+    },
+    {
+      "name": "retro-complete",
+      "sha256": "8d015c72907bf88d2625ed19448b7f6b79cf48322d8a83e48a47172fce080edf"
+    }
+  ]
+}

@@ -87,6 +87,9 @@ public static class DependencyInjection
         services.AddSingleton<ITeamsMessenger, TeamsBotMessenger>();
         services.AddSingleton<ICardOutbox>(sp => sp.GetRequiredService<OutboxTeamsMessenger>());
 
+        services.AddOptions<BoardOptions>().Bind(configuration.GetSection(BoardOptions.SectionName))
+            .Validate(o => o.Mode is "Share" or "MediaShare", "Board:Mode must be Share or MediaShare.")
+            .ValidateOnStart();
         services.AddHttpClient<HttpMeetingBridge>((sp, client) =>
         {
             var bridge = sp.GetRequiredService<IOptions<BridgeOptions>>().Value;

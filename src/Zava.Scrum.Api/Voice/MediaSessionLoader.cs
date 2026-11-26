@@ -10,7 +10,7 @@ using Zava.Scrum.Infrastructure.Teams;
 namespace Zava.Scrum.Api.Voice;
 
 /// <summary>Loads an authorised media session through existing read use cases, leaving Application unchanged.</summary>
-public sealed class MediaSessionLoader(ISender sender, IPromptStore prompts, ISessionRepository sessions, IOptions<BridgeOptions> options)
+public sealed class MediaSessionLoader(ISender sender, IPromptStore prompts, ISessionRepository sessions, IOptions<BridgeOptions> options, IOptions<BoardOptions> board)
 {
     /// <summary>Validates the explicit team against the session before disclosing any facts.</summary>
     /// <param name="sessionId">The token's session.</param>
@@ -47,6 +47,6 @@ public sealed class MediaSessionLoader(ISender sender, IPromptStore prompts, ISe
 
         return prompt is null
             ? Result<MediaSessionContext>.Failure(Error.NotFound("media.prompt_missing", "The media-facilitator prompt is missing."))
-            : Result<MediaSessionContext>.Success(new MediaSessionContext(session.Value, roster.Value, prompt.Text, stored.JoinUrl));
+            : Result<MediaSessionContext>.Success(new MediaSessionContext(session.Value, roster.Value, prompt.Text, stored.JoinUrl, board.Value.Mode));
     }
 }

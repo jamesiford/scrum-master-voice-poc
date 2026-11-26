@@ -19,6 +19,62 @@ namespace Zava.Scrum.Api.Tests.Voice;
 public sealed class GraphMediaVoiceGatewayTests(ITestOutputHelper output)
 {
     [Fact]
+    public async Task RunAsync_OpeningAndEnd_PushesOwnedBoardLifecycleWithoutSaving()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        await WaitAsync(() => fixture.Socket.HasType("board"));
+        Assert.False(fixture.Socket.LatestBoard().GetProperty("opened").GetBoolean());
+
+        fixture.Socket.Input(new { type = "callState", state = "Established" });
+        await WaitAsync(() => fixture.Socket.LatestBoard().GetProperty("opened").GetBoolean());
+        var board = fixture.Socket.LatestBoard();
+        Assert.Equal(fixture.Context.Session.Id, board.GetProperty("sessionId").GetGuid());
+        Assert.Equal("team-one", board.GetProperty("teamId").GetString());
+        Assert.False(board.GetProperty("recording").GetBoolean());
+
+        Assert.True(fixture.Live.TrySend(fixture.Context.Session.Id, "end"));
+        Assert.True(await fixture.Completion);
+        Assert.True(fixture.Socket.LatestBoard().GetProperty("ended").GetBoolean());
+        Assert.Null(fixture.Live.GetState(fixture.Context.Session.Id));
+    }
+
+    [Fact]
+    public async Task RunAsync_RosterJoinAndLeave_UpdatesCoveragePresenceWithoutNameMatching()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        await WaitAsync(() => fixture.Socket.HasType("board"));
+        fixture.Socket.Input(new
+        {
+            type = "participants",
+            items = new[] { new { participantId = "member", objectId = Fixture.ObjectId, displayName = "Different display name" } },
+        });
+        await WaitAsync(() => fixture.Socket.LatestBoard().GetProperty("team")[0].GetProperty("status").ValueKind == JsonValueKind.Null);
+        fixture.Socket.Input(new { type = "participants", items = Array.Empty<object>() });
+        await WaitAsync(() => fixture.Socket.LatestBoard().GetProperty("team")[0].GetProperty("status").GetString() == "away");
+        fixture.Socket.Input(new
+        {
+            type = "participants",
+            items = new[] { new { participantId = "guest", objectId = Guid.NewGuid(), displayName = "daniel" } },
+        });
+        await WaitAsync(() => fixture.Live.GetState(fixture.Context.Session.Id)?.Contains("\"guest\":true", StringComparison.Ordinal) == true);
+        Assert.Equal("away", fixture.Socket.LatestBoard().GetProperty("team")[0].GetProperty("status").GetString());
+    }
+
+    [Fact]
+    public async Task RunAsync_BoardFailure_DoesNotStopVoice()
+    {
+        await using var fixture = new Fixture();
+        await fixture.ReadyAsync();
+        fixture.Socket.Input(new { type = "boardStatus", state = "Failed", message = "VBSS refused" });
+        await WaitAsync(() => fixture.Live.GetState(fixture.Context.Session.Id)?.Contains("VBSS refused", StringComparison.Ordinal) == true);
+        fixture.Audio(Fixture.ObjectId, marker: 7);
+        await WaitAsync(() => fixture.Voice.Audio.Any(bytes => bytes[0] == 7));
+        Assert.False(fixture.Completion.IsCompleted);
+    }
+
+    [Fact]
     public async Task RunAsync_ThreeSyntheticIdentityStreams_AttributesEverySelectedFrame()
     {
         var identities = new[] { Fixture.ObjectId, Guid.NewGuid(), Guid.NewGuid() };
@@ -304,6 +360,10 @@ public sealed class GraphMediaVoiceGatewayTests(ITestOutputHelper output)
 
         public bool HasType(string type) => Sent.Any(s => s.Type == WebSocketMessageType.Text
             && JsonDocument.Parse(s.Bytes).RootElement.GetProperty("type").GetString() == type);
+
+        public JsonElement LatestBoard() => Sent.Where(s => s.Type == WebSocketMessageType.Text)
+            .Select(s => JsonDocument.Parse(s.Bytes).RootElement.Clone())
+            .Last(s => s.GetProperty("type").GetString() == "board");
 
         public override WebSocketCloseStatus? CloseStatus => null;
 

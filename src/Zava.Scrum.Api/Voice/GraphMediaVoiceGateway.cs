@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Members;
 using Zava.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Standups;
 
 namespace Zava.Scrum.Api.Voice;
 
@@ -45,6 +46,10 @@ public sealed class GraphMediaVoiceGateway(
     private object[] _participants = [];
     private readonly List<string> _parkingLot = [];
     private DateTimeOffset _nextUi;
+    private EphemeralMediaBoard _board = null!;
+    private string? _lastBoard;
+    private string _boardState = "Waiting";
+    private string? _boardFailure;
 
     /// <summary>Runs an ephemeral conversation; returns true only when the floor finishes, not on a reconnect.</summary>
     /// <param name="bridge">Authenticated media host connection.</param>
@@ -55,6 +60,8 @@ public sealed class GraphMediaVoiceGateway(
     {
         _bridge = bridge;
         _context = context;
+        _boardState = context.BoardMode == "MediaShare" ? "Waiting" : "Disabled (Board:Mode=Share)";
+        _board = new EphemeralMediaBoard(context.Session, context.JoinUrl);
         foreach (var member in context.Roster.Where(m => m.Active && m.TeamId == context.Session.TeamId).OrderBy(m => m.SpeakingOrder))
         {
             _speakers.Enqueue(member.Id);
@@ -79,6 +86,7 @@ public sealed class GraphMediaVoiceGateway(
         try
         {
             await _bridge.SendAsync(new { type = "hello", teamId = context.Session.TeamId, recording = false }, _ct);
+            await PushBoardAsync();
             while (!_finished)
             {
                 var pending = _events.Reader.ReadAsync(_ct).AsTask();
@@ -90,6 +98,8 @@ public sealed class GraphMediaVoiceGateway(
                 }
 
                 var input = await pending;
+                var previousFloor = _floor.State;
+                var previousMember = _floor.CurrentMemberId;
                 switch (input)
                 {
                     case JsonElement json: await OnBridgeAsync(json); break;
@@ -99,6 +109,10 @@ public sealed class GraphMediaVoiceGateway(
                 }
 
                 if (input is not DateTimeOffset || clock.UtcNow >= _nextUi) { PushState(); }
+                if (input is not DateTimeOffset || previousFloor != _floor.State || previousMember != _floor.CurrentMemberId || _finished)
+                {
+                    await PushBoardAsync();
+                }
             }
         }
         catch (OperationCanceledException) when (_ct.IsCancellationRequested) { }
@@ -120,6 +134,8 @@ public sealed class GraphMediaVoiceGateway(
                 while (_events.Reader.TryRead(out _)) { }
                 _participants = [];
                 _parkingLot.Clear();
+                _lastBoard = null;
+                _board = null!;
                 live.Unregister(context.Session.Id);
             }
         }
@@ -198,6 +214,11 @@ public sealed class GraphMediaVoiceGateway(
                     return new { participantId = p.GetProperty("participantId").GetString(), memberId = member?.Id, displayName = p.GetProperty("displayName").GetString(), guest = member is null };
                 }).ToArray();
                 _participants = guests;
+                _board.SetParticipants(guests.Where(p => p.memberId is not null).Select(p => p.memberId!).ToHashSet(StringComparer.Ordinal));
+                break;
+            case "boardStatus":
+                _boardState = json.GetProperty("state").GetString() ?? "Unknown";
+                _boardFailure = json.TryGetProperty("message", out var message) ? message.GetString() : null;
                 break;
             case "callState":
                 var state = json.GetProperty("state").GetString();
@@ -265,6 +286,9 @@ public sealed class GraphMediaVoiceGateway(
                 _vadStartedAt = null;
                 await ExecuteAsync(_floor.Handle(new SpeechActive(_speechSpeaker, false, clock.UtcNow)));
                 await ExecuteAsync(_floor.Handle(new MemberSpoke(_speechSpeaker, duration, clock.UtcNow)));
+                break;
+            case UserTranscript transcript:
+                _board.ApplyTranscript(_speechSpeaker, transcript.Text, _floor.State == FloorState.Clarifying, clock.UtcNow);
                 break;
             case VoiceFault:
                 logger.LogError("Voice service failed for {TeamId}/{SessionId}", _context.Session.TeamId, _context.Session.Id);
@@ -336,15 +360,42 @@ public sealed class GraphMediaVoiceGateway(
             {
                 case AgentSpeak speak:
                     var brief = _context.Session.PreBrief!.Members.FirstOrDefault(m => m.MemberId == speak.MemberId);
-                    var turn = JsonSerializer.Serialize(new { action = speak.Reason.ToString(), member = brief });
+                    var turn = JsonSerializer.Serialize(new
+                    {
+                        action = speak.Reason.ToString(),
+                        member = brief,
+                        kind = _context.Session.Kind.ToString(),
+                        phase = _board.InActions ? "Actions" : "Round",
+                        retro = _context.Session.Kind == CeremonyKind.Retrospective ? _board.Project(_floor.CurrentMemberId, true, false) : null,
+                    });
                     _itemId = null;
                     _turnStarted = Stopwatch.GetTimestamp();
                     await _voice.CreateResponseAsync(turn, _ct);
                     break;
                 case AdvanceSpeaker:
-                    await ExecuteAsync(_floor.Handle(new SpeakerSelected(_speakers.TryDequeue(out var next) ? next : null, Absent: false)));
+                    if (_context.Session.Kind == CeremonyKind.Retrospective)
+                    {
+                        _board.CompleteTurn(_floor.CurrentMemberId);
+                        var step = _board.NextRetroStep();
+                        if (step is not null) { _board.SelectRetroStep(step, clock.UtcNow); }
+                        await ExecuteAsync(step switch
+                        {
+                            Announcement announcement => _floor.Handle(new AnnounceStep(announcement.Reason)),
+                            MemberTurn member => _floor.Handle(new SpeakerSelected(member.Member.MemberId, _board.IsAbsent(member.Member.MemberId), CircleBack: member.CircleBack)),
+                            _ => _floor.Handle(new SpeakerSelected(null, Absent: false)),
+                        });
+                    }
+                    else
+                    {
+                        var next = _speakers.TryDequeue(out var selected) ? selected : null;
+                        await ExecuteAsync(_floor.Handle(new SpeakerSelected(next, Absent: next is not null && _board.IsAbsent(next))));
+                    }
+
                     break;
-                case DeferSpeaker defer: _speakers.Enqueue(defer.MemberId); break;
+                case DeferSpeaker defer:
+                    _speakers.Enqueue(defer.MemberId);
+                    _board.SetStatus(defer.MemberId, defer.Reason == DeferReason.NoResponse ? "no response" : "away");
+                    break;
                 case ParkTopic:
                     if (_floor.CurrentMemberId is { } parked) { _parkingLot.Add(parked); }
                     break;
@@ -382,7 +433,18 @@ public sealed class GraphMediaVoiceGateway(
             p95 = 0,
             running = !_finished,
             ended = _finished,
+            boardState = _boardState,
+            boardFailure = _boardFailure,
         }));
         _nextUi = clock.UtcNow.AddMilliseconds(500);
+    }
+
+    private async Task PushBoardAsync()
+    {
+        var board = _board.Project(_floor.CurrentMemberId, _floor.State != FloorState.Idle, _finished);
+        var json = JsonSerializer.Serialize(board);
+        if (json == _lastBoard) { return; }
+        _lastBoard = json;
+        await _bridge.SendAsync(board, _ct);
     }
 }

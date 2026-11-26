@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Zava.Scrum.Application\Zava.Scrum.Application.csproj" />
     <ProjectReference Include="..\Zava.Scrum.Infrastructure\Zava.Scrum.Infrastructure.csproj" />
     <PackageReference Include="Microsoft.Agents.Hosting.AspNetCore" />
+    <PackageReference Include="Microsoft.Agents.Extensions.MSTeams" />
     <PackageReference Include="Microsoft.Agents.Authentication.Msal" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
   </ItemGroup>
