@@ -171,6 +171,16 @@ or participant sample. `teams-app.ps1` preserves the deployment's SSO resource
 and adds only scheduled meeting event RSC. Empty-environment hooks/templates
 include the same changes. No manual private keys, parameters or portal resources.
 
+**Step 7 deployment proof:** API/native source `0d07e83`; API image
+`m11-7-0d07e83` (ready revision `--0000080`), bridge `m11-7-c25287f`
+(`--0000007`). Actual native DLL hash matches the local published Release DLL;
+its product version includes `0d07e83` and the running SYSTEM task retains one
+boot trigger. Mandatory `verify.ps1 -GateOutput docs\gates\m11-p7\after` passes
+all eight checks, including the signed-in approver's Azure DevOps comment and
+audit chain. One-run fallback p95 worsens 39.16% over 12 turns; native board/
+event/encoder/G1 acceptance remains n=0. No resources or roles were added,
+no default was switched, and all deployed services remain running.
+
 ## Agent identity governance (prompt 5B, ADR 0022)
 
 `infra/hooks/agent-identity.ps1` (postdeploy) checks the hosted agent's Entra Agent ID: it is an agent identity, holds no secret or certificate, has a sponsor, and prints its recent sign-ins. Human gates, for a Conditional Access administrator (nothing in the deployment can create tenant policy):

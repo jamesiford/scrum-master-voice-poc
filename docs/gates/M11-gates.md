@@ -13,50 +13,73 @@ in DEPLOY.md. No personal tab without positive S7 evidence.
 | --- | --- | --- |
 | G1 native share latency | Not run | n=0 native; Direct Simulated Room before/after is fallback-only |
 | G2 native attribution | Not run | n=0 live; join/leave/guest ownership is covered by focused gateway tests |
-| G3 approver-authored writes | Pending deployment verification | Existing approved-write and audit checks in mandatory verify.ps1, not a native speech write |
-| G4 parity / rehearsal | Failed exact board parity; live rehearsal not run | n=11 genuine Chromium/native board states; all differ; n=0 live native rehearsal |
-| G5 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G3 approver-authored writes | Measured portal subset | n=1 approved comment and complete audit chain; mandatory verify.ps1 passes, not a native speech write or Teams SSO proof |
+| G4 parity / rehearsal | Failed exact board parity; live rehearsal/full suites not run | n=11 genuine Chromium/native board states; all differ; n=0 live native rehearsal; checkpoint owns full suites |
+| G5 Copilot | Not run in step 7 | No new sample; preserve historical evidence below |
 | G6 stored-link native joins | Not run | n=0; live meeting prerequisites absent |
-| G7 | Not run in step 7 | No new sample; preserve historical evidence below |
-| G9 | Not run in step 7 | No new sample; preserve historical evidence below |
-| G10 | Not run in step 7 | No new sample; preserve historical evidence below |
-| G11 | Not run in step 7 | No new sample; preserve historical evidence below |
+| G7 observability / decision goldens | Not run in step 7 | Board images are not decision/trace acceptance |
+| G9 multi-team matrix / concurrency | Not run in step 7 | Focused isolation tests are not the full live matrix |
+| G10 Foundry IQ grounding | Not run in step 7 | No new sample; preserve historical evidence below |
+| G11 Work IQ consent / privacy | Not run in step 7 | No new sample; preserve historical evidence below |
 | Board automatically visible to every participant/guest <=2 s | Not run | n=0; renderer/socket readiness is not participant delivery |
 | Board change visible <=2 s | Not run | n=0 native |
 | Encoder CPU per meeting / cap | Not run | n=0; cap remains 1, not a measured capacity |
 | Scheduled meeting start/end delivery | Not run | n=0 live; real-mediator tests verify isolation/idempotence, not delivery |
+| Fallback latency point estimates | Failed p95 tolerance | n=12 turns per run; total p50 +3.34%, p95 +39.16%; not formal/native G1 |
 
 Eleven golden fixtures use the actual existing Chromium canvas: waiting, empty,
 agenda, speaker-highlight, covered-clipped-six, standup-complete,
 retro-round-empty, retro-round-notes, retro-themes, retro-actions, retro-complete.
 Their captured PNGs, native output, provenance, hashes and regional
 measurements are in `src/tests/Zava.Scrum.MediaBot.Tests/BoardGoldens`.
-Worst channel MAE **2.273/255**, changed pixels **4.988%**, geometry maximum
+Worst compared region (retro-complete/header): channel MAE **2.273/255**,
+changed pixels **4.988%**, geometry maximum
 channel difference **1**. Tests use explicit 2.5/255 MAE and 6% regional change
 tolerance for browser/Skia text shaping; **exact identity fails all eleven**. Do not
 remove ACS or mark the native visual gate passed. Native non-recording completion
 intentionally changes saved-follow-up wording, tested separately.
 
-Focused checks: board renderer 5/5, board lifecycle/failure isolation 3/3,
+Focused checks: board renderer 5/5, board lifecycle/failure recovery 7/7,
 native gateway/ephemeral retro 13/13, Application meeting events/normal end
-19/19, Domain session/lifecycle 10/10, SDK presentation 3/3 and dependency
+20/20, Domain session/lifecycle 10/10, SDK presentation 3/3 and dependency
 architecture 14/14 (including the dependency subset). These are local code checks, not native meeting samples.
+
+The deployed native DLL hash matches the local published Release DLL and its
+product version contains source0d07e83. SYSTEM task Running, one boot trigger,
+last run2026-11-26T22:09:09Z; real renderer readiness passes. This is artifact/
+hosting proof, not encoder load, meeting-event delivery or participant visibility.
 
 ### Step 7 deployed fallback regression, Direct Simulated Room
 
 Before: one run, **12 timed turns**, 382 s, 19 transcript pieces, zero
-talk-overs. The deployed API/bridge images are `m11-6b-1b7a614`; the
-runner source label is not an image hash. After measurements are recorded
-following committed-source deployment and mandatory verification.
+talk-overs; API/bridge images `m11-6b-1b7a614`. After: one run, **12 timed
+turns**, 398 s, 19 transcript pieces, zero talk-overs. API/native source
+`0d07e83`, API image `m11-7-0d07e83`, bridge image `m11-7-c25287f`.
+API/bridge ready revisions are `--0000080` / `--0000007`. The runner source
+label is not an image hash; the final documentation-only commit does not
+change deployed runtime. Mandatory `verify.ps1` passes all eight checks,
+including native renderer/capability protection, approver-authored comment
+and complete audit chain. Raw before/after and summaries are in `m11-p7`.
 
 | Hop | Before p50 / p95 ms | After p50 / p95 ms |
 | --- | --- | --- |
-| Total turn | 3230 / 3958 | Pending deployment |
-| Transcript | 0 / 192 | Pending deployment |
-| Analyser | 27 / 27 | Pending deployment |
-| Decision model | 152 / 167 | Pending deployment |
-| Orchestration | 1520 / 1967 | Pending deployment |
-| First Voice Live audio | 1564 / 2292 | Pending deployment |
+| Total turn | 3230 / 3958 | 3338 / 5508 |
+| Transcript | 0 / 192 | 0 / 198 |
+| Analyser | 27 / 27 | 27 / 40 |
+| Decision model | 152 / 167 | 144 / 236 |
+| Orchestration | 1520 / 1967 | 1576 / 3798 |
+| First Voice Live audio | 1564 / 2292 | 1459 / 1908 |
+
+Total p50 rises 108 ms (3.34%); p95 rises 1550 ms (39.16%), exceeding the
+historical 10% tolerance. The orchestration tail is larger. Question-only
+before/after is 3350/3958 versus 3642/5508 ms, **n=9 each**, with p50 +8.72%.
+Each run uses the decision model on 10/12 turns. These nearest-rank one-run
+estimates fail the fallback latency point comparison; they neither establish
+causality nor pass formal G1's >=30 questions/3 runs and model-on/off matrix.
+Simulated transcript p50 zero does not exercise speech-to-text. Native G1
+remains **not run, n=0**; preserve defaults, not a speculative timing fix.
+The printed, unchecked Teams checklist is historical ACS guidance, not native
+roster/share/rehearsal or native saved-follow-up evidence.
 
 ## Native media hosting checkpoint (conductor 6a/6b, 2026-11-26)
 

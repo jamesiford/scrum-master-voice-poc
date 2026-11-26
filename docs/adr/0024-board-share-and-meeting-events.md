@@ -34,6 +34,11 @@ the established call and active video socket, renegotiates after reconnect,
 and reports failures to the live console without stopping voice. Actual visual
 delivery to every participant, especially guests, still needs a native meeting.
 An active socket or a successful Send is not proof that a participant saw it.
+Sharing status follows actual SDK submission, not an inactive socket's silent
+drop. Expected SDK/send/role failures and timeouts keep the worker alive, report
+the failure and await reconnect or closure rather than retrying the role every
+tick. Reconnect compensates viewer role before renegotiating. Seven focused
+worker cases cover this recovery and accepted-frame reporting.
 
 Board messages are carried only on the already-authenticated host WebSocket,
 with explicit team and session ids checked again by the host. Prepared facts,
@@ -86,7 +91,8 @@ deployed Direct Simulated Room before/after measurements are recorded in
 `docs/gates/M11-gates.md`; none passes these native gates by proxy.
 
 Exact Chromium pixel identity **fails for all eleven states**: worst MAE
-2.273/255, changed pixels 4.988%, maximum geometry channel difference 1.
+2.273/255 and changed pixels 4.988% in the worst compared region
+(retro-complete/header), maximum geometry channel difference 1.
 Chromium GPOS shaping/rasterisation differs from Skia's text path. Tests use
 explicit 2.5/255 MAE and 6% changed-region tolerance; genuine browser/native PNGs,
 regional metrics and provenance are retained. This is a measured deviation

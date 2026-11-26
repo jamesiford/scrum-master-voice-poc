@@ -57,7 +57,9 @@ sharer/viewer lifecycle and reconnect renegotiation independent of voice.
 Team/session-owned snapshots, coverage and retro notes/actions remain ephemeral;
 native completion never promises saved follow-ups. The shared meeting view is
 visible to its participants, not a guest query/approval grant. The portal shows
-share failures. No personal tab is built because ADR 0015 S7 did not run.
+share failures and reports Sharing only after SDK frame submission; known
+failures/timeouts remain recoverable on reconnect. No personal tab is built
+because ADR 0015 S7 did not run.
 Native visibility/encoder CPU/G1 and live meeting events remain n=0; ACS/Direct
 remain defaults. Golden-image evidence and deployed checks are in the gate table.
 
