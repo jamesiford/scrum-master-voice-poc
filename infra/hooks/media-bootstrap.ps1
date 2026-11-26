@@ -86,4 +86,3 @@ $taskSettings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (N
 Register-ScheduledTask -TaskName 'ZavaMediaBot' -Action $action -Trigger $trigger -Principal $principal -Settings $taskSettings -Force | Out-Null
 # Return only the public certificate. The calling application's keyCredentials never contain a private key.
 Write-Output ('PUBLIC_CERT:' + [Convert]::ToBase64String($certificate.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)))
-Start-ScheduledTask -TaskName 'ZavaMediaBot'

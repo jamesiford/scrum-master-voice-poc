@@ -1,0 +1,33 @@
+# Build the committed source, never a developer's dependency caches, secrets or conductor notes.
+param([Parameter(Mandatory)][ValidateSet('api', 'bridge')][string]$Service)
+. "$PSScriptRoot\lib.ps1"
+Import-AzdEnvironment
+if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3') {
+  throw 'This conductor deployment is authorised only for zavaw3/westus3.'
+}
+$repo = (Resolve-Path "$PSScriptRoot\..\..").Path
+$dirty = git -C $repo diff HEAD --name-only -- src agents demo global.json Directory.Build.props Directory.Packages.props Dockerfile.api Dockerfile.bridge
+if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'Commit runtime/build inputs before deploying their source snapshot.' }
+$head = git -C $repo rev-parse --short HEAD
+if ($LASTEXITCODE -ne 0) { throw 'Cannot identify the committed deployment source.' }
+$work = Join-Path ([IO.Path]::GetTempPath()) ('zava-service-' + [Guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $work | Out-Null
+try {
+  $zip = Join-Path $work 'source.zip'
+  git -C $repo archive HEAD --format=zip "--output=$zip"
+  if ($LASTEXITCODE -ne 0) { throw 'Cannot package the committed source.' }
+  $context = Join-Path $work 'context'
+  Expand-Archive -Path $zip -DestinationPath $context
+  $registry = ($env:AZURE_CONTAINER_REGISTRY_ENDPOINT -split '\.')[0]
+  $tag = "m11-6b-$head"
+  $image = "zava-scrum-agent/$Service-$($env:AZURE_ENV_NAME):$tag"
+  $dockerfile = if ($Service -eq 'api') { 'Dockerfile.api' } else { 'Dockerfile.bridge' }
+  az acr build --registry $registry --image $image --file $dockerfile $context --no-logs -o none
+  if ($LASTEXITCODE -ne 0) { throw "$Service remote image build failed; inspect the ACR run log." }
+  $app = if ($Service -eq 'api') { $env:API_APP_NAME } else { $env:BRIDGE_APP_NAME }
+  az containerapp update -g $env:AZURE_RESOURCE_GROUP -n $app `
+    --image "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image" -o none
+  if ($LASTEXITCODE -ne 0) { throw "$Service revision deployment failed." }
+  Write-Check PASS "$Service deployed" "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image; existing environment/secrets retained"
+}
+finally { Remove-Item -LiteralPath $work -Recurse -Force }

@@ -36,4 +36,8 @@ if ($health.service -ne 'media-bot' -or $health.recording -ne $false -or $health
   throw 'Native HTTPS readiness must report media-bot, no recording and the one-meeting cap.'
 }
 Write-Check PASS 'Native HTTPS readiness' "https://$($env:MEDIA_FQDN)/healthz; no recording; cap 1"
+$uri = "$($env:API_URI)/api/media/context?sessionId=$([Guid]::NewGuid())&teamId=verification"
+$status = (Invoke-WebRequest $uri -SkipHttpErrorCheck -MaximumRedirection 0 -TimeoutSec 30).StatusCode
+if ($status -ne 401) { throw "Native API route must reject unauthenticated requests with 401, not $status or an Easy Auth redirect." }
+Write-Check PASS 'Native API capability protection' 'Unauthenticated media context receives 401 through the independent ASP.NET scheme.'
 Write-Check GATE 'Native Teams acceptance' 'HTTPS readiness does not prove RSC, G6 joins, G2 attribution, barge-in or native G1. See docs/gates/M11-gates.md.'

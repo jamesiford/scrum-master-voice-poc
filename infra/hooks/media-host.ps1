@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 else {
   $expires = ($certificate | ConvertFrom-Json).attributes.expires
-  $issueCertificate = [DateTimeOffset]::FromUnixTimeSeconds($expires) -le [DateTimeOffset]::UtcNow.AddDays(30)
+  $issueCertificate = [DateTimeOffset]$expires -le [DateTimeOffset]::UtcNow.AddDays(30)
 }
 if ($issueCertificate) {
   $issued = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
@@ -96,6 +96,11 @@ try {
     startDateTime = $cert.NotBefore.ToUniversalTime().ToString('o'); endDateTime = $cert.NotAfter.ToUniversalTime().ToString('o')
   })
   Invoke-Graph PATCH "/applications/$($app.id)" @{ keyCredentials = $keys } | Out-Null
+  $started = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
+    --scripts "`$ErrorActionPreference = 'Stop'; Start-ScheduledTask -TaskName 'ZavaMediaBot'; Write-Output 'MEDIA_TASK_STARTED'" -o json | ConvertFrom-Json
+  if ($LASTEXITCODE -ne 0 -or ($started.value.message -join "`n") -notmatch 'MEDIA_TASK_STARTED') {
+    throw 'Cannot start the media task after registering its Graph certificate.'
+  }
   $manifest = Get-Content "$PSScriptRoot\..\..\appPackage\media-bot\manifest.template.json" -Raw
   $manifest.Replace('{{MEDIA_APP_ID}}', $app.appId).Replace('{{MEDIA_FQDN}}', $env:MEDIA_FQDN) | Set-Content (Join-Path $work 'manifest.json') -Encoding utf8
   Copy-Item "$PSScriptRoot\..\..\appPackage\color.png", "$PSScriptRoot\..\..\appPackage\outline.png" -Destination $work
