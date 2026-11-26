@@ -1,0 +1,18 @@
+## decision model: model
+direct  rounds 6 turns 201: total p50 3197 p95 4269; voice first audio p50 1437 p95 2476; orchestration p50 1549 p95 2039
+hosted  rounds 6 turns 210: total p50 3239 p95 4504; voice first audio p50 1454 p95 2708; orchestration p50 1555 p95 2107
+pooled p50: hosted minus direct 42 ms (1.3% of direct 3,197); bootstrap 95 % interval -99 to 181 ms (-3.1% to 5.7%)
+pooled p95: hosted minus direct 235 ms (5.5% of direct 4,269); bootstrap 95 % interval -262 to 691 ms (-6.1% to 16.2%)
+per-round P50: 124, 56, 13, -65, 206, 70 | mean 67 sd 93 se 38; rounds hosted slower 5 of 6
+per-round P95: 2,312, -721, 86, 368, 335, 80 | mean 410 sd 1,012 se 413; rounds hosted slower 5 of 6
+slowest 5 % (10 turns) of direct: mean total 4,937; orchestration 42% of the turn, voice first audio 54%; orchestration median of these 1,656, voice median 2,667
+slowest 5 % (10 turns) of hosted: mean total 5,666; orchestration 33% of the turn, voice first audio 62%; orchestration median of these 1,579, voice median 3,152
+## decision model: rules
+direct  rounds 6 turns 203: total p50 2990 p95 4604; voice first audio p50 1322 p95 2236; orchestration p50 1562 p95 2455
+hosted  rounds 6 turns 211: total p50 3041 p95 4246; voice first audio p50 1462 p95 2453; orchestration p50 1585 p95 2278
+pooled p50: hosted minus direct 51 ms (1.7% of direct 2,990); bootstrap 95 % interval -58 to 179 ms (-1.9% to 6.0%)
+pooled p95: hosted minus direct -358 ms (-7.8% of direct 4,604); bootstrap 95 % interval -750 to 868 ms (-16.3% to 18.9%)
+per-round P50: -179, 170, 205, 64, 178, -79 | mean 60 sd 157 se 64; rounds hosted slower 4 of 6
+per-round P95: -488, -527, 1,588, 981, -920, -1,140 | mean -84 sd 1,105 se 451; rounds hosted slower 2 of 6
+slowest 5 % (10 turns) of direct: mean total 5,035; orchestration 51% of the turn, voice first audio 48%; orchestration median of these 2,569, voice median 2,122
+slowest 5 % (11 turns) of hosted: mean total 5,112; orchestration 58% of the turn, voice first audio 42%; orchestration median of these 2,772, voice median 1,894

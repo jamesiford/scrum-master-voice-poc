@@ -1,0 +1,272 @@
+{
+  "RunId": "0f21a5aa",
+  "Label": "round3-hosted-rules",
+  "Build": "d822389",
+  "Api": "https://ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io",
+  "StartedAt": "2026-11-26T08:17:34.2982459+00:00",
+  "SessionId": "0bf29a61-d872-4aaa-8083-6ce3fda683a8",
+  "ReportedP50Ms": 2954,
+  "Turns": [
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2967,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1705,
+      "VoiceFirstAudioMs": 1271,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3628,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 48,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1858,
+      "VoiceFirstAudioMs": 1754,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2954,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 28,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1413,
+      "VoiceFirstAudioMs": 1546,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "CallOn",
+      "TotalMs": 2544,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 957,
+      "VoiceFirstAudioMs": 1595,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Park",
+      "TotalMs": 1725,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 678,
+      "VoiceFirstAudioMs": 1053,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2679,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1718,
+      "VoiceFirstAudioMs": 969,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2581,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1530,
+      "VoiceFirstAudioMs": 1059,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3600,
+      "SpeechEndToTranscriptMs": 0,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1576,
+      "VoiceFirstAudioMs": 2033,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 5733,
+      "SpeechEndToTranscriptMs": 122,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 3807,
+      "VoiceFirstAudioMs": 1812,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 2992,
+      "SpeechEndToTranscriptMs": 147,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1665,
+      "VoiceFirstAudioMs": 1192,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Clarify",
+      "TotalMs": 3432,
+      "SpeechEndToTranscriptMs": 197,
+      "AnalyserMs": 26,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 1328,
+      "VoiceFirstAudioMs": 1915,
+      "Source": "Rules"
+    },
+    {
+      "Reason": "Recap",
+      "TotalMs": 2636,
+      "SpeechEndToTranscriptMs": 135,
+      "AnalyserMs": 25,
+      "DecisionModelMs": 0,
+      "OrchestrationMs": 983,
+      "VoiceFirstAudioMs": 1527,
+      "Source": "Rules"
+    }
+  ],
+  "Team": "team-b",
+  "TalkOvers": 0,
+  "HumanSegments": 19,
+  "Exchanges": [
+    {
+      "MemberId": null,
+      "Text": "Good morning, Gate team-b.\n\nOur sprint goal is: Customers can pay by card and failed payments retry automatically, and there are 5 days left in the sprint."
+    },
+    {
+      "MemberId": null,
+      "Text": "Daniel, please share your update.\nWhat did you finish, what\u2019s next, and is anything blocking you?"
+    },
+    {
+      "MemberId": "m-daniel",
+      "Text": "Yesterday I finished card tokenisation and shipped the payment status API version two. Today I\u0027m adding idempotency keys to payment requests. Nothing blocking me."
+    },
+    {
+      "MemberId": null,
+      "Text": "Daniel, I\u2019ve noted your commitment: Today I\u0027m adding idempotency keys to payment requests.\n\ntask 19, Prepare reconciliation report for audit, is past its due date. What is the new date?"
+    },
+    {
+      "MemberId": "m-daniel",
+      "Text": "The reconciliation report is at risk. I\u0027ll start it right after the idempotency keys, and flag it if it slips."
+    },
+    {
+      "MemberId": null,
+      "Text": "Daniel, I\u2019ve noted your commitment: I\u2019ll start task 19 right after the idempotency keys.\n\nStory 3, Customer payment plan summary page, has been Active for 5 days. Still on track?"
+    },
+    {
+      "MemberId": "m-daniel",
+      "Text": "Yes, it\u0027s on track. I\u0027ll pick the summary page back up as soon as the idempotency keys are in."
+    },
+    {
+      "MemberId": null,
+      "Text": "Daniel, I\u2019ve noted your commitment: I\u2019ll pick the summary page back up as soon as the idempotency keys are in.\n\nTask 15, Add structured logging to gateway client, has been Active for 5 days. Still on track?"
+    },
+    {
+      "MemberId": "m-daniel",
+      "Text": "Structured logging is nearly done. I\u0027ll finish it today."
+    },
+    {
+      "MemberId": null,
+      "Text": "Thank you, Daniel.\nMaya, what did you finish, what\u2019s next, and is anything blocking you?"
+    },
+    {
+      "MemberId": "m-maya",
+      "Text": "Yesterday I reviewed the settlement schema. Today I\u0027m continuing the settlement file validation. I\u0027m blocked on bug 12. The sandbox gateway keeps timing out, and I need access to the platform team\u0027s staging gateway."
+    },
+    {
+      "MemberId": "m-daniel",
+      "Text": "Sorry to jump in, Maya, but we hit the same gateway timeouts last sprint when we upgraded the TLS library, and it took us days to track down."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "Right, I think the root cause was the connection pool settings, so we should compare the gateway configuration between sandbox and staging, and also check whether the sandbox certificate was rotated."
+    },
+    {
+      "MemberId": null,
+      "Text": "Let\u0027s take that offline and I will add it to the parking lot, Maya please carry on."
+    },
+    {
+      "MemberId": "m-maya",
+      "Text": "That\u0027s everything from me."
+    },
+    {
+      "MemberId": null,
+      "Text": "Who can help unblock your access to the platform team\u2019s staging gateway?"
+    },
+    {
+      "MemberId": "m-maya",
+      "Text": "Daniel can help. He fixed the same gateway timeouts last sprint, so I\u0027ll pair with him on the staging access today."
+    },
+    {
+      "MemberId": null,
+      "Text": "Maya, I\u2019ve noted your commitment: I\u2019ll pair with him on the staging access today.\n\nStory 5, Update PCI scan exceptions, has been Active for 5 days. Still on track?"
+    },
+    {
+      "MemberId": "m-maya",
+      "Text": "The PCI scan exceptions are waiting on the security review. I\u0027ll chase them today."
+    },
+    {
+      "MemberId": null,
+      "Text": "Maya, I\u2019ve noted the blocker and your commitment, and blockers will be flagged for follow-up."
+    },
+    {
+      "MemberId": null,
+      "Text": "Thanks, Maya.\nAdmin, what did you finish, what\u2019s next, and is anything blocking you?"
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "Yesterday I finished the refund API tests."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "Today I\u0027m still working on the payment retry story."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "No blockers."
+    },
+    {
+      "MemberId": null,
+      "Text": "Admin, I\u2019ve noted your commitment: Keep working on the payment retry story today.\n\nTask 14, Write retry load test, is past its due date. What is the new date?"
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "It slipped because the sandbox was down."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "I should finish it tomorrow."
+    },
+    {
+      "MemberId": null,
+      "Text": "Who can help unblock this, given the sandbox was down and you\u2019re aiming to finish it tomorrow?"
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "Maya can help."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "She\u0027s already chasing the platform team about the sandbox, so I\u0027ll sync with her after the stand-up."
+    },
+    {
+      "MemberId": null,
+      "Text": "Admin, I\u2019ve noted the blocker: Need sandbox support from the platform team, and it will be flagged for follow-up."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "Yes, that\u0027s right."
+    },
+    {
+      "MemberId": "m-admin",
+      "Text": "That\u0027s everything from me."
+    },
+    {
+      "MemberId": null,
+      "Text": "To recap, blockers raised were staging gateway access from the platform team, a pending security review, a sandbox outage, and a need for sandbox support from the platform team. A side discussion about gateway timeouts and configuration was parked for offline follow-up. There were no absences, no one who didn\u2019t respond, and no flagged items left uncovered. Follow-ups, including any needed from today\u2019s blockers and the parked topic, are coming in Teams\u2014thank you everyone."
+    }
+  ]
+}
