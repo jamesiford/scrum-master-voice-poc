@@ -39,7 +39,7 @@ param agentHostName string = 'zava-voice-relay'
 param mediaHostEnabled string = 'false'
 
 @description('The media VM SKU. Four vCPU is the initial floor for audio and board encoding.')
-param mediaVmSize string = 'Standard_D3_v2'
+param mediaVmSize string = 'Standard_D4s_v5'
 
 @description('Optional owned DNS name for the trusted media certificate. Point it at the output public IP before bootstrap.')
 param mediaServiceFqdn string = ''

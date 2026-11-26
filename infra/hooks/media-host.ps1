@@ -1,12 +1,10 @@
 # Opt-in postdeploy hook. Provisioning and the public certificate gate precede selecting GraphMedia (ADR 0023).
+param([switch]$ConsentOnly)
 . "$PSScriptRoot/lib.ps1"
 Import-AzdEnvironment
 if ($env:MEDIA_HOST_ENABLED -ne 'true') { Write-Check SKIP 'Windows media host' 'MEDIA_HOST_ENABLED is false'; return }
 if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3') {
   throw 'This conductor media deployment is authorised only for zavaw3 in westus3.'
-}
-foreach ($name in @('MEDIA_VM_NAME', 'MEDIA_FQDN', 'MEDIA_PUBLIC_IP', 'MEDIA_VAULT_NAME', 'MEDIA_STORAGE_NAME', 'API_URI')) {
-  if (-not [Environment]::GetEnvironmentVariable($name)) { throw "$name is missing; provision the opt-in Bicep module first." }
 }
 $displayName = "zava-media-$($env:AZURE_ENV_NAME)"
 $app = (Invoke-Graph GET "/applications?`$filter=displayName eq '$displayName'").value
@@ -17,10 +15,6 @@ if (-not $app) {
 else { $app = @($app)[0] }
 Set-AzdValue MEDIA_APP_ID $app.appId
 Set-AzdValue MEDIA_APP_OBJECT_ID $app.id
-az deployment group create -g $env:AZURE_RESOURCE_GROUP --name media-bot-registration `
-  --template-file "$PSScriptRoot\..\modules\media-bot-registration.bicep" `
-  --parameters "appId=$($app.appId)" "tenantId=$($env:AZURE_TENANT_ID)" "botName=bot-media-$($env:AZURE_ENV_NAME)" "fqdn=$($env:MEDIA_FQDN)" -o none
-if ($LASTEXITCODE -ne 0) { throw 'Cannot register the Azure-managed calling bot and Teams calling webhook.' }
 $sp = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '$($app.appId)'").value
 if (-not $sp) { $sp = Invoke-Graph POST '/servicePrincipals' @{ appId = $app.appId } }
 else { $sp = @($sp)[0] }
@@ -35,14 +29,34 @@ if (-not ($grants | Where-Object { $_.appRoleId -eq $role.id -and $_.resourceId 
   Invoke-Graph POST "/servicePrincipals/$($sp.id)/appRoleAssignments" @{ principalId = $sp.id; resourceId = $graph.id; appRoleId = $role.id } | Out-Null
 }
 Write-Check PASS 'media app Graph permission' 'Calls.AccessMedia.All; join consent is per-meeting RSC, not a tenant-wide join role.'
+if ($ConsentOnly) { return }
+foreach ($name in @('MEDIA_VM_NAME', 'MEDIA_FQDN', 'MEDIA_PUBLIC_IP', 'MEDIA_VAULT_NAME', 'MEDIA_STORAGE_NAME', 'API_URI')) {
+  if (-not [Environment]::GetEnvironmentVariable($name)) { throw "$name is missing; provision the opt-in Bicep module first." }
+}
+az deployment group create -g $env:AZURE_RESOURCE_GROUP --name media-bot-registration `
+  --template-file "$PSScriptRoot\..\modules\media-bot-registration.bicep" `
+  --parameters "appId=$($app.appId)" "tenantId=$($env:AZURE_TENANT_ID)" "botName=bot-media-$($env:AZURE_ENV_NAME)" "fqdn=$($env:MEDIA_FQDN)" -o none
+if ($LASTEXITCODE -ne 0) { throw 'Cannot register the Azure-managed calling bot and Teams calling webhook.' }
 
 $certificate = az keyvault certificate show --vault-name $env:MEDIA_VAULT_NAME --name media-tls -o json 2>&1
+$issueCertificate = $false
 if ($LASTEXITCODE -ne 0) {
   if (($certificate -join "`n") -notmatch 'CertificateNotFound') {
     throw 'Cannot read media-tls. Check the vault certificate role and RBAC propagation before rerunning the hook.'
   }
-  Write-Check GATE 'MEDIA-TLS' "A certificate operator must import a trusted PFX for $($env:MEDIA_FQDN) as media-tls in $($env:MEDIA_VAULT_NAME). See docs/DEPLOY.md."
-  return
+  $issueCertificate = $true
+}
+else {
+  $expires = ($certificate | ConvertFrom-Json).attributes.expires
+  $issueCertificate = [DateTimeOffset]::FromUnixTimeSeconds($expires) -le [DateTimeOffset]::UtcNow.AddDays(30)
+}
+if ($issueCertificate) {
+  $issued = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
+    --scripts "@$PSScriptRoot\media-certificate.ps1" --parameters "Fqdn=$($env:MEDIA_FQDN)" "VaultName=$($env:MEDIA_VAULT_NAME)" -o json | ConvertFrom-Json
+  if ($LASTEXITCODE -ne 0 -or ($issued.value.message -join "`n") -notmatch 'MEDIA_TLS_IMPORTED:') {
+    throw "Automated MEDIA-TLS issuance/import failed. Inspect the VM run-command result; see docs/DEPLOY.md."
+  }
+  Write-Check PASS 'MEDIA-TLS' 'HTTP-01 certificate imported directly to Key Vault by the VM identity.'
 }
 $work = Join-Path ([IO.Path]::GetTempPath()) ('zava-media-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $work | Out-Null
@@ -89,8 +103,11 @@ try {
   New-Item -ItemType Directory -Path (Split-Path $package) -Force | Out-Null
   Compress-Archive -Path (Join-Path $work 'manifest.json'), (Join-Path $work 'color.png'), (Join-Path $work 'outline.png') -DestinationPath $package -Force
   $health = Invoke-RestMethod "https://$($env:MEDIA_FQDN)/healthz" -TimeoutSec 30
-  if ($health.service -ne 'media-bot' -or $health.recording -ne $false) { throw 'The media host did not pass HTTPS readiness.' }
+  if ($health.service -ne 'media-bot' -or $health.recording -ne $false -or $health.maxConcurrentMeetings -ne 1) { throw 'The media host did not pass HTTPS readiness with the one-meeting cap.' }
   Write-Check PASS 'Windows media host ready' "https://$($env:MEDIA_FQDN); concurrent call cap 1; no recording."
+  az containerapp update -g $env:AZURE_RESOURCE_GROUP -n $env:API_APP_NAME `
+    --set-env-vars "Bridge__GraphMediaBaseUrl=https://$($env:MEDIA_FQDN)" -o none
+  if ($LASTEXITCODE -ne 0) { throw 'Cannot configure the ready native media origin on the existing API.' }
   Write-Check GATE 'MEDIA-RSC' "A meeting organiser must install appPackage/dist/zava-media-bot.zip in each meeting chat and consent to Calls.JoinGroupCalls.Chat. See docs/DEPLOY.md."
 }
 finally {

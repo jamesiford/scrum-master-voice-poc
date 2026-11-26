@@ -15,7 +15,7 @@
     "decisionCapacity": { "value": "${DECISION_CAPACITY=100}" },
     "voiceRoute": { "value": "${VOICE_ROUTE=Direct}" },
     "mediaHostEnabled": { "value": "${MEDIA_HOST_ENABLED=false}" },
-    "mediaVmSize": { "value": "${MEDIA_VM_SIZE=Standard_D3_v2}" },
+    "mediaVmSize": { "value": "${MEDIA_VM_SIZE=Standard_D4s_v5}" },
     "mediaServiceFqdn": { "value": "${MEDIA_SERVICE_FQDN=}" },
     "bridgeMode": { "value": "${BRIDGE_MODE=Acs}" }
   }

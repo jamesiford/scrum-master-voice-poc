@@ -108,7 +108,25 @@ function Test-EasyAuth($name) {
 
 $secretValue = $null
 foreach ($app in $apps) {
-  if (Test-EasyAuth $app.Name) { Write-Check PASS "Easy Auth: $($app.Name)" 'already configured'; continue }
+  if (Test-EasyAuth $app.Name) {
+    # An existing secret/provider does not prove newly added, independently authenticated routes are excluded.
+    $url = "https://management.azure.com/subscriptions/$($env:AZURE_SUBSCRIPTION_ID)/resourceGroups/$rg/providers/Microsoft.App/containerApps/$($app.Name)/authConfigs/current?api-version=2024-03-01"
+    $cfg = az rest --method GET --url $url -o json | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0) { throw "Cannot read Easy Auth exclusions for $($app.Name)." }
+    $missing = @($app.Excluded | Where-Object { $_ -notin $cfg.properties.globalValidation.excludedPaths })
+    if ($missing.Count) {
+      $cfg.properties.globalValidation.excludedPaths = @($cfg.properties.globalValidation.excludedPaths) + $missing
+      $file = New-TemporaryFile
+      try {
+        @{ properties = $cfg.properties } | ConvertTo-Json -Depth 20 | Set-Content $file -Encoding utf8
+        az rest --method PUT --url $url --body "@$file" -o none
+        if ($LASTEXITCODE -ne 0) { throw "Cannot update Easy Auth exclusions for $($app.Name)." }
+      }
+      finally { Remove-Item -LiteralPath $file }
+    }
+    Write-Check PASS "Easy Auth: $($app.Name)" 'provider/secret retained; required route exclusions checked'
+    continue
+  }
 
   if (-not $secretValue) {
     # One credential for both apps. Older ones created by this script are removed so they do not pile up.

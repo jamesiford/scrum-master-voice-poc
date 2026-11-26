@@ -11,7 +11,7 @@ param tags object
 param adminObjectId string
 
 @description('VM size, initially four vCPU for audio and the later board encoder.')
-param vmSize string = 'Standard_D3_v2'
+param vmSize string = 'Standard_D4s_v5'
 
 @description('Optional certificate-covered owned DNS name; empty uses the Azure public IP DNS name.')
 param serviceFqdn string = ''
@@ -46,7 +46,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2024-05-01' = {
           access: 'Allow'
           protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRanges: [ '443', '8445' ]
+          destinationPortRanges: [ '80', '443', '8445' ]
           sourceAddressPrefix: 'Internet'
           destinationAddressPrefix: '*'
         }
@@ -146,6 +146,18 @@ resource vmSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: vault
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
+    principalId: vm.outputs.systemAssignedMIPrincipalId!
+    principalType: 'ServicePrincipal'
+  }
+
+}
+
+// HTTP-01 imports directly from the VM; private keys never enter run-command output.
+resource vmCertificates 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(vault.id, 'vm-media-${token}', 'media-certificates')
+  scope: vault
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a4417e6f-fecd-4de8-b567-7b0420556985')
     principalId: vm.outputs.systemAssignedMIPrincipalId!
     principalType: 'ServicePrincipal'
   }

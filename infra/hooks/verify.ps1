@@ -26,6 +26,10 @@ function Wait-Healthy([string]$Url) {
 }
 Check 'API health route' { Wait-Healthy "$api/healthz" }
 Check 'Bridge health route' { Wait-Healthy "$bridge/healthz" }
+Check 'Optional Windows media infrastructure (Teams acceptance is separate)' {
+  & "$PSScriptRoot\verify-media.ps1"
+  'hosting checks completed; any printed MEDIA-TLS gate means native readiness is not verified'
+}
 Check 'API accepts an Entra bearer token' {
   $t = Invoke-RestMethod "$api/api/teams/$team" -Headers $auth -TimeoutSec 30
   "team $($t.id)"
