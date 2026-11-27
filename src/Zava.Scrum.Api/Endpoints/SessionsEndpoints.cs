@@ -4,6 +4,7 @@ using Zava.Scrum.Application.Features.Standups.ControlStandup;
 using Zava.Scrum.Application.Features.Standups.GetLiveState;
 using Zava.Scrum.Application.Features.Standups.GetSession;
 using Zava.Scrum.Application.Features.Standups.GetSessionEvents;
+using Zava.Scrum.Application.Features.Standups.GetSessionLatency;
 using Zava.Scrum.Application.Features.Standups.JoinMeeting;
 using Zava.Scrum.Application.Features.Standups.ListSessions;
 using Zava.Scrum.Application.Features.Standups.PrepareStandup;
@@ -34,6 +35,9 @@ public static class SessionsEndpoints
 
         group.MapGet("/{id:guid}/events", async (Guid id, ISender sender, CancellationToken ct) =>
             (await sender.Send(new GetSessionEventsQuery(id), ct)).ToHttpResult());
+
+        group.MapGet("/{id:guid}/latency", async (Guid id, ISender sender, CancellationToken ct) =>
+            (await sender.Send(new GetSessionLatencyQuery(id), ct)).ToHttpResult());
 
         // Shows how the decision model reads one sentence (intent, items, comment kinds) without a live call, so the prompt can be tuned.
         group.MapPost("/{id:guid}/analyse", async (Guid id, AnalyseBody body, ISender sender, CancellationToken ct) =>

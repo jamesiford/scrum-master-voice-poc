@@ -114,11 +114,6 @@ public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IRes
             return Result<string>.Success(teamsId);
         }
 
-        if (http.Request.Query["teamId"].FirstOrDefault() is { Length: > 0 } queryTeam)
-        {
-            return Result<string>.Success(queryTeam);
-        }
-
         if (MatchGuid(SessionPath(), path) is { } session)
         {
             return await locator.ForSessionAsync(session, ct);
@@ -142,6 +137,11 @@ public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IRes
         if (AuditPath().Match(path) is { Success: true } audit)
         {
             return await locator.ForCorrelationAsync(audit.Groups[1].Value, ct);
+        }
+
+        if (http.Request.Query["teamId"].FirstOrDefault() is { Length: > 0 } queryTeam)
+        {
+            return Result<string>.Success(queryTeam);
         }
 
         if (Guid.TryParse(http.Request.Query["sessionId"].FirstOrDefault(), out var querySession))

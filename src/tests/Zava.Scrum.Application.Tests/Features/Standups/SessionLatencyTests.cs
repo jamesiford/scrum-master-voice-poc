@@ -43,6 +43,9 @@ public sealed class SessionLatencyTests
     [InlineData("""{"totalMs":-1}""")]
     [InlineData("""{"totalMs":"not measured"}""")]
     [InlineData("[]")]
+    [InlineData("{\"reason\":false}")]
+    [InlineData("{\"hop\":42}")]
+    [InlineData("{\"source\":{}}")]
     public async Task GetSessionLatency_InvalidMeasurement_ReturnsExplicitFailure(string text)
     {
         await using var harness = await StandupHarness.CreateAsync();

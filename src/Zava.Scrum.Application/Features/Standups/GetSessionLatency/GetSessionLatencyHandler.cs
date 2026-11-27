@@ -47,16 +47,16 @@ internal sealed class GetSessionLatencyHandler(ISessionRepository sessions, ILog
             throw new JsonException("A timing event must be an object.");
         }
 
-        if (timing.TryGetProperty("reason", out var reason) && reason.GetString() == "TalkOver")
+        if (ReadString(timing, "reason") == "TalkOver")
         {
             return;
         }
 
-        if (timing.TryGetProperty("hop", out var hop))
+        if (ReadString(timing, "hop") is { } hop)
         {
-            if (hop.GetString() is "bridge.audio" or "bridge.playback")
+            if (hop is "bridge.audio" or "bridge.playback")
             {
-                Add(samples, hop.GetString()!, timing, "durationMs");
+                Add(samples, hop, timing, "durationMs");
             }
 
             return;
@@ -67,10 +67,25 @@ internal sealed class GetSessionLatencyHandler(ISessionRepository sessions, ILog
         Add(samples, "decision.grounding", timing, "analyserMs");
         Add(samples, "voice.orchestration", timing, "orchestrationMs");
         Add(samples, "voice.first_audio", timing, "voiceFirstAudioMs");
-        if (timing.TryGetProperty("source", out var source) && string.Equals(source.GetString(), "model", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(ReadString(timing, "source"), "model", StringComparison.OrdinalIgnoreCase))
         {
             Add(samples, "decision.model", timing, "decisionModelMs");
         }
+    }
+
+    private static string? ReadString(JsonElement timing, string field)
+    {
+        if (!timing.TryGetProperty(field, out var value))
+        {
+            return null;
+        }
+
+        if (value.ValueKind != JsonValueKind.String)
+        {
+            throw new JsonException($"Invalid timing label {field}.");
+        }
+
+        return value.GetString();
     }
 
     private static void Add(Dictionary<string, List<int>> samples, string hop, JsonElement timing, string field)
