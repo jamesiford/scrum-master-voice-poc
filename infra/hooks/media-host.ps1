@@ -59,8 +59,11 @@ else {
   $expires = $certificateInfo.attributes.expires
   $issueCertificate = [DateTimeOffset]$expires -le [DateTimeOffset]::UtcNow.AddDays(30)
   if ($RuntimeOnly) {
+    # Graph's Binary identifier is returned as hex by this tenant and as base64 by other clients.
+    $thumbprintHex = $certificateInfo.x509ThumbprintHex
+    $thumbprintBase64 = [Convert]::ToBase64String([Convert]::FromHexString($thumbprintHex))
     $registered = (Invoke-Graph GET "/applications/$($app.id)?`$select=keyCredentials").keyCredentials |
-      Where-Object { $_.displayName -eq 'media-tls' -and $_.customKeyIdentifier -eq [Convert]::ToBase64String([Convert]::FromHexString($certificateInfo.x509ThumbprintHex)) }
+      Where-Object { $_.displayName -eq 'media-tls' -and ($_.customKeyIdentifier -eq $thumbprintHex -or $_.customKeyIdentifier -eq $thumbprintBase64) }
     if (-not $registered) { throw 'RuntimeOnly requires the current vault certificate to be registered before stopping the host.' }
   }
 }
@@ -123,8 +126,10 @@ try {
     startDateTime = $cert.NotBefore.ToUniversalTime().ToString('o'); endDateTime = $cert.NotAfter.ToUniversalTime().ToString('o')
   })
   if ($RuntimeOnly) {
+    $thumbprintHex = $cert.Thumbprint
+    $thumbprintBase64 = [Convert]::ToBase64String($cert.GetCertHash())
     $registered = (Invoke-Graph GET "/applications/$($app.id)?`$select=keyCredentials").keyCredentials |
-      Where-Object { $_.displayName -eq 'media-tls' -and $_.customKeyIdentifier -eq [Convert]::ToBase64String($cert.GetCertHash()) }
+      Where-Object { $_.displayName -eq 'media-tls' -and ($_.customKeyIdentifier -eq $thumbprintHex -or $_.customKeyIdentifier -eq $thumbprintBase64) }
     if (-not $registered) { throw 'RuntimeOnly refuses to start an unregistered certificate.' }
   }
   else { Invoke-Graph PATCH "/applications/$($app.id)" @{ keyCredentials = $keys } | Out-Null }
