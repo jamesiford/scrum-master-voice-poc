@@ -189,7 +189,7 @@ External dependencies:
 | State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
 | Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
-| Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export uses `APPLICATIONINSIGHTS_CONNECTION_STRING` or explicit `AzureMonitor:ConnectionString` SDK configuration; live evidence is in G7. Foundry quality evaluation stays unrun because required messages conflict with content capture OFF (ADR 0028). |
+| Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export uses `APPLICATIONINSIGHTS_CONNECTION_STRING` or explicit `AzureMonitor:ConnectionString` SDK configuration. Live API/bridge/model/approved-write trace is checked (211hop samples); native/hosted acceptance is not established. G7 fails dates75%n8; live Foundry quality conflicts with content capture OFF and real-model CI needs its approved OIDC configuration (ADR 0028, DEPLOY.md). |
 | Tests | xUnit for Domain rules, state machine, handlers (hand-written fakes) and the mediator; NetArchTest.Rules architecture tests (**VERIFY** version; ArchUnitNET fallback); one Playwright end-to-end test of a scripted standup |
 
 ---

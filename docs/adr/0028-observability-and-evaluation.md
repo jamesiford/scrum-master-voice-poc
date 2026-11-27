@@ -90,3 +90,61 @@ settings. Native runtime-only deployment verifies existing consent/certificate
 and makes no Entra write; hosted updates preserve traffic/defaults.
 No resource teardown, unrelated role, tenant policy or SKU change. Fixed added
 cost USD0/hour; existing variable ingestion/build charges apply.
+
+The runtime-only preflight found an exact registered certificate but Graph
+returned `customKeyIdentifier` as hex. Current
+[keyCredential](https://learn.microsoft.com/graph/api/resources/keycredential?view=graph-rest-1.0)
+defines a Binary thumbprint identifier; accept its exact hex or base64 form
+in both preflight and restart checks, never another credential. This fixes the
+deployment guard without renewing a certificate or making an Entra write.
+The hosted benchmark now requires both actual audio and terminal ResponseDone,
+not an audio event followed by a timeout. The first candidate5 creation timed
+out on readiness then became active; that caller's session was stopped and
+the single retry is recorded separately.
+
+## Live handoff
+
+The final saved workbook matches its committed template and all four panels
+were queried2026-11-27T02:46:27Z. Trace
+`e48b795beab7972d69f7145550a925f0` has211hop samples across actual
+API/bridge roles, including37forwarded-audio,20decision-model,36SDK-model
+and one approved write. All8mandatory checks pass; actual caller audit/
+revision52 and separate unapproved403/refusal are verified. The433team-tagged
+requests/dependencies have18dimension keys, zero prohibited key occurrences
+and no Insights log/exception rows in this bounded window. Do not extrapolate
+to unobserved content, vendor internals, Teams joins or native attribution.
+One Voice Live connection is not a successful Teams join.
+
+API/bridge8859a7a revisions84/9 are latest=ready; nativee8c95b6's actual DLL
+hash/SYSTEM boot task and protected content-off settings are checked.
+Non-telemetry environment hashes, scale, identities and secret names match.
+Hosted candidate5 exceeded readiness in both own fresh creates; sessions became
+active, but the paired protocol probe returned424 and no completed report.
+Both were stopped. Readback leaves stable4 at100%, and Direct unchanged.
+No healthy-hosted/version5 trace or paired latency is claimed. Collect startup
+diagnostics before stopping the next bounded synthetic probe; do not promote
+an active version without successful protocol/audio/terminal-response evidence.
+
+Nearest-rank fallback comparison (one run per column, all phase denominators
+10before and12after):
+
+| Hop | Before p50/p95 ms | After p50/p95 ms |
+| --- | ---: | ---: |
+| Total | 3200/5600 | 3398/4707 |
+| Speech end to transcript | 0/169 | 0/209 |
+| Analyser | 26/28 | 27/39 |
+| Decision model | 153/218 | 159/289 |
+| Orchestration | 1587/2669 | 1548/2041 |
+| Voice first audio | 1441/3729 | 1601/2835 |
+
+Wall time356/397s; talk-overs0/0. Total p50+6.19% fails the historical5%
+tolerance; p95-15.95% is an observed point estimate, not a causal improvement
+or formal G1 matrix. The1s target and inherited exact-board/fallback failures
+remain. `observability-M11.json` freezes metadata and denominators.
+
+Repository variable names were empty: rules reporting is wired, but real-model
+CI is not enabled and the daily schedule starts only after default-branch
+merge. DEPLOY.md names the least-privileged OIDC identity-owner prerequisite,
+not a secret/runtime-identity shortcut. Live employee quality remains disabled,
+and knowledge/Work IQ remain unbuilt. Fixed added cost USD0/hour; two temporary
+hosted compute allocations were stopped, with existing variable rates not guessed.

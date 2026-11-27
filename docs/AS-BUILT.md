@@ -131,7 +131,7 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - ACS is reached with Entra only (a role on the resource); there is no connection string or key (ADR 0020).
 - `JsonFile*` class names are historical; they sit on `ICollectionStore` (file or Cosmos).
 - Repository contract test: `SessionRepositoryContract` exists for `ISessionRepository` only and runs against the JSON-file store only; there is no Cosmos run.
-- OpenTelemetry now includes content-free session hops, counters/histograms and the bridge (M11 9, ADR 0028). Export still needs `APPLICATIONINSIGHTS_CONNECTION_STRING`; actual live acceptance is recorded in G7. Native vendor spans and Foundry live quality evaluation are not established. The gateway retains its structured console turn log.
+- OpenTelemetry now includes content-free session hops, counters/histograms and the bridge (M11 9, ADR 0028). Export needs `AzureMonitor:ConnectionString` or the ordinary `APPLICATIONINSIGHTS_CONNECTION_STRING`; hosted versions use the explicit SDK destination because Foundry reserves the ordinary variable. Actual live acceptance is recorded in G7. Native vendor spans and Foundry live quality evaluation are not established. The gateway retains its structured console turn log.
 - Agents are Microsoft Agent Framework chat-client agents (`AIProjectClient.AsAIAgent`, Azure.AI.Projects 2.x) behind the same ports (ADR 0009b). Foundry hosted agents are not used. `// PROD: Foundry hosted agents`.
 - `knowledge/working-agreements.md` is not read by any code.
 - The sprint calendar's Graph app (`Calendars.ReadWrite`, application) is not yet scoped to one mailbox with an Exchange application access policy; the `.ics` download is the fallback when `Calendar:Organizer` is empty.
@@ -322,6 +322,19 @@ environment hook. It filters one team for hop latency, join events and the
 approved-decision-to-write chain. Connection events are not unique-call rates;
 missing data is never passing evidence.
 
+Live check2026-11-27: the saved four-panel workbook matches source, with16hop
+rows and211session-hop samples under trace
+`e48b795beab7972d69f7145550a925f0` across API and bridge, decision/model SDK,
+approval and one actual write. Mandatory verification passes8/8; the exact
+approver-authored revision52 audit and a separate unapproved403/refusal are
+checked. The433team-tagged records have18dimension keys, zero prohibited key
+occurrences and no Insights log/exception rows in the bounded window.
+API/bridge8859a7a revisions84/9 and nativee8c95b6 are live. Candidate hosted5
+failed readiness/protocol424 testing and was not promoted; stable4 remains.
+This closes the API/bridge live-telemetry gap, not native/hosted/vendor acceptance.
+Before/after total p50/p95 is3200/5600ms(n10) versus3398/4707ms(n12),
+zero talk-overs. The p50+6.19% point estimate fails the historical5% tolerance.
+
 The repeatable runner and daily non-blocking CI use 72 authored synthetic
 goldens, not employees or real work items. Final real model n=72: intent/items
 98.6%, comment kinds95.8%, dates75% on n=8, four rules fallbacks, no failures,
@@ -339,3 +352,7 @@ evaluation. The daily decision report is synthetic, not live quality scoring.
 Knowledge and Work IQ remain unbuilt/unrun. ADR0028 and G7 record the measured
 deployment evidence and privacy deviation; no default adapter or Domain rule
 is changed to make a gate pass.
+
+The rules CI report is wired, but actual repository model/OIDC variables are
+unset; real-model CI and default-branch scheduling are not enabled by a draft
+PR. DEPLOY.md names the identity-owner prerequisite.

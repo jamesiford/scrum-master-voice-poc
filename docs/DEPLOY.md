@@ -297,6 +297,9 @@ The native runtime-only hook refuses missing existing consent or an unregistered
 near-expiry certificate before stopping the host, skips Entra/registration/
 certificate renewal writes, verifies its package hash and restarts the existing
 SYSTEM task. Full greenfield/renewal hooks retain the existing consent gates.
+The registered thumbprint must match exactly; Graph's Binary identifier may
+be returned as hex or base64. Runtime-only accepts those two encodings, not a
+new credential.
 The hosted version does not change traffic/default voice selection. Preserve
 Acs/Share/Direct. Native media still cannot save decision/approval content.
 
@@ -307,12 +310,36 @@ gate's trace id to `operation_Id`; inspect only allowed metadata, never full
 employee bodies. Record exact samples and missing hops in G7. Native/vendor
 and multi-team human acceptance are not established by a Direct scripted run.
 
+Step9 live handoff: API/bridge8859a7a revisions84/9 are latest=ready; native
+e8c95b6 has the checked DLL hash, running SYSTEM boot task and content-off
+settings. All8 mandatory checks pass, including approver-authored revision52
+and exact audit chain. Saved workbookb628a627-0f45-5727-a57e-a4f367cc4bf4
+matches source; actual metadata/latency evidence is in
+`docs/gates/observability-M11.json`. Non-telemetry hashes, scale, identity and
+secret names were preserved.
+Hosted5 is an unpromoted candidate: both fresh own sessions exceeded readiness,
+the paired probe returned424 without a completed report, and both sessions
+were stopped (platform log confirms Stopped). Stable selector4 remains100%.
+Investigate the candidate startup/readiness log during a bounded synthetic
+session before promoting; never switch defaults on version-active metadata
+or an old ready revision's health. Temporary session compute/model/ingestion
+is variable-cost; no unverified hourly tariff is claimed.
+
 G7 release runs the real synthetic decision command in
 `demo/evaluation/README.md`. The existing OIDC CI identity and
 `EVALUATION_PROJECT_ENDPOINT`/optional `EVALUATION_DECISION_DEPLOYMENT`
 variables enable its daily real-model report; absent configuration is not_run,
 not fabricated evidence. Reporting is non-blocking, `--release-check` is not.
 The checked-in final n72 report fails dates75% on n8; retain that failure.
+Actual repository variable names were empty at the step9 check, so the
+real-model CI job is not enabled here. **EVALUATION-CI-IDENTITY:** the repository
+and Azure identity owners must approve a least-privileged model-inference OIDC
+identity/federation for this repository, then configure `AZURE_CLIENT_ID`,
+`AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` and `EVALUATION_PROJECT_ENDPOINT`
+under repository Settings > Secrets and variables > Actions > Variables.
+Do not expose the broadly privileged runtime identity or a client secret to CI.
+The daily workflow starts after merge to the default branch; this run leaves
+the PR in draft. The rules report runs without Azure credentials.
 
 **FOUNDRY-EVAL-PRIVACY prerequisite:** live Foundry quality/safety/groundedness
 evaluation requires captured input/output messages. This deployment contract

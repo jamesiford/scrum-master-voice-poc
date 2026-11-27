@@ -204,6 +204,15 @@ blocking release command are in `demo/evaluation/README.md`; G7 currently fails
 spoken dates, not item leakage. Rules do not supply model probabilities or
 comment kinds. Foundry live quality, knowledge and Work IQ remain unrun.
 
+Checked live2026-11-27: select `team-payments` and the recorded trace
+`e48b795beab7972d69f7145550a925f0` to see API/bridge/model hops and the
+approved write. Its16hop rows/211session-hop samples,12turn events,
+one approval/write, one refusal and one rejection are measured, not placeholders.
+Mandatory checks pass8/8. Before/after total p50/p95 is3200/5600ms(n10)
+versus3398/4707ms(n12), zero talk-overs; p50+6.19% fails the historical5%
+point-estimate tolerance. Hosted candidate5 failed the readiness/paired probe
+(424); keep Direct and stable hosted4. See `docs/gates/observability-M11.json`.
+
 For the bridge's automated `e2e` and `e2e:retro` checks, run the local API and
 bridge with a dedicated Json data folder and the intended environment's Foundry,
 Azure DevOps and Speech configuration. Leave `VoiceLive:Endpoint` empty to derive
