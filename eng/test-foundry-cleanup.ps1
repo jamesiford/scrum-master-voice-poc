@@ -18,7 +18,7 @@ function az {
         $global:LASTEXITCODE = 1
         'ERROR: (ResourceNotFound) The intended project is absent.'
       }
-      else { '{"location":"eastus2","tags":{"azd-env-name":"zavagf"}}' }
+      else { '{"location":"westus3","tags":{"azd-env-name":"zavag8"}}' }
     }
     'account get-access-token' { 'test-token' }
     default { throw "Unexpected CLI invocation: $args" }
@@ -36,11 +36,11 @@ function Reset-Case {
   $global:foundryCleanupFixture.groupExists = 'true'
   $global:foundryCleanupFixture.projectMissing = $false
   $global:foundryCleanupFixture.responses = [Collections.Generic.Queue[object]]::new()
-  $env:AZURE_ENV_NAME = 'zavagf'
-  $env:AZURE_LOCATION = 'eastus2'
+  $env:AZURE_ENV_NAME = 'zavag8'
+  $env:AZURE_LOCATION = 'westus3'
   $env:AZURE_SUBSCRIPTION_ID = '4b0dd31f-5379-4acc-8dcd-60f2929d2513'
   $env:AZURE_TENANT_ID = 'tenant'
-  $env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavagf'
+  $env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavag8'
   $env:FOUNDRY_NAME = 'account'
   $env:FOUNDRY_PROJECT_NAME = 'project'
   $env:FOUNDRY_PROJECT_ENDPOINT = 'https://account.services.ai.azure.com/api/projects/project'
@@ -54,7 +54,7 @@ function Assert-Refused([string]$Expected) {
 }
 $owned = '{"name":"zava-voice-relay","versions":{"latest":{"definition":{"kind":"hosted","container_configuration":{"image":"registry.azurecr.io/zava-scrum-agent/agenthost:tag"}}}}}'
 
-foreach ($name in @('zavaw3', 'mcm')) {
+foreach ($name in @('zavaw3', 'mcm', 'zavagf')) {
   Reset-Case
   $env:AZURE_ENV_NAME = $name
   Assert-Refused 'authorised only'
@@ -111,5 +111,5 @@ Add-Response 202
 for ($i = 0; $i -lt 60; $i++) { Add-Response 200 $owned }
 Assert-Refused 'still visible'
 if ($calls.Count -ne 62) { throw 'Deletion visibility polling exceeded its bound.' }
-Write-Host 'PASS 13 focused Foundry cleanup checks'
+Write-Host 'PASS 14 focused Foundry cleanup checks'
 Remove-Variable -Name foundryCleanupFixture -Scope Global
