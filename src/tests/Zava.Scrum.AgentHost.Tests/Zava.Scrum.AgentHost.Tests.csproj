@@ -13,5 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
+    <!-- Exercise the same retry code without importing the tool's isolated preview SDK (ADR 0021). -->
+    <Compile Include="..\..\..\tools\AgentDeploy\AgentVersionCreation.cs" Link="AgentVersionCreation.cs" />
   </ItemGroup>
 </Project>
