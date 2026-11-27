@@ -356,12 +356,22 @@ export function getSession(sessionId: string, signal?: AbortSignal): Promise<Ses
 /** Approval lifecycle of a follow-up. */
 export type FollowUpStatus = 'Pending' | 'Sent' | 'Approved' | 'Rejected' | 'Applied';
 
+/** The exact approved baseline and journal identity for one existing sandbox item. */
+export interface DemoWorkItemReset {
+  operationId: string;
+  project: string;
+  areaPath: string;
+  keyTag: string;
+  fields: Record<string, string | null>;
+}
+
 /** A change proposed to Azure DevOps. */
 export interface ProposedChange {
   workItemId: number;
-  op: 'Comment' | 'State' | 'Tag' | 'SetIteration' | 'Assign' | 'CreateWorkItem';
+  op: 'Comment' | 'State' | 'Tag' | 'SetIteration' | 'Assign' | 'CreateWorkItem' | 'ResetDemoItem';
   value: string;
   rationale: string;
+  demoReset?: DemoWorkItemReset | null;
 }
 
 /** What a follow-up is for. Pack kinds are ceremony packs for the Scrum Master. */
