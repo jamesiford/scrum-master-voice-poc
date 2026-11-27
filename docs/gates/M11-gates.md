@@ -1,5 +1,50 @@
 # M11 gates
 
+## Work IQ contract and blocked spike (conductor 8B, 2026-11-26)
+
+ADR 0027 adds independent consent/evidence contracts and an **unregistered**
+Application reader, not a live signal adapter or four product integrations.
+Actual Graph metadata proves the Work IQ service principal exists and the
+portal has **no Work IQ grant**. Current Learn requires delegated
+`WorkIQAgent.Ask`, approved Copilot Credits usage/spending assignment and
+discovery of the live schema. No consenting owner, audience-safe channel/
+meeting/negative-user fixture or billing assignment is established.
+8A Graph retrieval consent is a different resource, not a Work IQ prerequisite.
+
+| Gate/check | Step 8B result | Sample and evidence |
+| --- | --- | --- |
+| G11 live owner consent/revoke and expiry | Not run | n=0 caller-OBO Work IQ calls; metadata is not consent proof |
+| G11 disabled-team / other-team / private-source leakage | Not run | n=0 live negative queries; no zero-leakage claim |
+| G11 channel evidence / chase wording / helper / review goldens | Not run | n=0 real source-labelled product cases; contract fixtures do not close M9c |
+| G11 Work IQ latency | Not run | n=0 Work IQ retrieval samples |
+| G1 before/after voice latency | Not run | n=0 new turns; no voice path, runtime registration or deployment change |
+| Consent and scope contract checks | Pass | Domain 17; Application 36 WorkSignal checks (32 real-mediator port-fake, four policy), plus 24 Copilot/approved-write regressions; architecture 14 |
+| Existing runtime health | Measured readiness only | n=1 healthz HTTP 200, body Healthy; unchanged deployment |
+
+Local checks exercise the actual Domain rules and unregistered reader through
+the real mediator with fakes only at the ports and a test-only presentation
+query. They cover disabled-team zero provider/scope calls for all operations,
+named owner/tenant/membership, revocation including during a provider call,
+board/meeting scope, channel/group/roster/provenance, age/size/HTTPS rejection,
+distinct at-most-three helpers and a typed unavailable state distinct from
+valid empty results. The four positive synthetic fixtures return citations,
+not live card integration or review proposal conversion.
+
+DEPLOY.md names WORK-SIGNALS-CONSENT / WORK-SIGNALS-BILLING /
+WORK-SIGNALS-FIXTURE. No scope is granted, policy/billing changed or source
+read performed. No private mail/chat or broad `ask` call was made.
+Do not treat post-filtering private results as proof of no private reads.
+No new runtime, resource, store or cache, so no new deployment or
+`verify.ps1` approval write. Acs/Share/Direct, native non-recording and prior
+failed gates remain unchanged. G2 to G7, G9 and G10 have no new live samples.
+Added fixed cost USD 0/hour, billable Work IQ queries n=0.
+
+All **91 focused checks** pass, with no failures/skips. .NET Release build
+has zero warnings/errors; portal and bridge builds and linters pass.
+Full C# format verification passes with no changes.
+No full suites or E2E rerun; the next full checkpoint remains after prompt 10.
+Portal's existing >500kB bundle advisory is unchanged.
+
 ## Foundry IQ prerequisites (conductor 8A, 2026-11-26)
 
 **Blocked before the required permission spike**, not a measured gate

@@ -1,5 +1,23 @@
 # Demo runbook
 
+## Work IQ signals readiness (M11 8B)
+
+**Not available for the demo.** Only the consent/evidence contracts and
+unregistered read boundary are built. No connection/Revoke page, channel
+enrichment, absent-member chase suppression, helper confirmation or cited
+review-backlog draft is enabled. Do not present synthetic contract fixtures
+as Work IQ results or M9c closure. Keep Acs/Share/Direct and Simulated Room.
+
+DEPLOY.md WORK-SIGNALS-CONSENT / WORK-SIGNALS-BILLING /
+WORK-SIGNALS-FIXTURE name the administrator, billing owner and team lead
+actions. After they complete, sign in as the real owner through portal OBO,
+discover the live schema and prove exact channel/meeting-only reads before
+building any supported use. Show source/title/link/time for real evidence;
+revoke and repeat to verify the visible **No signals available** banner.
+Run the disabled-team, other-team, expired-token and private-source negative
+cases and review proposal approval guard. Current live G11 samples are n=0,
+not a privacy pass. See ADR 0027 and WORK-SIGNALS-PRIVACY.md.
+
 ## Foundry IQ readiness (M11 8A)
 
 **Not available for the demo.** Prompt 8A stopped before its mandatory

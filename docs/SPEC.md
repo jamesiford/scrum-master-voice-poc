@@ -157,9 +157,10 @@ External dependencies:
 | Agent runtime | **As built:** Microsoft Agent Framework chat-client agents over the Foundry v2 SDK (`Azure.AI.Projects` 2.x, `Microsoft.Agents.AI.Foundry`) with `DefaultAzureCredential`, behind agent ports (ADR 0009b; ADR 0002 was the earlier `HttpClient` version) | Foundry hosted agents with Entra Agent ID, published to Microsoft 365 |
 | Tools | In-process C# tool classes | Scrum MCP server on Azure Functions behind API Management; Foundry Toolbox with tool policies |
 | Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | **As built (M11 5A/8, ADRs 0020/0025):** scheduled voice reads use the managed identity; approved writes use the approver and five Copilot reads use the asker through OBO, no fallback. PROD: agent identity with least privilege (5B); Azure DevOps Remote MCP |
-| Meeting bridge | Simulated Room plus ACS Teams interop | Decision between ACS interop and Graph media bot after the PoC; Work IQ real-time transcripts in parallel |
+| Meeting bridge | Simulated Room plus ACS Teams interop | Decision between ACS interop and Graph media bot after the PoC; Work IQ is advisory retrieval, not a verified real-time transcript transport (ADR 0027) |
 | Messaging | In-process channels | Service Bus and Event Grid |
 | Knowledge | Working agreements as Markdown in the repo, injected into prompts | Foundry IQ knowledge base on Azure AI Search |
+| Work IQ signals | M11 8B: consent/evidence contracts and unregistered read boundary built; live spike, adapter and all four integrations blocked, G11 n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADR 0027) |
 | Identity | Bot app registration; portal sign-in with any tenant user | App roles, Agent 365 registration, Conditional Access for agents |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
 | Quality | Human judgement in demos, a few unit tests, latency metric | Foundry evaluations, CI gates, online monitoring |
@@ -358,6 +359,13 @@ conversation, matches the stored meeting, records metadata and publishes the
 existing ceremony end events exactly once. No new portal endpoint or voice tool.
 Native board snapshots reuse Domain `ItemMentions`, `RetroInterpreter`,
 `RetroAgenda` and `RetroSummary` without persistence or model-computed numbers.
+
+**M11 8B (ADR 0027):** typed `IWorkSignals`, consent/scope/retention ports,
+Domain consent/access rules and the unregistered `WorkSignalReader` are
+contract-stage code only. No new production command/query/event is registered;
+the real-mediator test entry is test-only. Enable/connect/revoke, persistence
+commands and integration queries must be catalogued when the live spike
+supports their implementation, not presented as shipped use cases now.
 
 #### 6.1.5 Code standards summary
 
@@ -672,6 +680,13 @@ or citation is implemented. Caller-OBO permission trimming must be proved
 before consumers are added; advisory text must never create item links,
 `ProposedChange` records or state changes. G10 and new G1 samples are not run.
 
+**Work IQ (M11 8B, ADR 0027): contracts only.** No signal is on the live
+voice path. Channel/helper/meeting reads are blocked by missing delegated
+Work IQ consent and billing/real-owner/source fixtures, independent of 8A.
+The existing default-off flag is not a working portal feature. Notes are
+existing evidence, not a live transcript or non-recording workaround.
+G11 and new G1 samples remain n=0; M9c review-feedback conversion is unbuilt.
+
 ### 11.1 Voice Live session (**VERIFY** every field against the current reference)
 
 ```jsonc
@@ -902,6 +917,10 @@ M11 8 adds no portal data route: the five skills enter the existing authenticate
 `POST /api/messages`. `/privacy.html` and `/terms.html` are public static legal
 pages, not team data endpoints.
 
+M11 8B adds no production API route or portal connection page. Its typed
+ports and unregistered reader are contract-stage code; no endpoint can
+enable signals or provide an unverified Work IQ adapter.
+
 ---
 
 ## 15. Data model
@@ -1021,7 +1040,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M9 status as built (ceremony kinds, ceremony packs and carry-over).** Built: `CeremonyKind`; `SetIteration`, `Assign` and `CreateWorkItem` changes with the generalised attribution; planning, review and retrospective packs with cards; R1 Graph email (unverified against a live mailbox); R2 unblock loop; R3 commitment carry-over; R4 `AtRiskRule` (one at-risk task seeded: "Prepare reconciliation report for audit"); R5 recap routing. **Not built:** per-item checkboxes on pack cards (the card approves the whole follow-up); a portal page for packs (use the API route); a live-meeting run of the new voice turns (the unblock and carry-over turns are unit tested at the use-case level, not exercised against a live Voice Live session). Demo check: `docs/DEMO.md`, "M9 features".
 
-**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts: it needs delegated sign-in, a Work IQ MCP connection and the Teams admin setting `EnableWorkIQTranscriptAccess`, and the real-time delivery contract is not documented enough to code against.
+**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts. M11 8B adds consent/evidence contracts only; current Learn supports delegated OBO advisory retrieval with Work IQ-specific consent and usage-based billing, not the historical unverified `EnableWorkIQTranscriptAccess` setting or a live transcript transport. Live source scoping and all four integrations remain blocked with G11 n=0 (ADR 0027).
 
 **M11 6a/6b status (Teams-native media alternative).** The Windows Graph media host, selectable bridge, identity-tagged ephemeral gateway, focused tests and opt-in hosting are built; the D4s_v5 Windows VM, trusted Azure DNS-label TLS and SYSTEM startup task are deployed in zavaw3. Application stays unchanged and ACS remains the default. Native G1/G2/G6 and real-human barge-in remain n=0 pending catalogue/calendar/roster/RSC prerequisites. Synthetic tagged-frame and stop probes do not establish native acceptance, and unconditional opening-state barge-in fails. The native path saves no audio-derived transcript or follow-up; limits and exact actions are in ADR 0023 and DEPLOY.md.
 
