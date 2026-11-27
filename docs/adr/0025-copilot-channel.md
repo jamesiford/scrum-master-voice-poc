@@ -29,8 +29,13 @@ include only that member's unretracted events in that team whose references
 are all in the asker's readable current sprint; an itemless or partly
 unreadable commitment is omitted. Today's status is lifecycle metadata in the
 team time zone, not a transcript or native meeting recap.
-The model phrases only a short introduction from a computed summary; code
-owns facts, citations and URLs. Numeric, id-like or URL-bearing introductions
+The model phrases only a short introduction from a computed summary plus the
+authorised team identifier; code owns facts, citations and URLs.
+`IResolvedTeamRequest` provides typed result metadata to the existing logging
+behaviour, so an automatically selected team is not traced or counted as
+`none`. The REST/phraser adapters tag that same use-case activity when using
+their team-scoped source. No runtime reflection or new processor.
+Numeric, id-like or URL-bearing introductions
 are discarded with an explicit fallback. Model failure is also stated.
 Validate the complete answer before the SDK streams it and attach the source
 card to that same final message. No unvalidated model token is streamed.
@@ -75,7 +80,14 @@ Learn and official schema checked on 26 November 2026:
 
 Before deployment, one Direct Simulated Room run has 12 timed turns:
 p50/p95 3272/4379 ms, 387 s, 19 transcript pieces and zero talk-overs.
-Focused checks and after-deployment measurements are in `gates/M11-gates.md`.
+Final runtime `d041890` passes all eight mandatory deployment checks and
+62 focused checks. Its one final Direct run has 12 turns, 379 s,
+19 transcript pieces, zero talk-overs and p50/p95 3304/4503 ms:
++0.98%/+2.83% against before. These fallback point estimates hold the
+historical regression thresholds, not the 1 s absolute target or formal
+native G1. The initial `29f87e7` after-run p95 failure (+67.69%) remains
+recorded. Hop measurements and the real approver/audit G3 subset are in
+`gates/M11-gates.md`; live Copilot G5 still has n=0.
 Microsoft 365 Agents Toolkit accepts the source 1.25/1.1.0 manifest.
 Actual signed-in Graph catalogue read returned Forbidden for missing
 AppCatalog scopes; no retry or unrelated grant was attempted.

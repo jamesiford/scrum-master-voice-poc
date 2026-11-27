@@ -21,21 +21,23 @@ administrator cannot force the user update.
 | --- | --- | --- |
 | G1 native conversational latency | Not run | n=0 native; the Direct before/after harness is fallback regression only |
 | G2 native attribution | Not run | n=0 new live samples; prior failures/prerequisites unchanged |
-| G3 approver-authored writes | Pending mandatory deployment verification | Not a new write path or Copilot approval skill |
-| G4 full parity / rehearsal | Not run in step 8 | Prior checkpoint 849 .NET / 24 bridge passes retained; exact board parity still failed |
+| G3 approver-authored writes | Measured portal subset | n=1 final approved comment, real approver author and complete audit chain; verify 8/8, not Copilot SSO |
+| G4 full parity / rehearsal | Prior exact board parity failed; no full suite rerun | Prior checkpoint 849 .NET / 24 bridge passes retained; exact identity still fails 11/11 |
 | G5 real Copilot skills, permission-negative and streaming | Not run | n=0 authorised Copilot turns; local tests/package validation are separate evidence |
 | G6 stored-link native joins | Not run | n=0; existing catalogue/calendar/verified-roster/organiser-RSC gates unchanged |
 | G7 observability / decision goldens | Not run | n=0 new live acceptance samples |
 | G9 live multi-team matrix / concurrency | Not run | n=0 live; local membership/no-team/multi-team/isolation checks pass |
 | G10 Foundry IQ grounding | Not run in step 8 | No new source or acceptance sample |
 | G11 Work IQ consent / privacy | Not run in step 8 | Native non-recording and existing consent boundary unchanged |
-| Local skill / permission / manifest checks | Pass | Domain 4, real-mediator Application 16, Infrastructure 11, Api 9, architecture 14: 54/54 |
+| Local skill / permission / manifest checks | Pass | Domain 4, real-mediator skills 17 plus mediator compatibility 7, Infrastructure 11, Api 9, architecture 14: 62/62 |
 
 All three builds, both TypeScript typechecks/linters and full C# formatting
 pass. Focused tests cover actual-assignee selection, unretracted/readable
 commitments, team-local dates, no-team/admin/multi-team/roster/consent refusals,
 cross-credential HTTP isolation and model/id guards. Custom title/state labels
 with unknown references are omitted; cards offer at most five source actions.
+The automatically resolved team's use-case span/log/metric and model-source
+context carry its identifier, tested through the real mediator.
 No full suite rerun before the post-prompt-10 checkpoint. Added fixed cost
 USD 0/hour.
 
@@ -45,8 +47,43 @@ Before: one deployed run, **12 timed turns**, **387 s**, **19 transcript
 pieces**, **zero talk-overs**, API/native source `0d07e83`, bridge `c25287f`.
 Total p50/p95 **3272/4379 ms**; analyser **26/27**, decision **160/240**,
 orchestration **1522/2449**, Voice Live first audio **1718/2646**.
-Decision model used **10/12** turns. After evidence follows deployment;
-no native or Copilot latency claim is inferred from this baseline.
+Decision model used **10/12** turns. Initial deployment `29f87e7` passed all
+eight mandatory checks: one run, **12 turns**, **390 s**, **19 transcript
+pieces**, zero talk-overs, total **3301/7343 ms**. Its p95 point estimate
+failed (**+67.69%**) with Voice Live first-audio p95 **5496 ms**. That failed
+sample is retained, not replaced by the final measurement.
+
+Final committed runtime `d041890` is deployed as API image `git-d041890`,
+ready revision `ca-api-3fsyvjqqjw5go--0000082`. ACR run `dss` succeeded
+in **162 s**. The final mandatory verification passes **8/8**: one run,
+**12 turns**, **379 s**, **19 transcript pieces**, **zero talk-overs**.
+
+| Hop | Before p50/p95 ms | Final p50/p95 ms | Timed turns per run |
+| --- | ---: | ---: | ---: |
+| Total, speech end to first audio | 3272/4379 | 3304/4503 | 12 |
+| Speech end to transcript | 0/212 | 0/201 | 12 |
+| Analyser, rules and grounding | 26/27 | 26/57 | 12 |
+| Decision model call | 160/240 | 161/240 | 12 |
+| Orchestration | 1522/2449 | 1554/2488 | 12 |
+| Voice Live first audio | 1718/2646 | 1439/2436 | 12 |
+
+Final total point estimates change **+0.98% p50 / +2.83% p95**, within
+the historical 5%/10% fallback regression thresholds. Questions alone:
+before **3615/4379 ms**, final **3349/4503 ms**, **n=9** each; the decision
+model reads **10/12** turns in each run. Percentiles are nearest-rank.
+This is one before/final pair, not the formal three-run/model matrix or
+native G1; absolute p50 remains above the SPEC's 1 s target.
+No native or Copilot latency claim, or erased historical tail failure.
+
+Final G3 sample: comment `verify-31084cd3`, ADO revision **51**, session
+`ddbb0ca4-139f-4e84-be88-df73c296591f`, audit tag `zsa-c3e96bb06f29`,
+authored by the real approver. The bridge remains `m11-7-c25287f`,
+ready revision `--0000007`; native host and non-recording are unchanged.
+Existing env, secrets, identity, scale and other Easy Auth properties
+hash-match; only the two exact public legal paths were added. Both return
+HTTP 200. Final gate summary/raw turns and verification are retained in
+the untracked run log, `p8-final-after-verify` and `8-final-verify.txt`.
+Later documentation-only commits do not change this deployed runtime.
 
 ## Full test checkpoint after prompt 7 (tests-1, 2026-11-26)
 
