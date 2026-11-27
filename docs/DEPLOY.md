@@ -1,6 +1,292 @@
-# Deploying from an empty subscription
+# Deploying the current solution
 
-`azd up` builds the whole current solution in a new resource group: Foundry with its four model deployments, Azure Communication Services, Cosmos DB, the container registry, Container Apps (API and meeting bridge), the Azure Bot, the Entra objects, the Azure DevOps project and seed data, and the Teams package. Decisions and their evidence are in [ADR 0015a](adr/0015a-greenfield-deployment-model.md).
+The checked-in Bicep/hooks describe a new-resource-group deployment: Foundry
+with chat, realtime and decision deployments (three by default), ACS, Cosmos,
+ACR, API/bridge Container Apps, Bot/portal Entra configuration, Azure DevOps
+project/seed and Teams/Copilot package 1.1.0. Postdeploy adds the hosted relay
+and Agent ID checks; opt-in adds the native Windows host/certificate/package.
+This is infrastructure coverage, **not a passed final-solution G8 proof**.
+See [ADR 0015a](adr/0015a-greenfield-deployment-model.md),
+[ADR 0029](adr/0029-final-documentation-and-greenfield-proof.md) and the
+[measured gates](gates/M11-gates.md). Knowledge/Work IQ are unbuilt and add
+no delivered sources, Search service or signal resources.
+
+## Final validation is not an all-green release
+
+On26November2026, explicit `azd exec -e zavaw3 -- pwsh -NoProfile -File
+infra\hooks\verify.ps1 -Runs 1` passes all8mandatory checks. It includes one
+real portal-approved, approver-authored comment on item1/revision53 and its
+complete audit chain, plus native HTTPS/renderer readiness, not native Teams
+participation. Use `-GateOutput <ignored-directory>` to retain the actual
+scripted timing result. No provisioning, teardown or deployed setting change
+was made. G8 below is still failed, not closed by this verification.
+
+All947.NET and25bridge unique configured checks have passing evidence after
+one unchanged focused retrospective retry; the initial model deviation is
+retained. Final G1 fallback tail comparison fails+12.75%p95,n12/12;
+G4 exact board identity remains failed11/11; G7 release exits1 with
+dates75%n8, one timeout and missing binary/intent probabilities9/1 on72cases.
+Do not change adapters, goldens, thresholds or Domain rules to label this
+green. Native/Copilot/source/multi-team human gates below remain exact;
+this checkpoint supplies no new human fixtures. ADR0030 and
+`gates/final-validation-M11.json` distinguish test, readiness and acceptance.
+
+## Final G8 attempt and recovery
+
+**Recovery attempt, 26 November 2026 after 20:00 PT:** the operator renewed
+Global Administrator. Live directory-role readback and unchanged
+zavagf application/AllPrincipals consent PATCH/readback passed. The zavagf
+portal hook reconciled successfully and granted its existing Azure DevOps
+delegated permission; dedicated media `Calls.AccessMedia.All` consent passed.
+The cheapest unrestricted compatible x64 eastus2 catalogue candidate is
+**Standard_D4als_v7**, four available vCPUs, 8 GB, family/regional quota
+used0/limit100, Windows consumption **USD0.345/hour** (compute/licence only).
+It is Gen2-only. Only one of the two proof cycles is complete;
+[ADR 0031](adr/0031-greenfield-recovery-and-idempotent-hooks.md) records
+the iteration and the historical failure below is not current authority.
+
+New documented recovery parameters preserve existing defaults:
+`MEDIA_VM_IMAGE_SKU=2022-datacenter-g2` selects the compatible image;
+`MEDIA_VAULT_PURGE_PROTECTION=false` is used **only for disposable zavagf**.
+The vault keeps soft delete, Entra RBAC and protected secret delivery.
+The false parameter omits the API property: Key Vault create/update rejects
+an explicit `enablePurgeProtection=false`, even on a new vault.
+Purge protection defaults true everywhere else and cannot be disabled after
+creation. Selecting false before this new vault is created permits the
+explicitly authorised `down --purge` without a seven-day wait. No existing
+zavaw3 vault protection or tenant policy is changed.
+The postprovision registry role gate confirms AcrPull before image deployment.
+Native hooks admit the exact zavagf/eastus2 group as well as the original
+zavaw3/westus3 group; this run executes **only zavagf**.
+
+Initial old-group purge passed1622.63s and empty-group readback was false.
+First empty up from88d79a9 failed after492.54s with that explicit-false
+Key Vault BadRequest. The selected VM itself allocated successfully with
+a127GB StandardSSD_LRS/V2 OS disk. ADR0031 records the omission correction;
+the failed partial footprint is purged before retrying. Completed cycles0/2.
+That purge passed1025.01s; exact group absence=false and corrected preview
+29s pass. First empty-up retry started05:09:56Z from35812cd.
+It passed1828.77s,exit0,ending05:40:25Z; mandatory verification is running.
+Complete verification subsequently passes8/8 in344.83s, with one actual
+approver-authored ADO comment and complete audit/revision55. Completed
+cycles1/2; intervening purge runs before the second empty up.
+Intervening purge passes1639.20s, including the real media vault and Foundry
+account; group exists=false and matching deleted-name lists[] read back.
+The second empty up/verify remains required.
+The second iteration exposed an input/output naming collision:
+`down --purge` removed MEDIA_HOST_ENABLED, so its submitted native parameter
+was false. That smaller deployment is not a full G8 cycle. The template now
+keeps MEDIA_HOST_ENABLED input-only; configured flags survive output cleanup.
+For recovery from the old colliding template, purge its invalid footprint,
+then restore the documented parameter with
+`azd env set MEDIA_HOST_ENABLED true -e zavagf` before the next empty up.
+This is parameter recovery, not a manual resource or a hidden default.
+Always read back the true opt-in before a full G8 up/verify.
+
+The invalid second up exited1 after1036.69s with a Foundry409 workspace
+identity change during hosted version creation (request
+279ff8f7e9fdc6c39b993d57de16d99f). AgentDeploy now follows the service's
+explicit instruction: read the current agent and retry that exact conflict
+at most twice. Authentication, unrelated conflicts and failed reads are
+not retried. Reduced-footprint purge passed1742.02s with complete absence;
+all13 documented inputs were read back before the full native-enabled empty
+restart at07:15:07Z. Its subsequent mandatory verification is recorded below.
+
+**Current outcome: blocked, completed cycles 1/2.** The full second empty
+up ended 07:35:37.0795566Z after 1229.5552 s, exit 1. Native was actually
+enabled; all three hosted-version creation calls returned the exact
+workspace-identity 409 despite two successful current-agent reads. Final
+request: `f5e2882b465eff0ce347b4f56906cecc`. No more equivalent creation
+retries were attempted. Current project identity is SystemAssigned,
+`3bce4b0f-7f02-4430-aff8-5bd65045e8a2`; the retained owned agent
+`zava-voice-relay`, version 1, still exposes the first cycle's image and
+instance principal `ff6d1ab3-68c0-47c9-aa11-894f161b4db2`.
+Whether separate data-plane lifecycle cleanup or a stale provider binding
+caused this is unproven; no speculative deletion or identity toggle was made.
+The subscription/project owner should escalate the exact request, identities
+and project ARM id to Microsoft support before another full empty proof:
+`/subscriptions/4b0dd31f-5379-4acc-8dcd-60f2929d2513/resourceGroups/rg-zava-scrum-zavagf/providers/Microsoft.CognitiveServices/accounts/fdy-zava-scrum-pi7fumnppr2hk/projects/proj-zava-scrum`.
+
+**G8-PRIVILEGED-WRITE, attempted and blocked:** independent media completion
+failed after 7.9184 s at the application reconciliation write, before
+certificate/bootstrap. The exact one-attempt response was:
+
+```text
+ERROR: Forbidden({"error":{"code":"Authorization_RequestDenied","message":"Insufficient privileges to complete the operation.","innerError":{"date":"2026-11-27T07:40:44","request-id":"07d95ae3-fd0a-4479-9442-9e7d14dd3abf","client-request-id":"07d95ae3-fd0a-4479-9442-9e7d14dd3abf"}}})
+```
+
+An authorised Entra administrator must restore appropriate active
+application-write authority for `admin@MngEnvMCAP763514.onmicrosoft.com`
+on the existing zavagf calling app `aef240bc-3943-4f28-83f2-c7829c69a847`,
+application object `25ab2fd7-c291-4560-b8c4-3a755b19697f`. The authorised
+deployment operator then runs
+`azd exec -e zavagf -- pwsh -NoProfile -File infra\hooks\media-host.ps1`,
+including certificate registration, not a RuntimeOnly bypass.
+Earlier successful consent writes do not establish current write authority;
+their grants remain complete. There was no authentication retry or role
+activation. No zavaw3/mcm object or tenant policy was changed.
+
+Independent public legal exclusions and messaging package generation both
+passed, exit 0, in 4.1405 s total. The package is
+`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`,
+id `df7bb1a7-ba3c-4bae-839b-e1ea1a628d2f`; no catalogue authentication was
+attempted. Hosted identity reconciliation requires the failed hosted output
+and was not run. The surviving footprint has 24 ARM resources including
+the D4als_v7/127 GB StandardSSD_LRS/V2 VM and disposable vault. Provisioning
+is not certificate/task/renderer readiness: the current native host is
+unbootstrapped. It remains allocated for authorised continuation at a known
+VM/disk/IP tariff of USD0.363150685/hour plus variable charges.
+The first cycle's native readiness below is historical, not current readiness.
+
+Final mandatory verification independently passed **8/8 in 361.4580 s**,
+07:46:27.3643022Z to 07:52:28.8223331Z, source `7501b98`. It explicitly
+printed `MEDIA-TLS: native readiness NOT verified`; optional VM/DNS hosting
+success is not native acceptance. The Direct Simulated Room completed
+10 timed turns, total p50/p95 **2821/4189 ms**, questions 2836/4189 ms (n=7),
+9 model-read turns, 15 human segments and zero talk-overs.
+Real approved comment on item 1 was authored by the approver; revision 58,
+audit `zsa-1e117c8f2430`, session `17190e28-c4cc-409c-bb6a-a87e23c175f1`.
+Passing independent verification cannot turn the failed full up into cycle 2.
+Against first complete verification 3251/3682 ms (n=9), final p50 is -13.23%
+and p95 +13.77%; the tail point exceeds the 10% tolerance. These are
+different time windows, not causal or paired native evidence; G1 remains failed.
+
+**ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
+POST of the exact new media package returned403 Forbidden at05:41:36Z:
+`Missing scope permissions on the request. API requires one of
+'AppCatalog.Submit, AppCatalog.ReadWrite.All, Directory.ReadWrite.All'.`
+Requestf5606812-a404-4556-9256-78921efeb3a5. No sign-in retry was attempted.
+A Teams administrator must use Teams admin centre > Teams apps > Manage apps
+> Upload new app for `appPackage\dist\zava-media-bot.zip` (current zavagf
+calling appaef240bc-3943-4f28-83f2-c7829c69a847) and
+`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`, independently regenerated
+after the failed up. Regenerate the media package after authorised bootstrap.
+Alternatively obtain delegated AppCatalog.Submit through
+the documented interactive package hook. Do not upload historical zavaw3
+packages again, replace the old mcm app or mistake a role for OAuth scopes.
+This does not undo the completed zavaw3 uploads or successful core Entra hooks.
+
+### Historical finalisation attempt (superseded prerequisites)
+
+Only the old **zavagf/eastus2**, resource group `rg-zava-scrum-zavagf`,
+subscription `4b0dd31f-5379-4acc-8dcd-60f2929d2513`, is authorised for
+this destructive proof. Never tear down zavaw3 or touch mcm. The inspected
+old group contains 13 resources; an update is not an empty-environment run.
+One full preflight took **231.30 s**, 2026-11-27 03:04:32Z to 03:08:23Z,
+and exited 1 with:
+
+```text
+FAIL quota: Windows VM Standard_D4s_v5
+Not enough  vCPU quota in eastus2
+1 check(s) failed. Nothing was provisioned.
+```
+
+No `up`, teardown, new resource or successful verification cycle is claimed.
+Both required full-solution up/verify cycles remain **not_run, n=0**.
+The diagnostic read with `az vm list-skus --all` establishes the actual
+cause: Standard_D4s_v5 has **NotAvailableForSubscription** location and
+zone restrictions in eastus2. Both DSv5-family and total regional quota are
+used0/limit100. This is SKU availability, **not exhausted vCPU quota**;
+the preflight's missing-family message is misleading. Public metadata
+evidence is `gates/g8-M11.json`.
+The preflight Graph scope check passes, but read-only live directory-role
+assignments list Agent Registry Administrator, Agent ID Developer, Agent ID
+Administrator and Global Reader, not an application/privileged consent
+administrator. The explicitly authorised Global Administrator window ended
+at 14:27 PT on 26 November; cached OAuth scopes do not prove current role
+authority. No role activation, consent mutation or authentication loop was run.
+
+**G8-DEPLOYER-AUTHORITY, initially completed; later write refused:** actual
+Global Administrator and privileged operation readback passed as recorded
+above, but the later G8-PRIVILEGED-WRITE refusal now blocks native completion.
+For any later recovery, an authorised Entra Application Administrator
+(application changes) and Privileged Role Administrator/Global Administrator
+(required tenant consents) must run the existing hooks for **zavagf**, using
+their own approved active role. A Subscription Owner or equivalent scoped
+resource/RBAC permissions and Azure DevOps Project Collection Administrator
+are also required. Do not grant unrelated roles or change tenant policy.
+Revalidate actual role authority, not just the token's `scp` field.
+
+**G8-MEDIA-CAPACITY, catalogue/quota prerequisite resolved:** the operator
+authorised SKU selection and Standard_D4als_v7 was selected as recorded
+above. Actual allocation still requires the deployment. For a future run,
+the deployment owner must review
+`az vm list-skus -l eastus2 --size Standard_D4s_v5 --all` and its
+`NotAvailableForSubscription` restrictions. Approve an actually available
+minimum-four-vCPU alternative through the existing `MEDIA_VM_SIZE` parameter
+under existing eastus2 subscription capacity, then record its catalogue
+restrictions/family/quota before a new approved run. Do not retry the unavailable
+default or interpret used0/limit100 as a quota shortage.
+Do not file a quota request, change subscription/region or silently omit
+the native host to label the partial footprint complete.
+
+After those prerequisites and fresh validation pass, an authorised operator
+runs the following **only for zavagf**, recording UTC start/end, commit,
+resource inventory and actual verification output for each numbered run.
+The initial teardown is needed because the old group is currently nonempty.
+Do not delete it while rebuilding remains blocked.
+
+```pwsh
+# Confirm the intended subscription, environment and eastus2 group first.
+azd env set MEDIA_HOST_ENABLED true -e zavagf
+azd env set MEDIA_VM_SIZE <approved-available-four-vCPU-sku> -e zavagf
+azd env set MEDIA_VM_IMAGE_SKU 2022-datacenter-g2 -e zavagf
+azd env set MEDIA_VAULT_PURGE_PROTECTION false -e zavagf
+azd env set VOICE_ROUTE Direct -e zavagf
+azd env set BRIDGE_MODE Acs -e zavagf
+azd env set BOARD_MODE Share -e zavagf
+# Only after preflight and current deployment validation pass:
+azd down --purge --force --no-prompt -e zavagf
+azd up --no-prompt -e zavagf
+azd exec -e zavagf -- pwsh infra\hooks\verify.ps1 -GateOutput <run-1-folder>
+azd down --purge --force --no-prompt -e zavagf
+azd up --no-prompt -e zavagf
+azd exec -e zavagf -- pwsh infra\hooks\verify.ps1 -GateOutput <run-2-folder>
+```
+
+`verify.ps1` already runs the GateRunner subset and prints eight mandatory
+PASS/FAIL checks, including portal approval/author/audit. Its optional native
+hosting check is not G6 or a human meeting test. It does not print a complete
+formal G1-G11 verdict; that broader gate-status enhancement belongs to the
+remaining full prompt, not this documentation-only subset. Record actual
+failed/not_run gates separately, including G7 dates and G10/G11 n=0.
+Exchange, catalogue, organiser RSC and real-user actions below remain exact
+human gates; package generation is not tenant publication.
+
+## Edition C owner actions (final consolidation)
+
+**FILM-SCOPE, James Ford/product owner and Scout:** before booking a take,
+choose the truthful recording scope. The original native-media chapters and
+saved spoken follow-ups cannot be one demonstrated path: GraphMedia is
+non-recording and cannot persist meeting-derived proposals. Use
+**Acs / Share / Direct** for the approval story and label the Simulated Room
+fallback. Film native join/share/identity/barge-in separately only after the
+existing MEDIA-RSC, native voice and NATIVE-BOARD-ACCEPTANCE checks have real
+samples. Do not describe an admitted lobby join as unattended G6 success,
+the earlier smaller-footprint rebuild as final G8, or unbuilt knowledge/
+Work IQ as delivered. Conditional Access policy changes remain outside this
+run. Record the approved chapter substitutions and outstanding gates in the
+film brief before narration or capture; no Presenter Pack change is authorised.
+The dedicated audit portal page, Live per-hop panel, complete readable speaker
+names and atomic Sprint 43/roster/cast reset are still separate product work.
+
+**FILM-ASSETS, James Ford (recordings/backup owner) and Scout (film tooling):**
+restore the authorised Edition B tooling, raw clips and original seven Admin
+recordings from the owner's backup into a separate film workspace. The plan
+names `C:\Projects\film-work`; its absence was recorded on 24 November, not
+rechecked by final consolidation. Neither `video\README.md` nor
+`video\admin-lines\record-admin-lines.html` exists in this checkout, and no
+tracked film/recording assets were found. If the backup is unavailable,
+Scout must first rebuild the capture/audio preflight/persona host/assembly
+tooling and recording page in that workspace before asking James to record
+the seven original and three new interruption lines (08 to 10) in his own
+voice. Do not substitute TTS for the presenter's interruption.
+Obtain consenting participants and complete real meeting/Copilot dry runs
+before recording. Keep Daniel/Maya synthetic and labelled; use light theme,
+right-monitor native 16:9 capture, eased scrolling, separate pre-brief/recap
+clips and labelled fast-forwarded waits. Deliver the chaptered MP4 and
+transcript only for the owner-approved, evidence-backed scope; the original
+fourteen-chapter 15-to-17-minute plan is not currently ready to film as built.
 
 ## Parameters
 
@@ -8,13 +294,15 @@ Set once with `azd env set`. None is a secret.
 
 | Name | Required | Meaning |
 | --- | --- | --- |
-| `AZURE_LOCATION` | yes | Region. It must offer the realtime models and Voice Live; `preflight.ps1` checks. `eastus2` is proven. |
+| `AZURE_LOCATION` | yes | Must offer the configured models, Voice Live and selected native host. Earlier eastus2 API/bridge proof does not prove the final footprint. |
 | `AZURE_TENANT_ID` | yes | The Entra tenant. |
 | `ADO_ORG_URL` | yes | For example `https://dev.azure.com/your-org`. The project and seed data are created inside it. |
 | `ADMIN_UPN` | yes | The administrator. Also the calendar organiser. |
 | `REALTIME_SKU` | no | `DataZoneStandard` (default in `main.parameters.json`) or `GlobalStandard`. Global realtime quota is subscription-wide and was used by the original environment, so the default avoids it. |
 | `VOICE_ROUTE` | no | `Direct` (default) or `Hosted`: whether the API reaches Voice Live directly or through the hosted agent relay (ADR 0021). Set it before `azd provision`; the agent itself is created by `agent-host.ps1`. |
 | `MEDIA_HOST_ENABLED`, `MEDIA_VM_SIZE` | no | `false` by default; opt-in public Windows media VM, `Standard_D4s_v5` (four vCPU), hard call cap 1. `D3_v2` was unavailable in `zavaw3`/`westus3`. |
+| `MEDIA_VM_IMAGE_SKU` | no | `2022-datacenter` by default; select `2022-datacenter-g2` for Gen2-only sizes such as the G8 eastus2 D4als_v7. Preflight checks image generation, x64 and available cores. |
+| `MEDIA_VAULT_PURGE_PROTECTION` | no | `true` by default. `false` is for explicitly disposable teardown/rebuild proof environments only, before vault creation; existing protection cannot be disabled. Soft delete remains enabled. |
 | `MEDIA_SERVICE_FQDN` | no | Optional certificate-covered DNS name. Empty uses the Azure public IP DNS label; the hook obtains a Let's Encrypt HTTP-01 certificate and imports directly from the VM to Key Vault. |
 | `BRIDGE_MODE` | no | `Acs` (default), `Simulated`, or `GraphMedia`. Select native media only after HTTPS bootstrap and per-meeting RSC installation. The voice factory supports Direct or Hosted; preserve the working route until measured. |
 | `BOARD_MODE` | no | `Share` (ACS canvas, default) or `MediaShare` (VBSS on GraphMedia). Bicep sets API `Board__Mode`; image-only updates preserve the current setting. No native browser or additional resource. |
@@ -39,6 +327,7 @@ Resources are named with the `zava-scrum` prefix. The original environment (`mcm
 | preprovision | `infra/hooks/preflight.ps1` | Fails fast: tools, sign-in, Azure roles, resource providers, Graph scopes, Azure DevOps administrator, region, model catalogue and quota, Cosmos policy. |
 | preprovision | `infra/hooks/entra-portal-app.ps1` | Portal app registration, `access_as_user` scope (consented for the organisation), Azure CLI pre-authorised, the three app roles from `infra/entra/portal-app-roles.json` (Admin, Approver, Reader) assigned to `ADMIN_UPN`; sets `PORTAL_CLIENT_ID` and `ADMIN_OBJECT_ID`. |
 | provision | `infra/main.bicep` and `infra/modules/*` | Everything in Azure, including role assignments. |
+| postprovision | `infra/hooks/registry-rbac.ps1` | Confirms provisioned registry-scoped AcrPull before azd builds/deploys private images; bounded five checks, explicit failure. |
 | postprovision | `infra/hooks/entra-post.ps1` | Redirect URIs (web for Easy Auth, single-page application for MSAL.js), the managed identity's Graph `User.Read.All` permission (roster identity resolution), `Portal__ClientId` and `Identity__AdminObjectIds` on the API, and Easy Auth on both apps. |
 | postprovision | `infra/hooks/ado-setup.ps1` | Azure DevOps project, area, iterations, seed items, sprint; adds the managed identity to the organisation. |
 | postprovision | `infra/hooks/exchange.ps1 -Mode Apply` | Switches calendar and email to Graph once the Exchange grant exists. |
@@ -46,7 +335,9 @@ Resources are named with the `zava-scrum` prefix. The original environment (`mcm
 | postdeploy | `infra/hooks/teams-app.ps1` | Builds `appPackage/dist/zava-scrum-agent-<env>-<version>.zip` with the deployed bot id. |
 | postdeploy | `infra/hooks/media-host.ps1` | Opt-in only: separate calling app/Bot registration, minimum media permission, artefact upload, vault delivery, Windows startup task and native Teams package; reports TLS/RSC gates. |
 
-Every script is idempotent; re-running `azd up` creates no duplicates.
+Hooks are intended to reuse their tagged objects. A re-run can create an
+immutable hosted version and rotate Easy Auth credentials; it is not a no-op.
+Final repeatability and native eastus2 provisioning remain unverified.
 
 ## Identity model
 
@@ -85,18 +376,46 @@ The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, se
 
 The platform forces these. Each is named in the script output as `GATE`.
 
+### Operator-completed authority, consent and catalogue actions
+
+On 26 November 2026 at approximately20:00PT, Scout, signed in as the
+authorised administrator, completed and verified:
+
+- Zava Scrum Portal (zavaw3), service principal
+  `2b69cbf8-a7e7-432c-8441-726b72a9fffc`: Graph AllPrincipals delegated
+  `User.Read openid profile Files.Read.All Sites.Read.All`, and Work IQ
+  AllPrincipals delegated `WorkIQAgent.Ask` on resource service principal
+  `ca4a440d-9d38-41a8-a140-f5ff230ac975`, with matching app declarations.
+  No WorkIQ.Act, settings or application permissions were granted.
+- Tenant catalogue uploads: Zava Scrum Media
+  `b681ab3c-023c-4e91-9212-50980b43dec1` and Zava Scrum Agent1.1.0
+  `bed81a44-b97d-4687-9ad3-c4cf546f6689`. The old mcm app with
+  `38a0a184-...` external bot id was not changed.
+
+KNOWLEDGE-CONSENT, WORK-SIGNALS-CONSENT, COPILOT-ROLLOUT catalogue upload,
+MEDIA-CATALOGUE and MEETING-EVENT-CATALOGUE are therefore **completed for
+zavaw3**, not open administrator actions. Historical refusal logs below
+remain evidence of earlier attempts. User installation/update/sign-in,
+real fixtures, Copilot Credits spending approval, Exchange mailbox RBAC,
+evaluation CI identity/variables and per-meeting organiser RSC remain open.
+The native catalogue app installed for "No one" proves no meeting install.
+The portal Entra hook now merges baseline requiredResourceAccess with
+existing declarations idempotently; it never removes these approved optional
+scopes or automatically grants them to a new environment. IQ runtimes remain
+unbuilt and require their independent source/user/billing spike.
+
 ### WORK-SIGNALS-CONSENT, WORK-SIGNALS-BILLING and WORK-SIGNALS-FIXTURE (8B)
 
-ADR 0027 records contracts only, not an enabled runtime. The authorised
-administrator window ended at 14:27 PT on 26 November 2026.
-Read-only metadata proves the Work IQ service principal already exists,
-but the actual zavaw3 portal has no Work IQ permission declaration or grant.
+ADR 0027 records contracts only, not an enabled runtime. The earlier
+administrator window ended at14:27PT; the renewed window and operator
+readback above supersede the earlier absence of a declaration/grant.
 No OBO spike was attempted, and no refusal/leakage result is invented.
 Do not alter the mcm applications, grant application permissions, change
 tenant policy or create an unapproved billing plan.
 
-**WORK-SIGNALS-CONSENT, Entra Global Administrator / Privileged Role
-Administrator:** review the broad permission and approve the plan-specific
+**WORK-SIGNALS-CONSENT, completed by Scout as authorised administrator:**
+the following procedure is retained for another approved environment,
+not an outstanding zavaw3 action. Review the broad permission and approve the plan-specific
 delegated **WorkIQAgent.Ask** on **Zava Scrum Portal (zavaw3)**, app
 `265790b8-88a7-4975-bb8f-3fe381bb19ea`. In **Entra admin centre > App
 registrations > this app > API permissions > Add a permission > APIs my
@@ -146,15 +465,17 @@ greenfield PR, followed by zavaw3 deployment and `infra\hooks\verify.ps1`.
 
 ### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (prompt 8A, ADR 0026)
 
-Prompt 8A is blocked before its mandatory permission spike, not deployed.
-Only zavaw3 and its existing portal application are in scope. Readback shows
-Graph consent `User.Read openid profile`, not the required retrieval scopes.
+Prompt 8A remains unbuilt before its mandatory permission spike, not deployed.
+Only zavaw3 and its existing portal application are in scope for that spike.
+The operator's renewed-window readback above confirms both retrieval scopes;
+the source/two-user fixture and actual OBO spike remain outstanding.
 The signed-in administrator has a Copilot licence and can read the SharePoint
 root through Azure CLI; neither proves caller-OBO retrieval. The privileged
 window ended at 14:27 PT on 26 November 2026. No permission-trimming request
 was made, so leakage and latency remain unmeasured.
 
-**Entra Global Administrator / Privileged Role Administrator:** for
+**KNOWLEDGE-CONSENT, completed by Scout as authorised administrator:**
+retain this procedure for another approved environment. For
 **Zava Scrum Portal (zavaw3)**, app id
 `265790b8-88a7-4975-bb8f-3fe381bb19ea`, approve the plan-specific delegated
 Microsoft Graph permissions **Files.Read.All** and **Sites.Read.All**.
@@ -206,7 +527,9 @@ catalogue read was attempted with explicit Graph resource and refused:
 Directory.Read.All, Directory.ReadWrite.All'.`
 No authentication loop, new tenant policy or unrelated role was attempted.
 
-**Teams administrator:** in **Teams admin centre > Teams apps > Manage apps**,
+**Catalogue upload completed by Scout as authorised administrator.**
+The following is a repeat/update runbook, not an open upload gate:
+in **Teams admin centre > Teams apps > Manage apps**,
 open Zava Scrum Agent for bot/app id `bed81a44-b97d-4687-9ad3-c4cf546f6689`,
 choose **Upload file**, and upload
 `appPackage\dist\zava-scrum-agent-zavaw3-1.1.0.zip`. If absent, **Upload new
@@ -362,8 +685,8 @@ azd down --purge
 ## Known limits
 
 - Provisioning takes about 20 minutes; the Container Apps environment alone took 13.5 minutes in the proven run.
-- `eastus2` hosted-agent support is documented on Learn but was measured only in West US 3 (ADR 0015 S3). The current application does not use hosted agents.
-- The destroy-and-rebuild proof is incomplete (G8): the second `azd up` stopped at preprovision because the deployer's privileged Entra role had lapsed. See docs/gates/M11-gates.md.
+- Hosted transport is measured in West US 3; native eastus2/final-footprint acceptance remains open. Optional relay 4 is retained; candidate 5 is unpromoted.
+- Final two-cycle G8 is unrun: this step's preflight failed native capacity and current privileged deployer authority is absent. Earlier smaller-runtime teardown/rebuild history does not close it.
 - A new-subscription run was not possible: the work used one subscription and tenant.
 
 ## Native media preparation and human gates (6a/6b, ADR 0023)
@@ -392,11 +715,11 @@ The postdeploy hook creates the dedicated `zava-media-zavaw3` calling app/servic
 | --- | --- | --- |
 | `MEDIA-TLS`, only if automated issuance fails | DNS owner and Key Vault certificate operator for `MEDIA_VAULT_NAME` | Point a certificate-covered `MEDIA_SERVICE_FQDN` at output `MEDIA_PUBLIC_IP`; obtain a CA-trusted exportable PFX with its private key/full chain, the FQDN as primary name and more than 14 days remaining. Keep it outside the repo in a protected folder. Import with `az keyvault certificate import --vault-name <MEDIA_VAULT_NAME> --name media-tls --file <protected-empty-password-PFX>`, then rerun the hook. The normal Azure DNS label uses automated HTTP-01, not this fallback. |
 | Calling-app consent, if refused | Entra Privileged Role Administrator or Global Administrator | Perform the dedicated-app consent described above, then rerun the hook. **Completed in 6b:** app `b681ab3c-023c-4e91-9212-50980b43dec1` holds only `Calls.AccessMedia.All`, verified by Graph readback during the authorised admin window. Never grant a broader join role. |
-| `MEDIA-CATALOGUE` | Teams administrator signed into Teams admin centre | Upload generated `appPackage\dist\zava-media-bot.zip` through Teams apps > Manage apps > Upload new app. Open **Zava Scrum Media**, approve it if pending review, and confirm it is available under existing policy. The 6b administrator's actual Graph POST returned `Forbidden`: its Azure CLI token lacks `AppCatalog.Submit`, `AppCatalog.ReadWrite.All` or `Directory.ReadWrite.All`; an active Global Administrator role does not add OAuth scopes. No unrelated client or tenant policy is changed to bypass this. |
+| `MEDIA-CATALOGUE`, completed for zavaw3 | Scout as authorised administrator | Uploaded `appPackage\dist\zava-media-bot.zip` to the tenant catalogue, app b681ab3c-023c-4e91-9212-50980b43dec1. Earlier Graph scope refusal remains historical. Installed for "No one"; organiser meeting install/RSC is still required. A different environment needs its own generated package/upload. |
 | `MEDIA-RSC` | Each meeting's organiser, permitted by existing tenant policy | In the stored scheduled meeting's Teams chat, add the published **Zava Scrum Media** app and accept its resource-specific `Calls.JoinGroupCalls.Chat` permission for that chat before the ten unattended G6 joins. Catalogue publication and tenant media consent do not grant this meeting consent. If installation is prohibited, record the gate and retain ACS; do not alter tenant policy. |
 | Lobby admission | Meeting organiser | If existing meeting policy still sends the bot to the lobby, admit **Zava Scrum Media** from the meeting's lobby. Record that as a failed no-manual-step G6 case, not a successful unattended join. Do not relax tenant policy. |
 | Native voice acceptance | Meeting organiser plus Daniel, Maya and Admin as distinct signed-in Teams participants | Use the stored calendar link; perform ten joins without admission/manual steps, label each participant's speech and overlaps for >=95% G2, and interrupt the agent with >=350 ms real speech. Measure audio cessation <=500 ms, cancellation/truncation and the spoken answer, including opening/recap states. Run native per-hop G1 before changing the default. Synthetic identity-tagged bytes are not these acceptance samples. |
-| `MEETING-EVENT-CATALOGUE` | Teams administrator | Upload `appPackage\dist\zava-scrum-agent-zavaw3-1.0.5.zip` (or the explicitly configured later version) through Teams admin centre > Teams apps > Manage apps > Upload new app; approve under existing policy. The 7 updated-package POST was attempted during the active Global Administrator window and refused for missing delegated catalogue scopes, request `6cba8a7e-81ae-460f-a1b8-27abb7fe93ca` at 2026-11-26T21:20:16Z. No new unrelated scopes/policies are added. |
+| `MEETING-EVENT-CATALOGUE`, completed for zavaw3 | Scout as authorised administrator | Uploaded Zava Scrum Agent1.1.0, app bed81a44-b97d-4687-9ad3-c4cf546f6689, to the tenant catalogue. Earlier step7 missing-scope refusal remains historical. User update and organiser OnlineMeeting.ReadBasic.Chat installation/consent are still required. |
 | `MEETING-EVENT-RSC` | Scheduled meeting organiser and team administrator/lead | Add the published **Zava Scrum Agent** to the actual stored meeting chat and accept `OnlineMeeting.ReadBasic.Chat`. Bind that exact conversation to the correct team using the existing Bind card as a team lead/admin. The messaging bot keeps SSO; the media app's join consent alone does not grant event delivery. Start and end a real meeting, verify the API's matched lifecycle metadata and exactly one end/recap path; an unbound/other-team event must not end it. |
 | `NATIVE-BOARD-ACCEPTANCE` | Meeting organiser, members and a guest | After both apps are installed and a fresh session uses the stored meeting/verified roster, select GraphMedia/MediaShare as in DEMO.md. Without participant action, time the board's first appearance and each change to <=2 seconds for every participant, including the guest. Observe share stop/reconnect; sample VM process encoder CPU throughout one meeting against the unchanged cap 1, and run native G1 with the share running. Record sample sizes and failures. Renderer startup/goldens or Simulated Room are not these samples. |
 
@@ -436,5 +759,5 @@ no default was switched, and all deployed services remain running.
 
 | Gate | Who | Action |
 | --- | --- | --- |
-| Conditional Access for agents | Conditional Access Administrator | Entra admin centre > Protection > Conditional Access > New policy > Target resources > Agents (agent identities): (1) block agent identities with high risk (Agent ID Protection risk); (2) block agent identities tagged non-production from production resources. Test in report-only first. |
+| Conditional Access for agents | Tenant policy owner in a separately authorised production governance activity | Policy creation/change is outside this conductor contract. Existing-policy review and a future report-only design do not authorise changing tenant policy here. |
 | Sponsor attestation | The agent's sponsor (`admin@` by default) | Quarterly: Entra admin centre > Agent ID > the agent > Sponsors and Access reviews; confirm the agent is still needed and its roles (Cognitive Services User and Azure AI User on the Foundry account) are still right. Replace the sponsor when they leave. |

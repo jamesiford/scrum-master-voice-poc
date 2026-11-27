@@ -1,5 +1,67 @@
 # Demo runbook
 
+## Final M11 rehearsal boundary (26 November 2026)
+
+Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
+Simulated Room fallback. Do not switch to native media for the approval film:
+it is non-recording and cannot persist spoken updates or proposals. Hosted
+stable 4 is an optional previously measured relay; candidate 5 is unpromoted
+after readiness/protocol 424 failure (completed paired samples n=0).
+Knowledge and Work IQ are not built and the demo does not rely on either.
+
+The final real Teams meeting and Copilot rehearsal are **not run, n=0**.
+Scout has completed both zavaw3 catalogue uploads and delegated IQ consents.
+An organiser and consenting users must complete DEPLOY.md's installation,
+roster, meeting/RSC and Copilot gates. Record the actual session id, full
+correlation id, proposal/approval records and Azure DevOps revisions from
+each run; do not reuse the scripted trace as real meeting/Copilot evidence.
+Existing measured scripted evidence is session
+`bac27cf7-8a0e-40e7-9aec-92c779f23594`, correlation
+`e48b795beab7972d69f7145550a925f0`, approver-authored revision 52,
+with positive n=1 and separate unapproved/refused n=1.
+
+For each take: choose the intended team, reset application state, re-seed
+only its approved sandbox project, verify the roster and cast configuration,
+prepare a fresh session, run the standup, approve one follow-up and reject
+another, then inspect the audit API and the actual Azure DevOps comment.
+The Live console has aggregate latency/events; the workbook has per-hop
+measurements. A dedicated audit portal page, Live per-hop counter panel,
+readable names for every participant and an atomic roster/cast/Sprint 43
+re-seed remain product follow-ons, not features delivered by this docs step.
+Do not edit the Presenter Pack or fabricate UI/evidence for the film.
+
+### G8 recovery evidence is not a real Teams rehearsal
+
+Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
+verify8/8 passes344.83s; actual approved auditrevision55 is positive n1.
+Scripted standup3251/3682ms p50/p95,n9, does not replace the real meeting,
+permission-negative, board-visibility or native attribution matrix.
+First-cycle native trusted HTTPS/no-recording/cap1/1280x720renderer and SYSTEM
+startup task were ready, not proof of a stored-link Teams join. Second empty cycle
+is incomplete after intervening purge passed1639.20s with complete absence
+readback. New zavagf package publication was
+attempted and refused403 for OAuth catalogue scopes; use DEPLOY.md's exact
+administrator upload action. Completed zavaw3 uploads remain complete.
+The attempted second deployment lost the native opt-in through an
+input/output collision and is not counted as full G8 evidence. The corrected
+input-only template requires a clean retry; do not substitute a smaller
+deployment's optional native SKIP for actual hosting verification.
+It also exited1 after1036.69s with a hosted-version workspace-identity409.
+The tool's bounded service-directed recovery is not a completed second
+deployment or a native/live acceptance sample.
+The full native-enabled retry failed1229.5552s after three409 creations/two
+successful reads. Independent media completion then failed403
+Authorization_RequestDenied, request07d95ae3-fd0a-4479-9442-9e7d14dd3abf.
+G8 is human-blocked,1/2 complete cycles; the allocated current native VM is
+not bootstrapped. Independent legal pages/messaging package generation
+passed without a catalogue authentication retry. Follow DEPLOY.md's exact
+administrator/support actions; retain the untouched zavaw3 demo.
+Final independent Direct verify passes8/8 in361.4580s with an actual
+approver-authored revision58/audit,2821/4189ms,n10,talkovers0.
+It prints native MEDIA-TLS readiness not verified and does not credit
+cycle2. First-to-final tail +13.77% exceeds10% tolerance across different
+windows; do not call it a native/paired acceptance sample.
+
 ## Work IQ signals readiness (M11 8B)
 
 **Not available for the demo.** Only the consent/evidence contracts and
@@ -26,8 +88,8 @@ shipped. Do not present the prompt editor, repo working agreements, existing
 Story Writer or ordinary escalation cards as cited knowledge retrieval.
 Continue using the existing Acs/Share/Direct and Simulated Room paths.
 
-An Entra administrator must approve both delegated retrieval scopes on the
-zavaw3 portal app, and the standards/site owner must identify an approved
+Scout has approved both delegated retrieval scopes on the zavaw3 portal app;
+the standards/site owner must still identify an approved
 corpus and a restricted document with real positive/negative consenting
 users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
 On resume, prove ten real questions through the knowledge base MCP endpoint
@@ -35,6 +97,8 @@ and caller-OBO permission trimming before integration; evaluate at least
 forty source-labelled questions per knowledge base. Show answer citations
 and explicit "I don't know" for a genuine no-source result, never guesses.
 Current retrieval, leakage and latency sample sizes are all n=0 (ADR 0026).
+For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
+exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 
 ## Before the demo (5 minutes)
 Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secrets (`Azure:TenantId`, `Ado:Org`) or the azd environment (`AZURE_TENANT_ID`, `ADO_ORG_URL`); see README.
@@ -42,8 +106,8 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 2. Open the portal (local: `dotnet run --project src\Zava.Scrum.AppHost --launch-profile http`, Aspire dashboard at http://localhost:15888; Azure: the API URL printed by `azd up`).
 3. **Live console** tab > **Reset demo** (clears sessions, follow-ups and cards; Azure DevOps is not touched).
 4. **Team** tab > check the sprint goal. **Roster** tab > **Sync roster**.
-5. Optional: re-seed Azure DevOps with `dotnet run --project tools\SeedAdo -- --tenant <tenant-id> --org https://dev.azure.com/<your-organisation>` (idempotent; `--org` can be replaced by the `Ado__Org` environment variable).
-6. Teams: the app package `appPackage/zava-scrum-agent.zip` is sideloaded and you have messaged the bot once, so it can send you cards.
+5. Re-seed the approved Payments sandbox with `dotnet run --project tools\SeedAdo -- --tenant <tenant-id> --org https://dev.azure.com/<your-organisation> --payments-only`. It resets seed-tagged items in place and moves Sprint 42/43 dates relative to today; it does not remove previous comments, extra retro tasks, meetings or reset the app roster/cast. Check actual ids; never assume a fresh project starts at work item 1.
+6. Teams: use the environment-specific **1.1.0** package in `appPackage\dist`, complete the rollout below and bind its conversation to this team. Messaging the bot alone does not authorise team card routing.
 
 ## Microsoft 365 Copilot rollout and five skills (M11 8)
 
@@ -100,9 +164,10 @@ existing authorised ACS/Simulated history if demonstrating that skill.
 An unavailable/ungrounded model produces an explicitly labelled code answer.
 Other Teams reporting, planning, follow-ups and approvals are unchanged.
 
-Live G5 remains unrun until catalogue upload and consenting users are available.
-The actual Graph catalogue read was refused for missing AppCatalog scopes after
-the administrator window expired; DEPLOY.md names the exact gate. Current
+Live G5 remains unrun until actual consenting users and fixtures are available.
+The operator has completed the zavaw3 catalogue upload. The earlier Graph
+catalogue read was refused for missing AppCatalog scopes after the first
+administrator window expired; DEPLOY.md records the completed action. Current
 references: [enable Copilot](https://learn.microsoft.com/microsoftteams/platform/m365-apps/enable-agent-app-copilot),
 [custom app updates](https://learn.microsoft.com/microsoftteams/teams-custom-app-policies-and-settings#update-a-custom-app-using-teams-admin-center),
 [user update consent](https://learn.microsoft.com/microsoftteams/apps-update-experience).
@@ -144,7 +209,7 @@ For the M11 native-media alternative and its non-recording limitation, see "Team
 | Cards missing in Teams | Message the bot once; cards are always in **Follow-ups** > **Show card outbox**. |
 | Recap or follow-ups missing after the standup ends | Fixed and verified in a real Teams meeting (ADR 0016: the hang-up cancelled the end-of-standup handlers). If it recurs, look for `StandupEnded raised for session` and `Sent N follow-up card(s)` in the API log for the session id. |
 | Teams join fails | Run the Simulated Room instead; it is the fallback for any live demo. |
-| Approve shows a write error | Check the managed identity is in the Azure DevOps project Contributors group; use **Retry write**. |
+| Approve shows a write error | The approver must have Azure DevOps project write access and a valid OBO sign-in/consent. Fix that person's access, sign in again and retry as the same approver; there is no managed-identity writer fallback. |
 
 ## M9 features (ceremony packs, unblock loop, carry-over)
 Needs `az login`, the stack running and, for packs, a reachable Azure DevOps project. Nothing below writes to Azure DevOps until a person approves.
@@ -166,30 +231,44 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 3. Press **Prepare pack**. The page shows the draft goal, the velocity range, capacity bars per person, the proposed selection (carry-over first, then ready backlog items in order, suggested owners marked), **Not planned** with a reason on each excluded item (no story points, no acceptance criteria, too large, beyond capacity, not started), and a warning when the plan is over- or under-committed.
 4. The card **Sprint planning: Sprint 43** arrives in **Follow-ups** > **Show card outbox** and in Teams, with **Approve plan** and **Reject**.
 5. **Reject** first: nothing changes in Azure DevOps. **Prepare pack** again.
-6. Untick one item if you like, type your name and press **Approve plan** (or press **Approve plan** on the Teams card). The page shows "Plan written to Azure DevOps" with links to the work items. In Azure DevOps the kept items are in `Sprint 43`, the unowned ones have the suggested owner (a `demo-owner-*` tag in the sandbox) and each has an "Approved by {name} in the portal (or Teams), proposed by Zava Scrum Agent from the {date} sprint planning." comment.
+6. Untick one item if you like, verify **Deciding as** and press **Approve plan** (or use the Teams card after SSO). The recorded identity comes from sign-in, not a typed name. Azure DevOps shows the selected items in `Sprint 43`, suggested owners and approver-authored attribution.
 7. Chat: in Teams, a Scrum Master (an Entra object id in `Identity:AdminObjectIds`) can type "prepare sprint planning" to the bot; anyone else is told only the Scrum Master can.
 8. Re-run `SeedAdo` to put the items back for the next run.
 
 ## Retrospective by voice (M9b)
 Needs the stack running, a seeded sandbox and an Azure Speech resource for the cast voices (as for the scripted standup). About 5 minutes in the Simulated Room.
 
+Final validation observed one omitted circle-back question, leaving Daniel's
+self-correction unspoken; the effective default prompt was correct. Initial
+retrospective5/6, then one unchanged focused retry6/6 in267.29s. This is a
+live model reliability risk, not a removed assertion or a deterministic fix.
+Retain that evidence when rehearsing; scripted success does not prove Teams
+or native acceptance. See ADR0030 and `gates/M11-gates.md`.
+
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Retrospective** tab > **Prepare retro**. A card **Run it by voice** appears.
 3. Press **Start in Simulated Room**. The room opens in a new tab: press **Start standup** after ticking the autopilot box (or open the room link with `&autopilot=1`, as the e2e does). The cast (`demo/cast/payments-retro.yaml`) plays three people: Daniel steps away and is circled back to, Maya gives one unclear note so the agent asks "Is that something to start, stop or keep doing?", and Daniel corrects himself inside one answer.
 4. Watch the board in the Teams meeting's shared screen (three columns that fill live, then the actions), or the **Live console** for the floor and timer. After the round the agent reads the themes back, asks for an action from each person and confirms the owner, then closes with a recap.
 5. The Scrum Master gets a **Retrospective actions** card (**Follow-ups** > **Show card outbox**, and in Teams) and a summary in the recap channel. Press **Reject** on a copy of the card first if you want to show that nothing is created.
-6. Type your name in **Follow-ups** and press **Approve**. In Azure DevOps there are Tasks tagged `retro-action` in `Sprint 43`, one per action, with a `demo-owner-*` tag for the owner and an "Approved by {name} in the portal, proposed by Zava Scrum Agent from the {date} retrospective." first comment.
+6. Verify **Deciding as** in **Follow-ups** and approve. Azure DevOps shows one Task per action tagged `retro-action` in `Sprint 43`, with the owner tag and authenticated approver attribution; no typed name supplies approval authority.
 7. In a Teams meeting: **Retrospective** tab > **Prepare retro**, paste the meeting link and press **Start in Teams** (not checked live yet; the standup run is the reference). `Retro:Minutes` sets the timebox and `Retro:Format` the questions.
 8. Delete the created tasks and re-run `SeedAdo` before the next run. Automated: `npm run e2e:retro --prefix src/meeting-bridge` with the API and bridge running.
 
 ## Sprint calendar (M9d)
-Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" supplies the dates) and, for the full demo, Graph: set `Calendar:Organizer` to the agent's demo-tenant mailbox and grant the app `Calendars.ReadWrite` scoped by an application access policy. Roster members need an email: set `Demo:MemberEmails:daniel`, `:maya` and `:admin` in user secrets (then run `POST /api/teams/team-payments/members/sync`). Create the Graph app with `Calendars.ReadWrite` (application) and admin consent (done for `mcm-scrum-agent-calendar`), and scope it with `New-ApplicationAccessPolicy` to the organizer mailbox. The calendar writer needs an app token: the az CLI token is refused (403) on calendars, so give it an app with `Calendars.ReadWrite` through `Calendar:ClientId` and `Calendar:ClientSecret`. Without `Calendar:Organizer` steps 1 to 4 still work and approving points you to the `.ics`.
+Needs a seeded sandbox and the deployment's mailbox-scoped Exchange grant.
+An Exchange administrator runs `infra\hooks\exchange.ps1 -Mode Grant` for
+the intended environment; it grants the existing managed identity
+Application Calendars.ReadWrite and Application Mail.Send on the organiser's
+mailbox through Exchange RBAC for Applications, then applies Graph settings.
+Do not create another calendar app/secret or touch mcm. Configure actual roster
+emails and sync their distinct Entra ids before proposing meetings.
+Without the grant/organiser, use the `.ics` fallback; do not claim live invites.
 
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Schedule** tab, **Proposed sprint calendar**: the plan for the next sprint (daily standups, planning on day one, the retrospective on the last day; a review only when `Team:HasSprintReview` is true). Press **Download .ics (fallback)** to see the file.
 3. Press **Propose calendar**. The card **Proposed sprint calendar: Sprint 43** arrives in **Follow-ups** > **Show card outbox** and in Teams, with **Approve** and **Reject**.
 4. **Reject** first: nothing is created. **Propose calendar** again.
-5. Type your name and press **Approve** (or press **Approve** on the Teams card). The proposal shows "Approved" and "N of N meetings created"; the meetings appear in Outlook for the roster as Teams meetings, owned by the agent's mailbox. A Graph failure part-way shows the error; **Approve** again creates the rest.
+5. Verify **Deciding as** and approve (or use the Teams card after sign-in). Inspect the actual created count and stored join URLs; a Graph error is not successful invitation delivery. Record failures and use the documented calendar fallback.
 6. The **Schedule** is now enabled in Teams mode with each standup's join URL stored. At the next standup time the scheduler prepares the session ten minutes before and joins the calendar meeting one minute before, with no pasted link. (To try it today, change the schedule's start time to a few minutes from now and make the first approved meeting start then.)
 7. Delete the meetings from the agent's calendar before the next run.
 
@@ -344,8 +423,17 @@ The voice can run through a Foundry hosted agent (a relay in front of Voice Live
    - `pwsh infra/hooks/canary.ps1 -Promote` makes the canary image a new stable version, pins it and stops the canary;
    - `pwsh infra/hooks/canary.ps1 -Rollback` is the one-step rollback (stops the canary; with no canary it pins the previous stable version);
    - `pwsh infra/hooks/canary.ps1 -Show` prints the pin and the canary settings.
-   The API restarts onto a new revision for each change, so a change takes effect in about a minute. A session keeps its agent: the choice is a hash of the session id, and `hostWarmUp.route` shows `hosted-canary` for the sessions that went to the candidate.4. **Kill the host.** A standup survives it: the voice reconnects to the same hosted session and the session is read back from Cosmos. The one-off cold start after an idle stop (15 minutes) is about 4 s longer than a warm reconnect; pre-warm avoids it.
-5. **Which route to use.** Direct is the default. The hosted route held the latency gate on the point estimates (ADR 0021, "G1 settled") but not with margin, so it is an option for demonstrating the hosted agent. Switch with `azd env set VOICE_ROUTE Hosted` then `azd provision`, or with the `az containerapp update` command in step 2; go back by removing the setting.
+   The API restarts onto a new revision for each change. A session keeps its
+   chosen route; inspect `hostWarmUp.route` and the actual ready revision.
+4. **Restart resilience:** loopback tests cover host interruption and store
+   recovery. A real platform stop during a standup remains unverified; do not
+   kill a shared host or present that test as a live recovery rehearsal.
+5. **Which route to use.** Direct stays default. Historical hosted 4 held
+   latency point estimates without confidence-bound margin; candidate 5
+   failed actual readiness/protocol testing. Do not promote it. For an
+   authorised rehearsal use the scoped API setting in step 2 and restore it
+   afterwards; never full-provision the shared working zavaw3 environment
+   merely to switch adapters.
 6. **Measure the hop.** `dotnet run --project tools/VoiceRelayBench -- --mode paired ...` (header comment in the file) alternates direct and relayed turns; `pwsh docs/gates/m11-p4/g1.ps1` runs the gate harness on both routes with the decision model on and off.
 
 ### Agent identity sign-ins (5B)

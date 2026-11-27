@@ -6,9 +6,7 @@ if ($env:MEDIA_HOST_ENABLED -ne 'true') {
   Write-Check SKIP 'Windows media hosting' 'MEDIA_HOST_ENABLED is false'
   return
 }
-if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3') {
-  throw 'Native media verification is authorised only for zavaw3/westus3.'
-}
+Assert-MediaDeploymentEnvironment
 foreach ($name in @('MEDIA_VM_NAME', 'MEDIA_FQDN', 'MEDIA_PUBLIC_IP', 'MEDIA_VAULT_NAME')) {
   if (-not [Environment]::GetEnvironmentVariable($name)) { throw "$name is missing; provision the media module first." }
 }

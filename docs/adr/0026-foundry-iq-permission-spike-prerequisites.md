@@ -3,6 +3,13 @@
 Date: 2026-11-26
 Status: Accepted prerequisite; implementation blocked, not rejected
 
+**20:00PT operator update:** Scout granted and read back the actual zavaw3
+portal Graph AllPrincipals Files.Read.All/Sites.Read.All permissions with
+matching declarations. KNOWLEDGE-CONSENT is completed, not an open human
+gate. Approved corpus/two-user entitlement/permission fixture and the actual
+OBO spike remain open, n0. Evidence below is historical. ADR0031 preserves
+these declarations during baseline hook reconciliation without enabling IQ.
+
 ## Context and evidence
 
 Prompt 8A requires remote SharePoint and indexed Blob retrieval through a

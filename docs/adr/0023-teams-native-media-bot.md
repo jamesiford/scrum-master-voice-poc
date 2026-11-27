@@ -2,6 +2,12 @@
 
 Date: 2026-11-26. Status: implemented and hosted in zavaw3 as a selectable alternative; native meeting acceptance remains unrun.
 
+**20:00PT operator update:** Scout uploaded Zava Scrum Media
+(b681ab3c-023c-4e91-9212-50980b43dec1) to the tenant catalogue.
+MEDIA-CATALOGUE is completed for zavaw3, installed for "No one".
+Per-meeting installation/RSC, actual roster/link and native acceptance remain
+open, n0. Earlier catalogue scope refusal below is historical.
+
 ## Context
 
 ADR 0015 S5 left both the permission and VM choice open. S6 measured a relay round trip, not participant attribution or a real media call. The requested non-recording rule is stronger than "do not save PCM": [Graph's recording-status reference](https://learn.microsoft.com/en-us/graph/api/call-updaterecordingstatus?view=graph-rest-1.0) prohibits persisting media **or data derived from it** before a successful recording-status notification. Passing media into the existing gateway, which saves transcript events and follow-ups, would violate that rule.

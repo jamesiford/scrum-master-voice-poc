@@ -34,6 +34,10 @@ hooks:
       continueOnError: false
   postprovision:
     - shell: pwsh
+      run: ./infra/hooks/registry-rbac.ps1
+      interactive: false
+      continueOnError: false
+    - shell: pwsh
       run: ./infra/hooks/entra-post.ps1
       interactive: false
       continueOnError: false

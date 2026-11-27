@@ -3,6 +3,13 @@
 Date: 2026-11-26
 Status: Accepted contract and design; live integration blocked
 
+**20:00PT operator update:** Scout granted and read back actual zavaw3
+portal AllPrincipals WorkIQAgent.Ask with matching declaration.
+WORK-SIGNALS-CONSENT is completed; no Act/settings/application permission.
+Billing/spending owner, consenting lead, scoped fixtures and live OBO remain
+open, n0. Earlier absence of grant below is historical. ADR0031 preserves
+the approved declaration without enabling the unbuilt signal adapter.
+
 ## Evidence and current Learn
 
 Prompt 8B does not depend on the unbuilt Foundry IQ layer. Read the current

@@ -112,13 +112,50 @@ if ($cosmosDeny) { Write-Check WARN 'policy: Cosmos DB public access' 'A deny po
 else { Write-Check PASS 'policy: Cosmos DB public access' 'no blocking policy found at subscription scope (the resource group is still tagged SecurityControl=Ignore)' }
 
 # ---- Windows VM (prompt 6) ---------------------------------------------------------------------------------------------------
-if ($env:MEDIA_VM_SIZE) {
-  $family = (az vm list-skus -l $loc --size $env:MEDIA_VM_SIZE --query '[0].family' -o tsv 2>$null)
-  $u = az vm list-usage -l $loc --query "[?name.value=='$family']" -o json 2>$null | ConvertFrom-Json
-  if ($u -and ($u.limit - $u.currentValue) -ge 4) { Write-Check PASS "quota: Windows VM $env:MEDIA_VM_SIZE" "$($u.limit - $u.currentValue) vCPU free" }
-  else { Write-Check FAIL "quota: Windows VM $env:MEDIA_VM_SIZE" "Not enough $family vCPU quota in $loc" }
+if ($env:MEDIA_HOST_ENABLED -eq 'true') {
+  $size = if ($env:MEDIA_VM_SIZE) { $env:MEDIA_VM_SIZE } else { 'Standard_D4s_v5' }
+  $catalogue = az vm list-skus -l $loc --resource-type virtualMachines --size $size --all -o json | ConvertFrom-Json
+  if ($LASTEXITCODE -ne 0) { throw "Cannot read the VM SKU catalogue in $loc." }
+  $vmSku = $catalogue | Where-Object name -eq $size | Select-Object -First 1
+  if (-not $vmSku) { Write-Check FAIL "SKU: Windows VM $size" "No exact catalogue entry in $loc" }
+  elseif (@($vmSku.restrictions).Count -gt 0) {
+    Write-Check FAIL "SKU: Windows VM $size" "Restricted in ${loc}: $($vmSku.restrictions | ConvertTo-Json -Depth 10 -Compress)"
+  }
+  else {
+    $cores = [int]($vmSku.capabilities | Where-Object name -eq 'vCPUs').value
+    $available = ($vmSku.capabilities | Where-Object name -eq 'vCPUsAvailable').value
+    $architecture = ($vmSku.capabilities | Where-Object name -eq 'CpuArchitectureType').value
+    $generations = "$(($vmSku.capabilities | Where-Object name -eq 'HyperVGenerations').value)".Split(',')
+    $generation = if ($env:MEDIA_VM_IMAGE_SKU -eq '2022-datacenter-g2') { 'V2' } else { 'V1' }
+    if ($cores -lt 4 -or ($available -and [int]$available -lt 4)) { Write-Check FAIL "SKU: Windows VM $size" "Native media requires at least four available vCPUs; found $cores/$available" }
+    elseif ($architecture -eq 'Arm64' -or $generation -notin $generations) {
+      Write-Check FAIL "SKU: Windows VM $size" "The win-x64 $generation image is incompatible with $architecture/$($generations -join ',')"
+    }
+    else {
+      $usage = az vm list-usage -l $loc -o json | ConvertFrom-Json
+      if ($LASTEXITCODE -ne 0) { throw "Cannot read VM quota in $loc." }
+      $own = 0
+      $group = "rg-zava-scrum-$($env:AZURE_ENV_NAME)"
+      $exists = az group exists -n $group -o tsv
+      if ($LASTEXITCODE -ne 0) { throw 'Cannot check this environment''s resource group.' }
+      $vms = @()
+      if ($exists -eq 'true') {
+        $vms = az vm list -g $group -o json | ConvertFrom-Json
+        if ($LASTEXITCODE -ne 0) { throw 'Cannot read this environment''s existing VM capacity.' }
+      }
+      foreach ($vm in @($vms | Where-Object { $_.location -eq $loc -and $_.hardwareProfile.vmSize -eq $size })) { $own += $cores }
+      foreach ($family in @($vmSku.family, 'cores')) {
+        $row = $usage | Where-Object { $_.name.value -eq $family } | Select-Object -First 1
+        if (-not $row) { Write-Check FAIL "quota: Windows VM $size ($family)" 'No quota row returned; capacity is not verified' }
+        elseif (($row.limit - $row.currentValue + $own) -lt $cores) {
+          Write-Check FAIL "quota: Windows VM $size ($family)" "Needs $cores vCPUs, $($row.limit - $row.currentValue + $own) free in $loc"
+        }
+        else { Write-Check PASS "quota: Windows VM $size ($family)" "$($row.limit - $row.currentValue + $own) free, need $cores ($own already held by this environment)" }
+      }
+    }
+  }
 }
-else { Write-Check SKIP 'quota: Windows VM' 'MEDIA_VM_SIZE is not set; the media bot VM arrives with prompt 6' }
+else { Write-Check SKIP 'quota: Windows VM' 'MEDIA_HOST_ENABLED is not true' }
 
 Write-Host ''
 if ($script:Failures -gt 0) { Write-Host "$script:Failures check(s) failed. Nothing was provisioned." -ForegroundColor Red; exit 1 }

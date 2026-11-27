@@ -41,6 +41,14 @@ param mediaHostEnabled string = 'false'
 @description('The media VM SKU. Four vCPU is the initial floor for audio and board encoding.')
 param mediaVmSize string = 'Standard_D4s_v5'
 
+@allowed([ '2022-datacenter', '2022-datacenter-g2' ])
+@description('Windows Server 2022 image SKU; Gen2-only VM sizes require 2022-datacenter-g2.')
+param mediaVmImageSku string = '2022-datacenter'
+
+@allowed([ 'false', 'true' ])
+@description('Media vault purge protection. Keep true except for an explicitly disposable teardown/rebuild proof.')
+param mediaVaultPurgeProtection string = 'true'
+
 @description('Optional owned DNS name for the trusted media certificate. Point it at the output public IP before bootstrap.')
 param mediaServiceFqdn string = ''
 
@@ -170,6 +178,8 @@ module mediaHost 'modules/media-host.bicep' = if (mediaHostEnabled == 'true') {
     tags: tags
     adminObjectId: adminObjectId
     vmSize: mediaVmSize
+    imageSku: mediaVmImageSku
+    vaultPurgeProtection: mediaVaultPurgeProtection == 'true'
     serviceFqdn: mediaServiceFqdn
   }
 }
@@ -193,7 +203,7 @@ output FOUNDRY_PROJECT_NAME string = foundry.outputs.projectName
 output FOUNDRY_PROJECT_ENDPOINT string = 'https://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}'
 output COSMOS_ACCOUNT_NAME string = data.outputs.cosmosName
 output ACS_ENDPOINT string = data.outputs.acsEndpoint
-output MEDIA_HOST_ENABLED string = mediaHostEnabled
+// Keep the opt-in as an input: azd down clears resource outputs (ADR 0031).
 output MEDIA_VM_NAME string = mediaHostEnabled == 'true' ? mediaHost!.outputs.vmName : ''
 output MEDIA_PUBLIC_IP string = mediaHostEnabled == 'true' ? mediaHost!.outputs.publicIpAddress : ''
 output MEDIA_FQDN string = mediaHostEnabled == 'true' ? mediaHost!.outputs.fqdn : ''

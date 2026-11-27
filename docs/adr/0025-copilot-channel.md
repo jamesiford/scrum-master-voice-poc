@@ -2,6 +2,12 @@
 
 Status: accepted for implementation; live G5 acceptance remains unrun.
 
+**20:00PT operator update:** Scout uploaded the zavaw3 Zava Scrum Agent1.1.0
+package (bed81a44-b97d-4687-9ad3-c4cf546f6689) to the tenant catalogue.
+Catalogue upload is completed; actual consenting user update/sign-in,
+source/permission/streaming G5 fixtures remain n0. Earlier scope refusals
+below are historical; the old mcm catalogue app was not changed.
+
 ## Context
 
 Prompt 8 requires five useful read-only skills in Microsoft 365 Copilot, with

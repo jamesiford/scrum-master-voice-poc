@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Azure.AI.Projects;
 using Azure.AI.Projects.Agents;
 using Azure.Identity;
+using Zava.Scrum.Tools.AgentDeploy;
 
 // Creates an immutable version of the hosted agent and waits until it is active (ADR 0021). Used by infra/hooks/agent-host.ps1.
 //   dotnet run --project tools/AgentDeploy -- --endpoint <project endpoint> --name <agent> --image <image> --tenant <id> [--env K=V ...] [--cpu 1] [--memory 2Gi]
@@ -31,7 +32,9 @@ foreach (var pair in envs)
 }
 
 var clock = Stopwatch.StartNew();
-var version = agents.CreateAgentVersion(name, new ProjectsAgentVersionCreationOptions(definition)).Value;
+var version = AgentVersionCreation.Create(
+    () => agents.CreateAgentVersion(name, new ProjectsAgentVersionCreationOptions(definition)).Value,
+    () => _ = agents.GetAgent(name).Value);
 Console.Error.WriteLine($"created version {version.Version} in {clock.ElapsedMilliseconds} ms");
 while (true)
 {

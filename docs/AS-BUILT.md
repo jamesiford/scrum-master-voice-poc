@@ -1,10 +1,68 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 23, 2026 (includes M9 and M10).
+**Date:** November 26, 2026 (M11 final validation).
+
+**Acceptance is not implementation.** The current demo is Acs/Share/Direct
+with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
+failed readiness/paired protocol (424, completed paired samples n=0).
+Native Windows hosting/TLS/renderer are verified, not native Teams
+attribution/join/board acceptance. Five delegated Copilot skills and package
+1.1.0 are implemented, with real Copilot G5 still open. G7 revised dates fail
+(75%, n=8); latest fallback p95 regression fails (+12.75%, n=12/12),
+and historical p50 +6.19% remains failed. Final configured suites have
+passing evidence after one unchanged retrospective retry; its initial
+model deviation remains a reliability risk. G8 recovery has one complete
+verified empty up/verify cycle of two; intervening purge passed1639.20s
+with group/vault/Foundry absence readback. The second cycle is incomplete.
+The attempted second deployment was reduced because teardown erased the
+native opt-in's colliding output; it is not counted. The input-only fix and
+compiled cleanup regression17/17 pass, and a full empty retry is required.
+That invalid iteration also failed hosted version creation with the exact
+Foundry409 workspace-identity conflict after1036.69s. AgentDeploy now reads
+the current agent before at most two retries of that conflict only; other
+errors remain explicit. Focused recovery tests6/6 and all three builds pass;
+the isolated preview tool retains its existing dependency-resolution warning.
+Invalid-footprint purge passes1742.02s; full native-enabled empty retry
+started07:15:07Z after complete absence and13 documented input readbacks.
+It failed 1229.5552 s later: three hosted-version creations returned the
+same409 despite two successful reads. Independent native completion then
+received403 Authorization_RequestDenied, request
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 is human-blocked at 1/2;
+legal pages and messaging package generation independently passed.
+Current24-resource native VM/vault provisioning is not certificate,
+SYSTEM task or renderer readiness; the current host is unbootstrapped.
+DEPLOY.md records exact administrator/support actions and continuing costs.
+Final independent mandatory verify passes8/8 in361.4580s, approved audit/
+revision58, Direct2821/4189ms p50/p95,n10,talkovers0. It explicitly prints
+native MEDIA-TLS readiness not verified. First-to-final tail +13.77%
+exceeds10% tolerance; these are different windows, not causal parity.
+Failed full up still prevents cycle2 credit; inherited G1 remains failed.
+See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
+[ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
+
+**G8 recovery and operator update:** renewed Global Administrator and
+unchanged zavagf privileged writes passed. Recovery uses the unrestricted
+x64 Standard_D4als_v7 (4vCPUs, Gen2, Windows USD0.345/hour) in eastus2.
+Image/purge parameters preserve existing defaults; the explicitly disposable
+zavagf vault is purgeable with soft delete retained. Hook scope guards,
+native-capacity validation, registry-role gate and optional permission merge
+are implemented (ADR0031). First full empty up passes1828.77s; mandatory
+verify8/8 passes344.83s with a real approver-authored write/auditrevision55.
+The first complete cycle's D4als_v7 had127GB StandardSSD_LRS/V2 disk, trusted HTTPS,
+no-recording/cap1/1280x720renderer and SYSTEM/AtStartup task readiness.
+Known VM/disk/IP tariffUSD0.363150685/hour excludes variable charges.
+The failed first vault iteration and conductor verification-layout failure
+are retained in the gate evidence, not erased by the passing retry.
+New zavagf catalogue publication was attempted once and refused403 for
+missing OAuth catalogue scopes; exact Teams administrator action is in DEPLOY.md.
+Second empty up/verify remains required; no native Teams acceptance is claimed.
+Scout completed the zavaw3 Graph Files.Read.All/Sites.Read.All and Work IQ
+WorkIQAgent.Ask delegated grants and both tenant catalogue uploads.
+Real user/source/billing/Exchange/CI/organiserRSC gates remain open.
 
 **M11 8B status (26 November 2026):** Work IQ consent and advisory evidence
 contracts are built, but the live spike and integration are blocked.
-The portal has no Work IQ grant; a licensed, consenting team lead with an
+The operator has now granted WorkIQAgent.Ask; a licensed, consenting team lead with an
 approved spending-policy assignment and scoped channel/meeting fixture is
 still required. Domain consent/revoke rules, typed Application ports and
 the unregistered read boundary have focused tests through the real mediator
@@ -18,9 +76,9 @@ This document describes what the proof of concept actually does today. It is the
 
 **M11 8A status (26 November 2026):** Foundry IQ is blocked before its
 mandatory caller-OBO permission spike, not implemented or deployed.
-The actual portal Graph grant lacks `Files.Read.All` and `Sites.Read.All`;
-an approved standards corpus and two-user permission fixture are also
-outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
+The operator granted zavaw3 `Files.Read.All` and `Sites.Read.All`;
+an approved standards corpus and two-user caller-OBO permission fixture
+are still outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
 Knowledge page, standards chat skill or knowledge enrichment in pre-briefs,
 follow-ups, Story Writer or retrospective packs. Repo working agreements
 are not a substitute. G10 retrieval and permission tests have n=0, not a
@@ -28,7 +86,12 @@ zero-leakage pass. ADR 0026 and DEPLOY.md give the exact resume prerequisites.
 The existing zavaw3 runtime and voice/approval boundaries are unchanged.
 
 ## 1. What it is
-A voice-led "junior Scrum Master" for the Payments team. It joins a real Microsoft Teams meeting, runs the daily standup by voice, grounds every question in Azure DevOps, shares a live board on screen, posts a recap and per-person follow-ups, and writes changes back to Azure DevOps only after a person approves them.
+A team-scoped voice-led "junior Scrum Master", with Payments as the demo
+team and Identity/Catalogue seed definitions. The ACS path joins Teams,
+facilitates daily standups, shares a board and proposes follow-ups. Approved
+changes use the recorded approver's delegated Azure DevOps access; rejection
+writes nothing. Native non-recording facilitation deliberately cannot save
+spoken updates or create meeting-derived proposals.
 
 ## 2. Architecture
 ```
@@ -40,6 +103,11 @@ Admin portal (React, Tailwind) -> API (served by the same container)
 Optional voice route (VoiceLive:RelayEndpoint): API voice gateway -> Foundry hosted agent (src/Zava.Scrum.AgentHost, invocations_ws relay) -> Azure Voice Live
 ```
 - **Agent host (`src/Zava.Scrum.AgentHost`, prompt 4):** the Foundry hosted agent. Today it carries the stateless voice relay (`invocations_ws`, port 8088) and nothing else; the voice gateway, ceremony agents and Teams handlers are still in the API (section 20 lists what is not moved). Built as an image in the environment registry by `infra/hooks/agent-host.ps1`.
+- **Native media host (`src/Zava.Scrum.MediaBot`):** separate public Windows
+  four-vCPU Graph SDK host, trusted TLS, protected SYSTEM bootstrap and
+  browser-free board renderer. GraphMedia/MediaShare are real alternatives,
+  not the default saved-follow-up path. Hosted Agent ID, the media calling
+  application, the API managed identity and portal OBO application are distinct.
 - **Solution:** Clean Architecture, four projects (`Domain`, `Application`, `Infrastructure`, `Api`), enforced by architecture tests. Hand-rolled mediator with logging, validation and exception-mapping behaviours. No MediatR.
 - **Bridge (`src/meeting-bridge`):** Node 22 + TypeScript. Serves the Simulated Room and the Teams call page, launches Chromium, and holds the ACS identity. Fallback for any live demo: the Simulated Room (scripted cast).
 - **Portal (`src/admin-portal`):** React 19, Vite, Tailwind CSS v4, lucide icons, hash routing, Entra sign-in (Easy Auth).
@@ -103,7 +171,11 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 
 ## 5. Features by area
 - **Standups:** prepare, start (Simulated Room or Teams), live console (floor, speaker, timebox, parking lot, latency p50/p95, Bridge events), control (begin, mute, unmute, skip, take over, hand back, end), scheduler (prepare T-10 min, start T-1 min), demo reset.
-- **Follow-ups:** per-member follow-up with proposed Azure DevOps comments, escalation for long-blocked items, "missed standup" and "no response" messages. Adaptive cards in Teams with Approve and Reject (there is no Edit action); the card updates with the outcome. The planner proposes **comments only**; State and Tag changes exist in the model and the writer but are reachable only through `POST /api/followups/propose`. Pre-brief, follow-up, absent and escalation cards are sent to **every stored conversation** (everyone who has messaged or added the bot), not to the meeting chat, a channel or the Scrum Master specifically; the recap goes to the team's recap channel and the meeting chat, with every stored conversation as the fallback (M9, section 11). Outbox view in the portal when Teams is unavailable. Optional email copy (`Features:EmailFollowUps`): recorded to an outbox, and sent through Microsoft Graph when `Email:Mode=Graph` (M9, section 11).
+- **Follow-ups:** per-member proposed comments, escalation, absent/no-response
+  messages and Approve/Reject cards. The planner proposes comments only;
+  explicit proposal APIs support other change kinds. Cards use owning-team
+  bindings (Standup/Recap, or Planning/Recap for plans), never global broadcast;
+  no binding means outbox only. Optional email uses Outbox/Graph settings.
 - **Reports (M6):** KPIs (say/do, velocity, carry-over, blocker age, attendance, follow-up closure), sprint and monthly narrative, and Q&A shared with the Teams chat. KPI history is an illustrative fixture because the sandbox project has no past sprints.
 - **Planning (M8):** load per person, carry-over, Definition-of-Ready gaps, suggested owners (advice only).
 - **Retrospective (M8):** start/stop/continue built in code from the sprint and standups; a model writes the opening summary. Text, not voice-led.
@@ -111,10 +183,22 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 - **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are not set (they were placeholders): the page shows the Voice Live pricing tier from Learn and "Price unverified" until real rates are configured (ADR 0019).
 - **Teams and Copilot Q&A (M11 8, ADR 0025):** five read-only skills use `AnswerCopilotQuestionQuery`, membership team resolution and the asker's OBO Azure DevOps token. Blockers, commitments, risk, today's standup status and personal item states are computed/filtered in Domain; a model phrases only the introduction. Responses include source cards and use the Agents SDK streaming channel when supported. Unknown Copilot requests never fall through to managed-identity reporting. Other Teams reporting and planning remain. Manifest 1.25/version 1.1.0 declares the existing bot as a custom engine agent; actual Copilot discovery, SSO/OBO and permission-negative G5 acceptance remain unrun pending tenant upload/user consent.
 - **Foundry agent mode (M8):** `VoiceLive:AgentName` and `AgentProjectName` bind the session to a Foundry voice agent instead of a model. Implemented, not exercised against a live agent; parameter names need verifying.
-- **Not built:** Work IQ real-time transcripts (needs delegated sign-in, a Work IQ MCP connection and a tenant setting; delivery contract not documented enough); API Management, Service Bus, private networking, evaluation pipelines. On-behalf-of is built for approved writes and the five Copilot reads, not scheduled voice reads. The Graph media alternative is hosted in zavaw3 but not live-verified in Teams (section 22).
+- **Not built:** knowledge/Work IQ integrations, live transcript transport,
+  hosted orchestration/channel migration, production infrastructure and
+  employee-content quality evaluation. Synthetic decision evaluation and
+  rules CI reporting are built; real-model CI is not enabled without its
+  approved identity/variables. OBO is built for approved writes and the five
+  Copilot reads, not scheduled voice reads. Native acceptance remains open.
 
 ## 6. Portal
 Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Reports, Planning, Retrospective, Story Writer, Models and email, Schedule, Prompts, Team, Roster. Light and dark themes, responsive.
+
+M11 adds team switching, fleet/registry/onboarding and membership management.
+Film-feature gaps: no dedicated correlation-id audit page, no Live per-hop
+counter panel and no verified readable speaker names for every participant.
+The API/workbook and aggregate latency are not those UI features. SeedAdo
+resets seeded work items/relative sprint dates; app reset does not reset
+Azure DevOps, external meeting state or the whole roster/cast configuration.
 
 ## 7. Demo environment
 - Azure DevOps organisation `<your-organisation>`, project `Zava-Scrum-Demo`, seeded idempotently by `tools/SeedAdo` from `demo/seed-ado.json` (29 items: 19 in the sprint and 10 backlog items, plus the next iteration "Sprint 43"; each assigned to the signed-in user and tagged `demo-owner-{key}`, ADR 0002; roster Daniel Park, Maya Lin, Admin, matching the tenant users "Daniel Park", "Maya Lin", "System Administrator").
@@ -132,7 +216,9 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - `JsonFile*` class names are historical; they sit on `ICollectionStore` (file or Cosmos).
 - Repository contract test: `SessionRepositoryContract` exists for `ISessionRepository` only and runs against the JSON-file store only; there is no Cosmos run.
 - OpenTelemetry now includes content-free session hops, counters/histograms and the bridge (M11 9, ADR 0028). Export needs `AzureMonitor:ConnectionString` or the ordinary `APPLICATIONINSIGHTS_CONNECTION_STRING`; hosted versions use the explicit SDK destination because Foundry reserves the ordinary variable. Actual live acceptance is recorded in G7. Native vendor spans and Foundry live quality evaluation are not established. The gateway retains its structured console turn log.
-- Agents are Microsoft Agent Framework chat-client agents (`AIProjectClient.AsAIAgent`, Azure.AI.Projects 2.x) behind the same ports (ADR 0009b). Foundry hosted agents are not used. `// PROD: Foundry hosted agents`.
+- API agents are Microsoft Agent Framework chat-client agents behind the
+  existing ports (ADR 0009b). The optional hosted relay uses its own Agent ID,
+  not Azure DevOps or channel handlers; stable 4 remains pinned.
 - `knowledge/working-agreements.md` is not read by any code.
 - The sprint calendar's Graph app (`Calendars.ReadWrite`, application) is not yet scoped to one mailbox with an Exchange application access policy; the `.ics` download is the fallback when `Calendar:Organizer` is empty.
 - Email follow-ups are recorded to an outbox; `Email:Mode=Graph` sends them through Microsoft Graph but has not been run against a live mailbox.
@@ -140,14 +226,23 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-The M11 checkpoint after prompt 7 (26 November 2026) passes 849 .NET tests:
-403 Domain, 170 Application, 88 Infrastructure, 151 Api, 14 architecture,
-3 AgentHost and 20 Windows MediaBot. Bridge unit tests pass 12/12. All three
+The M11 final checkpoint (26 November 2026) passes947.NET tests:
+424Domain,225Application,93Infrastructure,168Api,14architecture,
+3AgentHost and20WindowsMediaBot in one aggregate run, no failures/skips.
+Bridge unit tests pass13/13. All three
 builds and both TypeScript lint/typecheck checks pass. The portal has no
 configured test suite; build/lint is not reported as a test pass.
-Full solution formatting passes after whitespace-only corrections. Both real
-Simulated Room E2E suites pass 6/6 each, in one aggregate invocation:
-standup 366.4 s, retrospective 298.3 s. Measured evidence is recorded in
+Full solution formatting passes without code changes. One real E2E aggregate
+passes standup6/6 in371.16s and retrospective5/6 in351.44s. Voice Live
+omits the requested circle-back question, so the cast never supplies Daniel's
+correction; the effective default template is correct. One unchanged focused
+retrospective retry passes6/6 in267.29s. No code/prompt/cast/assertion change
+or aggregate rerun; all972unique configured checks have passing evidence,
+but the initial failure remains a live model reliability risk.
+Final zavaw3 verify passes8/8 with actual approver-authored revision53 and
+complete audit chain; scripted12turn latency3262/5307ms fails the preceding
+run's p95 tolerance. G7 real synthetic n72 still fails dates75%n8 and has
+one timeout/missing probabilities9/1. Measured evidence is recorded in
 `gates/M11-gates.md`. The existing Simulated Room standup has six checks via
 `npm run e2e --prefix src/meeting-bridge`; the retrospective has six via
 `npm run e2e:retro --prefix src/meeting-bridge`. A scripted "messy standup"
@@ -155,7 +250,11 @@ previously exercised chime-ins, step-away, circle-back, silence, what-to-report,
 correction and proxy against the real gateway.
 
 ## 10. Decision records
-0001 domain events; 0002 to 0006 deviations by milestone (M1 to M7, Teams bridge, scheduler, reports, Cosmos); 0007 M8 stretch features, shared board, Teams audio; 0008 goal-driven orchestration; 0009 documentation baseline (which document wins, and the `StandupSession` naming debt); 0009b Agent Framework and OpenTelemetry; 0010 ceremony kinds, packs and carry-over (M9); 0011 sprint planning pack (M9a). `DOC-DRIFT.md` lists the differences found between the documents and the code.
+
+The complete [ADR index](adr/README.md) covers Domain/mediator decisions,
+M0-M10 deviations and M11 platform, identity, media, Copilot, blocked
+knowledge/Work IQ and observability decisions. `DOC-DRIFT.md` records the
+current corrections without overwriting historical measured failures.
 
 ## 11. M9: ceremony kinds, packs and carry-over
 Built after the reconciliation (ADR 0010). Behaviour is in code and covered by unit tests; none of it has been run in a live Teams meeting.
@@ -167,7 +266,8 @@ Built after the reconciliation (ADR 0010). Behaviour is in code and covered by u
 - **R2 unblock loop.** A recorded blocker makes the next turn ask who can help (`turn-unblocker.md`); `UnblockerResolver` matches the answer to one roster member in code; the member gets an `Unblock` card and email; the next pre-brief lists still-blocked items with the unblocker and the agent asks them in their turn. Blocked items escalate to the Scrum Master after `Flags:EscalateBlockerAfterDays` whether or not they were raised again.
 - **R3 commitment carry-over.** `PrepareStandup` carries each member's open commitments from the last three started standups into `MemberBrief.PreviousCommitments`; the call-on turn asks about them first; a commitment still open two standups later is flagged `MissedCommitment` and escalated.
 - **R4 `AtRiskRule`.** Flags items due within `Flags:AtRiskDays` that have more than `Flags:AtRiskRemainingPct` of the original estimate left, or are still `New`. Seeded by the task "Prepare reconciliation report for audit" (re-run `SeedAdo` to add it).
-- **R5 recap routing.** The recap goes to `Team.RecapChannelKey` (captured when the bot is added in a channel, or `PUT /api/teams/{id}/recap-channel`) and to any `19:meeting_` chat; every stored conversation is the fallback.
+- **R5 recap routing.** M9 added recap destinations; M11's `CardRouting`
+  restricts them to the team's bindings/purposes. No global fallback.
 - **Gaps.** The new voice turns (unblocker question, carry-over notes) are built into `VoiceGateway` but exercised only through use-case tests, not a live Voice Live session. A deployed environment needs a new image and, for Graph email, `Mail.Send` plus an application access policy.
 
 ## 12. M9a: sprint planning
@@ -200,9 +300,17 @@ Built after M9b (ADR 0013); `SPEC.md` section 10.8 has the rules.
 
 ## 15. M11 greenfield deployment
 
-`azd up` builds the whole solution in an empty resource group (ADR 0015a, `docs/DEPLOY.md`).
+The Bicep/hooks describe empty-environment deployment (ADR 0015a,
+`docs/DEPLOY.md`); final-solution two-cycle G8 acceptance is not established.
+Native hosting is opt-in, so a default deployment alone is not the full G8
+proof. zavaw3 tenant package uploads are completed; real user/organiser
+installation and consent remain gates. Another environment needs its own package.
 
-- **Bicep** (`infra/main.bicep` plus `modules/` observability, identity, foundry, data, compute): resource group, Log Analytics, Application Insights, one user-assigned managed identity, the Foundry account and project with four model deployments, ACR (explicit `LegacyRegistryPermissions`, AcrPull for the apps and Foundry identities), Cosmos DB (Entra-only), ACS (Entra), the Container Apps environment, API and bridge apps, and the Azure Bot as `UserAssignedMSI` with the Teams channel. Names use the `zava-scrum` prefix.
+- **Bicep:** resource group, telemetry/workbook, managed identity, Foundry
+  account/project with three default model deployments, ACR/AcrPull,
+  Cosmos/ACS (Entra), API/bridge Container Apps and messaging Bot. Opt-in
+  native module adds the Windows host, vault/package storage and scoped roles.
+  Hooks own hosted version/Agent ID, Entra/OBO, seed and package generation.
 - **Hooks** (`infra/hooks/`): `preflight`, `entra-portal-app`, `entra-post` (Easy Auth), `ado-setup` (project, seed, managed identity access), `exchange` (human gate), `teams-app` (package build, upload is a human gate), `verify`.
 - **Identity.** The bot id is the managed identity client id; Easy Auth holds one client secret as a Container Apps secret; the Azure CLI client is pre-authorised on the portal API scope so `verify` and GateRunner use a normal Entra token.
 - **Not changed.** Application behaviour. The original `mcm-scrum-demo` environment keeps its names and is not managed by these templates.
@@ -261,7 +369,10 @@ Built in M11 prompt 5A (ADR 0020). Code and hooks are built and tested; the live
 
 ## 20. M11: hosted agent voice relay, session storage, pre-warm and canary
 
-Built in M11 prompt 4 (ADR 0021, ADR 0015 S6). Read ADR 0021 for what was measured and what was not moved. **G1 is not met for the hosted route at p95 with the decision model on, so the default voice route stays direct.**
+Built in M11 prompt 4 (ADR 0021, ADR 0015 S6). Prompt 4A's larger sample held
+G1 point estimates, not confidence bounds. That does not erase later failed
+fallback comparisons or prove candidate 5, which returned 424. Direct
+remains the default; stable hosted 4 is the optional measured relay.
 
 - **Voice relay.** `AgentHost` (`VoiceRelayHandler`, `VoiceRelay`) is a hosted agent with `/invocations_ws`. It opens Voice Live with its own identity and forwards every frame unchanged, refuses a call with no `team` (close 1008), and keeps no state. `VoiceLive:RelayEndpoint` set means the hosted route; empty means Voice Live directly. Both are real adapters of `IVoiceSessionFactory`. `VoiceSessionConfig` carries the team id and the session id (the hosted agent session id, so a reconnect reattaches to the same sandbox).
 - **Sessions.** `Sessions` Cosmos container, partition `/teamId`, one item per session (`ISessionItemStore`, `SessionRepository`). `SessionMigration` (run at API start by `SessionMigrationService`) moves the old `sessions.json` document and deletes it once every session is in; demo reset clears the items.
@@ -283,13 +394,13 @@ The host validates the session/team/stored link at the API, uses authenticated G
 
 **Non-recording boundary:** the ephemeral gateway has no mediator, repositories or executable tools. It saves no PCM, transcript, spoken update, voice-derived attendance or follow-up proposal. Parking, live participants and the conversation are memory-only. Existing metadata-only lifecycle cards may still be emitted on completion, but contain no learned meeting updates. ACS and the Simulated Room retain the complete saved follow-up/approval demo. Recording in a future feature needs successful `updateRecordingStatus` first and the applicable recording requirements.
 
-Barge-in clears queued audio, drops late response output and truncates at the host's played-frame acknowledgement. Shared floor-control exceptions for opening/recap/absent announcements are unchanged. A bounded transport reconnect retains the real call but restarts the ephemeral conversation. No native board share is built until prompt 7.
+Barge-in clears queued audio, drops late response output and truncates at the host's played-frame acknowledgement. Shared floor-control exceptions for opening/recap/absent announcements are unchanged. A bounded transport reconnect retains the real call but restarts the ephemeral conversation. Prompt 7 adds native board sharing; live visibility/encoder acceptance remains open.
 
 Opt-in Bicep/azd adds a public four-vCPU Windows Server 2022 D4s_v5 host (D3_v2 was unavailable), HTTPS/TCP 8445, certificate vault, artefact storage, scoped roles and SYSTEM startup task. Let's Encrypt HTTP-01 uses temporary TCP 80; the Azure DNS-label certificate expires 2027-02-24 and monthly hook reruns are required for renewal. The separate calling app's `Calls.AccessMedia.All` grant is verified; meeting join still needs organiser RSC `Calls.JoinGroupCalls.Chat`. Daily SDK-age CI enforces newest-or-within-three-months. Fixed added cost is about USD 0.39415/hour, plus variable operations/storage/egress.
 
 Real SDK/HTTPS readiness reports no recording and cap 1, including after an idle VM reboot without manual task start; the task runs as SYSTEM with an at-startup trigger. The aligned direct native-package reference and explicit Graph v1.0 service URL fix startup defects that managed unit tests did not exercise. This does not establish native call capacity or a Teams media handshake.
 
-Native G1/G2/G6 and real-human barge-in remain n=0: the catalogue POST lacked delegated OAuth scopes, no real meeting link is stored, Daniel/Maya lack roster Entra ids, and organiser RSC/voices are outstanding. Synthetic probes passed 90/90 tagged frames and dispatched stop 29.6 ms after threshold (n=1), not SDK attribution or live audio. Opening-state 600 ms speech does not cancel, so unconditional barge-in fails synthetically. See DEPLOY.md for exact human actions and the gate table for fallback measurements.
+Native G1/G2/G6 and real-human barge-in remain n=0: catalogue upload is now completed by the operator, but no real meeting link is stored, Daniel/Maya lack roster Entra ids, and organiser installation/RSC/voices are outstanding. Synthetic probes passed 90/90 tagged frames and dispatched stop 29.6 ms after threshold (n=1), not SDK attribution or live audio. Opening-state 600 ms speech does not cancel, so unconditional barge-in fails synthetically. See DEPLOY.md for exact human actions and the gate table for fallback measurements.
 
 ## 23. M11: content-free observability and evaluation
 
