@@ -228,6 +228,23 @@ public sealed class ApprovalIdentityTests : IAsyncDisposable
     }
 
     [Fact]
+    public async Task AuditChain_StoredMeeting_PreservesRealMeetingIdentity()
+    {
+        var session = StandupSession.Prepare(Guid.NewGuid(), "t1", StandupHarness.Now, null);
+        const string link = "https://teams.microsoft.com/l/meetup-join/chat/0";
+        session.Start("acs", link, 15, StandupHarness.Now);
+        session.RecordMeetingEvent("meeting", "chat", link, false, StandupHarness.Now);
+        await _sessions.SaveAsync(session, default);
+
+        var result = await Sender.Send(new GetAuditChainQuery(session.CorrelationId));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("meeting", result.Value.Meeting?.MeetingId);
+        Assert.Equal("chat", result.Value.Meeting?.ConversationId);
+        Assert.Equal(link, result.Value.JoinUrl);
+    }
+
+    [Fact]
     public async Task AuditChain_ApprovedButNotYetWritten_IsCompleteSoFarAndStillCompleteAfterTheRetry()
     {
         var session = StandupSession.Prepare(Guid.NewGuid(), "t1", StandupHarness.Now, null);

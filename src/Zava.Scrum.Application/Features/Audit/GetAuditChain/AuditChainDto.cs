@@ -27,6 +27,12 @@ public sealed record AuditChainDto(
     int ApprovedCount,
     IReadOnlyList<string> Missing)
 {
+    /// <summary>Gets the correlated Teams meeting identity, absent for a Simulated Room or an unobserved meeting lifecycle.</summary>
+    public MeetingLifecycle? Meeting { get; init; }
+
+    /// <summary>Gets the stored meeting link, never a model-generated link.</summary>
+    public string? JoinUrl { get; init; }
+
     /// <summary>Gets a value indicating whether every decided follow-up has its approval record, matching hash and write record.</summary>
     public bool Complete => Missing.Count == 0;
 }

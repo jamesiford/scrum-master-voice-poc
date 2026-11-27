@@ -41,7 +41,11 @@ internal sealed class GetAuditChainHandler(ISessionRepository sessions, IFollowU
             trail,
             cards.OrderBy(c => c.SentAt).Select(c => new AuditCardDto(c.Id, c.SentAt, c.Message.Kind, c.Message.FollowUpId)).ToList(),
             proposals.Count(f => f.Status is FollowUpStatus.Approved or FollowUpStatus.Applied),
-            Missing(session, proposals, trail));
+            Missing(session, proposals, trail))
+        {
+            Meeting = session?.MeetingLifecycle,
+            JoinUrl = session?.JoinUrl,
+        };
         return Result<AuditChainDto>.Success(dto);
     }
 
