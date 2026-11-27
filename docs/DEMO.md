@@ -1,5 +1,23 @@
 # Demo runbook
 
+## Foundry IQ readiness (M11 8A)
+
+**Not available for the demo.** Prompt 8A stopped before its mandatory
+caller-OBO permission spike; no Knowledge page or standards chat skill is
+shipped. Do not present the prompt editor, repo working agreements, existing
+Story Writer or ordinary escalation cards as cited knowledge retrieval.
+Continue using the existing Acs/Share/Direct and Simulated Room paths.
+
+An Entra administrator must approve both delegated retrieval scopes on the
+zavaw3 portal app, and the standards/site owner must identify an approved
+corpus and a restricted document with real positive/negative consenting
+users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
+On resume, prove ten real questions through the knowledge base MCP endpoint
+and caller-OBO permission trimming before integration; evaluate at least
+forty source-labelled questions per knowledge base. Show answer citations
+and explicit "I don't know" for a genuine no-source result, never guesses.
+Current retrieval, leakage and latency sample sizes are all n=0 (ADR 0026).
+
 ## Before the demo (5 minutes)
 Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secrets (`Azure:TenantId`, `Ado:Org`) or the azd environment (`AZURE_TENANT_ID`, `ADO_ORG_URL`); see README.
 1. `az login --tenant <tenant-id>`.
