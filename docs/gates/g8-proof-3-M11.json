@@ -3,7 +3,7 @@
   "environment": "zavag8",
   "region": "westus3",
   "resourceGroup": "rg-zava-scrum-zavag8",
-  "source": "88d07566fd65a3f997aad7223f0063bffc751178",
+  "source": "4f658ff83d27162d931728534133cd9b566881ac",
   "gate": "G8",
   "verdict": "not_run",
   "requiredFullEmptyCycles": 2,
@@ -16,19 +16,41 @@
   },
   "validation": {
     "lifecycleChecks": 14,
-    "greenfieldChecks": 17,
+    "greenfieldChecks": 20,
+    "architectureChecks": 16,
     "builds": 3,
     "dotnetWarnings": 0,
     "dotnetErrors": 0,
     "schema": "pass",
     "package": "pass",
-    "initialPreviewSeconds": 25
+    "initialPreviewSeconds": 25,
+    "updatedArmValidation": "pass",
+    "updatedWhatIf": { "create": 39, "modify": 0, "delete": 0 },
+    "fullFormat": "pass"
+  },
+  "modelProvisioning": {
+    "provisionRealtimeModels": false,
+    "managedVoiceLiveModel": "gpt-realtime-2.1",
+    "chatAndDecisionDeploymentsRequired": true,
+    "protectedQuotaChanged": false
+  },
+  "provisioningObservation": {
+    "time": "2026-11-27T22:58:06.4404031+00:00",
+    "armState": "Succeeded",
+    "vmPowerState": "PowerState/running",
+    "registryMode": "LegacyRegistryPermissions",
+    "appIdentityScopedAcrPullVisible": true,
+    "firstRemoteBuildRunIds": ["ds1", "ds2"],
+    "remoteBuildsComplete": true,
+    "hostedRemoteBuildRunId": "ds3",
+    "apiRevision": "ca-api-uaogwrz6uq4hc--azd-1795819927",
+    "fullUpAndVerificationComplete": false
   },
   "media": {
     "size": "Standard_D4als_v7",
     "imageSku": "2022-datacenter-g2",
     "windowsComputeUsdPerHour": 0.345,
-    "finalPowerState": "not_created"
+    "finalPowerState": "pending_deallocation"
   },
   "iterations": [
     {
@@ -53,6 +75,7 @@
   "notes": [
     "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
     "Previous failures remain historical and do not establish a support prerequisite.",
+    "Actual first remote API/bridge/hosted builds pass; full postdeploy and verification remain pending.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]
 }

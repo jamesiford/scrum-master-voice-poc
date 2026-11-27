@@ -70,7 +70,10 @@ changed or full suites rerun. All three builds are required before push.
 Current Microsoft Learn confirms explicit environment targeting and teardown
 semantics: [azd reference](https://learn.microsoft.com/azure/developer/azure-developer-cli/reference)
 and [environment targeting](https://learn.microsoft.com/azure/developer/azure-developer-cli/work-with-environments#run-commands-in-specific-environments).
-Use `-e zavagf` and process-scoped context for hooks. `down --purge` is
+The old `-e zavagf` scope is retired and operator-deleted. G8 now uses
+only `-e zavag8` in fresh westus3, the proven hosted-agent region after
+the former target's409/404 failures (ADR0038). Keep process-scoped
+context for hooks. `down --purge` is
 destructive, not validation; it must finish before reusing soft-deleted names.
 These lifecycle docs do not promise native SKU or tenant consent availability.
 The code/templates are the source of component coverage; live gates are the

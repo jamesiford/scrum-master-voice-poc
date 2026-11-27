@@ -24,7 +24,7 @@ Three layers, in this order of preference.
 4. **Registry permission mode set explicitly** to `LegacyRegistryPermissions`, with AcrPull for the apps identity and the Foundry project identity (ADR 0015 S3).
 5. **Azure DevOps identity is the managed identity**, not an Entra agent identity (ADR 0015 S4, `VS403283`). The hook adds it with a Basic entitlement and to the project's Contributors. The entitlement POST is idempotent; the list endpoint does not support GET.
 6. **Bridge key generated** at deployment (`newGuid()` as a `@secure()` default) and held as a Container Apps secret.
-7. **Realtime quota.** Global `gpt-realtime-2.1` and `gpt-live-1` quota is subscription-wide, and the original environment used all of it. The new environment defaults to `DataZoneStandard` in `eastus2`. Preflight reads the catalogue and quota and says so before provisioning.
+7. **Historical standalone realtime quota.** Global `gpt-realtime-2.1` and `gpt-live-1` quota is subscription-wide, and the original environment used all of it. The original attempt selected `DataZoneStandard` in eastus2. That target is operator-deleted; fresh G8 is zavag8/westus3 (ADR0038). Current Learn confirms the existing managed Voice Live model needs no standalone deployment: fresh `PROVISION_REALTIME_MODELS=false` omits only unused standalone deployment/quota, while default true preserves existing inputs (ADR0039).
 8. **Exchange RBAC for Applications** replaces the application access policy and the broad Graph application permissions: the identity holds Calendars.ReadWrite and Mail.Send on the organiser's mailbox only.
 
 ## Measured

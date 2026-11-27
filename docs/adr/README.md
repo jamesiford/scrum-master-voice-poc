@@ -38,7 +38,7 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0028](0028-observability-and-evaluation.md) | Content-free telemetry and failed date release gate |
 | [0029](0029-final-documentation-and-greenfield-proof.md) | Final documentation and G8 acceptance boundary |
 | [0030](0030-final-validation-and-live-model-variance.md) | Final validation and retained live model failures |
-| [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Authorised eastus2 recovery, compatible image/purge parameters and idempotent hooks |
+| [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Historical recovery, compatible image/purge parameters and idempotent hooks; scope moved to fresh westus3 in0038 |
 | [0032](0032-foundry-workspace-version-recovery.md) | Bounded service-directed hosted-version workspace conflict recovery |
 | [0033](0033-foundry-iq-consent-redo-and-fixture-boundary.md) | Knowledge consent verified; real source and permission fixtures still required |
 | [0034](0034-work-iq-live-discovery-and-source-fixtures.md) | Work IQ delegated metadata discovery succeeds; scoped content and billing fixtures remain required |
