@@ -34,6 +34,7 @@ public sealed class GraphMediaBridge(
                     request.JoinUrl,
                     request.BridgeToken,
                     request.ApiBase,
+                    traceParent = System.Diagnostics.Activity.Current?.Id,
                 }),
             };
             message.Headers.Add("x-bridge-key", options.Value.ApiKey);

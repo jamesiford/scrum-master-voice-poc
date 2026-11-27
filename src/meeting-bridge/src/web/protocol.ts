@@ -61,6 +61,8 @@ export type ServerMessage =
   | {
       type: 'hello';
       sessionId: string;
+      teamId?: string;
+      traceParent?: string;
       mode: string;
       /** The ceremony: `DailyScrum` or `Retrospective`. Selects the cast script. */
       kind?: string;
@@ -77,6 +79,7 @@ export type ServerMessage =
 
 /** Room to gateway. */
 export type ClientMessage =
+  | { type: 'telemetry'; hop: 'bridge.audio' | 'bridge.playback'; durationMs: number }
   | { type: 'participants'; items: { memberId: string; displayName: string; present: boolean }[] }
   | { type: 'localSpeaker'; memberId: string }
   | { type: 'speaking'; memberId: string; active: boolean }

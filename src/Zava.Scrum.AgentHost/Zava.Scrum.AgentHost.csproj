@@ -2,5 +2,8 @@
   <ItemGroup>
     <PackageReference Include="Azure.AI.AgentServer.Invocations" />
     <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
+    <Compile Include="..\telemetry\TelemetryBootstrap.cs" Link="Telemetry\TelemetryBootstrap.cs" />
+    <Compile Include="..\telemetry\SessionTelemetry.cs" Link="Telemetry\SessionTelemetry.cs" />
   </ItemGroup>
 </Project>

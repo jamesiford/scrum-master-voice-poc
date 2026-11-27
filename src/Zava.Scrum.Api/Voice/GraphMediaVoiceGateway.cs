@@ -7,6 +7,7 @@ using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Members;
 using Zava.Scrum.Domain.Voice;
 using Zava.Scrum.Domain.Standups;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Api.Voice;
 
@@ -60,6 +61,7 @@ public sealed class GraphMediaVoiceGateway(
     {
         _bridge = bridge;
         _context = context;
+        using var sessionHop = ScrumTelemetry.StartHop("media.session", context.Session.TeamId, context.Session.Id, context.Session.CorrelationId);
         _boardState = context.BoardMode == "MediaShare" ? "Waiting" : "Disabled (Board:Mode=Share)";
         _board = new EphemeralMediaBoard(context.Session, context.JoinUrl);
         foreach (var member in context.Roster.Where(m => m.Active && m.TeamId == context.Session.TeamId).OrderBy(m => m.SpeakingOrder))
@@ -102,7 +104,17 @@ public sealed class GraphMediaVoiceGateway(
                 var previousMember = _floor.CurrentMemberId;
                 switch (input)
                 {
-                    case JsonElement json: await OnBridgeAsync(json); break;
+                    case JsonElement json:
+                        using (var frameHop = json.TryGetProperty("traceParent", out var trace)
+                            && ActivityContext.TryParse(trace.GetString(), null, out var parent)
+                            && parent.TraceId.ToHexString() == context.Session.CorrelationId
+                            ? ScrumTelemetry.Source.StartActivity("media.frame.receive", ActivityKind.Consumer, parent,
+                                new ActivityTagsCollection { [ScrumTelemetry.TeamTag] = context.Session.TeamId, ["session.id"] = context.Session.Id.ToString(), ["hop"] = "media.frame.receive" })
+                            : null)
+                        {
+                            await OnBridgeAsync(json);
+                        }
+                        break;
                     case VoiceEvent ev: await OnVoiceAsync(ev); break;
                     case DateTimeOffset now: await OnTickAsync(now); break;
                     case string control: await OnControlAsync(control); break;
@@ -193,6 +205,9 @@ public sealed class GraphMediaVoiceGateway(
                     _speaker = member.Id;
                     _lastInput = clock.UtcNow;
                     await SetGuestSpeechAsync(null);
+                    using var forwarding = Activity.Current?.OperationName == "media.frame.receive"
+                        ? ScrumTelemetry.StartHop("media.voice.send", _context.Session.TeamId, _context.Session.Id, _context.Session.CorrelationId)
+                        : null;
                     await _voice.SendAudioAsync(pcm, _ct);
                 }
                 else if (frame.GetProperty("amplitude").GetInt32() >= 300)
@@ -225,6 +240,7 @@ public sealed class GraphMediaVoiceGateway(
                 _callState = state ?? "Unknown";
                 if (state == "Established" && _floor.State == FloorState.Idle)
                 {
+                    ScrumTelemetry.Count("join", _context.Session.TeamId, "success");
                     await ExecuteAsync(_floor.Handle(new StartFloor(clock.UtcNow)));
                 }
 
@@ -266,6 +282,8 @@ public sealed class GraphMediaVoiceGateway(
                 await _bridge.SendAudioAsync(audio.Pcm, _ct);
                 if (_turnStarted != 0)
                 {
+                    ScrumTelemetry.RecordHop("media.first_audio", _context.Session.TeamId, Stopwatch.GetElapsedTime(_turnStarted).TotalMilliseconds);
+                    ScrumTelemetry.Count("turn", _context.Session.TeamId, "first_audio");
                     logger.LogInformation("Media turn {TeamId}/{SessionId} {MemberId} {State}, latency {LatencyMs} ms",
                         _context.Session.TeamId, _context.Session.Id, _floor.CurrentMemberId, _floor.State,
                         Stopwatch.GetElapsedTime(_turnStarted).TotalMilliseconds);
@@ -404,6 +422,7 @@ public sealed class GraphMediaVoiceGateway(
                     await ExecuteAsync(_floor.Handle(new ReconcileFinished(reconcile.Version, HasQuestion: true)));
                     break;
                 case CancelResponse:
+                    ScrumTelemetry.Count("barge_in", _context.Session.TeamId, "cancelled");
                     _discard = true;
                     _interruptedItemId = _itemId;
                     await _bridge.SendAsync(new { type = "stopAudio" }, _ct);

@@ -1,12 +1,8 @@
-using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Zava.Scrum.Application.Behaviors;
-using Zava.Scrum.Infrastructure.Agents;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+using Zava.Scrum.Telemetry;
 
 namespace Zava.Scrum.Api.Telemetry;
 
-/// <summary>Basic OpenTelemetry to Application Insights: requests, outgoing HTTP, use-case spans and Agent Framework model calls.</summary>
+/// <summary>Content-free OpenTelemetry for the API, session hops and Agent Framework model calls.</summary>
 public static class TelemetryExtensions
 {
     /// <summary>The environment variable Bicep sets for the Application Insights resource.</summary>
@@ -19,20 +15,11 @@ public static class TelemetryExtensions
     /// <returns>The same builder.</returns>
     /// <remarks>
     /// VERIFY: https://learn.microsoft.com/azure/azure-monitor/app/opentelemetry-enable?tabs=aspnetcore.
-    /// PROD: sampling, custom metrics per ceremony and distributed traces from the meeting bridge.
     /// </remarks>
     public static WebApplicationBuilder AddScrumTelemetry(this WebApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        if (string.IsNullOrWhiteSpace(builder.Configuration[ConnectionStringKey]))
-        {
-            return builder;
-        }
-
-        builder.Services.AddOpenTelemetry()
-            .UseAzureMonitor()
-            .WithTracing(t => t.AddSource(ScrumTelemetry.SourceName, FoundryAgentFactory.TelemetrySource))
-            .WithMetrics(m => m.AddMeter(FoundryAgentFactory.TelemetrySource, ScrumTelemetry.SourceName));
+        TelemetryBootstrap.Configure(builder, "zava-api");
         return builder;
     }
 }

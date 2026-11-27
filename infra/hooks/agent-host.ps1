@@ -22,6 +22,7 @@ try {
   foreach ($f in 'global.json', 'Directory.Build.props', 'Directory.Packages.props', '.editorconfig', 'Dockerfile.agenthost') { Copy-Item (Join-Path $repo $f) $ctx }
   New-Item -ItemType Directory (Join-Path $ctx 'src') | Out-Null
   Copy-Item (Join-Path $repo 'src/Zava.Scrum.AgentHost') (Join-Path $ctx 'src') -Recurse
+  Copy-Item (Join-Path $repo 'src/telemetry') (Join-Path $ctx 'src') -Recurse
   Get-ChildItem (Join-Path $ctx 'src/Zava.Scrum.AgentHost') -Directory | Where-Object { $_.Name -in 'bin', 'obj' } | Remove-Item -Recurse -Force
   az acr build --registry $registry --image "zava-scrum-agent/agenthost:$Tag" --file Dockerfile.agenthost $ctx -o none
   if ($LASTEXITCODE -ne 0) { throw 'The agent host image build failed.' }

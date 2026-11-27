@@ -4,6 +4,7 @@ import { extname, join, normalize } from 'node:path';
 import type { CastRoutes } from './castRoutes.js';
 import { sendJson } from './castRoutes.js';
 import type { TeamsRoutes } from './teamsRoutes.js';
+import { traceRequest } from '../services/telemetry.js';
 
 const types: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -24,7 +25,7 @@ export function createRouter(
   teams: TeamsRoutes,
 ): (req: IncomingMessage, res: ServerResponse) => void {
   return (req, res) => {
-    void route(req, res, publicDir, cast, teams).catch((error: unknown) => {
+    void traceRequest(req, res, () => route(req, res, publicDir, cast, teams)).catch((error: unknown) => {
       sendJson(res, 500, {
         error: 'bridge_error',
         detail: error instanceof Error ? error.message : 'Unexpected error',

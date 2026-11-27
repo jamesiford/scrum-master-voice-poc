@@ -21,6 +21,10 @@ public sealed class HttpMeetingBridge(HttpClient http, IOptions<BridgeOptions> o
         try
         {
             using var message = new HttpRequestMessage(HttpMethod.Post, "teams/join") { Content = JsonContent.Create(request) };
+            if (System.Diagnostics.Activity.Current?.GetTagItem("team.id") is string teamId)
+            {
+                message.Headers.Add("x-zava-team", teamId);
+            }
             message.Headers.Add("x-bridge-key", options.Value.ApiKey);
             using var response = await http.SendAsync(message, ct);
             if (response.IsSuccessStatusCode)

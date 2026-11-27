@@ -10,6 +10,7 @@ import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import { AgentPlayer, SAMPLE_RATE } from './audio.js';
 import { BoardRenderer } from './board.js';
 import type { ClientMessage, RoomMember, ServerMessage } from './protocol.js';
+import { BridgeTelemetry } from './telemetry.js';
 
 /**
  * The Teams call page (SPEC 7.3, M4). Runs in headless Chromium: joins the meeting as an ACS external user, feeds the
@@ -24,6 +25,7 @@ const apiBase = params.get('api') ?? '';
 const joinUrl = params.get('join') ?? '';
 const displayName = params.get('name') ?? 'Zava Scrum Agent';
 const beginDelayMs = Number(params.get('beginDelayMs') ?? 8000);
+const telemetry = new BridgeTelemetry();
 
 let socket: WebSocket;
 let call: Call | undefined;
@@ -70,7 +72,7 @@ function matchMember(name: string | undefined): RoomMember | undefined {
 }
 
 async function fetchAcsToken(): Promise<string> {
-  const response = await fetch('/acs/token', { method: 'POST' });
+  const response = await fetch('/acs/token', { method: 'POST', headers: telemetry.requestHeaders() });
   if (!response.ok) throw new Error(`ACS token request failed (${response.status})`);
   return ((await response.json()) as { token: string }).token;
 }
@@ -231,7 +233,7 @@ async function join(): Promise<void> {
   await context.audioWorklet.addModule('/static/mic-worklet.js');
   const worklet = new AudioWorkletNode(context, 'mic-capture');
   worklet.port.onmessage = (e: MessageEvent<ArrayBuffer>) => {
-    if (socket.readyState === WebSocket.OPEN) socket.send(e.data);
+    if (socket.readyState === WebSocket.OPEN) telemetry.forward(socket, e.data, send);
   };
   const silent = context.createGain();
   silent.gain.value = 0;
@@ -272,6 +274,7 @@ async function join(): Promise<void> {
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case 'hello':
+      telemetry.bind(message.teamId, message.traceParent);
       members = message.members;
       join().catch((e: unknown) =>
         report('Failed', e instanceof Error ? e.message : 'Could not join the meeting.'),

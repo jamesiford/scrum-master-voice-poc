@@ -8,6 +8,8 @@ using Microsoft.Graph.Communications.Calls;
 using Microsoft.Graph.Communications.Calls.Media;
 using Microsoft.Graph.Communications.Resources;
 using Microsoft.Skype.Bots.Media;
+using System.Diagnostics;
+using Zava.Scrum.Telemetry;
 
 namespace Zava.Scrum.MediaBot;
 
@@ -36,6 +38,7 @@ public sealed class MediaCall : IAsyncDisposable
     private bool _playing;
     private long _playedFrames;
     private int _disposed;
+    private long _lastFrameTrace;
 
     /// <summary>Subscribes before negotiation so no received media is missed.</summary>
     /// <param name="join">Verified team-scoped request.</param>
@@ -129,6 +132,13 @@ public sealed class MediaCall : IAsyncDisposable
 
     private void OnAudio(object? sender, AudioMediaReceivedEventArgs args)
     {
+        var started = Stopwatch.GetTimestamp();
+        var sample = Stopwatch.GetElapsedTime(_lastFrameTrace).TotalSeconds >= 1;
+        if (sample) { _lastFrameTrace = started; }
+        using var hop = sample && ActivityContext.TryParse(_join.TraceParent, null, out var parent)
+            ? SessionTelemetry.Source.StartActivity("media.audio.frame", ActivityKind.Producer, parent,
+                new ActivityTagsCollection { [SessionTelemetry.TeamTag] = _join.TeamId, ["session.id"] = _join.SessionId.ToString(), ["hop"] = "media.audio.frame" })
+            : null;
         using var buffer = args.Buffer;
         var frames = new List<object>();
         foreach (var audio in buffer.UnmixedAudioBuffers ?? [])
@@ -154,7 +164,8 @@ public sealed class MediaCall : IAsyncDisposable
             });
         }
 
-        Enqueue(new { type = "audio", items = frames });
+        Enqueue(new { type = "audio", items = frames, traceParent = hop?.Id });
+        if (sample) { SessionTelemetry.RecordHop("media.audio.frame", _join.TeamId, Stopwatch.GetElapsedTime(started).TotalMilliseconds); }
     }
 
     private void OnSendStatus(object? sender, AudioSendStatusChangedEventArgs args) =>
@@ -251,6 +262,7 @@ public sealed class MediaCall : IAsyncDisposable
             try
             {
                 using var socket = new ClientWebSocket();
+                if (_join.TraceParent is { } traceParent) { socket.Options.SetRequestHeader("traceparent", traceParent); }
                 socket.Options.SetRequestHeader("x-bridge-key", _apiKey);
                 socket.Options.SetRequestHeader("x-bridge-token", _join.BridgeToken);
                 var origin = new Uri(_join.ApiBase);

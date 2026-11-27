@@ -14,6 +14,7 @@ import type {
   SpokenLine,
   UiState,
 } from './protocol.js';
+import { BridgeTelemetry } from './telemetry.js';
 
 /**
  * The Simulated Room (SPEC 7.3): roster, captions, timebox, parking lot, push-to-talk and the demo cast player.
@@ -24,6 +25,7 @@ const params = new URLSearchParams(location.search);
 const sessionId = location.pathname.split('/').filter(Boolean).pop() ?? '';
 const token = params.get('token') ?? '';
 const apiBase = params.get('api') ?? '';
+const telemetry = new BridgeTelemetry();
 
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
@@ -99,6 +101,7 @@ function connect(): void {
 async function onMessage(message: ServerMessage): Promise<void> {
   switch (message.type) {
     case 'hello':
+      telemetry.bind(message.teamId, message.traceParent);
       members = message.members;
       kind = message.kind ?? 'DailyScrum';
       standupSeconds = message.standupMinutes * 60;
@@ -131,7 +134,7 @@ async function onMessage(message: ServerMessage): Promise<void> {
 }
 
 async function loadCast(): Promise<void> {
-  const response = await fetch(`/cast/script?kind=${encodeURIComponent(kind)}`);
+  const response = await fetch(`/cast/script?kind=${encodeURIComponent(kind)}`, { headers: telemetry.requestHeaders() });
   cast = response.ok ? ((await response.json()) as { members: CastMemberInfo[] }).members : [];
   if (!response.ok)
     banner(
@@ -243,7 +246,7 @@ async function requestLine(
 ): Promise<{ line: SpokenLine | null; sidebar: SpokenLine[] }> {
   const response = await fetch('/cast/line', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...telemetry.requestHeaders() },
     body: JSON.stringify({ sessionId, memberId, question: lastAgentCaption, kind }),
   });
   if (!response.ok) {
@@ -312,7 +315,7 @@ async function sayAsMicrophone(line: SpokenLine): Promise<void> {
   if (!line.audio) return;
   const pcm = base64ToBytes(line.audio);
   void playCastLine(context, pcm);
-  await streamAsMicrophone(pcm, (frame) => socket.send(frame));
+  await streamAsMicrophone(pcm, (frame) => telemetry.forward(socket, frame, send));
 }
 
 function micGate(): boolean {
@@ -343,7 +346,7 @@ async function startStandup(): Promise<void> {
 async function startMic(): Promise<void> {
   try {
     mic = new MicrophoneStreamer(context, (frame) => {
-      if (micGate() && socket.readyState === WebSocket.OPEN) socket.send(frame);
+      if (micGate() && socket.readyState === WebSocket.OPEN) telemetry.forward(socket, frame, send);
     });
     await mic.start();
   } catch (error) {

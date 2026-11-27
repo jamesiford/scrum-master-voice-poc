@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Zava.Scrum.MediaBot;
 
 var builder = WebApplication.CreateBuilder(args);
+Zava.Scrum.Telemetry.TelemetryBootstrap.Configure(builder, "zava-media-bot");
 builder.Services.AddOptions<MediaBotOptions>().Bind(builder.Configuration.GetSection("MediaBot")).ValidateDataAnnotations()
     .Validate(o => Uri.TryCreate(o.ApiBase, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps,
         "MediaBot:ApiBase must be the trusted HTTPS API origin.").ValidateOnStart();

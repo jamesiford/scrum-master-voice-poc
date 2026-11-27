@@ -5,6 +5,7 @@ using Azure.Core;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Microsoft.Extensions.Options;
 using Zava.Scrum.Infrastructure.Agents;
+using System.Diagnostics;
 
 namespace Zava.Scrum.Infrastructure.Voice;
 
@@ -22,6 +23,7 @@ public sealed class VoiceLiveSessionFactory(TokenCredential credential, IOptions
         var token = await credential.GetTokenAsync(new TokenRequestContext([Scope]), ct);
         var socket = new ClientWebSocket();
         socket.Options.SetRequestHeader("Authorization", "Bearer " + token.Token);
+        if (Activity.Current?.Id is { } traceParent) { socket.Options.SetRequestHeader("traceparent", traceParent); }
         try
         {
             await socket.ConnectAsync(BuildUri(options, config), ct);
@@ -44,7 +46,8 @@ public sealed class VoiceLiveSessionFactory(TokenCredential credential, IOptions
         {
             var hostedSession = string.IsNullOrWhiteSpace(options.RelaySessionId) ? (config.SessionId ?? Guid.NewGuid()).ToString() : options.RelaySessionId;
             var team = Uri.EscapeDataString(config.TeamId ?? string.Empty);
-            return new Uri($"{hosted}?api-version=v1&agent_session_id={hostedSession}&team={team}&model={Uri.EscapeDataString(options.Model)}");
+            var trace = Activity.Current?.Id is { } parent ? $"&traceparent={Uri.EscapeDataString(parent)}" : string.Empty;
+            return new Uri($"{hosted}?api-version=v1&agent_session_id={hostedSession}&team={team}&model={Uri.EscapeDataString(options.Model)}{trace}");
         }
 
         var host = string.IsNullOrWhiteSpace(options.Endpoint)
