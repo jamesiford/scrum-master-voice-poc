@@ -191,6 +191,7 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
     var created = channel.Now;
     await session.CreateResponseAsync("Answer the question in one short sentence.", CancellationToken.None);
     double? firstAudio = null;
+    double? responseDone = null;
     while (await channel.ReadAsync(TimeSpan.FromSeconds(25)) is { } e)
     {
         if (e.Event is AgentAudio && firstAudio is null)
@@ -206,6 +207,7 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
 
         if (e.Event is ResponseDone)
         {
+            responseDone = e.At;
             break;
         }
     }
@@ -213,6 +215,12 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
     if (firstAudio is null)
     {
         turn.Failed = "no audio";
+        return turn;
+    }
+
+    if (responseDone is null)
+    {
+        turn.Failed = "no response completion";
         return turn;
     }
 
