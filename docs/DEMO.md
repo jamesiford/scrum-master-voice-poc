@@ -42,6 +42,10 @@ is pending after intervening purge passed1639.20s with complete absence
 readback. New zavagf package publication was
 attempted and refused403 for OAuth catalogue scopes; use DEPLOY.md's exact
 administrator upload action. Completed zavaw3 uploads remain complete.
+The attempted second deployment lost the native opt-in through an
+input/output collision and is not counted as full G8 evidence. The corrected
+input-only template requires a clean retry; do not substitute a smaller
+deployment's optional native SKIP for actual hosting verification.
 
 ## Work IQ signals readiness (M11 8B)
 

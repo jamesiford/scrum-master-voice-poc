@@ -108,6 +108,16 @@ Foundry lists[] prove the second start is empty. All three builds pass again,
 .NET0warnings/errors32.03s;16focused checks and full C# format pass. No full
 suites. The second full empty up/verify is next, not yet counted as complete.
 
+Second iteration started06:23:09.5200057Z from8c8ade9, but actual submitted
+native opt-in is false. Down erased MEDIA_HOST_ENABLED because main.bicep
+also emitted that same configuration name as an output. Native resources
+are omitted; **this reduced deployment does not count as cycle2**.
+ADR0031 records the input-only correction and compiled cleanup-contract
+regression17/17; all three builds pass, .NET0warnings/errors46.73s.
+The invalid iteration must finish and be purged before restoring the
+documented true input and restarting empty. The conductor now refuses
+Up/Verify with missing/false native opt-in; no smaller-footprint false pass.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

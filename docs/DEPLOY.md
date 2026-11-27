@@ -73,6 +73,15 @@ cycles1/2; intervening purge runs before the second empty up.
 Intervening purge passes1639.20s, including the real media vault and Foundry
 account; group exists=false and matching deleted-name lists[] read back.
 The second empty up/verify remains required.
+The second iteration exposed an input/output naming collision:
+`down --purge` removed MEDIA_HOST_ENABLED, so its submitted native parameter
+was false. That smaller deployment is not a full G8 cycle. The template now
+keeps MEDIA_HOST_ENABLED input-only; configured flags survive output cleanup.
+For recovery from the old colliding template, purge its invalid footprint,
+then restore the documented parameter with
+`azd env set MEDIA_HOST_ENABLED true -e zavagf` before the next empty up.
+This is parameter recovery, not a manual resource or a hidden default.
+Always read back the true opt-in before a full G8 up/verify.
 
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:

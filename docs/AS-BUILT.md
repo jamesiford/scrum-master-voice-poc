@@ -14,6 +14,9 @@ passing evidence after one unchanged retrospective retry; its initial
 model deviation remains a reliability risk. G8 recovery has one complete
 verified empty up/verify cycle of two; intervening purge passed1639.20s
 with group/vault/Foundry absence readback. The second cycle is next.
+The attempted second deployment was reduced because teardown erased the
+native opt-in's colliding output; it is not counted. The input-only fix and
+compiled cleanup regression17/17 pass, and a full empty retry is required.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 

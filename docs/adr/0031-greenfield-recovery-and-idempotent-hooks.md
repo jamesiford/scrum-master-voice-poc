@@ -141,3 +141,25 @@ both deleted-name lists[] confirm a genuinely empty second start. Thus
 the omission fix supports the required repeat purge in practice, while
 existing protected environments remain untouched. Three final builds,
 16focused checks and full C# format pass again; no full suites.
+
+## Repeat-cycle opt-in defect
+
+The second start at06:23:09.5200057Z exposed another real repeat defect.
+After `down --purge`, MEDIA_HOST_ENABLED disappeared while size/image/
+purge/adapter inputs remained. The template had used the same name for a
+configuration input and generated output. Actual submitted mediaHostEnabled
+is false, so that deployment omits the native footprint and **cannot count**
+as the second complete proof, even if azd exits0.
+
+Keep MEDIA_HOST_ENABLED input-only by removing its redundant output; the
+native hooks already read the documented input. An actual compiled-template
+contract regression simulates output cleanup and asserts all configured
+parameter inputs survive. It passes17/17 focused checks; all three builds
+pass again, .NET0warnings/errors. The conductor now refuses Up/Verify when
+the required native opt-in is missing/false. Complete and purge this invalid
+iteration, restore the documented true input after that purge, then rerun
+from empty; no silent smaller-footprint success or manual infrastructure.
+
+[Current Learn](https://learn.microsoft.com/azure/developer/azure-developer-cli/manage-environment-variables)
+distinguishes configuration inputs from automatically captured Bicep outputs.
+The observed down cleanup takes precedence where that page is less explicit.

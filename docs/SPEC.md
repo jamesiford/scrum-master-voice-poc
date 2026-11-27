@@ -34,6 +34,9 @@ because explicit purge-protection false was refused on new vault creation.
 New zavagf catalogue upload has a measured OAuth403 human gate, not a
 failed core Entra hook. Operator-completed zavaw3 retrieval/WorkIQ
 consents and catalogue uploads do not prove G5/G6/G10/G11 or their fixtures.
+The native opt-in is now input-only: teardown must not erase a configured
+flag as a generated output. The observed reduced second iteration is not
+a completed full cycle; compiled cleanup-contract regression17/17 passes.
 
 ### What changed in v0.6 (M9)
 
