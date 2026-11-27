@@ -25,12 +25,16 @@ var speechEndpoint = Arg("--speech") ?? throw new ArgumentException("--speech is
 var alternations = int.Parse(Arg("--alternations") ?? "4", System.Globalization.CultureInfo.InvariantCulture);
 var turns = int.Parse(Arg("--turns") ?? "8", System.Globalization.CultureInfo.InvariantCulture);
 var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { TenantId = Arg("--tenant") });
+var teamId = Arg("--team") ?? "team-bench";
+using var benchHop = new Activity("voice.relay.bench").SetIdFormat(ActivityIdFormat.W3C).Start();
+benchHop.ActivityTraceFlags = ActivityTraceFlags.Recorded;
+benchHop.SetTag("team.id", teamId);
 
 IVoiceSessionFactory Factory(bool relay, string sessionId = "") => new VoiceLiveSessionFactory(
     credential,
-    Options.Create(new VoiceLiveOptions { Endpoint = directEndpoint, RelayEndpoint = relay ? relayEndpoint : string.Empty, RelaySessionId = sessionId }),
+    Options.Create(new VoiceLiveOptions { Endpoint = directEndpoint, RelayEndpoint = relay ? relayEndpoint : string.Empty, RelaySessionId = relay ? Arg("--relay-session") ?? sessionId : sessionId }),
     Options.Create(new FoundryOptions { ProjectEndpoint = "https://" + new Uri(directEndpoint.Replace("wss://", "https://", StringComparison.Ordinal)).Host + "/api/projects/p" }));
-var config = new VoiceSessionConfig("You are a brief, friendly scrum master. Answer in one short sentence.", [], 800, "team-bench");
+var config = new VoiceSessionConfig("You are a brief, friendly scrum master. Answer in one short sentence.", [], 800, teamId);
 
 string[] questions =
 [
@@ -71,7 +75,7 @@ foreach (var q in questions)
 }
 
 Console.Error.WriteLine($"synthesised {audio.Count} questions, {audio.Sum(a => a.Length) / 48000.0:F1} s of audio");
-var result = new Dictionary<string, object>();
+var result = new Dictionary<string, object> { ["traceId"] = benchHop.TraceId.ToHexString(), ["teamId"] = teamId };
 
 switch (mode)
 {
