@@ -8,8 +8,11 @@ and support actions below are historical, not active deployment targets
 or prerequisites. Exact destructive guards now permit only zavag8/westus3
 and refuse the former target and protected deployments.
 Fresh portal baseline consent/administrator roles and dedicated media
-Calls.AccessMedia.All setup have succeeded automatically. Two full empty
-up/verify cycles and final VM-only deallocation are pending; no G8 pass.
+Calls.AccessMedia.All setup have succeeded automatically. First full
+empty up1665.7626s and mandatoryverify8/8/407.4025s/native5/5 pass,
+with real managed Voice Live3417/3871ms,n10 and approverrevision71/audit
+complete. The guarded intervening purge is running; cycle two and final
+VM-only deallocation remain required, so G8 is not yet a pass.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the
@@ -74,7 +77,7 @@ clean even after an exact API86 restart: one Active primary, seed roster,
 zero sessions/follow-ups, earlier approvals/comments unchanged. Azure
 remains running; only owned isolated local test helpers/data are removed.
 
-**G8 second recovery is provider-blocked (ADR0035), newcycles0/2.** Guarded azd predown now
+**Historical G8 second recovery (ADR0035), provider-blocked at newcycles0/2.** Guarded azd predown now
 deletes the two owned hosted data-plane agents before project identity
 teardown, with absence readback. Current calling-app PATCH succeeds;
 historical403 is resolved for that operation. Same-project recreation passes

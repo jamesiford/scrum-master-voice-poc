@@ -1,6 +1,6 @@
 # ADR 0038: Run the greenfield proof in a fresh westus3 environment
 
-Date: 27 November 2026. Status: accepted; measurements pending.
+Date: 27 November 2026. Status: accepted; first full cycle verified, second pending.
 
 ## Context
 
@@ -47,4 +47,10 @@ before the full-up image deployment phase.
 
 Final cycle durations, failures, sample sizes, exact final state and costs
 will be recorded in the gate table and content-free proof evidence.
+First full retryup1665.7626s/mandatoryverify8/8/407.4025s/native5/5 pass.
+Real managed Direct3417/3871ms,n10, approverrevision71/auditcomplete and
+24 resources are measured. Owned hosted version1 reads HTTP200/active;
+this first fresh cycle does not reproduce the former project404.
+Intervening guarded purge is running; G8 remains1/2. The fresh catalogue
+POST403 is a separate OAuth-scope human gate, not a support prerequisite.
 No runtime feature, Domain invariant, default adapter or public API changes.

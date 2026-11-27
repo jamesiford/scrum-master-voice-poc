@@ -35,7 +35,7 @@
     "protectedQuotaChanged": false
   },
   "provisioningObservation": {
-    "time": "2026-11-27T22:58:06.4404031+00:00",
+    "time": "2026-11-27T23:09:45.9543113+00:00",
     "armState": "Succeeded",
     "vmPowerState": "PowerState/running",
     "registryMode": "LegacyRegistryPermissions",
@@ -43,7 +43,7 @@
     "firstRemoteBuildRunIds": ["ds1", "ds2"],
     "remoteBuildsComplete": true,
     "hostedRemoteBuildRunId": "ds3",
-    "apiRevision": "ca-api-uaogwrz6uq4hc--azd-1795819927",
+    "initialImageRevisionObserved": "ca-api-uaogwrz6uq4hc--azd-1795819927",
     "fullUpAndVerificationComplete": true
   },
   "media": {
@@ -98,6 +98,14 @@
     }
   ],
   "defaults": { "bridge": "Acs", "board": "Share", "voice": "Direct" },
+  "interveningPurge": {
+    "observationTime": "2026-11-27T23:34:55.6274142+00:00",
+    "state": "running",
+    "guardedPredownPassed": true,
+    "remainingOwnedResources": 2,
+    "exactGroupAbsent": false,
+    "requiredInputsSnapshotted": 13
+  },
   "protectedEnvironmentsMutated": false,
   "humanGates": [
     "ZAVAG8-CATALOGUE: one authorised fresh media POST returns40323:04:07Z, request8364af43-f368-4df1-b400-98780c476131, missing AppCatalog.Submit/AppCatalog.ReadWrite.All/Directory.ReadWrite.All OAuth scopes. Teams administrator uploads only both fresh packages through Teams admin centre; exact DEPLOY action. No auth retry/broader CLI grant."

@@ -1,6 +1,6 @@
 # ADR 0039: Do not require standalone model quota for managed Voice Live
 
-Date: 27 November 2026. Status: accepted correction; fresh live proof pending.
+Date: 27 November 2026. Status: accepted correction; first real live cycle verified.
 
 ## Context
 
@@ -44,8 +44,15 @@ GlobalStandard capacity5. Subscription realtime deployment usage10/10 is
 measured, not inferred. This is not a quota request or workaround.
 Focused tests exercise the real preflight loop: false skips only optional
 realtime quota; true and unset preserve the original requirement.
-The compiled-template input/output regression protects this new input
-through intervening down. All three builds and exact format checks pass.
+The new parameter remains input-only; before/after-down readbacks must
+prove preservation. All three builds and exact format checks pass.
+
+The corrected full up1665.7626s and mandatoryverify8/8/407.4025s pass,
+including real managed Voice Live10timedturns, total3417/3871ms and
+firstaudio1235/2269ms, approverrevision71/completeaudit and native5/5.
+All24 resources/requiredmodels and owned hosted version1active are real.
+No standalone realtime deployment is created or protected quota changed.
+The guarded intervening purge is running; G8 is still1/2, not a pass.
 
 Both full empty up/verify cycles must prove actual managed Voice Live
 audio, approved writes and the entire footprint before G8 passes.

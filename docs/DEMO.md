@@ -5,8 +5,10 @@
 The greenfield proof runs only in fresh **zavag8/westus3** (ADR0038);
 the operator-deleted former eastus2 target and its recovery commands below
 are historical only. Keep the zavaw3 demo untouched and Acs/Share/Direct
-as defaults. Two full empty up/verify cycles are pending, not claimed as
-a rehearsal or a passing G8. After the proof, its media VM will be
+as defaults. First full up/verify/native readiness passes, cycles1/2;
+real Direct3417/3871ms,n10 and approved revision71 are scripted proof,
+not a live Teams rehearsal or a passing final G8. The guarded intervening
+purge is running; cycle two remains. After the proof, its media VM will be
 deallocated with the final application resources retained.
 
 The first empty up failed preflight206.1921s without creating resources.
