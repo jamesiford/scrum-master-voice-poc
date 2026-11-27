@@ -88,7 +88,9 @@ identity change during hosted version creation (request
 279ff8f7e9fdc6c39b993d57de16d99f). AgentDeploy now follows the service's
 explicit instruction: read the current agent and retry that exact conflict
 at most twice. Authentication, unrelated conflicts and failed reads are
-not retried. Its reduced footprint is being purged before the full restart.
+not retried. Reduced-footprint purge passed1742.02s with complete absence;
+all13 documented inputs were read back before the full native-enabled empty
+restart at07:15:07Z. The second mandatory verification remains required.
 
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:

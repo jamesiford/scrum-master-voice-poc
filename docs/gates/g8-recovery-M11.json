@@ -43,7 +43,8 @@
     {"operation": "firstUpVerify", "status": "pass", "completedCycles": 1},
     {"operation": "interveningDown", "start": "2026-11-27T05:54:02.8015505Z", "end": "2026-11-27T06:21:22.0028777Z", "seconds": 1639.2013272, "exit": 0, "status": "pass", "emptyGroupReadback": false, "deletedVaultMatches": 0, "deletedFoundryMatches": 0},
     {"operation": "secondUpIteration1", "start": "2026-11-27T06:23:09.5200057Z", "end": "2026-11-27T06:40:26.2085805Z", "seconds": 1036.6885748, "exit": 1, "status": "failed_and_invalid_full_scope", "source": "8c8ade9bba5b6fcbdb0ef1d4d5fc91e0d71762c9", "actualNativeParameter": "false", "armResourceCount": 14, "countsAsCompleteCycle": false, "foundryError": {"status": 409, "requestId": "279ff8f7e9fdc6c39b993d57de16d99f", "message": "The project workspace identity changed during version creation. Read the current agent and retry."}, "currentAgentRead": {"status": 200, "attempts": 1, "instancePrincipalMatchesFirstCycle": true}},
-    {"operation": "invalidSecondDown", "start": "2026-11-27T06:42:11.3489783Z", "status": "running"},
+    {"operation": "invalidSecondDown", "start": "2026-11-27T06:42:11.3489783Z", "end": "2026-11-27T07:11:13.3733913Z", "seconds": 1742.024413, "exit": 0, "status": "pass", "emptyGroupReadback": false, "deletedVaultMatches": 0, "deletedFoundryMatches": 0},
+    {"operation": "secondUpIteration2", "start": "2026-11-27T07:15:07.5243294Z", "status": "running", "source": "ebfc0853bb431bf19dd7cbf802398d7cd34c8f97", "documentedNativeInput": "true", "actualNativeParameter": "true", "armDeployment": "zavagf-1795763991", "documentedInputReadbacks": 13, "emptyGroupReadback": false, "vault": {"state": "Succeeded", "purgeProtection": null, "softDelete": true, "retentionDays": 7, "rbac": true}},
     {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}
   ],
   "completedCycles": 1,

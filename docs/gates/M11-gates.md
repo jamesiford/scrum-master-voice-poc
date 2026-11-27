@@ -131,6 +131,16 @@ retried. Focused recovery tests6/6 and all three builds pass, solution
 preview dependency-resolution warning, without an SDK upgrade. Formatting
 verification follows targeted line-ending repair; completed cycles remain1/2.
 
+Invalid-footprint purge subsequently **passes1742.0244s (29m02.02s)**,
+06:42:11.3489783Z to07:11:13.3733913Z,exit0,n1. Exact group=false and
+matching deleted-vault/Foundry lists[] read back. All13 documented inputs,
+including native=true, were restored/read after complete cleanup. Guarded
+full second empty up started07:15:07.5243294Z from pushebfc085; mandatory
+verification remains pending, completed cycles1/2. Formatting passes.
+At07:22Z actual ARM deploymentzavagf-1795763991 submits native=true and
+the real second media vault is Succeeded, protection omitted, softDelete/
+EntraRBAC=true, retention7days. This is full provisioning, not native SKIP.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

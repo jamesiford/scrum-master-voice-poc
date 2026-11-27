@@ -22,6 +22,8 @@ Foundry409 workspace-identity conflict after1036.69s. AgentDeploy now reads
 the current agent before at most two retries of that conflict only; other
 errors remain explicit. Focused recovery tests6/6 and all three builds pass;
 the isolated preview tool retains its existing dependency-resolution warning.
+Invalid-footprint purge passes1742.02s; full native-enabled empty retry
+started07:15:07Z after complete absence and13 documented input readbacks.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 

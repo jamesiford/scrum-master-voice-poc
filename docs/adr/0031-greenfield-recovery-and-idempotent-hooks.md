@@ -177,3 +177,9 @@ this is version creation, not image availability or authentication failure.
 bounded service-directed version recovery decision, focused6/6 tests and
 unchanged isolated preview SDK. Another complete empty native-enabled
 up/verify remains necessary.
+
+The invalid footprint purge passes1742.0244s,ending07:11:13.3733913Z.
+Exact group=false/deleted-vault and Foundry[] confirm cleanup. Restored
+and read all13 documented inputs only after purge, including native=true.
+Full second empty up started07:15:07.5243294Z from pushebfc085; no optional
+native omission is accepted. Completed verified cycles remain1/2.
