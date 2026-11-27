@@ -44,6 +44,14 @@ are Succeeded. Known VM+E10+IPv4 tariffUSD0.363150685/hour is now tied to
 that readback, not an assumed disk. AZD's generic soft-deleted-resource
 diagnostic was misleading; the actual API error and omission fix above win.
 
+Failed-footprint purge passed04:51:57.1146390Z to05:09:02.1228983Z,
+**1025.0083s (17m05.01s),exit0,n1**. Exact group absence readback false;
+corrected empty preview passes29s. First empty-up iteration2 started
+05:09:56.5199151Z from35812cd. Both completed verified cycles remain0/2.
+The corrected vault now reaches Succeeded: actual readback has omitted
+purge protection=null, softDelete=true, retention7days, EntraRBAC=true.
+That resolves the observed BadRequest without modifying an existing vault.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

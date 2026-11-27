@@ -4,7 +4,7 @@
   "subscription": "4b0dd31f-5379-4acc-8dcd-60f2929d2513",
   "resourceGroup": "rg-zava-scrum-zavagf",
   "status": "running",
-  "source": "88d79a97427d8d0ccbd5b80f97be2c1ef146e23b",
+  "source": "35812cd29061436b0688abd4512899943ab63fc6",
   "authority": {
     "globalAdministratorReadback": true,
     "unchangedApplicationPatchAndReadback": {"passed": 1, "total": 1},
@@ -36,7 +36,8 @@
   "operations": [
     {"operation": "initialDown", "start": "2026-11-27T04:13:08.8429494Z", "end": "2026-11-27T04:40:11.4755627Z", "seconds": 1622.6326133, "exit": 0, "status": "pass"},
     {"operation": "firstUpIteration1", "start": "2026-11-27T04:41:08.8381940Z", "end": "2026-11-27T04:49:21.3802308Z", "seconds": 492.5420368, "exit": 1, "status": "fail", "source": "88d79a97427d8d0ccbd5b80f97be2c1ef146e23b"},
-    {"operation": "failedIterationDown", "status": "not_run"},
+    {"operation": "failedIterationDown", "start": "2026-11-27T04:51:57.1146390Z", "end": "2026-11-27T05:09:02.1228983Z", "seconds": 1025.0082593, "exit": 0, "status": "pass", "emptyGroupReadback": false},
+    {"operation": "firstUpIteration2", "start": "2026-11-27T05:09:56.5199151Z", "status": "running", "source": "35812cd29061436b0688abd4512899943ab63fc6", "correctedEmptyPreviewSeconds": 29, "correctedVault": {"state": "Succeeded", "purgeProtection": null, "softDelete": true, "retentionDays": 7, "rbac": true}},
     {"operation": "firstUpVerify", "status": "not_run", "completedCycles": 0},
     {"operation": "interveningDown", "status": "not_run"},
     {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}

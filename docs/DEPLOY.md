@@ -64,6 +64,8 @@ First empty up from88d79a9 failed after492.54s with that explicit-false
 Key Vault BadRequest. The selected VM itself allocated successfully with
 a127GB StandardSSD_LRS/V2 OS disk. ADR0031 records the omission correction;
 the failed partial footprint is purged before retrying. Completed cycles0/2.
+That purge passed1025.01s; exact group absence=false and corrected preview
+29s pass. First empty-up retry started05:09:56Z from35812cd.
 
 ### Historical finalisation attempt (superseded prerequisites)
 

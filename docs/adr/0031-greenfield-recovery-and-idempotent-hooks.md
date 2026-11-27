@@ -95,3 +95,11 @@ deleted-vault readback was empty. Seventeen resources were created. The
 selected D4als_v7 VM and127GB StandardSSD_LRS/V2 disk both reached Succeeded,
 so actual allocation is now proven, not merely catalogue availability.
 Known VM+E10disk+IPv4 tariff isUSD0.363150685/hour before variable charges.
+
+The failed footprint purge passed1025.0083s,04:51:57.1146390Z to
+05:09:02.1228983Z,exit0. Exact group absence=false and corrected empty
+preview29s pass. First empty-up iteration2 started05:09:56.5199151Z
+from35812cd. This restart preserves the genuinely empty-cycle criterion.
+Live corrected-vault creation succeeds: purgeProtection=null (omitted),
+softDelete=true, retention7days, EntraRBAC=true. The original API defect is
+resolved; full runtime/verification remains pending.
