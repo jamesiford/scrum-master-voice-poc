@@ -662,13 +662,19 @@ public sealed class VoiceGateway(
     private async Task RecordTimingAsync(int totalMs, int toCreateMs, int voiceMs)
     {
         var orchestrationMs = Math.Max(0, toCreateMs - _turnTranscriptMs - _turnAnalysisMs);
-        using var turnHop = ScrumTelemetry.StartHop("voice.turn", _session.TeamId, _sessionId, _session.CorrelationId);
+        var ended = clock.UtcNow;
+        using var turnHop = ScrumTelemetry.StartHop("voice.turn", _session.TeamId, _sessionId, _session.CorrelationId, ended.AddMilliseconds(-totalMs));
+        turnHop?.SetEndTime(ended.UtcDateTime);
         ScrumTelemetry.Count("turn", _session.TeamId, "first_audio");
         ScrumTelemetry.RecordHop("voice.total", _session.TeamId, totalMs);
         ScrumTelemetry.RecordHop("voice.transcription", _session.TeamId, _turnTranscriptMs);
         ScrumTelemetry.RecordHop("decision.grounding", _session.TeamId, Math.Max(0, _turnAnalysisMs - _turnModelMs));
         ScrumTelemetry.RecordHop("voice.orchestration", _session.TeamId, orchestrationMs);
         ScrumTelemetry.RecordHop("voice.first_audio", _session.TeamId, voiceMs);
+        RecordMeasuredHop("voice.transcription", ended.AddMilliseconds(-totalMs), _turnTranscriptMs);
+        RecordMeasuredHop("decision.grounding", ended.AddMilliseconds(-totalMs + _turnTranscriptMs + _turnModelMs), Math.Max(0, _turnAnalysisMs - _turnModelMs));
+        RecordMeasuredHop("voice.orchestration", _createSentAt.AddMilliseconds(-orchestrationMs), orchestrationMs);
+        RecordMeasuredHop("voice.first_audio", _createSentAt, voiceMs);
         var json = JsonSerializer.Serialize(new
         {
             traceId = turnHop?.TraceId.ToHexString() ?? _session.CorrelationId,
@@ -683,6 +689,12 @@ public sealed class VoiceGateway(
             source = _turnSource,
         });
         await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Timing, _floor.CurrentMemberId, json), _run);
+    }
+
+    private void RecordMeasuredHop(string name, DateTimeOffset started, int milliseconds)
+    {
+        using var hop = ScrumTelemetry.StartHop(name, _session.TeamId, _sessionId, _session.CorrelationId, started);
+        hop?.SetEndTime(started.AddMilliseconds(milliseconds).UtcDateTime);
     }
 
     // One event each time the agent is cut off by someone speaking. In a scripted run nobody talks over the agent on purpose, so each one

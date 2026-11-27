@@ -44,6 +44,28 @@ public sealed class DelegatedWriteTests
     private ISender Sender => _sp.GetRequiredService<ISender>();
 
     [Fact]
+    public void StartHop_MeasuredInterval_PreservesDurationWithoutInventingAParent()
+    {
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == ScrumTelemetry.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+        };
+        ActivitySource.AddActivityListener(listener);
+        var correlation = ActivityTraceId.CreateRandom().ToHexString();
+        var started = StandupHarness.Now;
+
+        using var hop = ScrumTelemetry.StartHop("voice.turn", "t1", Guid.NewGuid(), correlation, started);
+        hop!.SetEndTime(started.AddMilliseconds(321).UtcDateTime);
+        hop.Stop();
+
+        Assert.Equal(correlation, hop.TraceId.ToHexString());
+        Assert.Equal(TimeSpan.FromMilliseconds(321), hop.Duration);
+        Assert.Null(hop.ParentId);
+        Assert.Equal("t1", hop.GetTagItem(ScrumTelemetry.TeamTag));
+    }
+
+    [Fact]
     public async Task Approve_ThroughMediator_UsesPersistedTraceForDecisionAndWriteWithoutContent()
     {
         var followUp = await AddAsync();

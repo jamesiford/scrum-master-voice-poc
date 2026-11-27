@@ -31,8 +31,9 @@ public static class SessionTelemetry
     /// <param name="teamId">The verified owning team.</param>
     /// <param name="sessionId">The session, when known.</param>
     /// <param name="correlationId">The persisted W3C trace id.</param>
+    /// <param name="startTime">An already measured interval start, or the current instant.</param>
     /// <returns>The activity, or null when no exporter listens.</returns>
-    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string? correlationId)
+    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string? correlationId, DateTimeOffset startTime = default)
     {
         if (string.IsNullOrWhiteSpace(correlationId))
         {
@@ -46,7 +47,7 @@ public static class SessionTelemetry
         var links = incoming is not null && incoming.TraceId != traceId ? new[] { new ActivityLink(incoming.Context) } : null;
         return Source.StartActivity(hop, ActivityKind.Internal, parent,
             new ActivityTagsCollection { [TeamTag] = teamId, ["session.id"] = sessionId?.ToString(), ["hop"] = hop },
-            links: links);
+            links: links, startTime: startTime);
     }
 
     /// <summary>Records one content-free event for a verified team.</summary>

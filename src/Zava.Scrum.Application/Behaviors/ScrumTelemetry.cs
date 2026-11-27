@@ -24,9 +24,10 @@ public static class ScrumTelemetry
     /// <param name="teamId">Verified team.</param>
     /// <param name="sessionId">Session, when known.</param>
     /// <param name="correlationId">Persisted trace id; absent legacy ids are counted, not invented.</param>
+    /// <param name="startTime">An already measured interval start, or the current instant.</param>
     /// <returns>The activity, or null when no listener or correlation exists.</returns>
-    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string? correlationId) =>
-        SessionTelemetry.StartHop(hop, teamId, sessionId, correlationId);
+    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string? correlationId, DateTimeOffset startTime = default) =>
+        SessionTelemetry.StartHop(hop, teamId, sessionId, correlationId, startTime);
 
     /// <summary>Counts an event without meeting content.</summary>
     /// <param name="name">Fixed event name.</param>

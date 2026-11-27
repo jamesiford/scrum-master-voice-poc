@@ -33,9 +33,13 @@ internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtte
 
         // A retrospective sorts its notes by rules in code (RetroInterpreter), so only a standup asks the model.
         var modelStarted = System.Diagnostics.Stopwatch.GetTimestamp();
-        var reading = session.Kind == CeremonyKind.Retrospective
-            ? null
-            : await model.ReadAsync(new UtteranceContext(request.Text, request.SpeakerId, request.HolderId, roster, items, request.Asked, request.FocusItemId), ct);
+        UtteranceReading? reading;
+        using (var modelHop = session.Kind == CeremonyKind.Retrospective ? null : ScrumTelemetry.StartHop("decision.model", session.TeamId, session.Id, session.CorrelationId))
+        {
+            reading = session.Kind == CeremonyKind.Retrospective
+                ? null
+                : await model.ReadAsync(new UtteranceContext(request.Text, request.SpeakerId, request.HolderId, roster, items, request.Asked, request.FocusItemId), ct);
+        }
         var modelMs = session.Kind == CeremonyKind.Retrospective ? 0 : (int)System.Diagnostics.Stopwatch.GetElapsedTime(modelStarted).TotalMilliseconds;
         var analysis = UtteranceAnalyser.Analyse(request.Text, request.SpeakerId, request.HolderId, roster, own, knownIds, reading) with { ModelMs = modelMs };
         hop?.SetTag("analysis.source", analysis.Source.ToString());
