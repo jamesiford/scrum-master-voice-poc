@@ -197,3 +197,8 @@ Exact Entra administrator/support actions and continuing
 USD0.363150685/hour VM/disk/IP tariff are in DEPLOY.md. G8 is blocked,
 not complete; earlier first-cycle native readiness does not describe the
 current unbootstrapped VM.
+Final independent mandatory verify passes8/8 in361.4580s and actual
+approver-authored audit/revision58, Direct2821/4189ms,n10,talkovers0.
+It explicitly prints native MEDIA-TLS readiness not verified. Different
+window first-to-final p95 +13.77% exceeds10% tolerance, so G1 failure is
+retained; passing verification alone cannot count the failed up as cycle2.

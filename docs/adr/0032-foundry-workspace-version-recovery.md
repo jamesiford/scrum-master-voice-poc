@@ -51,3 +51,7 @@ the project owner/Microsoft support; DEPLOY.md has the exact identifiers.
 Independent native completion also received a privileged Entra403 and
 requires authorised human action. Thus G8 is blocked at1/2 complete cycles,
 not accepted merely because bounded recovery is implemented.
+Independent Direct verification subsequently passes8/8 in361.4580s,
+2821/4189ms,n10, actual approved audit/revision58. Explicit MEDIA-TLS
+gate remains; neither this result nor the different-window tail estimate
+repairs the failed hosted creation or proves a second full greenfield cycle.

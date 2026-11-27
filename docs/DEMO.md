@@ -56,6 +56,11 @@ G8 is human-blocked,1/2 complete cycles; the allocated current native VM is
 not bootstrapped. Independent legal pages/messaging package generation
 passed without a catalogue authentication retry. Follow DEPLOY.md's exact
 administrator/support actions; retain the untouched zavaw3 demo.
+Final independent Direct verify passes8/8 in361.4580s with an actual
+approver-authored revision58/audit,2821/4189ms,n10,talkovers0.
+It prints native MEDIA-TLS readiness not verified and does not credit
+cycle2. First-to-final tail +13.77% exceeds10% tolerance across different
+windows; do not call it a native/paired acceptance sample.
 
 ## Work IQ signals readiness (M11 8B)
 

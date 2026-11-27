@@ -90,7 +90,7 @@ explicit instruction: read the current agent and retry that exact conflict
 at most twice. Authentication, unrelated conflicts and failed reads are
 not retried. Reduced-footprint purge passed1742.02s with complete absence;
 all13 documented inputs were read back before the full native-enabled empty
-restart at07:15:07Z. The second mandatory verification remains required.
+restart at07:15:07Z. Its subsequent mandatory verification is recorded below.
 
 **Current outcome: blocked, completed cycles 1/2.** The full second empty
 up ended 07:35:37.0795566Z after 1229.5552 s, exit 1. Native was actually
@@ -137,6 +137,19 @@ is not certificate/task/renderer readiness: the current native host is
 unbootstrapped. It remains allocated for authorised continuation at a known
 VM/disk/IP tariff of USD0.363150685/hour plus variable charges.
 The first cycle's native readiness below is historical, not current readiness.
+
+Final mandatory verification independently passed **8/8 in 361.4580 s**,
+07:46:27.3643022Z to 07:52:28.8223331Z, source `7501b98`. It explicitly
+printed `MEDIA-TLS: native readiness NOT verified`; optional VM/DNS hosting
+success is not native acceptance. The Direct Simulated Room completed
+10 timed turns, total p50/p95 **2821/4189 ms**, questions 2836/4189 ms (n=7),
+9 model-read turns, 15 human segments and zero talk-overs.
+Real approved comment on item 1 was authored by the approver; revision 58,
+audit `zsa-1e117c8f2430`, session `17190e28-c4cc-409c-bb6a-a87e23c175f1`.
+Passing independent verification cannot turn the failed full up into cycle 2.
+Against first complete verification 3251/3682 ms (n=9), final p50 is -13.23%
+and p95 +13.77%; the tail point exceeds the 10% tolerance. These are
+different time windows, not causal or paired native evidence; G1 remains failed.
 
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:

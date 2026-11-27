@@ -32,6 +32,11 @@ legal pages and messaging package generation independently passed.
 Current24-resource native VM/vault provisioning is not certificate,
 SYSTEM task or renderer readiness; the current host is unbootstrapped.
 DEPLOY.md records exact administrator/support actions and continuing costs.
+Final independent mandatory verify passes8/8 in361.4580s, approved audit/
+revision58, Direct2821/4189ms p50/p95,n10,talkovers0. It explicitly prints
+native MEDIA-TLS readiness not verified. First-to-final tail +13.77%
+exceeds10% tolerance; these are different windows, not causal parity.
+Failed full up still prevents cycle2 credit; inherited G1 remains failed.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 

@@ -27,7 +27,7 @@ the selected unrestricted four-core D4als_v7 costs USD0.345/hour Windows.
 First empty up/verify cycle passes1828.77s/344.83s, mandatory checks8/8,
 actual approved write/auditrevision55. The127GB StandardSSD_LRS/V2 disk
 and SYSTEM startup task are verified; VM/disk/IP tariffUSD0.363150685/hour
-excludes variable consumption. Second empty up/verify remains pending
+excludes variable consumption. The second full empty up/verify cycle remains incomplete
 after intervening purge passed1639.20s with group/vault/Foundry absence
 readback. The disposable parameter omits the API property,
 because explicit purge-protection false was refused on new vault creation.
@@ -47,6 +47,11 @@ G8 remains human-blocked,1/2 complete cycles; the current24-resource
 footprint is unbootstrapped, unlike first-cycle native readiness.
 Legal pages/messaging package independently pass; DEPLOY.md defines exact
 administrator/support actions. No default adapter or Domain rule changed.
+Final independent verification passes8/8 in361.4580s, approver-authored
+revision58 and complete audit, Direct2821/4189ms,n10. It prints native
+MEDIA-TLS readiness not verified; this cannot credit the failed up as
+cycle2. First-to-final p95 +13.77% exceeds10% tolerance; no causal/native
+parity or threshold change is claimed.
 
 ### What changed in v0.6 (M9)
 

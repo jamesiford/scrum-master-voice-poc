@@ -165,9 +165,39 @@ Independent public-pages and messaging-package hooks passed,exit0,n1
 each,4.1405256s total (07:44:58.8972806Z to07:45:03.0378062Z).
 Catalogue upload remains a named OAuth gate; no new auth attempt.
 
+Final independent mandatory verify **passes8/8 in361.4580309s**,exit0,n1,
+07:46:27.3643022Z to07:52:28.8223331Z, source7501b98. It explicitly
+prints `MEDIA-TLS: native readiness NOT verified`; optional VM/DNS success
+is not native bootstrapping, a live acceptance sample or cycle2 credit.
+Actual session17190e28-c4cc-409c-bb6a-a87e23c175f1, item1revision58,
+audit zsa-1e117c8f2430, approver objectaeaec64b-d720-4996-9022-02fa0dcf043d
+and actual comment authoradmin@MngEnvMCAP763514.onmicrosoft.com verified.
+
+| Hop | Final p50/p95 ms | n |
+|---|---:|---:|
+| Total speech end to first audio | 2821/4189 | 10 |
+| Transcript | 0/95 | 10 |
+| Analyser | 29/140 | 10 |
+| Decision | 162/296 | 10 |
+| Orchestration | 1447/1772 | 10 |
+| Voice first audio | 1064/2248 | 10 |
+
+Questions2836/4189ms,n7; modelread9/10; humansegments15; talkovers0,n1run.
+First complete3251/3682ms,n9 to final2821/4189ms,n10 is p50-13.23%,
+**p95+13.77%, fails10% tail tolerance**. Different time windows and
+unchanged hot-path code are not causal/paired parity; G1 remains failed.
+Inherited zavaw3 baseline3262/5307ms,n12 and earlier failed point estimates
+are retained. Completed full greenfield cycles stay1/2.
+Final required solution/portal/bridge builds all pass,59.5560s total,
+07:54:32.6265882Z to07:55:32.1825998Z; .NET41.61s,0warnings/errors.
+Existing portal606.42KB advisory and isolated preview NU1603 remain.
+No full suites rerun. Final read-only exact-group inventory confirms24 ARM
+resources; no resource, policy, role or protected-environment mutation.
+
 | Gate | Current status | Denominator and decisive evidence |
 |---|---|---|
 | G8 full greenfield | Human-blocked; failed goal | 1/2 complete cycles; persistent409 plus actual privileged403 |
+| G1 Direct latency | Failed point estimate; historical failures retained | First-to-final p95+13.77%,n9/10; native/paired samples n0 |
 | Native G6/live G1/board | Not_run | New native meeting samples n0; allocated VM is not bootstrapped |
 
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
