@@ -3,7 +3,7 @@
 ## Current G8 fresh westus3 proof
 
 Operator-selected fresh **zavag8/westus3** replaces the deleted former
-eastus2 target (ADR0038). New successful full empty cycles0/2, pending.
+eastus2 target (ADR0038). New successful full empty cycles1/2.
 Prior404/409 failures remain historical evidence, not a support prerequisite
 or an authorised target. Portal baseline consent/app roles and dedicated
 media Calls.AccessMedia.All setup succeed automatically. Native and
@@ -11,7 +11,7 @@ real Teams acceptance remain separate. No protected deployment is mutated.
 
 | Gate | Current verdict | Actual evidence |
 | --- | --- | --- |
-| G8 fresh westus3 greenfield | Not_run, fullcycles0/2 | Privileged read n1; automated portal/media consent pass; lifecycle14/14, greenfield20/20, architecture16/16 and all3builds/.NET0warnings/errors. Initial full up206.1921s fails unavailable standalone realtime SKU before any resource. Managed Voice Live needs no standalone deployment: declarative correction preserves the real model/default adapters; updated ARM/what-if5/5, Create39/Modify0/Delete0 pass. First full retry running; two complete up/verify cycles and final VM-only deallocation pending. See g8-proof-3-M11.json/ADR0038/0039. |
+| G8 fresh westus3 greenfield | Pending, fullcycles1/2 | Initial up206.1921s fails unused standalone realtime SKU before resources. Managed-model correction preserves real Voice Live/default adapters; full retryup1665.7626s and mandatoryverify8/8/407.4025s/native5/5 pass. Actual Direct3417/3871ms,n10; questions3442/3871ms,n8; modelreads8/10,humansegments18/talkovers0; approverrevision71/auditzsa-056f2d09bbc9. All24resources/nativeGen2VM/ownhostedversion1active; no project404. Guarded intervening purge running; second full empty up/verify/finalVM-onlydeallocation pending. Fresh cataloguePOST403 is separate namedhumanGate. Lifecycle14/14,greenfield20/20,architecture16/16/all3builds/.NET0warnings/errors pass. See g8-proof-3-M11.json/ADR0038/0039. |
 
 ## Film implementation checkpoint (27 November 2026)
 

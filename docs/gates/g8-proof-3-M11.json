@@ -7,7 +7,7 @@
   "gate": "G8",
   "verdict": "not_run",
   "requiredFullEmptyCycles": 2,
-  "completedFullEmptyCycles": 0,
+  "completedFullEmptyCycles": 1,
   "administrator": {
     "privilegedReadSucceeded": true,
     "sampleSize": 1,
@@ -44,7 +44,7 @@
     "remoteBuildsComplete": true,
     "hostedRemoteBuildRunId": "ds3",
     "apiRevision": "ca-api-uaogwrz6uq4hc--azd-1795819927",
-    "fullUpAndVerificationComplete": false
+    "fullUpAndVerificationComplete": true
   },
   "media": {
     "size": "Standard_D4als_v7",
@@ -67,15 +67,45 @@
       "standaloneGlobalRealtimeQuotaUsed": 10,
       "standaloneGlobalRealtimeQuotaLimit": 10,
       "cycleCredit": false
+    },
+    {
+      "operation": "full_up_and_verify",
+      "iteration": 1,
+      "attempt": 2,
+      "start": "2026-11-27T22:34:41.8722897+00:00",
+      "upEnd": "2026-11-27T23:02:27.6348744+00:00",
+      "upSeconds": 1665.7625847,
+      "upExitCode": 0,
+      "verifyStart": "2026-11-27T23:02:50.2982485+00:00",
+      "verifyEnd": "2026-11-27T23:09:37.7007001+00:00",
+      "verifySeconds": 407.4024516,
+      "verifyExitCode": 0,
+      "mandatoryChecks": 8,
+      "nativeReadyChecks": 5,
+      "timedTurns": 10,
+      "totalP50Ms": 3417,
+      "totalP95Ms": 3871,
+      "questions": 8,
+      "questionP50Ms": 3442,
+      "questionP95Ms": 3871,
+      "modelReadTurns": 8,
+      "humanSegments": 18,
+      "talkOvers": 0,
+      "adoRevision": 71,
+      "auditTag": "zsa-056f2d09bbc9",
+      "resources": 24,
+      "cycleCredit": true
     }
   ],
   "defaults": { "bridge": "Acs", "board": "Share", "voice": "Direct" },
   "protectedEnvironmentsMutated": false,
-  "humanGates": [],
+  "humanGates": [
+    "ZAVAG8-CATALOGUE: one authorised fresh media POST returns40323:04:07Z, request8364af43-f368-4df1-b400-98780c476131, missing AppCatalog.Submit/AppCatalog.ReadWrite.All/Directory.ReadWrite.All OAuth scopes. Teams administrator uploads only both fresh packages through Teams admin centre; exact DEPLOY action. No auth retry/broader CLI grant."
+  ],
   "notes": [
     "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
     "Previous failures remain historical and do not establish a support prerequisite.",
-    "Actual first remote API/bridge/hosted builds pass; full postdeploy and verification remain pending.",
+    "First full postdeploy/verification pass; real managed Voice Live audio has10 timed turns without standalone deployments. Intervening guarded purge is running.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]
 }

@@ -158,7 +158,11 @@ Read back exact group, matching soft-deleted account/vault absence and
 the preserved native opt-in before cycle two. Record every failed attempt;
 only successful FULL up plus mandatory verification earns cycle credit.
 After the proof, deallocate only the zavag8 media VM and keep its resources.
-Measurements and costs are pending; the current G8 verdict is not a pass.
+First full cycle passes: up1665.7626s and mandatoryverify8/8/407.4025s,
+nativeRequireReady5/5, Direct3417/3871ms,n10, approverrevision71 with
+complete audit. All24 resources and the real hosted version1 are present;
+the guarded intervening purge is running. The second full empty cycle and
+final VM-only deallocation remain required, so G8 is not yet a pass.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not
@@ -169,6 +173,22 @@ Azure OpenAI deployment. For this fresh proof set
 standalone deployment for existing inputs. Chat/decision/native remain
 required, and both full live verifications must pass. No model substitution,
 shared endpoint, quota change or protected environment mutation is made.
+
+**ZAVAG8-CATALOGUE, attempted once and human-gated:** the authorised
+new media package POST returns HTTP403 at23:04:07Z, request
+`8364af43-f368-4df1-b400-98780c476131`:
+`Missing scope permissions on the request. API requires one of 'AppCatalog.Submit, AppCatalog.ReadWrite.All, Directory.ReadWrite.All'.`
+Administrator privilege does not add those OAuth scopes. No authentication
+retry or broader CLI permission grant is made. A Teams administrator must
+use Teams admin centre > Teams apps > Manage apps > Upload new app for
+`appPackage\dist\zava-media-bot.zip`, verified external id
+`acb3c894-4b16-4e82-bd2b-69a91e34b2fc`, and the final
+`appPackage\dist\zava-scrum-agent-zavag8-1.1.0.zip` generated after cycle two.
+Upload only these fresh packages, never replace the completed zavaw3
+entries or the old mcm app. Organiser meeting/chat install, RSC and lobby
+admission remain separate real-human gates. This catalogue refusal does
+not turn a full deployment/scripted verification into Teams acceptance
+or block the G8 infrastructure repeatability proof.
 
 ## Historical final G8 attempts and recovery
 
