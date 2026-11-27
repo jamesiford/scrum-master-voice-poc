@@ -23,6 +23,11 @@ services:
       remoteBuild: true
 # Everything Bicep cannot express is scripted here and is idempotent (docs/DEPLOY.md, ADR 0015a).
 hooks:
+  predown:
+    - shell: pwsh
+      run: ./infra/hooks/foundry-cleanup.ps1
+      interactive: false
+      continueOnError: false
   preprovision:
     - shell: pwsh
       run: ./infra/hooks/preflight.ps1
