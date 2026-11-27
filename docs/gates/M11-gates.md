@@ -28,6 +28,22 @@ Known selected VM+E10disk+staticIPv4 estimateUSD0.363150685/hour,
 before usage-based storage/vault/operations/egress; actual disk is still
 unverified. Basic ACRUSD0.1666/day. Do not present these as an all-in bill.
 
+First empty-up iteration started04:41:08.8381940Z from88d79a9 and created
+target resources, but media vault creation failed BadRequest:
+`The property "enablePurgeProtection" cannot be set to false. Enabling the
+purge protection for a vault is an irreversible action.`
+No matching deleted vault exists. ADR0031 records the correction: omit
+that property for the explicitly disposable vault rather than emitting
+false; defaults still emit true. Bicep and16focused checks pass.
+This iteration is not a passed cycle; its partial footprint must be purged
+before retrying a full empty up. Final duration is recorded when it exits.
+
+Iteration exited04:49:21.3802308Z,**492.5420s,exit1,n1**;17target resources
+were created. Actual D4als_v7 allocation and127GB StandardSSD_LRS/V2 disk
+are Succeeded. Known VM+E10+IPv4 tariffUSD0.363150685/hour is now tied to
+that readback, not an assumed disk. AZD's generic soft-deleted-resource
+diagnostic was misleading; the actual API error and omission fix above win.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

@@ -49,6 +49,8 @@ New documented recovery parameters preserve existing defaults:
 `MEDIA_VM_IMAGE_SKU=2022-datacenter-g2` selects the compatible image;
 `MEDIA_VAULT_PURGE_PROTECTION=false` is used **only for disposable zavagf**.
 The vault keeps soft delete, Entra RBAC and protected secret delivery.
+The false parameter omits the API property: Key Vault create/update rejects
+an explicit `enablePurgeProtection=false`, even on a new vault.
 Purge protection defaults true everywhere else and cannot be disabled after
 creation. Selecting false before this new vault is created permits the
 explicitly authorised `down --purge` without a seven-day wait. No existing
@@ -56,6 +58,14 @@ zavaw3 vault protection or tenant policy is changed.
 The postprovision registry role gate confirms AcrPull before image deployment.
 Native hooks admit the exact zavagf/eastus2 group as well as the original
 zavaw3/westus3 group; this run executes **only zavagf**.
+
+Initial old-group purge passed1622.63s and empty-group readback was false.
+First empty up from88d79a9 failed after492.54s with that explicit-false
+Key Vault BadRequest. The selected VM itself allocated successfully with
+a127GB StandardSSD_LRS/V2 OS disk. ADR0031 records the omission correction;
+the failed partial footprint is purged before retrying. Completed cycles0/2.
+
+### Historical finalisation attempt (superseded prerequisites)
 
 Only the old **zavagf/eastus2**, resource group `rg-zava-scrum-zavagf`,
 subscription `4b0dd31f-5379-4acc-8dcd-60f2929d2513`, is authorised for

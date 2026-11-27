@@ -110,15 +110,14 @@ resource vault 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: 'kv-media-${token}'
   location: location
   tags: tags
-  properties: {
+  properties: union({
     tenantId: tenant().tenantId
     sku: { name: 'standard', family: 'A' }
     enableRbacAuthorization: true
     enableSoftDelete: true
-    enablePurgeProtection: vaultPurgeProtection
     softDeleteRetentionInDays: 7
     publicNetworkAccess: 'Enabled'
-  }
+  }, vaultPurgeProtection ? { enablePurgeProtection: true } : {})
 }
 
 resource storage 'Microsoft.Storage/storageAccounts@2025-01-01' = {

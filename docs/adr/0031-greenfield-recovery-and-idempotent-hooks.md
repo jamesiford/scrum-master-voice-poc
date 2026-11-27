@@ -74,3 +74,24 @@ claimed. [Recovery evidence](../gates/g8-recovery-M11.json) is checkpointed.
 Initial purge completed04:40:11.4755627Z,exit0,1622.6326s (27m02.63s).
 The exact old group and soft-deleted Foundry account were removed/purged.
 First up/verify remains pending; this successful teardown is not G8 closure.
+
+## First empty-up iteration
+
+The first empty up started04:41:08.8381940Z from88d79a9. The media vault
+creation returned BadRequest: `The property "enablePurgeProtection" cannot
+be set to false. Enabling the purge protection for a vault is an
+irreversible action.` No matching deleted vault exists, so this is a new
+template defect, not an attempt to alter existing protection.
+[Current Learn](https://learn.microsoft.com/dotnet/api/microsoft.azure.powershell.cmdlets.keyvault.models.vaultcreateorupdateparameters.enablepurgeprotection?view=az-ps-latest)
+explicitly says the create/update property does not accept false.
+The disposable parameter now omits the property; the default still emits
+true. Soft delete, retention and RBAC are unchanged. Bicep compilation and
+16/16 focused hook checks pass. This failed iteration is not a completed
+cycle; purge its partial footprint and restart from an empty group.
+
+The failed iteration exited04:49:21.3802308Z,492.5420s,exit1. AZD's generic
+soft-deleted-resource suggestion misclassified the actual BadRequest;
+deleted-vault readback was empty. Seventeen resources were created. The
+selected D4als_v7 VM and127GB StandardSSD_LRS/V2 disk both reached Succeeded,
+so actual allocation is now proven, not merely catalogue availability.
+Known VM+E10disk+IPv4 tariff isUSD0.363150685/hour before variable charges.

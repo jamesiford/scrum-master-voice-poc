@@ -4,7 +4,7 @@
   "subscription": "4b0dd31f-5379-4acc-8dcd-60f2929d2513",
   "resourceGroup": "rg-zava-scrum-zavagf",
   "status": "running",
-  "source": "a2e34e1ca6118fe666bd846b9f1fb013bca35c26",
+  "source": "88d79a97427d8d0ccbd5b80f97be2c1ef146e23b",
   "authority": {
     "globalAdministratorReadback": true,
     "unchangedApplicationPatchAndReadback": {"passed": 1, "total": 1},
@@ -35,14 +35,17 @@
   "validation": {"threeBuilds": "pass", "dotnetWarnings": 0, "dotnetErrors": 0, "focusedHookChecks": {"passed": 16, "total": 16}, "schema": "pass", "bicep": "pass", "gen2Image": "pass", "previewSeconds": 27, "package": "pass", "format": "pass", "fullSuitesRerun": false},
   "operations": [
     {"operation": "initialDown", "start": "2026-11-27T04:13:08.8429494Z", "end": "2026-11-27T04:40:11.4755627Z", "seconds": 1622.6326133, "exit": 0, "status": "pass"},
+    {"operation": "firstUpIteration1", "start": "2026-11-27T04:41:08.8381940Z", "end": "2026-11-27T04:49:21.3802308Z", "seconds": 492.5420368, "exit": 1, "status": "fail", "source": "88d79a97427d8d0ccbd5b80f97be2c1ef146e23b"},
+    {"operation": "failedIterationDown", "status": "not_run"},
     {"operation": "firstUpVerify", "status": "not_run", "completedCycles": 0},
     {"operation": "interveningDown", "status": "not_run"},
     {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}
   ],
   "completedCycles": 0,
   "requiredCycles": 2,
-  "newAzureResourcesCreated": 0,
-  "failures": [],
+  "newAzureResourcesCreated": 17,
+  "actualMediaAllocation": {"vm": "vm-media-pi7fumnppr2hk", "size": "Standard_D4als_v7", "state": "Succeeded", "disk": "vm-media-pi7fumnppr2hk-disk-os-01", "diskSizeGB": 127, "diskSku": "StandardSSD_LRS", "generation": "V2", "knownVmDiskIPv4HourlyUSD": 0.363150685, "priceBasis": "Public USD Windows consumption/E10/staticIPv4 tariffs, excludes variable charges and conditional disk mount"},
+  "failures": [{"iteration": 1, "resource": "kv-media-pi7fumnppr2hk", "code": "BadRequest", "message": "The property \"enablePurgeProtection\" cannot be set to false. Enabling the purge protection for a vault is an irreversible action.", "deletedVaultMatches": 0, "correction": "Omit enablePurgeProtection for the explicitly disposable vault; default continues emitting true", "azdSuggestion": "Generic soft-deleted-resource suggestion was misleading"}],
   "boundaries": ["No zavaw3 or mcm mutation", "No quota request, subscription/region change, tenant policy change or unrelated role", "Acs/Share/Direct and stable hosted4 retained in zavaw3", "Operator-completed zavaw3 Graph/WorkIQ consents and catalogue uploads do not prove real user, source, billing, Exchange, CI or per-meeting RSC acceptance"],
   "historicalFailuresRetained": ["G1 fallback point estimates", "G4 exact board identity", "G7 spoken date release check", "Earlier D4s_v5 NotAvailableForSubscription"]
 }
