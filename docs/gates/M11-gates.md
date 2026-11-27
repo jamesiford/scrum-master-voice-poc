@@ -1,10 +1,111 @@
 # M11 gates
 
+## Final validation (26 November 2026)
+
+The final checkpoint runs the configured suites once, aggregated, without
+changing goldens, thresholds, Domain rules, prompts or adapters. Gate failures
+remain failures even when build checks pass. ADR 0030 records this boundary.
+
+| Gate | Final status | Measurement and denominator |
+| --- | --- | --- |
+| G1 latency | Failed; formal/native acceptance not_run | Latest Direct 3262/5307 ms p50/p95, n12; versus preceding 3398/4707 ms n12, p50 -4.00%, p95 +12.75% (10% tolerance). Historical p50 +6.19% remains failed; native n0 |
+| G2 identity/attribution | Native not_run; portal identity measured | Exact approver object id and ADO author n1; native speaker/overlap n0 |
+| G3 audit/author | Measured portal subset | Final verify 8/8; actual positive approval/write/audit n1, revision53 on item1, tag zsa-35420fdf8067. New negative/Teams/Copilot samples n0 |
+| G4 parity/rehearsal | Failed exact board parity; configured suites pass after focused retry | .NET947/947, bridge unit13/13, standup6/6 and retrospective6/6 on unchanged focused retry. Initial real E2E11/12 retained; exact board identity still differs11/11; real Teams/Copilot rehearsal n0 |
+| G5 Copilot | Not_run | Consenting/permission-negative/streaming live turns n0; local tests are not channel proof |
+| G6 native join | Not_run | Trusted HTTPS, running VM, no-recording/cap1, actual1280x720renderer and unauthenticated401 measured; stored-link joins0/10 |
+| G7 trace/evaluation | Failed release gate | Real synthetic n72: intent/items98.6%, kinds94.4%, dates75%n8; one timeout, five fallbacks, missing binary/intent probabilities9/1. Trace/span metadata12/12; live quality/modelCI n0 |
+| G8 final greenfield | Failed prerequisite; unchanged | D4s_v5 NotAvailableForSubscription in eastus2, quota0/100 used; privileged deployer authority absent. Both final up/verify cycles n0; no G8 operation here |
+| G9 multi-team | Not_run in final checkpoint | New concurrency/second-org/human matrix samples n0; historical three sessions/36turns/three chains retained |
+| G10 knowledge | Not_run, unbuilt | Retrieval/citation/permission/latency n0; exact consent/corpus/two-user gates in DEPLOY.md |
+| G11 Work IQ | Not_run, unbuilt | Owner-OBO/source/privacy/latency n0; exact consent/billing/source gates in DEPLOY.md |
+
+### Aggregate suites and checks
+
+One `dotnet test ZavaScrum.slnx -c Release --no-build --no-restore` invocation
+passes **947/947**, failed0/skipped0. All seven retained TRX files were
+independently summed. No full .NET suite was rerun.
+
+| Suite | Final passed / total |
+| --- | ---: |
+| Domain | 424 / 424 |
+| Application | 225 / 225 |
+| Infrastructure | 93 / 93 |
+| Api | 168 / 168 |
+| Architecture | 14 / 14 |
+| AgentHost | 3 / 3 |
+| Windows MediaBot | 20 / 20 |
+| Bridge unit | 13 / 13 |
+| Bridge standup E2E | 6 / 6, 371.16s |
+| Bridge retrospective E2E, initial | 5 / 6, 351.44s |
+| Bridge retrospective E2E, focused retry | 6 / 6, 267.29s |
+| Portal | 0 configured tests; no runner or test script |
+
+The initial real E2E aggregate has11passes/1failure/0cancelled/0skipped in
+723.75s. Its retrospective records step-away and circle-back, but Voice Live
+says "Thank you, noted. I'll hand the floor back to the facilitator" instead
+of the requested question. The unchanged cast consequently never delivers
+Daniel's correction. The actual team-scoped circle-back prompt reads back as
+`Default` with the correct question; no deterministic interpretation defect
+is established. One focused unchanged retrospective retry passes6/6 in
+267.29s (runner268.17s), failed0/cancelled0/skipped0. No code, prompt,
+cast or assertion change was made; the initial deviation remains a reliability
+risk, not a fixed deterministic defect. No second retry or passing-suite rerun.
+All **972 configured unique checks** now have passing evidence:947.NET plus
+25bridge. The retry executes six existing cases, not six new tests.
+
+All three builds, both TypeScript typechecks/ESLint/Prettier and full C#
+format verification pass. Release solution build27.67s, zero warnings/errors;
+portal retains its existing606.42KB chunk advisory. Retained raw test,
+verification and model output belongs to the ignored run log, not the repo.
+No runtime deployment, resource configuration, role, quota or policy change;
+no resource added (fixed USD0/hour). Local E2E uses isolated Json data and
+attached API/bridge helpers, not deployed data or approval authority.
+Both helpers are stopped, ports5089/5099 released and the exact temporary
+Json directory/launcher removed. Public content-free counters/provenance are
+in [final-validation-M11.json](final-validation-M11.json).
+
+### Final deployed harness
+
+Explicit `azd exec -e zavaw3` runs the existing `verify.ps1 -Runs 1` and retains
+its GateRunner output. All eight mandatory checks pass, including actual
+approver-authored `verify-49f548e2`, revision53 on item1, and the complete
+`zsa-35420fdf8067` audit chain. Session
+`aab034b6-ab06-47b9-939f-58c2e45b4e62`, trace
+`35420fdf80672ff45b53aab3d18c3c4d`; all12turns have trace/span metadata.
+One scripted Direct run takes380s,19transcript pieces, zero talk-overs;
+questions p50/p953330/5307ms,n9; decision model10/12turns.
+
+| Hop | p50 ms | p95 ms | n |
+| --- | ---: | ---: | ---: |
+| Total | 3262 | 5307 | 12 |
+| Speech end to transcript | 0 | 205 | 12 |
+| Analyser | 26 | 27 | 12 |
+| Decision model | 141 | 166 | 12 |
+| Orchestration | 1507 | 2062 | 12 |
+| Voice Live first audio | 1350 | 3720 | 12 |
+
+Versus the preceding step9after3398/4707ms,n12, latestp50-4.00% but
+p95+12.75% fails the unchanged10% tail tolerance. Versus step9before
+3200/5600ms,n10, latest+1.94%/-5.23%; neither comparison erases any
+historical failure or establishes causality. One scripted run is not formal
+G1's model matrix, native latency, human attribution or rehearsal.
+The printed Teams checklist is unchecked historical ACS guidance, not proof.
+
+The final real G7 gate exits1:72synthetic cases, dates75% eligible n8,
+one B01 timeout2520ms, five rules fallbacks, escaped ids0, rejected
+candidates0/35 and three outside-id challenges. Binary threshold0.7:
+precision94.4%n71,639probabilities, missing9, Brier0.0302/ECE0.0756.
+Intent threshold0.6:precision98.5%n67,71probabilities, missing1,
+Brier0.0405/ECE0.1079. Golden before/after SHA256 is unchanged:
+`e1c580be02de6629818a22f597b2b1c721eae3efc87b397ed52b055812c8ae37`,
+the historical semantic-LF hash. No retry discards this failure.
+
 ## Final documentation checkpoint (conductor 10, 26 November 2026)
 
 This is the final **measured status**, not an all-green release claim.
 Historical stage results below remain evidence, not current native/Copilot
-proof. Full suites run once at the following conductor checkpoint.
+proof. The final validation above supersedes only the pending test checkpoint.
 
 | Gate | Final status | Measurement and denominator |
 | --- | --- | --- |

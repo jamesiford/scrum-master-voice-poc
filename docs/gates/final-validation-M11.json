@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-26",
+  "step": "final-validation",
+  "branch": "m11-p10",
+  "testedSourceCommit": "a3c1bb2b7ecae5b24628c676f5b71012c25c800c",
+  "environment": "zavaw3",
+  "region": "westus3",
+  "runtimeDeploymentPerformed": false,
+  "resourceConfigurationChanged": false,
+  "goldensThresholdsDomainPromptsCastChanged": false,
+  "configuredUniqueChecks": 972,
+  "dotnet": {
+    "aggregateRuns": 1,
+    "passed": 947,
+    "failed": 0,
+    "skipped": 0,
+    "suites": {"Domain":424,"Application":225,"Infrastructure":93,"Api":168,"Architecture":14,"AgentHost":3,"WindowsMediaBot":20}
+  },
+  "bridgeUnit": {"runs":1,"passed":13,"failed":0,"cancelled":0,"skipped":0,"durationMs":13859.3095},
+  "bridgeE2eInitial": {
+    "aggregateRuns":1,"passed":11,"failed":1,"cancelled":0,"skipped":0,"durationMs":723748.762,
+    "standup":{"passed":6,"failed":0,"durationMs":371160.8055},
+    "retrospective":{"passed":5,"failed":1,"durationMs":351443.8707},
+    "failure":"Voice Live omitted the circle-back question; the unchanged cast did not deliver Daniel's correction.",
+    "effectiveCircleBackPromptSource":"Default"
+  },
+  "bridgeRetrospectiveFocusedRetry": {"runs":1,"passed":6,"failed":0,"cancelled":0,"skipped":0,"suiteDurationMs":267292.9393,"runnerDurationMs":268173.9228,"codePromptCastAssertionsChanged":false},
+  "portalConfiguredTests": 0,
+  "buildChecks": {"dotnet":"pass","dotnetWarnings":0,"dotnetErrors":0,"dotnetDurationSeconds":27.67,"bridge":"pass","portal":"pass","dotnetFormat":"pass","bridgeTypecheckLintPrettier":"pass","portalTypecheckLintPrettier":"pass","existingPortalChunkKb":606.42},
+  "verification": {
+    "runs":1,"passed":8,"failed":0,
+    "sessionId":"aab034b6-ab06-47b9-939f-58c2e45b4e62",
+    "traceId":"35420fdf80672ff45b53aab3d18c3c4d",
+    "auditTag":"zsa-35420fdf8067",
+    "approvalWriteSamples":1,"adoWorkItemId":1,"adoRevision":53,
+    "exactCallerAndRevisionAuditVerified":true,
+    "newNegativeApprovalSamples":0,
+    "nativeHostingReady":true,"nativeHumanJoinSamples":0
+  },
+  "latency": {
+    "runs":1,"turns":12,"questions":9,"humanSegments":19,"talkOvers":0,"runSeconds":380,
+    "modelReadTurns":10,"traceSamples":12,"spanSamples":12,
+    "totalP50Ms":3262,"totalP95Ms":5307,"questionP50Ms":3330,"questionP95Ms":5307,
+    "precedingRun":{"turns":12,"p50Ms":3398,"p95Ms":4707},
+    "p50ChangeVsPrecedingPercent":-4.002354326074161,
+    "p95ChangeVsPrecedingPercent":12.746972594008923,
+    "unchangedP50TolerancePercent":5,"unchangedP95TolerancePercent":10,
+    "fallbackPointStatus":"failed","formalNativeSamples":0,
+    "hops":[
+      {"name":"speechEndToTranscript","p50Ms":0,"p95Ms":205,"n":12},
+      {"name":"analyser","p50Ms":26,"p95Ms":27,"n":12},
+      {"name":"decisionModel","p50Ms":141,"p95Ms":166,"n":12},
+      {"name":"orchestration","p50Ms":1507,"p95Ms":2062,"n":12},
+      {"name":"voiceFirstAudio","p50Ms":1350,"p95Ms":3720,"n":12}
+    ]
+  },
+  "decisionEvaluation": {
+    "generatedAtUtc":"2026-11-27T03:20:40.8439417+00:00",
+    "runs":1,"samples":72,"teamId":"team-evaluation",
+    "goldenSha256":"e1c580be02de6629818a22f597b2b1c721eae3efc87b397ed52b055812c8ae37",
+    "beforeAfterHashMatches":true,"model":"Microsoft-Decision-1.1","deployment":"zava-decision",
+    "intentAccuracy":0.9861111111111112,"itemAccuracy":0.9861111111111112,
+    "commentAccuracy":0.9444444444444444,"dateAccuracy":0.75,"dateSamples":8,
+    "failures":1,"timeoutCase":"B01","timeoutLatencyMs":2520,"ruleFallbacks":5,
+    "candidateIds":35,"rejectedIds":0,"outsideIdChallenges":3,"escapedIds":0,
+    "binaryCalibration":{"threshold":0.7,"samples":639,"missing":9,"accepted":71,"acceptedPrecision":0.9436619718309859,"brier":0.03020837819740116,"ece":0.07555457787042791},
+    "intentCalibration":{"threshold":0.6,"samples":71,"missing":1,"accepted":67,"acceptedPrecision":0.9850746268656716,"brier":0.04053285664477167,"ece":0.1078558263159198},
+    "releasePassed":false,"exitCode":1,"liveQualitySamples":0
+  },
+  "gates":{"G1":"failed","G2":"not_run","G3":"measured","G4":"failed","G5":"not_run","G6":"not_run","G7":"failed","G8":"failed","G9":"not_run","G10":"not_run","G11":"not_run"},
+  "historicalFailuresRetained":true,
+  "g8Operations":0,
+  "g8Reason":"Standard_D4s_v5 NotAvailableForSubscription in eastus2 despite regional/DSv5 quota0/100used; active privileged deployer authority unproven. Both final up/verify cycles n0.",
+  "newHumanFixtureSamples":0,
+  "ownedLocalHelpersStopped":true,
+  "temporaryLocalDataRemoved":true,
+  "addedFixedUsdPerHour":0
+}

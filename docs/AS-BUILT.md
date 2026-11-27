@@ -1,6 +1,6 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 26, 2026 (M11 documentation checkpoint).
+**Date:** November 26, 2026 (M11 final validation).
 
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
@@ -8,8 +8,10 @@ failed readiness/paired protocol (424, completed paired samples n=0).
 Native Windows hosting/TLS/renderer are verified, not native Teams
 attribution/join/board acceptance. Five delegated Copilot skills and package
 1.1.0 are implemented, with real Copilot G5 still open. G7 revised dates fail
-(75%, n=8), and latest fallback p50 regression fails (+6.19%, n=10/12).
-Final G8 proof and full-suite checkpoint are separate from historical passes.
+(75%, n=8); latest fallback p95 regression fails (+12.75%, n=12/12),
+and historical p50 +6.19% remains failed. Final configured suites have
+passing evidence after one unchanged retrospective retry; its initial
+model deviation remains a reliability risk. Final G8 proof remains failed.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 
@@ -179,14 +181,23 @@ Azure DevOps, external meeting state or the whole roster/cast configuration.
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-The M11 checkpoint after prompt 7 (26 November 2026) passes 849 .NET tests:
-403 Domain, 170 Application, 88 Infrastructure, 151 Api, 14 architecture,
-3 AgentHost and 20 Windows MediaBot. Bridge unit tests pass 12/12. All three
+The M11 final checkpoint (26 November 2026) passes947.NET tests:
+424Domain,225Application,93Infrastructure,168Api,14architecture,
+3AgentHost and20WindowsMediaBot in one aggregate run, no failures/skips.
+Bridge unit tests pass13/13. All three
 builds and both TypeScript lint/typecheck checks pass. The portal has no
 configured test suite; build/lint is not reported as a test pass.
-Full solution formatting passes after whitespace-only corrections. Both real
-Simulated Room E2E suites pass 6/6 each, in one aggregate invocation:
-standup 366.4 s, retrospective 298.3 s. Measured evidence is recorded in
+Full solution formatting passes without code changes. One real E2E aggregate
+passes standup6/6 in371.16s and retrospective5/6 in351.44s. Voice Live
+omits the requested circle-back question, so the cast never supplies Daniel's
+correction; the effective default template is correct. One unchanged focused
+retrospective retry passes6/6 in267.29s. No code/prompt/cast/assertion change
+or aggregate rerun; all972unique configured checks have passing evidence,
+but the initial failure remains a live model reliability risk.
+Final zavaw3 verify passes8/8 with actual approver-authored revision53 and
+complete audit chain; scripted12turn latency3262/5307ms fails the preceding
+run's p95 tolerance. G7 real synthetic n72 still fails dates75%n8 and has
+one timeout/missing probabilities9/1. Measured evidence is recorded in
 `gates/M11-gates.md`. The existing Simulated Room standup has six checks via
 `npm run e2e --prefix src/meeting-bridge`; the retrospective has six via
 `npm run e2e:retro --prefix src/meeting-bridge`. A scripted "messy standup"

@@ -202,6 +202,13 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 ## Retrospective by voice (M9b)
 Needs the stack running, a seeded sandbox and an Azure Speech resource for the cast voices (as for the scripted standup). About 5 minutes in the Simulated Room.
 
+Final validation observed one omitted circle-back question, leaving Daniel's
+self-correction unspoken; the effective default prompt was correct. Initial
+retrospective5/6, then one unchanged focused retry6/6 in267.29s. This is a
+live model reliability risk, not a removed assertion or a deterministic fix.
+Retain that evidence when rehearsing; scripted success does not prove Teams
+or native acceptance. See ADR0030 and `gates/M11-gates.md`.
+
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Retrospective** tab > **Prepare retro**. A card **Run it by voice** appears.
 3. Press **Start in Simulated Room**. The room opens in a new tab: press **Start standup** after ticking the autopilot box (or open the room link with `&autopilot=1`, as the e2e does). The cast (`demo/cast/payments-retro.yaml`) plays three people: Daniel steps away and is circled back to, Maya gives one unclear note so the agent asks "Is that something to start, stop or keep doing?", and Daniel corrects himself inside one answer.

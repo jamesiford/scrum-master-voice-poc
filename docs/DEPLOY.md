@@ -11,6 +11,26 @@ See [ADR 0015a](adr/0015a-greenfield-deployment-model.md),
 [measured gates](gates/M11-gates.md). Knowledge/Work IQ are unbuilt and add
 no delivered sources, Search service or signal resources.
 
+## Final validation is not an all-green release
+
+On26November2026, explicit `azd exec -e zavaw3 -- pwsh -NoProfile -File
+infra\hooks\verify.ps1 -Runs 1` passes all8mandatory checks. It includes one
+real portal-approved, approver-authored comment on item1/revision53 and its
+complete audit chain, plus native HTTPS/renderer readiness, not native Teams
+participation. Use `-GateOutput <ignored-directory>` to retain the actual
+scripted timing result. No provisioning, teardown or deployed setting change
+was made. G8 below is still failed, not closed by this verification.
+
+All947.NET and25bridge unique configured checks have passing evidence after
+one unchanged focused retrospective retry; the initial model deviation is
+retained. Final G1 fallback tail comparison fails+12.75%p95,n12/12;
+G4 exact board identity remains failed11/11; G7 release exits1 with
+dates75%n8, one timeout and missing binary/intent probabilities9/1 on72cases.
+Do not change adapters, goldens, thresholds or Domain rules to label this
+green. Native/Copilot/source/multi-team human gates below remain exact;
+this checkpoint supplies no new human fixtures. ADR0030 and
+`gates/final-validation-M11.json` distinguish test, readiness and acceptance.
+
 ## Final G8 attempt and recovery
 
 Only the old **zavagf/eastus2**, resource group `rg-zava-scrum-zavagf`,

@@ -37,3 +37,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0027](0027-work-iq-delegated-advisory-contract.md) | Work IQ contracts only; live integrations blocked |
 | [0028](0028-observability-and-evaluation.md) | Content-free telemetry and failed date release gate |
 | [0029](0029-final-documentation-and-greenfield-proof.md) | Final documentation and G8 acceptance boundary |
+| [0030](0030-final-validation-and-live-model-variance.md) | Final validation and retained live model failures |

@@ -182,7 +182,7 @@ External dependencies:
 | Work IQ signals | M11 8B: consent/evidence contracts and unregistered read boundary built; live spike, adapter and all four integrations blocked, G11 n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADR 0027) |
 | Identity | Built: Entra bearer validation, app/team roles, federated OBO approval and portal audit. Open: live Teams SSO and agent policy acceptance | Reviewed least privilege, agent governance and access reviews |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
-| Quality | Built: unit/architecture/E2E checkpoint and live content-free API/bridge workbook. Open: failed G7 dates/latency, final full-suite checkpoint, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
+| Quality | Built: final947.NET/25bridge checks have passing evidence after one unchanged retro retry; live content-free API/bridge workbook. Open: initial model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
 | History for KPIs | Azure DevOps Analytics if history exists, else a JSON fixture | Fabric OneLake plus Power BI semantic model |
 
 ---
@@ -1111,8 +1111,12 @@ approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
 **M11 10 status (documentation/deployment subset).** Reconcile documentation,
 human prerequisites and final gate evidence; attempt G8 only in the authorised
 old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
-prove the final solution. The final full-suite checkpoint, real Teams/Copilot
-rehearsal and film UI/reset enhancements remain separate follow-ons. No native,
+prove the final solution. Final validation now records947.NET/25bridge
+checks with passing evidence after one unchanged retrospective retry, all
+three builds/checks and zavaw3 verify8/8. Initial retro11/12 aggregate,
+latest fallback p95+12.75% and G7 dates75%n8 remain explicit failures/risks;
+goldens, thresholds and Domain rules are unchanged (ADR0030).
+Real Teams/Copilot rehearsal and film UI/reset enhancements remain follow-ons. No native,
 knowledge or Work IQ acceptance is inferred from scripted Direct runs.
 
 ---
