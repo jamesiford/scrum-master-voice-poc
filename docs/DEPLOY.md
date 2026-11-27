@@ -71,7 +71,7 @@ hook checks and all3builds pass. Both full empty cycles are pending;
 G8 is not yet passed.
 Only zavagf/eastus2 is authorised. Initial media bootstrap instead hit
 OperationNotAllowed because external governance deallocated the VM at08:46Z;
-one owned start/retry is in progress without a policy change. At the end of
+one owned start/retry completed without a policy change. At the end of
 this attempt the media VM will be deallocated, not deleted.
 The owned start/retry now succeeds: actual certificate registration,
 trusted HTTPS/cap1/non-recording/1280x720renderer and focusednative5/5 pass.
@@ -761,16 +761,22 @@ separate prerequisites. This observability step grants no permissions.
 ## Teardown
 
 ```pwsh
-azd down --purge
+azd down --purge --no-prompt -e zavagf
 ```
 
-`--purge` releases the soft-deleted Foundry account so the same name and quota can be used again. It does not remove the Entra app, the Azure DevOps project or the Teams catalogue entry; they are reused by the next `azd up` (the Entra app is found by tag, the project by name).
+Only the explicitly authorised disposable `zavagf/eastus2` proof may use
+this command; never tear down `zavaw3` or `mcm`. The guarded `predown` hook
+first deletes the two owned hosted agents and reads back absence.
+`--purge` then releases the soft-deleted Foundry account so the same name
+and quota can be reused. Account purge alone did not remove the observed
+retained data-plane workspace binding (ADR0035). The Entra app, Azure
+DevOps project and Teams catalogue entry remain for the next `azd up`.
 
 ## Known limits
 
 - Provisioning takes about 20 minutes; the Container Apps environment alone took 13.5 minutes in the proven run.
 - Hosted transport is measured in West US 3; native eastus2/final-footprint acceptance remains open. Optional relay 4 is retained; candidate 5 is unpromoted.
-- Final two-cycle G8 is failed at 1/2 complete empty up/verify cycles. The full second up failed on the Foundry workspace-identity 409; independent calling-app reconciliation returned 403. Current 24-resource zavagf footprint remains allocated and unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. The capacity prerequisite is resolved; exact administrator/support actions are above. No zavagf lifecycle action belongs to this reconciliation.
+- Previous G8 proof failed at1/2 complete cycles with409/403. Current actual privileged/native recovery and same-project recreation pass; both new full empty cycles and final VM-only deallocation are running requirements, not yet a G8 pass. See the authoritative second-attempt evidence above and ADR0035; no operation touches zavaw3/mcm.
 - A new-subscription run was not possible: the work used one subscription and tenant.
 
 ## Native media preparation and human gates (6a/6b, ADR 0023)

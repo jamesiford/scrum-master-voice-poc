@@ -62,3 +62,8 @@ The full baseline7/8 retained an SSL check before bootstrap completion;
 focusednative5/5 afterwards recovers it without erasing the failure.
 Two empty cycles, their durations/verification and final deallocation are
 recorded in [second-attempt evidence](../gates/g8-proof-2-M11.json).
+
+Initial full purge passes1641.7849s. Exact resource group and matching
+soft-deleted Foundry/vault absence read back19:13:50Z; first new full up
+starts19:13:52Z with native enabled, approved D4als_v7/Gen2 and unchanged
+Direct/Acs/Share. This is0/2 completed new cycles, not a passing G8.

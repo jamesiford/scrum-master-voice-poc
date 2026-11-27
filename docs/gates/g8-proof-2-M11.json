@@ -51,7 +51,10 @@
     "audit":"zsa-ace415470fde",
     "session":"38105a91-09c1-4701-992a-b75b9ff1b5dc"
   },
-  "cycles": [],
+  "initialPurge": {"start":"2026-11-27T18:46:09.0997630Z","end":"2026-11-27T19:13:30.8846593Z","seconds":1641.7848963,"exit":0,"source":"c230f81e6e41223558e5047f86b71590521a8179"},
+  "cycles": [
+    {"cycle":1,"status":"running","emptyReadback":"2026-11-27T19:13:50.8292163Z","resourceGroupExists":false,"deletedAccountMatches":0,"deletedVaultMatches":0,"nativeEnabled":true,"vmSize":"Standard_D4als_v7","image":"2022-datacenter-g2","upStart":"2026-11-27T19:13:52.3046035Z","upSource":"12be35e8e83b515b4738e56a19fa9f6740381659"}
+  ],
   "validation": {"lifecycleChecks":11,"existingHookChecks":17,"architectureChecks":14,"allThreeBuilds":"pass","dotnetWarnings":0,"dotnetErrors":0,"format":"pass","typescriptLints":"pass","azureSchema":"pass","previewSeconds":29,"fullSuitesRun":false},
   "finalVm": {"state":"pending final deallocation"},
   "cost": {"newCodeResourceTypes":0,"nativeBotRegistrationAdded":"bot-media-zavagf, F0, USD0/hour fixed","knownMediaRunningUsdPerHour":0.363150685,"computeUsdPerHour":0.345,"retainedDiskAndIpUsdPerHourAfterDeallocation":0.018150685,"allInBill":false},

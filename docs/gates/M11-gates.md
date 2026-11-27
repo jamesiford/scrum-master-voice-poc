@@ -21,7 +21,10 @@ verification7/8 in401.92s retained a native SSL check performed while
 bootstrap was unfinished; subsequent focusednative5/5 recovers that check,
 not a new full8/8baseline. Direct total3021/4168ms,n12,questions3136/4168ms,n9,
 modelread10,humansegments19,talkovers0; realapproverrevision64 and complete
-auditzsa-ace415470fde. New initial purge is running before bothNEWcycles.
+auditzsa-ace415470fde. Initial full purge passes1641.7849s; exact group/
+account/vault absence and native/D4als_v7/Gen2/Direct/Acs/Share inputs read
+back19:13:50Z. First NEW full up starts19:13:52Z from12be35e;
+completed newcycles0/2.
 [Content-free second-attempt evidence](g8-proof-2-M11.json) retains the
 historical failure and controlled root-cause measurements.
 
