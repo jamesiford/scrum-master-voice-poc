@@ -203,7 +203,7 @@ output FOUNDRY_PROJECT_NAME string = foundry.outputs.projectName
 output FOUNDRY_PROJECT_ENDPOINT string = 'https://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}'
 output COSMOS_ACCOUNT_NAME string = data.outputs.cosmosName
 output ACS_ENDPOINT string = data.outputs.acsEndpoint
-output MEDIA_HOST_ENABLED string = mediaHostEnabled
+// Keep the opt-in as an input: azd down clears resource outputs (ADR 0031).
 output MEDIA_VM_NAME string = mediaHostEnabled == 'true' ? mediaHost!.outputs.vmName : ''
 output MEDIA_PUBLIC_IP string = mediaHostEnabled == 'true' ? mediaHost!.outputs.publicIpAddress : ''
 output MEDIA_FQDN string = mediaHostEnabled == 'true' ? mediaHost!.outputs.fqdn : ''

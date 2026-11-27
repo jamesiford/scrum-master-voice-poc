@@ -2,6 +2,25 @@
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\..\infra\hooks\lib.ps1"
 
+$templateJson = az bicep build --file "$PSScriptRoot\..\infra\main.bicep" --stdout
+if ($LASTEXITCODE -ne 0) { throw 'Cannot compile the real deployment output contract.' }
+$template = $templateJson | ConvertFrom-Json
+$parameters = Get-Content "$PSScriptRoot\..\infra\main.parameters.json" -Raw | ConvertFrom-Json
+$configured = @{}
+foreach ($parameter in $parameters.parameters.PSObject.Properties) {
+  foreach ($variable in [regex]::Matches($parameter.Value.value, '\$\{([A-Z_]+)(?:=[^}]*)?\}')) {
+    $configured[$variable.Groups[1].Value] = "configured-$($parameter.Name)"
+  }
+}
+$configured.MEDIA_HOST_ENABLED = 'true'
+$beforeDown = $configured.Clone()
+foreach ($output in $template.outputs.PSObject.Properties.Name) { $configured.Remove($output) }
+foreach ($inputName in $beforeDown.Keys) {
+  if ($configured[$inputName] -ne $beforeDown[$inputName]) {
+    throw "Down_ResourceOutputs_PreservesDeploymentInputs failed: $inputName"
+  }
+}
+
 $existing = @(
   @{ resourceAppId = 'graph'; resourceAccess = @(@{ id = 'files'; type = 'Scope' }, @{ id = 'user'; type = 'Scope' }) }
   @{ resourceAppId = 'workiq'; resourceAccess = @(@{ id = 'ask'; type = 'Scope' }) })
@@ -89,4 +108,4 @@ foreach ($case in @(
   & $capacityBlock | Out-Null
   if (($script:Failures -eq 0) -ne $case.pass) { throw "Capacity_$($case.name)_ExpectedVerdict failed" }
 }
-Write-Host 'PASS 16 focused greenfield hook checks'
+Write-Host 'PASS 17 focused greenfield hook checks'
