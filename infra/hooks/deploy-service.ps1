@@ -1,5 +1,10 @@
 # Build the committed source, never a developer's dependency caches, secrets or conductor notes.
-param([Parameter(Mandatory)][ValidateSet('api', 'bridge')][string]$Service)
+param(
+  [Parameter(Mandatory)][ValidateSet('api', 'bridge')][string]$Service,
+  [switch]$BuildOnly,
+  [string]$ValidatedDigest
+)
+if ($BuildOnly -and $ValidatedDigest) { throw 'Choose build validation or deployment of its verified digest.' }
 . "$PSScriptRoot\lib.ps1"
 Import-AzdEnvironment
 if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3' -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513') {
@@ -35,20 +40,29 @@ if ($Service -eq 'api' -and ($env:DEMO_RESET_TENANT_ID -or $env:DEMO_RESET_TEAM_
 $work = Join-Path ([IO.Path]::GetTempPath()) ('zava-service-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $work | Out-Null
 try {
-  $zip = Join-Path $work 'source.zip'
-  git -C $repo archive HEAD --format=zip "--output=$zip"
-  if ($LASTEXITCODE -ne 0) { throw 'Cannot package the committed source.' }
-  $context = Join-Path $work 'context'
-  Expand-Archive -Path $zip -DestinationPath $context
   $registry = ($env:AZURE_CONTAINER_REGISTRY_ENDPOINT -split '\.')[0]
   $tag = "git-$head"
   $image = "zava-scrum-agent/$Service-$($env:AZURE_ENV_NAME):$tag"
   $dockerfile = if ($Service -eq 'api') { 'Dockerfile.api' } else { 'Dockerfile.bridge' }
-  az acr build --subscription $env:AZURE_SUBSCRIPTION_ID --registry $registry --image $image --file $dockerfile $context --no-logs -o none
-  if ($LASTEXITCODE -ne 0) { throw "$Service remote image build failed; inspect the ACR run log." }
+  if (-not $ValidatedDigest) {
+    $zip = Join-Path $work 'source.zip'
+    git -C $repo archive HEAD --format=zip "--output=$zip"
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot package the committed source.' }
+    $context = Join-Path $work 'context'
+    Expand-Archive -Path $zip -DestinationPath $context
+    az acr build --subscription $env:AZURE_SUBSCRIPTION_ID --registry $registry --image $image --file $dockerfile $context --no-logs -o none
+    if ($LASTEXITCODE -ne 0) { throw "$Service remote image build failed; inspect the ACR run log." }
+  }
+  $digest = az acr repository show --subscription $env:AZURE_SUBSCRIPTION_ID --name $registry --image $image --query digest -o tsv
+  if ($LASTEXITCODE -ne 0 -or $digest -notmatch '^sha256:[0-9a-f]{64}$') { throw 'Cannot verify the committed image digest.' }
+  if ($ValidatedDigest -and $digest -cne $ValidatedDigest) { throw 'The current source tag differs from its validated image digest.' }
+  if ($BuildOnly) {
+    Write-Check PASS "$Service image validated; not deployed" "$image@$digest"
+    return
+  }
   $app = if ($Service -eq 'api') { $env:API_APP_NAME } else { $env:BRIDGE_APP_NAME }
   az containerapp update --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP -n $app `
-    --image "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image" @environmentArguments -o none
+    --image "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image@$digest" @environmentArguments -o none
   if ($LASTEXITCODE -ne 0) { throw "$Service revision deployment failed." }
   Write-Check PASS "$Service deployed" "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image; existing environment/secrets retained"
 }
