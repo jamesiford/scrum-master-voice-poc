@@ -73,6 +73,11 @@ Only zavagf/eastus2 is authorised. Initial media bootstrap instead hit
 OperationNotAllowed because external governance deallocated the VM at08:46Z;
 one owned start/retry is in progress without a policy change. At the end of
 this attempt the media VM will be deallocated, not deleted.
+The owned start/retry now succeeds: actual certificate registration,
+trusted HTTPS/cap1/non-recording/1280x720renderer and focusednative5/5 pass.
+BaselineDirect3021/4168ms,n12/revision64 is recorded with its original
+7/8 result because the SSL check preceded completed bootstrap; do not
+silently relabel it8/8. Initial purge now precedes both new emptycycles.
 The chronology below describes the previous attempt, not current readiness.
 
 **Recovery attempt, 26 November 2026 after 20:00 PT:** the operator renewed

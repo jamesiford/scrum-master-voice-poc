@@ -52,6 +52,13 @@ determine the measured G8 verdict.
 The historical media reconciliation403 is not current: unchanged actual
 calling-app PATCH and Calls.AccessMedia.All readback pass. Initial native
 bootstrap instead returns OperationNotAllowed because external governance
-deallocated the VM at08:46Z. One scope-owned start/retry is in progress;
+deallocated the VM at08:46Z. One scope-owned start/retry succeeds, including
+actual certificate registration and focusednative5/5;
 no governance policy is changed. Catalogue OAuth/real organiser gates are
 separate and do not establish full native acceptance.
+
+BaselineDirect total3021/4168ms,n12,talkovers0, actual approverrevision64.
+The full baseline7/8 retained an SSL check before bootstrap completion;
+focusednative5/5 afterwards recovers it without erasing the failure.
+Two empty cycles, their durations/verification and final deallocation are
+recorded in [second-attempt evidence](../gates/g8-proof-2-M11.json).

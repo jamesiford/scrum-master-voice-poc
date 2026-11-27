@@ -15,6 +15,16 @@ Both new full empty up/verify cycles are pending, so G8 stays failed,
 not a passing cleanup proxy. Final media VM deallocation is required.
 ADR0035 and DEPLOY.md record scope/decision; older sections are historical.
 
+Early privileged native recovery is now complete: actual certificate
+registration/bootstrap and focused RequireReady5/5 pass. Baseline
+verification7/8 in401.92s retained a native SSL check performed while
+bootstrap was unfinished; subsequent focusednative5/5 recovers that check,
+not a new full8/8baseline. Direct total3021/4168ms,n12,questions3136/4168ms,n9,
+modelread10,humansegments19,talkovers0; realapproverrevision64 and complete
+auditzsa-ace415470fde. New initial purge is running before bothNEWcycles.
+[Content-free second-attempt evidence](g8-proof-2-M11.json) retains the
+historical failure and controlled root-cause measurements.
+
 ## Reconciliation validation (27 November 2026)
 
 One aggregate .NET run passes **968/968**, zero failures/skips: Domain424,
@@ -70,7 +80,7 @@ it does not replace their measured failures or invent retrieval samples.
 
 | Gate | Current result | Measured evidence and remaining boundary |
 | --- | --- | --- |
-| G8 final greenfield proof | Failed | 1/2 complete empty cycles. First up 1828.77 s and verify 8/8 in 344.83 s. Full second up failed after 1229.56 s: three workspace-identity 409 creations despite two successful reads; independent calling-app reconciliation returned 403 Authorization_RequestDenied. Current 24-resource zavagf footprint remains unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. No zavagf operation in reconciliation. |
+| G8 final greenfield proof | Failed; second recovery running | Previous proof1/2, second full up1229.56s failed409 and later403, retained below. Current calling-app/fullnative recovery and same-project recreation pass; retained data-plane workspace binding is corrected by guarded predown cleanup. Both new emptycycles0/2 pending after initial purge. Baseline7/8/401.92s (SSL before completed bootstrap), focusednative5/5, Direct3021/4168ms,n12/revision64. Final VM-only deallocation required. |
 | G10 knowledge grounding | Not_run, n=0 | Consent/declaration reads n=1 each and genuine administrator Graph OBO/identity reads n=1 each pass; 5.362 s probe is not retrieval latency. Five teams have zero knowledge bases/stored memberships. Approved corpus, restricted document and real positive/negative members are missing; retrieval/citations/leakage/latency all n=0. |
 | G11 Work IQ signals | Not_run, n=0 | WorkIQAgent.Ask consent/declaration reads n=1 each; genuine administrator OBO/initialisations n=2 each; tools/list n=1, HTTP 200/12 tools. Complete discovery 9.352 s is not retrieval latency or billing approval. Approved Copilot Credits assignment, lead/channel/meeting UID/negative-user fixtures are missing; content/scoping/leakage/latency all n=0. |
 
