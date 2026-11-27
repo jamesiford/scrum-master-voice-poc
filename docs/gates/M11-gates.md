@@ -1,5 +1,123 @@
 # M11 gates
 
+## Film implementation checkpoint (27 November 2026)
+
+Scope is only zavaw3/westus3. ADR0036 adds real authorised audit/latency
+reads and participant identity presentation; ADR0037 records the separate
+approved ADO reset and atomic application-publication boundary. Aggregate
+source verification and actual deployment/live proof are complete.
+No threshold, prompt/golden, Acs/Share/Direct or native non-recording change.
+
+The unchanged harness baseline on source215fe44 is a real Simulated Room,
+not Teams meeting acceptance: session81a1690b-b58d-410e-9a73-4c0fa9e4585f,
+correlation564629bf03056c87cf14f4b57a12f537, total3419/4912ms p50/p95,n12;
+questions3645/4912ms,n9; zero talk-overs, model10/12 and19 transcript pieces.
+Hop intervals overlap and must not be added. The new counter excludes
+uncalled model placeholders rather than fabricating samples.
+
+After end, twelve own-session follow-ups are Sent and fourteen card outbox
+records exist without invoking the manual send endpoint (finding1.20).
+That proves automatic application/outbox behaviour, not Teams delivery.
+Focused Application26/26, Domain3/3, API133/133 and portal2/2 pass; targeted
+portal/bridge builds/typechecks/lints pass. Initial reset-focused29checks
+pass. Real local Edge UI has no page errors, readable roster/guest names,
+an empty counter with no numeric rows and actual API-backed audit session;
+it is isolated local data, not a real approval or meeting.
+
+The requested first .NET aggregate is1038/1039/0skips; only locked-mode
+startup failed because a local journal read resolved an ADO credential.
+The root is repaired without weakening identity/tests, and that unchanged
+case plus3new durable-history cases pass:1042unique.NETcases have passing
+evidence. Counts are Domain434,Application242,Infrastructure131,API190,
+Architecture16,AgentHost9,Media20. Final solution7.74s/0warnings/errors;
+both TS builds/typechecks/ESLint/Prettier pass, bridgeunit13/13,portal2/2.
+One real Edge E2E aggregate passes12/12/0retries/0skips:
+retro302.571s,standup369.451s,total673.170s. These are scripted, not Teams.
+Existing hook17/17 passes after the new Bicep loop's BCP138 repair;
+new configuration7cases/3hookparsers pass. Full C# format's only3new
+line-ending failures and new history files pass focused repair/verification.
+Goldens, models and gate thresholds are unchanged.
+
+### Actual zavaw3 deployment and after measurements
+
+Committed runtime339bb67 is deployed digest-pinned only to existing zavaw3,
+API86/bridge10, both HTTP200. Actual existing ACR builds are API ds14 and
+bridge ds13; local Docker daemon was unavailable. Official core validation
+passes5/5, effective policy read includes8 inherited assignments, and existing
+AcrPull/Cosmos collection/session/append-only approval roles are read back.
+Only six owned demo reset environment keys are added; identities, secrets
+metadata, configuration, resources, scale, probes and other environment
+values match the immediate pre-deployment fingerprint. Added fixed cost
+USD0/hour; no resource/role/policy/native/hosted/G8 lifecycle change.
+
+Mandatory `infra\hooks\verify.ps1 -Runs 1` passes8/8, including native
+readiness5/5 (not Teams acceptance). The unchanged cast harness finishes
+in366s with12 timed turns/19 transcript pieces/zero talk-overs. Actual session
+`8fc23213-7ec5-4954-a49a-98246050d180`, correlation
+`d5870d3e2a682dfd06f82330c1e01fad`, is a Simulated Room run, not a Teams meeting.
+
+| Measurement | Before p50/p95 ms | After p50/p95 ms | n before/after |
+| --- | ---: | ---: | ---: |
+| Total | 3419/4912 | 3140/4719 | 12/12 |
+| Questions | 3645/4912 | 3957/4719 | 9/9 |
+| Speech end to transcript | 0/259 | 0/205 | 12/12 |
+| Grounding/analyser | 26/28 | 25/41 | 12/12 |
+| Orchestration | 1496/2713 | 1732/2402 | 12/12 |
+| Voice Live first audio | 1640/2417 | 1488/2877 | 12/12 |
+
+These are independent single-run point estimates, not a formal paired gate
+or a sub-second pass. Total improves279/193ms, but question median worsens
+312ms; do not promote an adapter or change a threshold from these samples.
+The product counter's six actual rows match every real harness sample.
+Its real-model row is142/223ms,n10; legacy harness143/223ms,n12 includes
+two rules placeholders and is not the same population. No browser-send
+sample exists in this headless run, so no such row is fabricated.
+
+All six automatically created own-session follow-ups are Sent after end;
+eight actual outbox cards contain no manual verification-follow-up id.
+No manual send endpoint is invoked. The separate manually proposed
+verification follow-up is Applied and excluded from the automatic count.
+This confirms finding1.20 application/outbox behaviour, not Teams delivery.
+Its complete actual audit has Approved/Applied and item1/revision68; the
+comment names **System Administrator**, the validated actor, and includes
+`zsa-d5870d3e2a68`, authored by the actual Admin UPN. Anonymous audit/latency
+requests independently return401. This authorised Admin's supplied team-b
+query is ignored: both reads still resolve owning Payments, not team-b.
+Negative-member/tenant isolation is covered by API/mediator tests; real
+other-tenant/user fixture n0 is not manufactured.
+
+### Actual guarded clean baseline
+
+Before opt-in, all five entries are unmarked and reset refuses403 with no
+registry mutation. Exact markers pass5/5; first operation
+`86f3a14f-bc60-4b54-9540-51a27d24e88e` reviews29 seed keys/fields, then
+uses the real Admin approval/apply/commit pipeline. Pending apply403,
+premature commit409 and wrong operation team403 leave all ADO revisions
+unchanged. All29 actual staged fields match:19 Demo Sprint/10 root backlog,
+Sprint43 empty. Four reviewed connections,226 old follow-ups (214 open)
+and20 sessions are logically hidden, leaving the active primary and
+Daniel/Maya/Admin roster. Unknown real teams observed n0; no guessing.
+Completed same-id replay keeps the next take and changes no ADO revisions.
+Retained Approved/Applied records contain29 real revisions after cleanup,
+with the actual System Administrator/UPN/tag comment. Atomicity is only
+one application publication; external ADO remains recoverable, not ACID.
+
+After capturing all after evidence, final reviewed operation
+`67ad9b4c-2614-4af5-965b-d6b84e938a34` completes another approved29-item
+baseline. Marker replay uses removal history and leaves all four cleaned
+connections absent. The exact existing clean API revision86 is restarted
+once to check durability, without image/config/native changes. Readback
+still shows only the Active demo primary, Daniel/Maya/Admin roster and
+zero sessions/follow-ups. All29 final fields match; completed replay changes
+no ADO revision. Prior verification approval records and comment text are
+byte-for-byte retained after cleanup/restart. API/bridge remain HTTP200.
+Only the owned local API/bridge/Vite helpers are stopped and their exact
+isolated data leaf removed; Azure remains running.
+
+Inherited verdicts remain G1/G4/G7/G8failed, G3measured and
+G2/G5/G6/G9/G10/G11not_run. The historical sections below are not new film
+deployment or G8 cycle evidence.
+
 ## G8 second recovery attempt (27 November 2026)
 
 **Current G8 failed/provider-blocked, newcycles0/2.** Initial purge

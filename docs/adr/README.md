@@ -43,3 +43,5 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0033](0033-foundry-iq-consent-redo-and-fixture-boundary.md) | Knowledge consent verified; real source and permission fixtures still required |
 | [0034](0034-work-iq-live-discovery-and-source-fixtures.md) | Work IQ delegated metadata discovery succeeds; scoped content and billing fixtures remain required |
 | [0035](0035-hosted-agent-teardown-lifecycle.md) | Guarded hosted data-plane lifecycle cleanup before authorised project teardown |
+| [0036](0036-film-evidence-surfaces.md) | Team-authorised audit page, measured Live counters and Entra/guest participant names |
+| [0037](0037-guarded-demo-reseed-publication.md) | Explicit demo opt-in, approved recoverable ADO baseline and atomic application publication |

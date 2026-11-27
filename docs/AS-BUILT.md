@@ -1,6 +1,59 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 27, 2026 (M11 redo reconciliation).
+**Date:** November 27, 2026 (M11 film features).
+
+**Film product reads (ADR0036):** the portal has an Audit chain page for a
+full correlation id or `zsa-` tag, including stored meeting/session identity,
+turns, proposals, named approval records, revision ids and outbox evidence.
+Missing evidence is explicit. Live shows measured per-hop p50/p95/n from
+recorded Timing events and ephemeral browser send samples; absent hops are
+not estimated and overlapping percentile values must not be added.
+Readable speakers come from the team roster; ACS participant presentation
+uses unique non-anonymous Entra object ids where available and labels all
+others guests. Presentation never grants approval authority. Stored resource
+team scope cannot be overridden by a query-string team id. Source339bb67
+is deployed only to zavaw3, API revision86 and bridge revision10, using
+validated image digests. Existing identities, secrets, scale, resource
+settings and unrelated configuration are unchanged. Current aggregate/live
+evidence is in [M11 gates](gates/M11-gates.md), separate from older runs.
+
+**Guarded film re-seed (ADR0037):** an app Admin stages a pending baseline
+follow-up, reviews and explicitly approves its `ResetDemoItem` changes,
+applies/retries through the existing approved writer, then atomically
+publishes demo collections, seed roster, empty sessions/cast progress and
+completed journal. ADO patches are separately idempotent/recoverable, not
+distributed ACID. Exact tenant, seed fingerprints, allowlist and persisted
+demo markers are required; running/stale takes and changed/overlapping
+connections refuse. `demo\film-reset-scope.json` and the two guarded hooks
+prepare/opt in only the reviewed five-team zavaw3 set. Failed Identity/
+Catalogue connections and named test debris are logically removed without
+touching unselected teams. Startup reads local-only removal history even
+when reset is disabled; it never recreates removed connections or resolves
+ADO credentials merely to read that history. Approval records/comments
+remain append-only. Existing Sprint43 item fields/paths are restored;
+iteration settings/dates and external meeting state are not reset.
+
+The first live approved reset completes as operation
+`86f3a14f-bc60-4b54-9540-51a27d24e88e`: all29 existing seed items match the
+staged fields, with19 in Demo Sprint and10 in the root backlog; Sprint43 is
+empty. It removes four reviewed connections,226 old follow-ups (214 open)
+and20 old sessions from normal reads, leaving the active primary and
+Daniel/Maya/Admin roster. Unmarked reset/apply and wrong-team probes refuse
+403; premature commit refuses409, without ADO revision changes. Completed
+same-id replay preserves the next take and all revisions. The retained
+`zsa-86f3a14fbc60` Approved/Applied records contain29 real revisions; its ADO
+comment names **System Administrator**, authored by the actual approver UPN.
+No unknown real team was observed; cross-tenant/non-Admin isolation also has
+focused test evidence, not an invented live user fixture.
+
+Mandatory deployed verify8/8 passes: after total3140/4719ms,n12 versus
+before3419/4912ms,n12; questions3957/4719ms,n9 versus3645/4912ms,n9.
+Six automatic Sent follow-ups/eight actual outbox cards are not Teams
+delivery. All six counter rows match real samples, model142/223ms,n10.
+Final operation67ad9b4c-2614-4af5-965b-d6b84e938a34 leaves the next take
+clean even after an exact API86 restart: one Active primary, seed roster,
+zero sessions/follow-ups, earlier approvals/comments unchanged. Azure
+remains running; only owned isolated local test helpers/data are removed.
 
 **G8 second recovery is provider-blocked (ADR0035), newcycles0/2.** Guarded azd predown now
 deletes the two owned hosted data-plane agents before project identity
@@ -232,19 +285,20 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Reports, Planning, Retrospective, Story Writer, Models and email, Schedule, Prompts, Team, Roster. Light and dark themes, responsive.
 
 M11 adds team switching, fleet/registry/onboarding and membership management.
-Film-feature gaps: no dedicated correlation-id audit page, no Live per-hop
-counter panel and no verified readable speaker names for every participant.
-The API/workbook and aggregate latency are not those UI features. SeedAdo
-resets seeded work items/relative sprint dates; app reset does not reset
-Azure DevOps, external meeting state or the whole roster/cast configuration.
+Film product surfaces are now implemented above (ADR0036/0037), rather than
+inferred from an API/workbook. Real Teams participant/meeting acceptance is
+still unrun; the native bot remains non-recording. Guarded film re-seed
+restores only the approved item/application baseline, not external meeting
+state or iteration dates/settings. Standalone SeedAdo remains privileged
+greenfield bootstrap, not the between-takes reset path.
 
 ## 7. Demo environment
-- Azure DevOps organisation `<your-organisation>`, project `Zava-Scrum-Demo`, seeded idempotently by `tools/SeedAdo` from `demo/seed-ado.json` (29 items: 19 in the sprint and 10 backlog items, plus the next iteration "Sprint 43"; each assigned to the signed-in user and tagged `demo-owner-{key}`, ADR 0002; roster Daniel Park, Maya Lin, Admin, matching the tenant users "Daniel Park", "Maya Lin", "System Administrator").
+- Azure DevOps organisation `<your-organisation>`, project `Zava-Scrum-Demo`, seeded idempotently by `tools/SeedAdo` from `demo/seed-ado.json` (29 items: 19 in the sprint and 10 backlog items, plus the next iteration "Sprint 43"; assigned sandbox items use the signed-in user and `demo-owner-{key}` tags, ADR 0002). Scripted roster is Daniel Park, Maya Lin, Admin; distinct real-user Entra links remain an unrun fixture, not inferred from display names.
 - Demo cast (`demo/cast/payments-standup.yaml`) lets one presenter run a full three-person standup with a scripted side conversation.
 - Deploy with `azd up` / `azd deploy`. Run the runbook in `DEMO.md`.
 
 ## 8. Known limits and open items
-- Teams app installation from the admin center failed repeatedly with a tenant/admin-portal error; sideloading per user is the workaround. Until installed, cards fall back to the portal outbox.
+- Both zavaw3 Teams catalogue uploads are completed. Real-user/per-chat installation and organiser RSC remain separate gates; without an actual conversation binding, cards stay in the portal outbox. The earlier administrator upload failure is historical, not an open consent/catalogue gate.
 - Finding 1.20 (recap and follow-ups sometimes missing after the standup ends): root cause and fix in ADR 0016 (ending the standup now publishes its events on `CancellationToken.None`, because leaving the call cancelled the gateway's token). Covered by an Application test and **resolved**: verified in a real Teams meeting on 24 November 2026 (ADR 0016). Before (build 84498ad): recap recorded 130 ms after the end, no follow-ups; a manual send created 4. After (3c78835, three consecutive runs): 4 follow-ups, all Sent, 2.4 to 2.5 s after the end, delivered to the Admin's chat. Not covered: the agent ending the standup itself (same `EndAsync` path) and a run with spoken answers.
 - Voice latency p50 is about 3.7 seconds (p95 5.0 s) in the 23 November Teams take, against a 1 second target; with the M10 decision model on, the Simulated Room measured 6.2 s p50 against 4.2 s with rules (ADR 0014). Each speaker now waits briefly while the agent checks their update.
 - The utterance classifier recognises English phrasing; unusual wording can be missed by the rules. The M10 decision model (ADR 0014) reads ambiguous speech first and the rules remain the fallback. PROD: tune the model and the thresholds on real standups.

@@ -11,7 +11,90 @@ See [ADR 0015a](adr/0015a-greenfield-deployment-model.md),
 [measured gates](gates/M11-gates.md). Knowledge/Work IQ are unbuilt and add
 no delivered sources, Search service or signal resources.
 
+## Film reset configuration and publication (ADR0037)
+
+The reviewed manifest `demo\film-reset-scope.json` pins the zavaw3 tenant,
+organisation and exact five registry fingerprints, including individually
+named `team-b`/`team-c` test debris. Default markers/allowlists are disabled.
+No arbitrary team is classified by its display name or a failed connection.
+Select **only zavaw3** before preparing the local declarative inputs:
+
+```powershell
+azd env select zavaw3
+pwsh -NoProfile -File infra\hooks\demo-reseed-scope.ps1 -ConfigureEnvironment
+pwsh -NoProfile -File infra\hooks\demo-reseed-scope.ps1
+```
+
+`ConfigureEnvironment` sets local `DEMO_RESET_TENANT_ID` and comma-separated
+`DEMO_RESET_TEAM_IDS`; Bicep maps them to the API options. It does not deploy.
+The default invocation previews actual fingerprints. After validating and
+deploying the API/configuration in the exact approved environment, apply and
+read back markers through the authenticated app-Admin API:
+
+```powershell
+pwsh -NoProfile -File infra\hooks\demo-reseed-scope.ps1 -Apply
+```
+
+This marker operation writes no Azure DevOps data and approves nothing.
+Then use DEMO.md's staged re-seed: inspect, explicitly approve the existing
+follow-up, apply/retry, and commit. All ADO baseline edits pass through
+`FollowUp.GetApprovedChanges` and `IWorkItemWriter`, with real approver/tag/
+revision evidence. Non-Admin alternate approval surfaces are refused.
+Keep the durable operation id; once approved, recovery resumes rather than
+aborts. Only one application publication document is atomic (file rename or
+Cosmos ETag CAS); external ADO patches are separately recoverable. Maximum
+publication payload is1.8MB. Existing single-replica API is the write-gate
+boundary; no distributed lease or new infrastructure service is introduced.
+
+Cleanup hides only selected demo sessions/follow-ups/cards and removed demo
+connections, restores the target roster, and retains append-only approval
+records/comments. Startup respects removal journal tombstones. Existing item
+baseline fields are restored without creating items or changing iteration
+dates/settings. Unknown/foreign/non-demo teams, changed connections, live
+takes and stale preparations refuse explicitly. Live verification evidence
+is recorded in the current film gate section, not inferred from these commands.
+
+For this update, source339bb67 was built in the existing ACR (API run ds14,
+bridge ds13) and deployed as validated `tag@sha256` images to existing
+zavaw3 only, API86/bridge10. Docker Desktop was unavailable locally; real
+ACR Docker builds replace no shipped adapter. The scoped service hook's
+`-BuildOnly` cannot deploy; `-ValidatedDigest` verifies the source tag's
+digest before an image update. Only the six owned `Demo__Reset*` options
+were added. No provision/up/down, new resource, role or tenant policy change
+was made; added fixed cost is USD0/hour. All unrelated environment values,
+identity, secrets metadata, configuration, scale, probes and resources match
+the immediate pre-deployment fingerprint.
+
+Live markers pass5/5. The reviewed29-item first reset completes; actual
+214 open/226 total follow-ups,20 sessions and four connections are logically
+removed, with approvals/comments retained. All fields match the immutable
+proposal, Sprint43 is empty and completed replay changes no ADO revisions.
+The active primary retains the Daniel/Maya/Admin seed roster. The app Admin
+approval is already performed with evidence, not a deferred Global Admin
+gate. Existing real-user/organiser/source/billing/Exchange/evaluation gates
+below remain separate and were not manufactured by this film step.
+
+After mandatory verify8/8 and evidence capture, a final approved29-item
+operation67ad9b4c-2614-4af5-965b-d6b84e938a34 leaves only the clean Active
+primary/seed roster and zero sessions/follow-ups. Marker replay does not
+recreate removed entries. One exact existing API86 restart verifies durable
+startup suppression; all fields and same-id replay pass, with earlier
+approval records/comments unchanged. API/bridge remain running at:
+
+| Service | Endpoint |
+| --- | --- |
+| API and portal | https://ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io |
+| Bridge | https://ca-bridge-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io |
+
 ## Redo reconciliation is not an all-green release
+
+This section is historical. Film source adds the authorised **Audit chain**
+page and measured Live per-hop p50/p95/n (ADR0036), plus two configured
+portal participant-name tests (`npm run test --prefix src\admin-portal`).
+Audit uses the stored resource's owning team, not a caller-supplied override.
+Counters omit absent/unmeasured intervals and guest labels never confer
+approval permissions. Current film deployment/aggregate evidence belongs
+to the gate table, not the earlier reconciliation numbers below.
 
 On27November2026 the requested first aggregate runs pass968/968.NET and
 25/25bridge checks (unit13, real E2E12), plus17pure hook checks. All three

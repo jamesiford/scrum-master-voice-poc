@@ -1,6 +1,6 @@
 # Documentation drift report
 
-**Date:** November 26, 2026 (M11 final documentation checkpoint).
+**Date:** November 27, 2026 (M11 film features).
 
 ## Current M11 corrections
 
@@ -18,16 +18,18 @@ is `gates/M11-gates.md`, decisions are indexed in `adr/README.md`.
 | Typed approval names | Portal **Deciding as** comes from validated Entra identity; display names/request-body names never grant authority |
 | Calendar app/secret workaround | Greenfield hook uses existing managed identity and mailbox-scoped Exchange RBAC; no new calendar app or mcm change |
 | Native media equals saved-follow-up demo | Native hosting/renderer verified, Teams joins/attribution/board/events open; native meeting-derived persistence is prohibited |
-| Copilot delivered end to end | Five skills and 1.1.0 package implemented; catalogue, real-user SSO/streaming/negative G5 are still open |
-| Knowledge/Work IQ delivered | 8A/8B integrations unbuilt; exact existing consent/source/billing gates retained; G10/G11 not_run n=0 |
+| Copilot delivered end to end | Five skills and 1.1.0 package implemented; zavaw3 catalogue upload completed, real-user SSO/streaming/negative G5 still open |
+| Knowledge/Work IQ delivered | Delegated consents and administrator metadata OBO completed; 8A/8B content integrations unbuilt pending real source/member/billing fixtures; G10/G11 not_run n=0 |
 | Quality/telemetry wholly deferred | API/bridge content-free workbook verified (211 hop samples); G7 dates75% n8 fails, employee-content quality remains off, real-model CI variables empty |
-| Earlier G8 closure proves final runtime | Old smaller-footprint proof is historical; final zavagf attempt failed preflight, both full-solution cycles n=0 |
+| Earlier G8 closure proves final runtime | G8 remains failed at one historical full cycle out of two; second recovery has new cycles0/2/provider404, not credit from independent verification |
 | Failed native preflight means quota is exhausted | Actual D4s_v5 is NotAvailableForSubscription in eastus2; regional/DSv5 quota used0/limit100. Empty-family preflight message misdiagnoses SKU availability |
-| Film features already covered by audit API/metrics | Dedicated audit page, Live per-hop panel/all-participant names and atomic roster/cast/Sprint 43 reset remain follow-ons |
+| Film features already covered by audit API/metrics | Film source now adds an actual authorised audit page, Live per-hop p50/p95/n and readable roster/guest names (ADR0036); validation/deployment evidence is recorded separately, not inferred from the old API/workbook |
+| Global reset or standalone SeedAdo is an atomic film re-seed | ADR0037 stages an Admin-approved baseline, recovers per-item ADO patches and atomically publishes only the explicitly marked demo application set; comments/approval history are retained and external meeting/iteration settings are not reset |
 
-This documentation step changes no runtime, Domain rules, golden expectations
-or gate thresholds. ADR 0029 records the deployment acceptance boundary and
-the exact preflight defect/gates; full suites run at the following checkpoint.
+The film step adds real runtime features and guarded demo rules, with one
+aggregate and scoped live evidence in M11 gates. Goldens and gate thresholds
+are unchanged. ADR0029 and the baseline inventory below are historical;
+ADRs0036/0037 describe the current film decisions.
 
 Generated while reconciling the documents with `main` at `36d25ad`. **The code wins** over every document (see ADR 0009). Paths are relative to the repository root. "Test" means a test that exercises the use case directly; a domain-only test is noted in the cell.
 
