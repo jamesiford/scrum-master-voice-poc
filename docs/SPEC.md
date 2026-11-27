@@ -666,6 +666,12 @@ The retrospective runs on the standup's voice gateway and `FloorControl`; only t
 
 ## 11. Voice design
 
+**Foundry IQ (M11 8A, ADR 0026): blocked before the permission spike.**
+Knowledge retrieval is not on the live voice path, and no standards answer
+or citation is implemented. Caller-OBO permission trimming must be proved
+before consumers are added; advisory text must never create item links,
+`ProposedChange` records or state changes. G10 and new G1 samples are not run.
+
 ### 11.1 Voice Live session (**VERIFY** every field against the current reference)
 
 ```jsonc
@@ -792,6 +798,15 @@ planning" and all existing approval/rejection actions remain.
 ---
 
 ## 13. Admin portal (demo scope)
+
+**Knowledge page (M11 8A): not built.** `KnowledgeBaseIds` remains reserved;
+there is no source-management or knowledge-query API. Missing Graph delegated
+retrieval consent and an approved two-user source fixture block the mandatory
+spike (ADR 0026; DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE).
+Do not treat repo working agreements or the existing prompt editor as Foundry
+IQ. The planned page must show sources, access basis, sync/failure state and
+last ingestion, distinguishing remote SharePoint (no Search ingestion) from
+indexed Blob content. No catalogue or use-case entry is added without code.
 
 **Approval in the portal (M11 5A).** The API validates the bearer token, then exchanges it on-behalf-of for Azure DevOps (`user_impersonation`). If the person cannot write, or Entra needs consent, multi-factor or a Conditional Access step, the approve is refused with a message that says what to do, and nothing is written (never a fallback to the service identity).
 

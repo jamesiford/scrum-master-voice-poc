@@ -4,6 +4,17 @@
 
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
 
+**M11 8A status (26 November 2026):** Foundry IQ is blocked before its
+mandatory caller-OBO permission spike, not implemented or deployed.
+The actual portal Graph grant lacks `Files.Read.All` and `Sites.Read.All`;
+an approved standards corpus and two-user permission fixture are also
+outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
+Knowledge page, standards chat skill or knowledge enrichment in pre-briefs,
+follow-ups, Story Writer or retrospective packs. Repo working agreements
+are not a substitute. G10 retrieval and permission tests have n=0, not a
+zero-leakage pass. ADR 0026 and DEPLOY.md give the exact resume prerequisites.
+The existing zavaw3 runtime and voice/approval boundaries are unchanged.
+
 ## 1. What it is
 A voice-led "junior Scrum Master" for the Payments team. It joins a real Microsoft Teams meeting, runs the daily standup by voice, grounds every question in Azure DevOps, shares a live board on screen, posts a recap and per-person follow-ups, and writes changes back to Azure DevOps only after a person approves them.
 

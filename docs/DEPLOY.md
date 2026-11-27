@@ -77,6 +77,58 @@ The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, se
 
 The platform forces these. Each is named in the script output as `GATE`.
 
+### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (prompt 8A, ADR 0026)
+
+Prompt 8A is blocked before its mandatory permission spike, not deployed.
+Only zavaw3 and its existing portal application are in scope. Readback shows
+Graph consent `User.Read openid profile`, not the required retrieval scopes.
+The signed-in administrator has a Copilot licence and can read the SharePoint
+root through Azure CLI; neither proves caller-OBO retrieval. The privileged
+window ended at 14:27 PT on 26 November 2026. No permission-trimming request
+was made, so leakage and latency remain unmeasured.
+
+**Entra Global Administrator / Privileged Role Administrator:** for
+**Zava Scrum Portal (zavaw3)**, app id
+`265790b8-88a7-4975-bb8f-3fe381bb19ea`, approve the plan-specific delegated
+Microsoft Graph permissions **Files.Read.All** and **Sites.Read.All**.
+In **Entra admin centre > App registrations > this app > API permissions >
+Add a permission > Microsoft Graph > Delegated permissions**, select both;
+then **Grant admin consent** for this tenant. Do not grant application
+permissions, ExternalItem permissions, tenant policy changes or access to mcm.
+The resumed implementation must encode the same declarations and idempotent
+consent handling in the Entra hook; this approval is not a substitute for
+greenfield automation. Verify the actual portal service-principal grant
+(`2b69cbf8-a7e7-432c-8441-726b72a9fffc`) before OBO testing.
+
+**Standards owner / team lead and SharePoint site owner:** name the approved
+organisation and team site/library URLs and real standards, Definition of
+Done/Ready, working agreements and runbooks. Supply an approved Blob corpus
+and explicitly decide which content is team-wide. Establish a restricted
+SharePoint document accessible to the positive user and denied to the negative
+user; record its document id and expected source. Do not ingest the tenant
+root or unrelated documents by default. Supply ten real spike questions and
+at least forty questions with expected document ids per knowledge base.
+
+**Two real consenting team members:** sign in through the application's
+delegated boundary in this tenant, with verified team memberships. The
+negative member must have no access to the restricted document but must have
+permission to run retrieval. Each needs a Microsoft 365 Copilot licence or
+already authorised Retrieval API pay-as-you-go; do not enable billing silently.
+Run identical positive/negative questions using each person's OBO token
+forwarded as `x-ms-query-source-authorization`, never the administrator's token.
+Prove positive access first, then absence of restricted content and citations
+for the negative user. An empty or failed query is not permission proof.
+
+**Resuming deployment operator:** after these prerequisites, add the real
+Search service, sources, knowledge bases, scoped roles and MCP connection to
+Bicep/hooks before deploying only zavaw3/westus3. Reviewed versions are Search
+REST/MCP `2026-11-01-preview` and project connection ARM
+`2025-10-01-preview`; recheck Learn on resume. Record actual versions, ten
+retrieval samples and permission results before implementing consumers.
+G10 needs correct citation rate, uncited answers, leakage and latency with
+explicit denominators. No source means "I don't know"; infrastructure failures
+must remain explicit. Keep knowledge off voice unless G1 is preserved.
+
 ### COPILOT-ROLLOUT and COPILOT-G5 (prompt 8, ADR 0025)
 
 Only zavaw3 is in scope. The authorised Global Administrator window ended at

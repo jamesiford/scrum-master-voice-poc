@@ -1,5 +1,34 @@
 # M11 gates
 
+## Foundry IQ prerequisites (conductor 8A, 2026-11-26)
+
+**Blocked before the required permission spike**, not a measured gate
+failure or completed integration (ADR 0026). Live metadata reads succeeded:
+the administrator can read the SharePoint root and has a Copilot licence,
+but the portal application's actual Graph consent is only
+`User.Read openid profile`, missing both delegated retrieval scopes.
+No approved source/denied-user fixture is established. No Search service
+exists in the authorised resource group; none was provisioned to stand in
+for the blocked experiment.
+
+| Gate/check | Step 8A result | Sample and evidence |
+| --- | --- | --- |
+| G10 correct citation rate | Not run | n=0 real questions; no approved source-labelled corpus |
+| G10 uncited answers | Not run | n=0 answers; zero is not a measured rate |
+| G10 permission leakage | Not run | n=0 caller-OBO and denied-user queries; metadata access is not trimming proof |
+| G10 retrieval latency | Not run | n=0 retrieval samples; no MCP knowledge base exercised |
+| G1 voice latency | Not run | n=0 new turns; no runtime changes, previous measurements/failures retained |
+| Build regression | Pass | .NET Release 0 warnings/0 errors; portal and bridge builds exit 0 |
+| Existing runtime health | Measured readiness only | n=1 HTTP 200; API git-d041890, latest=ready --0000082, not a new deployment |
+
+G2 to G7, G9 and G11 have no new acceptance samples. Inherited failures
+and native/Copilot human gates remain unchanged. No full suites or
+before/after voice runs were repeated for this documentation-only blocked
+checkpoint; it adds no voice or other runtime. The portal retains its
+pre-existing Vite bundle-size advisory. Added fixed cost USD 0/hour.
+DEPLOY.md names exact consent, corpus and real-user actions. Resume the spike
+before implementing consumers; do not substitute Blob-only or admin retrieval.
+
 ## Copilot channel (conductor 8, 2026-11-26)
 
 ADR 0025 implements five real-mediator skills using membership resolution and
