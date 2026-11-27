@@ -5,6 +5,7 @@ using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Application.Features.Teams;
 using Zava.Scrum.Domain.FollowUps;
 using Zava.Scrum.Domain.Teams;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Application.Features.FollowUps.ApplyApprovedChanges;
 
@@ -29,9 +30,11 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
             return Result.Success();
         }
 
+        using var hop = ScrumTelemetry.StartHop("approval.apply", followUp.TeamId, followUp.SessionId, followUp.CorrelationId);
         var changes = followUp.GetApprovedChanges();
         if (!changes.IsSuccess)
         {
+            ScrumTelemetry.Count("refusal", followUp.TeamId, changes.Error!.Code);
             return Result.Failure(changes.Error!);
         }
 
@@ -72,9 +75,14 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
         var revisions = new List<AdoRevision>();
         foreach (var change in changes.Value)
         {
+            using var writeHop = ScrumTelemetry.StartHop("ado.write", followUp.TeamId, followUp.SessionId, followUp.CorrelationId);
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
             var written = await writer.ApplyAsync(change, team.Ado, context, ct);
+            ScrumTelemetry.RecordHop("ado.write", followUp.TeamId, System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds);
+            writeHop?.SetTag("write.outcome", written.IsSuccess ? "success" : "refused");
             if (!written.IsSuccess)
             {
+                ScrumTelemetry.Count("refusal", followUp.TeamId, written.Error!.Code);
                 followUp.MarkApplyFailed(written.Error!.Message);
                 await followUps.SaveAsync(followUp, ct);
                 return Result.Failure(written.Error);
@@ -92,6 +100,7 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
         await records.AppendAsync(
             new ApprovalRecord(Guid.NewGuid(), followUp.CorrelationId, followUp.Id, followUp.TeamId, ApprovalRecordKind.Applied, decision.ProposalHash, decision.Actor, decision.Channel, now, decision.Authentication, decision.Id, revisions),
             ct);
+        hop?.SetTag("approval.outcome", "applied");
         await followUp.PublishEventsAsync(publisher, ct);
         return Result.Success();
     }

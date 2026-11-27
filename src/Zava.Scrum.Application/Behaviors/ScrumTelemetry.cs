@@ -19,4 +19,43 @@ public static class ScrumTelemetry
 
     /// <summary>Gets the duration of each use case in milliseconds, tagged with the use case and the team.</summary>
     public static Histogram<double> UseCaseDuration { get; } = ScrumMeter.CreateHistogram<double>("zava.scrum.usecase.duration", "ms", "Use case duration");
+
+    /// <summary>Gets hop durations, without meeting content or participant identity.</summary>
+    public static Histogram<double> HopDuration { get; } = ScrumMeter.CreateHistogram<double>("zava.scrum.hop.duration", "ms");
+
+    /// <summary>Gets counts of joins, turns, interruptions, approval decisions and refusals.</summary>
+    public static Counter<long> Events { get; } = ScrumMeter.CreateCounter<long>("zava.scrum.events", "{event}");
+
+    /// <summary>Starts a hop in the persisted session trace, linking a different incoming request rather than losing its provenance.</summary>
+    /// <param name="hop">Fixed operation name, never user input.</param>
+    /// <param name="teamId">The verified owning team.</param>
+    /// <param name="sessionId">The session, when known.</param>
+    /// <param name="correlationId">The persisted W3C trace id.</param>
+    /// <returns>The activity, or null when no exporter listens.</returns>
+    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string correlationId)
+    {
+        var traceId = ActivityTraceId.CreateFromString(correlationId.AsSpan());
+        var incoming = Activity.Current;
+        var parent = incoming?.TraceId == traceId ? incoming.Context : new ActivityContext(traceId, default, ActivityTraceFlags.Recorded);
+        var links = incoming is not null && incoming.TraceId != traceId ? new[] { new ActivityLink(incoming.Context) } : null;
+        return Source.StartActivity(hop, ActivityKind.Internal, parent,
+            new ActivityTagsCollection { [TeamTag] = teamId, ["session.id"] = sessionId?.ToString(), ["hop"] = hop },
+            links: links);
+    }
+
+    /// <summary>Records one content-free event for a verified team.</summary>
+    /// <param name="name">Fixed event name.</param>
+    /// <param name="teamId">Owning team.</param>
+    /// <param name="outcome">Fixed result classification.</param>
+    public static void Count(string name, string teamId, string outcome) =>
+        Events.Add(1, new KeyValuePair<string, object?>("event", name),
+            new KeyValuePair<string, object?>(TeamTag, teamId), new KeyValuePair<string, object?>("outcome", outcome));
+
+    /// <summary>Records the measured duration of a fixed hop for a verified team.</summary>
+    /// <param name="hop">Fixed hop name.</param>
+    /// <param name="teamId">Owning team.</param>
+    /// <param name="milliseconds">Measured duration.</param>
+    public static void RecordHop(string hop, string teamId, double milliseconds) =>
+        HopDuration.Record(milliseconds, new KeyValuePair<string, object?>("hop", hop),
+            new KeyValuePair<string, object?>(TeamTag, teamId));
 }
