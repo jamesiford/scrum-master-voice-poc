@@ -9,6 +9,11 @@ as defaults. Two full empty up/verify cycles are pending, not claimed as
 a rehearsal or a passing G8. After the proof, its media VM will be
 deallocated with the final application resources retained.
 
+The first empty up failed preflight206.1921s without creating resources.
+ADR0039 uses the same real managed gpt-realtime-2.1 Voice Live model, which
+needs no standalone OpenAI deployment, rather than taking quota from
+the demo. No model, voice route or experience is substituted.
+
 ## Final M11 rehearsal boundary (27 November 2026)
 
 Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
@@ -202,7 +207,7 @@ prerequisites only, not cited knowledge or a permission-trimming demonstration.
 Redo existing-zavaw3 verification passes8/8 with real approver/auditrevision59;
 Direct2969/4875ms,n12,talkovers0. Native hosting readiness does not establish
 native meeting acceptance; inherited failed gates remain visible.
-For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
+For the separately authorised G8 proof use only fresh zavag8/westus3 and DEPLOY.md's
 exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 
 ## Before the demo (5 minutes)

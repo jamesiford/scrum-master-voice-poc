@@ -46,3 +46,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0036](0036-film-evidence-surfaces.md) | Team-authorised audit page, measured Live counters and Entra/guest participant names |
 | [0037](0037-guarded-demo-reseed-publication.md) | Explicit demo opt-in, approved recoverable ADO baseline and atomic application publication |
 | [0038](0038-greenfield-proof-westus3.md) | Fresh westus3 greenfield proof with protected-environment lifecycle guards |
+| [0039](0039-managed-voice-live-deployment-quota.md) | Managed Voice Live does not require unused standalone Azure OpenAI deployment quota |

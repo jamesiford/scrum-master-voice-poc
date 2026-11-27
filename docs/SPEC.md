@@ -16,6 +16,12 @@ purge are required; then retain resources and deallocate only its media VM.
 Exact lifecycle guards admit only the fresh target. No API/use-case,
 Domain invariant or default-adapter change.
 
+ADR0039 makes unused standalone realtime deployments optional through
+`PROVISION_REALTIME_MODELS` (true by default). The fresh proof uses false:
+the existing managed Voice Live gpt-realtime-2.1 model requires no separate
+Azure OpenAI quota. Chat/decision/native and actual audio verification
+remain mandatory; no API/use-case or runtime adapter changes.
+
 **G8 second recovery (ADR0035), provider-blocked, newcycles0/2:** a guarded predown lifecycle hook removes
 only code-owned hosted agents before project teardown and reads back
 absence. Current calling-app reconciliation and controlled same-project
@@ -1195,7 +1201,8 @@ approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
 
 **M11 10 status (documentation/deployment subset).** Reconcile documentation,
 human prerequisites and final gate evidence; attempt G8 only in the authorised
-old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
+fresh `zavag8`/`westus3` environment (ADR0038 supersedes the old target).
+Earlier smaller-runtime G8 history does not
 prove the final solution. Historical final validation records947.NET/25bridge
 checks with passing evidence after one unchanged retrospective retry, all
 three builds/checks and zavaw3 verify8/8. Initial retro11/12 aggregate,

@@ -2,6 +2,13 @@
 
 Date: 27 November 2026. Status: accepted correction; two-cycle proof pending.
 
+**Scope superseded by ADR0038:** the operator deleted the former eastus2
+resources/apps and moved G8 to fresh zavag8/westus3. Former-target/support
+actions and endpoints below are historical evidence only. The lifecycle
+safety rule remains; its exact allowed target is now zavag8/westus3, never
+zavaw3/mcm or the former target. No support case is a prerequisite for
+investigating the fresh region.
+
 ## Context
 
 The previous G8 proof completed only one of two empty deployment cycles.

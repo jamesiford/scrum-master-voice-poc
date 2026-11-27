@@ -11,7 +11,7 @@ real Teams acceptance remain separate. No protected deployment is mutated.
 
 | Gate | Current verdict | Actual evidence |
 | --- | --- | --- |
-| G8 fresh westus3 greenfield | Not_run, fullcycles0/2 | Privileged read n1; automated portal/media consent pass; lifecycle14/14, greenfield17/17 and all3builds/.NET0warnings/errors; preview25s/schema/package pass. Full up/verify cycles and VM-only deallocation pending. See g8-proof-3-M11.json and ADR0038. |
+| G8 fresh westus3 greenfield | Not_run, fullcycles0/2 | Privileged read n1; automated portal/media consent pass; lifecycle14/14, greenfield20/20, architecture16/16 and all3builds/.NET0warnings/errors. Initial full up206.1921s fails unavailable standalone realtime SKU before any resource. Managed Voice Live needs no standalone deployment: declarative correction preserves the real model/default adapters; updated ARM/what-if5/5, Create39/Modify0/Delete0 pass. First full retry running; two complete up/verify cycles and final VM-only deallocation pending. See g8-proof-3-M11.json/ADR0038/0039. |
 
 ## Film implementation checkpoint (27 November 2026)
 
@@ -389,7 +389,9 @@ native Teams joins/attribution/board/barge-in remain not_run. No full suites.
 
 ## G8 recovery attempt 1 (26 November 2026 after20:00PT)
 
-Only zavagf/eastus2 is used; zavaw3/mcm are not modified. Actual Global
+That retired attempt used the former eastus2 target; the operator has
+since moved G8 to fresh zavag8/westus3, the proven hosted region.
+zavaw3/mcm are not modified. Actual Global
 Administrator readback, unchanged application/AllPrincipals consent
 PATCH/readback n1 each, portal reconciliation and dedicated native
 Calls.AccessMedia.All consent pass. Old group13resources.
@@ -738,7 +740,8 @@ sample is removed by a later better run.
 
 ### Final G8 attempt
 
-Target is only `zavagf`/`eastus2`, subscription
+The historical target was `zavagf`/`eastus2`; it is operator-deleted and
+never reused. Current G8 is fresh `zavag8`/`westus3`, subscription
 `4b0dd31f-5379-4acc-8dcd-60f2929d2513`; the existing resource group
 `rg-zava-scrum-zavagf` contains13resources. One current full preflight ran
 03:04:32.2709665Z to03:08:23.5667972Z on27November (231.2965s):
@@ -1345,7 +1348,8 @@ Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStand
 Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
 
 Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. That teardown is historical; zavaw3 was subsequently rebuilt and is running.
-It is protected from this final G8 proof, which targets only zavagf/eastus2.
+It is protected from G8, which now targets only fresh zavag8/westus3
+by operator decision; the former eastus2 target is retired (ADR0038).
 
 ## 3B: realtime model and silence (ADR 0019)
 

@@ -12,6 +12,13 @@ Calls.AccessMedia.All setup have succeeded automatically. Two full empty
 up/verify cycles and final VM-only deallocation are pending; no G8 pass.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
+ADR0039 corrects the standalone realtime quota prerequisite for the
+existing managed Voice Live URL. The new infrastructure-only input
+`PROVISION_REALTIME_MODELS=false` omits unused OpenAI realtime deployments
+for this proof; true preserves existing deployment inputs. Chat/decision/
+native and real managed audio stay required. Initial preflight206.1921s
+failed before any resource creation; quota10/10 is not changed.
+
 **Date:** November 27, 2026 (M11 film features).
 
 **Film product reads (ADR0036):** the portal has an Audit chain page for a

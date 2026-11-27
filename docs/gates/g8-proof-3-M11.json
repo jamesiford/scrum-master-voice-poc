@@ -30,8 +30,24 @@
     "windowsComputeUsdPerHour": 0.345,
     "finalPowerState": "not_created"
   },
-  "iterations": [],
-  "defaults": {"bridge":"Acs","board":"Share","voice":"Direct"},
+  "iterations": [
+    {
+      "operation": "full_up",
+      "iteration": 1,
+      "attempt": 1,
+      "start": "2026-11-27T22:25:11.1050938+00:00",
+      "end": "2026-11-27T22:28:37.2972322+00:00",
+      "seconds": 206.1921384,
+      "exitCode": 1,
+      "phase": "preflight",
+      "error": "model: gpt-realtime-2.1 Not offered as DataZoneStandard in westus3 for this subscription",
+      "resourcesCreated": 0,
+      "standaloneGlobalRealtimeQuotaUsed": 10,
+      "standaloneGlobalRealtimeQuotaLimit": 10,
+      "cycleCredit": false
+    }
+  ],
+  "defaults": { "bridge": "Acs", "board": "Share", "voice": "Direct" },
   "protectedEnvironmentsMutated": false,
   "humanGates": [],
   "notes": [
