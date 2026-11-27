@@ -11,7 +11,9 @@ attribution/join/board acceptance. Five delegated Copilot skills and package
 (75%, n=8); latest fallback p95 regression fails (+12.75%, n=12/12),
 and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
-model deviation remains a reliability risk. Final G8 proof remains failed.
+model deviation remains a reliability risk. G8 recovery has one complete
+verified empty up/verify cycle of two; intervening purge passed1639.20s
+with group/vault/Foundry absence readback. The second cycle is next.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 
@@ -21,7 +23,16 @@ x64 Standard_D4als_v7 (4vCPUs, Gen2, Windows USD0.345/hour) in eastus2.
 Image/purge parameters preserve existing defaults; the explicitly disposable
 zavagf vault is purgeable with soft delete retained. Hook scope guards,
 native-capacity validation, registry-role gate and optional permission merge
-are implemented (ADR0031). Two full proof cycles are pending.
+are implemented (ADR0031). First full empty up passes1828.77s; mandatory
+verify8/8 passes344.83s with a real approver-authored write/auditrevision55.
+The actual D4als_v7 has127GB StandardSSD_LRS/V2 disk, trusted HTTPS,
+no-recording/cap1/1280x720renderer and SYSTEM/AtStartup task readiness.
+Known VM/disk/IP tariffUSD0.363150685/hour excludes variable charges.
+The failed first vault iteration and conductor verification-layout failure
+are retained in the gate evidence, not erased by the passing retry.
+New zavagf catalogue publication was attempted once and refused403 for
+missing OAuth catalogue scopes; exact Teams administrator action is in DEPLOY.md.
+Second empty up/verify remains required; no native Teams acceptance is claimed.
 Scout completed the zavaw3 Graph Files.Read.All/Sites.Read.All and Work IQ
 WorkIQAgent.Ask delegated grants and both tenant catalogue uploads.
 Real user/source/billing/Exchange/CI/organiserRSC gates remain open.
@@ -42,9 +53,9 @@ This document describes what the proof of concept actually does today. It is the
 
 **M11 8A status (26 November 2026):** Foundry IQ is blocked before its
 mandatory caller-OBO permission spike, not implemented or deployed.
-The actual portal Graph grant lacks `Files.Read.All` and `Sites.Read.All`;
-an approved standards corpus and two-user permission fixture are also
-outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
+The operator granted zavaw3 `Files.Read.All` and `Sites.Read.All`;
+an approved standards corpus and two-user caller-OBO permission fixture
+are still outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
 Knowledge page, standards chat skill or knowledge enrichment in pre-briefs,
 follow-ups, Story Writer or retrospective packs. Repo working agreements
 are not a substitute. G10 retrieval and permission tests have n=0, not a

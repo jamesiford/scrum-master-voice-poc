@@ -30,6 +30,19 @@ readable names for every participant and an atomic roster/cast/Sprint 43
 re-seed remain product follow-ons, not features delivered by this docs step.
 Do not edit the Presenter Pack or fabricate UI/evidence for the film.
 
+### G8 recovery evidence is not a real Teams rehearsal
+
+Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
+verify8/8 passes344.83s; actual approved auditrevision55 is positive n1.
+Scripted standup3251/3682ms p50/p95,n9, does not replace the real meeting,
+permission-negative, board-visibility or native attribution matrix.
+Native trusted HTTPS/no-recording/cap1/1280x720renderer and SYSTEM startup
+task are ready, not proof of a stored-link Teams join. Second empty cycle
+is pending after intervening purge passed1639.20s with complete absence
+readback. New zavagf package publication was
+attempted and refused403 for OAuth catalogue scopes; use DEPLOY.md's exact
+administrator upload action. Completed zavaw3 uploads remain complete.
+
 ## Work IQ signals readiness (M11 8B)
 
 **Not available for the demo.** Only the consent/evidence contracts and

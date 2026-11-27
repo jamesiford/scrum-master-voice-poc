@@ -134,3 +134,10 @@ item1revision55,tagzsa-6e033b0292c9. Complete standup3251/3682ms,n9,
 talkovers0, without changing inherited/native failed or unrun gates.
 Full ARM inventory25. Completed empty up/verify cycles1/2; intervening purge
 starts now. Second empty up/verify remains necessary for G8 closure.
+
+Intervening purge passes1639.2013s,ending06:21:22.0028777Z. The actual
+disposable media vault and Foundry account purge succeeds; group=false and
+both deleted-name lists[] confirm a genuinely empty second start. Thus
+the omission fix supports the required repeat purge in practice, while
+existing protected environments remain untouched. Three final builds,
+16focused checks and full C# format pass again; no full suites.

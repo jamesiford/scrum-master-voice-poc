@@ -101,6 +101,13 @@ are additional logical objects, priced by the existing consumption ledger,
 not invented fixed charges. **Completed cycles1/2**; intervening authorised
 purge has started before the second empty up.
 
+Intervening purge **passes1639.2013s (27m19.20s),exit0,n1**,
+05:54:02.8015505Z to06:21:22.0028777Z. Both the media vault and Foundry
+account were purged. Exact group exists=false and matching deleted-vault/
+Foundry lists[] prove the second start is empty. All three builds pass again,
+.NET0warnings/errors32.03s;16focused checks and full C# format pass. No full
+suites. The second full empty up/verify is next, not yet counted as complete.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

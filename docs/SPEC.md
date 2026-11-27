@@ -24,7 +24,15 @@ quota rows, and the registry image-pull role is verified before deployment.
 Optional approved Entra declarations survive baseline reconciliation.
 Gen2 image and disposable-vault purge parameters preserve original defaults;
 the selected unrestricted four-core D4als_v7 costs USD0.345/hour Windows.
-Full two-cycle proof is pending. Operator-completed zavaw3 retrieval/WorkIQ
+First empty up/verify cycle passes1828.77s/344.83s, mandatory checks8/8,
+actual approved write/auditrevision55. The127GB StandardSSD_LRS/V2 disk
+and SYSTEM startup task are verified; VM/disk/IP tariffUSD0.363150685/hour
+excludes variable consumption. Second empty up/verify remains pending
+after intervening purge passed1639.20s with group/vault/Foundry absence
+readback. The disposable parameter omits the API property,
+because explicit purge-protection false was refused on new vault creation.
+New zavagf catalogue upload has a measured OAuth403 human gate, not a
+failed core Entra hook. Operator-completed zavaw3 retrieval/WorkIQ
 consents and catalogue uploads do not prove G5/G6/G10/G11 or their fixtures.
 
 ### What changed in v0.6 (M9)

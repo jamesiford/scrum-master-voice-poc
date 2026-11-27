@@ -70,6 +70,9 @@ It passed1828.77s,exit0,ending05:40:25Z; mandatory verification is running.
 Complete verification subsequently passes8/8 in344.83s, with one actual
 approver-authored ADO comment and complete audit/revision55. Completed
 cycles1/2; intervening purge runs before the second empty up.
+Intervening purge passes1639.20s, including the real media vault and Foundry
+account; group exists=false and matching deleted-name lists[] read back.
+The second empty up/verify remains required.
 
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:
