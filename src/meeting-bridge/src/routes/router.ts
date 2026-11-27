@@ -25,12 +25,14 @@ export function createRouter(
   teams: TeamsRoutes,
 ): (req: IncomingMessage, res: ServerResponse) => void {
   return (req, res) => {
-    void traceRequest(req, res, () => route(req, res, publicDir, cast, teams)).catch((error: unknown) => {
-      sendJson(res, 500, {
-        error: 'bridge_error',
-        detail: error instanceof Error ? error.message : 'Unexpected error',
-      });
-    });
+    void traceRequest(req, res, () => route(req, res, publicDir, cast, teams)).catch(
+      (error: unknown) => {
+        sendJson(res, 500, {
+          error: 'bridge_error',
+          detail: error instanceof Error ? error.message : 'Unexpected error',
+        });
+      },
+    );
   };
 }
 

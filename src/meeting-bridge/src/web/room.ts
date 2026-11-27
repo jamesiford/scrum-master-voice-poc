@@ -134,7 +134,9 @@ async function onMessage(message: ServerMessage): Promise<void> {
 }
 
 async function loadCast(): Promise<void> {
-  const response = await fetch(`/cast/script?kind=${encodeURIComponent(kind)}`, { headers: telemetry.requestHeaders() });
+  const response = await fetch(`/cast/script?kind=${encodeURIComponent(kind)}`, {
+    headers: telemetry.requestHeaders(),
+  });
   cast = response.ok ? ((await response.json()) as { members: CastMemberInfo[] }).members : [];
   if (!response.ok)
     banner(

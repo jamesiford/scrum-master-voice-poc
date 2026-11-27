@@ -72,7 +72,10 @@ function matchMember(name: string | undefined): RoomMember | undefined {
 }
 
 async function fetchAcsToken(): Promise<string> {
-  const response = await fetch('/acs/token', { method: 'POST', headers: telemetry.requestHeaders() });
+  const response = await fetch('/acs/token', {
+    method: 'POST',
+    headers: telemetry.requestHeaders(),
+  });
   if (!response.ok) throw new Error(`ACS token request failed (${response.status})`);
   return ((await response.json()) as { token: string }).token;
 }
