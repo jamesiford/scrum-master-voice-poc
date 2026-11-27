@@ -118,6 +118,19 @@ The invalid iteration must finish and be purged before restoring the
 documented true input and restarting empty. The conductor now refuses
 Up/Verify with missing/false native opt-in; no smaller-footprint false pass.
 
+The invalid iteration ended06:40:26.2085805Z,**1036.6886s,exit1,n1**,
+with14ARMresources. Image/app deployment succeeded, but hosted version
+creation returned409: `The project workspace identity changed during
+version creation. Read the current agent and retry.`
+Request279ff8f7e9fdc6c39b993d57de16d99f. One current-agent GET200 retained
+the first cycle's instance principal. Invalid-footprint purge started
+06:42:11.3489783Z. ADR0032 records the exact-conflict recovery, capped at
+two read-before-create retries; authentication and other errors are not
+retried. Focused recovery tests6/6 and all three builds pass, solution
+.NET0warnings/errors21.42s; isolated tool builds with its existing NU1603
+preview dependency-resolution warning, without an SDK upgrade. Formatting
+verification follows targeted line-ending repair; completed cycles remain1/2.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

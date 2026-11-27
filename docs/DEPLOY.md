@@ -83,6 +83,13 @@ then restore the documented parameter with
 This is parameter recovery, not a manual resource or a hidden default.
 Always read back the true opt-in before a full G8 up/verify.
 
+The invalid second up exited1 after1036.69s with a Foundry409 workspace
+identity change during hosted version creation (request
+279ff8f7e9fdc6c39b993d57de16d99f). AgentDeploy now follows the service's
+explicit instruction: read the current agent and retry that exact conflict
+at most twice. Authentication, unrelated conflicts and failed reads are
+not retried. Its reduced footprint is being purged before the full restart.
+
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:
 `Missing scope permissions on the request. API requires one of

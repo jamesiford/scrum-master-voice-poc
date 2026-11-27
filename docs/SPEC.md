@@ -37,6 +37,9 @@ consents and catalogue uploads do not prove G5/G6/G10/G11 or their fixtures.
 The native opt-in is now input-only: teardown must not erase a configured
 flag as a generated output. The observed reduced second iteration is not
 a completed full cycle; compiled cleanup-contract regression17/17 passes.
+AgentDeploy also recovers the actual Foundry409 workspace-identity change (ADR0032)
+by reading the current agent before at most two creation retries, only
+for that exact error. Authentication and unrelated errors are not retried.
 
 ### What changed in v0.6 (M9)
 

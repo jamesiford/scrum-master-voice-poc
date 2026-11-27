@@ -163,3 +163,17 @@ from empty; no silent smaller-footprint success or manual infrastructure.
 [Current Learn](https://learn.microsoft.com/azure/developer/azure-developer-cli/manage-environment-variables)
 distinguishes configuration inputs from automatically captured Bicep outputs.
 The observed down cleanup takes precedence where that page is less explicit.
+
+## Foundry workspace recreation conflict
+
+The invalid second iteration also exited1 after1036.6886s withHTTP409:
+`The project workspace identity changed during version creation. Read the
+current agent and retry.` Request279ff8f7e9fdc6c39b993d57de16d99f.
+One actual current-agent GET200 returned the same instance principal as
+the first cycle, despite workspace recreation. Image build/push succeeded;
+this is version creation, not image availability or authentication failure.
+
+[ADR0032](0032-foundry-workspace-version-recovery.md) records the distinct
+bounded service-directed version recovery decision, focused6/6 tests and
+unchanged isolated preview SDK. Another complete empty native-enabled
+up/verify remains necessary.

@@ -32,7 +32,7 @@
     "defaultMediaVaultPurgeProtection": true
   },
   "preflight": {"start": "2026-11-27T04:07:14.5614890Z", "end": "2026-11-27T04:10:37.4000104Z", "seconds": 202.8385214, "exit": 0, "samples": 1},
-  "validation": {"threeBuilds": "pass", "dotnetWarnings": 0, "dotnetErrors": 0, "focusedHookChecks": {"passed": 16, "total": 16}, "schema": "pass", "bicep": "pass", "gen2Image": "pass", "previewSeconds": 27, "package": "pass", "format": "pass", "fullSuitesRerun": false},
+  "validation": {"threeBuilds": "pass", "dotnetWarnings": 0, "dotnetErrors": 0, "focusedHookChecks": {"passed": 17, "total": 17}, "focusedVersionRecoveryTests": {"passed": 6, "total": 6}, "isolatedPreviewToolBuild": "pass", "isolatedToolExistingDependencyWarning": "NU1603: unavailable Azure.AI.Extensions.OpenAI alpha resolves to beta.1; SDK versions unchanged", "schema": "pass", "bicep": "pass", "gen2Image": "pass", "previewSeconds": 27, "package": "pass", "format": "pass", "fullSuitesRerun": false},
   "operations": [
     {"operation": "initialDown", "start": "2026-11-27T04:13:08.8429494Z", "end": "2026-11-27T04:40:11.4755627Z", "seconds": 1622.6326133, "exit": 0, "status": "pass"},
     {"operation": "firstUpIteration1", "start": "2026-11-27T04:41:08.8381940Z", "end": "2026-11-27T04:49:21.3802308Z", "seconds": 492.5420368, "exit": 1, "status": "fail", "source": "88d79a97427d8d0ccbd5b80f97be2c1ef146e23b"},
@@ -42,8 +42,8 @@
     {"operation": "firstVerifyIteration2", "start": "2026-11-27T05:47:54.0723372Z", "end": "2026-11-27T05:53:38.9021640Z", "seconds": 344.8298268, "exit": 0, "status": "pass", "source": "2d9d49a5836df61677c19cd2ece057a92712563c", "mandatoryChecks": {"passed": 8, "total": 8}, "approvalAudit": {"session": "0dfba242-d1a3-4d73-ae8e-f54681252b90", "tag": "zsa-6e033b0292c9", "workItem": 1, "revision": 55, "approverObjectId": "aeaec64b-d720-4996-9022-02fa0dcf043d", "author": "admin@MngEnvMCAP763514.onmicrosoft.com"}},
     {"operation": "firstUpVerify", "status": "pass", "completedCycles": 1},
     {"operation": "interveningDown", "start": "2026-11-27T05:54:02.8015505Z", "end": "2026-11-27T06:21:22.0028777Z", "seconds": 1639.2013272, "exit": 0, "status": "pass", "emptyGroupReadback": false, "deletedVaultMatches": 0, "deletedFoundryMatches": 0},
-    {"operation": "secondUpIteration1", "start": "2026-11-27T06:23:09.5200057Z", "status": "running_but_invalid_full_scope", "source": "8c8ade9bba5b6fcbdb0ef1d4d5fc91e0d71762c9", "actualNativeParameter": "false", "countsAsCompleteCycle": false},
-    {"operation": "invalidSecondDown", "status": "not_run"},
+    {"operation": "secondUpIteration1", "start": "2026-11-27T06:23:09.5200057Z", "end": "2026-11-27T06:40:26.2085805Z", "seconds": 1036.6885748, "exit": 1, "status": "failed_and_invalid_full_scope", "source": "8c8ade9bba5b6fcbdb0ef1d4d5fc91e0d71762c9", "actualNativeParameter": "false", "armResourceCount": 14, "countsAsCompleteCycle": false, "foundryError": {"status": 409, "requestId": "279ff8f7e9fdc6c39b993d57de16d99f", "message": "The project workspace identity changed during version creation. Read the current agent and retry."}, "currentAgentRead": {"status": 200, "attempts": 1, "instancePrincipalMatchesFirstCycle": true}},
+    {"operation": "invalidSecondDown", "start": "2026-11-27T06:42:11.3489783Z", "status": "running"},
     {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}
   ],
   "completedCycles": 1,

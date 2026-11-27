@@ -46,6 +46,9 @@ The attempted second deployment lost the native opt-in through an
 input/output collision and is not counted as full G8 evidence. The corrected
 input-only template requires a clean retry; do not substitute a smaller
 deployment's optional native SKIP for actual hosting verification.
+It also exited1 after1036.69s with a hosted-version workspace-identity409.
+The tool's bounded service-directed recovery is not a completed second
+deployment or a native/live acceptance sample.
 
 ## Work IQ signals readiness (M11 8B)
 

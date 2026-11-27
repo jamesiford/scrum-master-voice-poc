@@ -17,6 +17,11 @@ with group/vault/Foundry absence readback. The second cycle is next.
 The attempted second deployment was reduced because teardown erased the
 native opt-in's colliding output; it is not counted. The input-only fix and
 compiled cleanup regression17/17 pass, and a full empty retry is required.
+That invalid iteration also failed hosted version creation with the exact
+Foundry409 workspace-identity conflict after1036.69s. AgentDeploy now reads
+the current agent before at most two retries of that conflict only; other
+errors remain explicit. Focused recovery tests6/6 and all three builds pass;
+the isolated preview tool retains its existing dependency-resolution warning.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 
