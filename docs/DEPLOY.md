@@ -463,16 +463,30 @@ switch. All real adapters, scope configuration, storage/retention, owner
 connection/revoke UI, optional permissions and hooks belong in the resumed
 greenfield PR, followed by zavaw3 deployment and `infra\hooks\verify.ps1`.
 
-### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (prompt 8A, ADR 0026)
+### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (8A/8A-r, ADRs 0026/0033)
 
 Prompt 8A remains unbuilt before its mandatory permission spike, not deployed.
 Only zavaw3 and its existing portal application are in scope for that spike.
-The operator's renewed-window readback above confirms both retrieval scopes;
-the source/two-user fixture and actual OBO spike remain outstanding.
+The27November2026 actual grant/declaration readbacks confirm both retrieval
+scopes; KNOWLEDGE-CONSENT is complete, not blocked by the old administrator
+window. The source/two-user fixture and actual retrieval spike remain outstanding.
 The signed-in administrator has a Copilot licence and can read the SharePoint
-root through Azure CLI; neither proves caller-OBO retrieval. The privileged
-window ended at 14:27 PT on 26 November 2026. No permission-trimming request
-was made, so leakage and latency remain unmeasured.
+root through Azure CLI; neither proves caller-OBO retrieval. Five current
+application teams have no knowledge bases or stored memberships. No approved
+corpus or denied-user fixture is established; do not create people or search
+unrelated tenant documents to manufacture one. No permission-trimming request
+was made, so leakage and retrieval latency remain unmeasured.
+The8A-r administrator's genuine portal-to-Graph OBO exchange and matching
+`/me` identity-only read succeed n1 each. The bounded probe reuses the existing
+confidential-client credential in memory; it does not validate deployed
+managed-identity federation or source retrieval. Do not reopen consent or
+administrator sign-in as human gates; obtain the actual approved source and
+real positive/negative members below.
+Existing-zavaw3 mandatory `infra\hooks\verify.ps1` passes8/8 on8A-r,
+including genuine approver-authored item1/revision59 and complete audit.
+No knowledge runtime or resources were added, so nothing was redeployed.
+Leave zavaw3 running and preserve its current adapters; source approval
+cannot be automated or replaced with a privileged administrator's broad access.
 
 **KNOWLEDGE-CONSENT, completed by Scout as authorised administrator:**
 retain this procedure for another approved environment. For
@@ -487,6 +501,9 @@ The resumed implementation must encode the same declarations and idempotent
 consent handling in the Entra hook; this approval is not a substitute for
 greenfield automation. Verify the actual portal service-principal grant
 (`2b69cbf8-a7e7-432c-8441-726b72a9fffc`) before OBO testing.
+The inherited hook already preserves approved optional declarations using
+`Merge-RequiredResourceAccess`; do not replace or revoke the operator's
+Graph or WorkIQAgent.Ask permissions during reconciliation.
 
 **Standards owner / team lead and SharePoint site owner:** name the approved
 organisation and team site/library URLs and real standards, Definition of
@@ -671,8 +688,10 @@ no score is claimed. A product/data owner may supply an explicitly approved
 synthetic full-input/output and source-ground-truth corpus for a separate
 synthetic Foundry evaluation, using the checked-in tone/cited-item/refusal
 rubric. Do not enable employee content or waive privacy to close G7.
-Knowledge and Work IQ evaluations still require their existing8A/8B consent/
-source fixtures and remain n0; this step grants none of those permissions.
+Knowledge and Work IQ evaluations still require their existing8A/8B source/
+real-user fixtures and remain n0. Both zavaw3 delegated administrator consents
+are completed; source approval, member consent and Work IQ billing remain
+separate prerequisites. This observability step grants no permissions.
 
 ## Teardown
 

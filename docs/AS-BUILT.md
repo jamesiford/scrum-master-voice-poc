@@ -74,16 +74,23 @@ WORK-SIGNALS-PRIVACY.md and DEPLOY.md for the exact resume boundary.
 
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
 
-**M11 8A status (26 November 2026):** Foundry IQ is blocked before its
+**M11 8A-r status (27 November 2026):** Foundry IQ is blocked before its
 mandatory caller-OBO permission spike, not implemented or deployed.
-The operator granted zavaw3 `Files.Read.All` and `Sites.Read.All`;
+Actual zavaw3 grant/declaration readbacks verify `Files.Read.All` and `Sites.Read.All`;
 an approved standards corpus and two-user caller-OBO permission fixture
-are still outstanding. `KnowledgeBaseIds` remains reserved. There is no `IKnowledge`,
+are still outstanding. Five actual teams have no knowledge bases or stored
+memberships; no Search service exists in zavaw3. `KnowledgeBaseIds` remains reserved.
+There is no `IKnowledge`,
 Knowledge page, standards chat skill or knowledge enrichment in pre-briefs,
 follow-ups, Story Writer or retrospective packs. Repo working agreements
 are not a substitute. G10 retrieval and permission tests have n=0, not a
-zero-leakage pass. ADR 0026 and DEPLOY.md give the exact resume prerequisites.
+zero-leakage pass. Genuine admin portal-to-Graph OBO and matching `/me` metadata
+succeed n1 each, using the existing confidential-client credential only in a
+bounded memory-only probe; deployed federation/source permissions are unproved.
+ADRs 0026/0033 and DEPLOY.md give the exact resume prerequisites.
 The existing zavaw3 runtime and voice/approval boundaries are unchanged.
+Redo mandatory verification passes8/8, real approver/audit revision59 and
+Direct2969/4875ms,n12,talkovers0; this is not knowledge or native acceptance.
 
 ## 1. What it is
 A team-scoped voice-led "junior Scrum Master", with Payments as the demo

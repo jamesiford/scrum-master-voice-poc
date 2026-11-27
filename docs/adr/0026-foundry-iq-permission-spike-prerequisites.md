@@ -3,6 +3,11 @@
 Date: 2026-11-26
 Status: Accepted prerequisite; implementation blocked, not rejected
 
+**27November2026 redo:** ADR0033 records actual consent/declaration readback
+and current caller/registry prerequisites. Consent is closed; approved sources
+and real permission fixtures remain open. The original absence claims below
+describe the earlier attempt, not the current application.
+
 **20:00PT operator update:** Scout granted and read back the actual zavaw3
 portal Graph AllPrincipals Files.Read.All/Sites.Read.All permissions with
 matching declarations. KNOWLEDGE-CONSENT is completed, not an open human
