@@ -4,18 +4,24 @@ Date: 2026-11-26
 Status: Accepted prerequisite; implementation blocked, not rejected
 
 **27November2026 redo:** ADR0033 records actual consent/declaration readback
-and current caller/registry prerequisites. Consent is closed; approved sources
-and real permission fixtures remain open. The original absence claims below
-describe the earlier attempt, not the current application.
+and genuine administrator portal-to-Graph OBO exchange n=1, with matching
+Graph `/me` identity read n=1. The complete probe took 5.362 s, not retrieval
+latency; it used the existing Easy Auth credential only in memory and did
+not prove deployed managed-identity federation. Consent and administrator
+sign-in are closed prerequisites. Five actual teams have zero knowledge
+bases and stored memberships; approved sources and real positive/negative
+member fixtures remain open. G10 retrieval, citation, leakage and latency
+remain not_run, n=0. The absence claims below describe the earlier attempt,
+not the current application.
 
 **20:00PT operator update:** Scout granted and read back the actual zavaw3
 portal Graph AllPrincipals Files.Read.All/Sites.Read.All permissions with
 matching declarations. KNOWLEDGE-CONSENT is completed, not an open human
 gate. Approved corpus/two-user entitlement/permission fixture and the actual
-OBO spike remain open, n0. Evidence below is historical. ADR0031 preserves
+caller-OBO retrieval spike remain open, n=0. Evidence below is historical. ADR0031 preserves
 these declarations during baseline hook reconciliation without enabling IQ.
 
-## Context and evidence
+## Historical context and evidence (original 8A attempt)
 
 Prompt 8A requires remote SharePoint and indexed Blob retrieval through a
 knowledge base MCP endpoint, ten real spike questions and a permission-negative
@@ -81,7 +87,7 @@ Stop before provisioning or shipping the dependent knowledge implementation.
 Do not substitute Azure CLI access, an admin token, application permissions,
 repo Markdown, fabricated citations or Blob-only retrieval for the required
 caller-OBO permission proof. Do not label absence of a query as a successful
-zero-leakage test. DEPLOY.md names the exact consent, corpus and user gates.
+zero-leakage test. DEPLOY.md names the completed consent and remaining corpus/user gates.
 
 After those prerequisites, resume prompt 8A in two stages: first create the
 real Search/source/knowledge base infrastructure through Bicep and idempotent
@@ -103,5 +109,6 @@ G10 is not run; G1 has no new sample. Preserve the previous prompt's Direct
 fallback measurements, including its initial tail failure, without relabelling
 them as prompt 8A measurements. All three existing builds pass; no full suites
 were rerun. Added fixed cost is **USD 0/hour**, with no retrieval consumption.
-The step result is blocked, not done. The docs and draft stacked PR preserve
+The original step and redo results are blocked only by real source/user
+fixtures, not by missing consent or administrator sign-in. The docs and draft stacked PR preserve
 the evidence and the exact resume boundary rather than claiming implementation.

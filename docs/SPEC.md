@@ -4,7 +4,7 @@
 >
 > **Companions:** *Zava AI Scrum Master Agent - Solution Architecture* (the why and the options) and *Zava AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
-> **Owner:** James Ford (Microsoft). **Version 0.7 (M11 implementation and measured acceptance)**, November 26, 2026. **The code wins** where this document and the code disagree. `AS-BUILT.md` describes implementation; `gates/M11-gates.md` distinguishes measured acceptance from open work; `DOC-DRIFT.md` records corrections. Decision records are indexed in `adr/README.md`.
+> **Owner:** James Ford (Microsoft). **Version 0.7 (M11 implementation and measured acceptance)**, November 27, 2026. **The code wins** where this document and the code disagree. `AS-BUILT.md` describes implementation; `gates/M11-gates.md` distinguishes measured acceptance from open work; `DOC-DRIFT.md` records corrections. Decision records are indexed in `adr/README.md`.
 
 ### M11 acceptance boundary
 
@@ -15,6 +15,15 @@ adapter is hosted but its real Teams attribution, joins and board acceptance
 remain open, and it saves no meeting-derived proposals. Five delegated
 Teams/Copilot skills and package 1.1.0 are implemented; live Copilot G5 is open.
 Foundry IQ and Work IQ integrations are not built (G10/G11 not_run, n=0).
+Graph Files.Read.All/Sites.Read.All and WorkIQAgent.Ask AllPrincipals
+consents and matching declarations are completed. Real administrator
+Graph OBO/identity reads n=1 each and Work IQ OBO/initialisations n=2 each,
+tools/list n=1 with HTTP 200/12 tools, establish prerequisites only.
+The 5.362 s Graph and 9.352 s Work IQ probes are not retrieval latency.
+They used the existing Easy Auth credential only in memory; deployed
+managed-identity federation and real source/member enforcement remain
+unproved. Work IQ metadata adapters are real but unregistered in the
+deployed API image `git-3d24f8e`; no content consumer is enabled.
 G7 fails revised dates (75%, n=8); latest fallback p50 regression is +6.19%
 (n=10 before, n=12 after). No threshold or Domain rule was changed to pass.
 
@@ -1137,7 +1146,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M9 status as built (ceremony kinds, ceremony packs and carry-over).** Built: `CeremonyKind`; `SetIteration`, `Assign` and `CreateWorkItem` changes with the generalised attribution; planning, review and retrospective packs with cards; R1 Graph email (unverified against a live mailbox); R2 unblock loop; R3 commitment carry-over; R4 `AtRiskRule` (one at-risk task seeded: "Prepare reconciliation report for audit"); R5 recap routing. **Not built:** per-item checkboxes on pack cards (the card approves the whole follow-up); a portal page for packs (use the API route); a live-meeting run of the new voice turns (the unblock and carry-over turns are unit tested at the use-case level, not exercised against a live Voice Live session). Demo check: `docs/DEMO.md`, "M9 features".
 
-**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts. M11 8B adds consent/evidence contracts only; current Learn supports delegated OBO advisory retrieval with Work IQ-specific consent and usage-based billing, not the historical unverified `EnableWorkIQTranscriptAccess` setting or a live transcript transport. Live source scoping and all four integrations remain blocked with G11 n=0 (ADR 0027).
+**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts. M11 8B/8B-r adds consent/evidence contracts and unregistered real MI-OBO/metadata-discovery adapters, not content retrieval; current Learn supports delegated OBO advisory retrieval with Work IQ-specific consent and usage-based billing, not the historical unverified `EnableWorkIQTranscriptAccess` setting or a live transcript transport. Live source scoping and all four integrations remain blocked by approved billing/real-owner/source fixtures with G11 n=0 (ADRs 0027/0034); delegated consent and administrator discovery are completed.
 
 **M11 6a/6b status (Teams-native media alternative).** The Windows Graph media host, selectable bridge, identity-tagged ephemeral gateway, focused tests and opt-in hosting are built; the D4s_v5 Windows VM, trusted Azure DNS-label TLS and SYSTEM startup task are deployed in zavaw3. Application stays unchanged and ACS remains the default. Native G1/G2/G6 and real-human barge-in remain n=0 pending catalogue/calendar/roster/RSC prerequisites. Synthetic tagged-frame and stop probes do not establish native acceptance, and unconditional opening-state barge-in fails. The native path saves no audio-derived transcript or follow-up; limits and exact actions are in ADR 0023 and DEPLOY.md.
 

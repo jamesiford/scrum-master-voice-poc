@@ -59,6 +59,8 @@ The postprovision registry role gate confirms AcrPull before image deployment.
 Native hooks admit the exact zavagf/eastus2 group as well as the original
 zavaw3/westus3 group; this run executes **only zavagf**.
 
+The following iteration chronology records historical checkpoints, not
+currently running operations. The current outcome below is authoritative.
 Initial old-group purge passed1622.63s and empty-group readback was false.
 First empty up from88d79a9 failed after492.54s with that explicit-false
 Key Vault BadRequest. The selected VM itself allocated successfully with
@@ -66,7 +68,7 @@ a127GB StandardSSD_LRS/V2 OS disk. ADR0031 records the omission correction;
 the failed partial footprint is purged before retrying. Completed cycles0/2.
 That purge passed1025.01s; exact group absence=false and corrected preview
 29s pass. First empty-up retry started05:09:56Z from35812cd.
-It passed1828.77s,exit0,ending05:40:25Z; mandatory verification is running.
+It passed1828.77s,exit0,ending05:40:25Z, then entered mandatory verification.
 Complete verification subsequently passes8/8 in344.83s, with one actual
 approver-authored ADO comment and complete audit/revision55. Completed
 cycles1/2; intervening purge runs before the second empty up.
@@ -209,7 +211,8 @@ Revalidate actual role authority, not just the token's `scp` field.
 
 **G8-MEDIA-CAPACITY, catalogue/quota prerequisite resolved:** the operator
 authorised SKU selection and Standard_D4als_v7 was selected as recorded
-above. Actual allocation still requires the deployment. For a future run,
+above. Actual allocation succeeded in both the completed first cycle and the
+current partial footprint. For a future run,
 the deployment owner must review
 `az vm list-skus -l eastus2 --size Standard_D4s_v5 --all` and its
 `NotAvailableForSubscription` restrictions. Approve an actually available
@@ -407,11 +410,13 @@ unbuilt and require their independent source/user/billing spike.
 ### WORK-SIGNALS-CONSENT, WORK-SIGNALS-BILLING and WORK-SIGNALS-FIXTURE (8B)
 
 ADRs 0027 and 0034 record an unregistered boundary and real metadata-only
-owner-OBO/discovery adapters, not an enabled content runtime. The earlier
-administrator window ended at14:27PT; the renewed window and operator
-readback above supersede the earlier absence of a declaration/grant.
+owner-OBO/discovery adapters, not an enabled content runtime. Operator consent
+and redo readbacks supersede the original absent-grant/administrator-window
+block. Consent and administrator sign-in are completed prerequisites.
 The8B-r administrator OBO succeeds n2, initialisation n2 and tools/list n1,
 HTTP200/12tools; complete discovery9.352s,n1 is not retrieval latency.
+The probe used the existing Easy Auth credential only in memory; deployed
+managed-identity federation is still unproved.
 All content/source-enforcement/negative-user samples remain not_run,n0.
 Do not alter the mcm applications, grant application permissions, change
 tenant policy or create an unapproved billing plan.
@@ -549,7 +554,7 @@ must remain explicit. Keep knowledge off voice unless G1 is preserved.
 
 ### COPILOT-ROLLOUT and COPILOT-G5 (prompt 8, ADR 0025)
 
-Only zavaw3 is in scope. The authorised Global Administrator window ended at
+Only zavaw3 is in scope. Historically, the authorised Global Administrator window ended at
 14:27 PT on 26 November 2026, before prompt 8 started. The signed-in Azure CLI
 catalogue read was attempted with explicit Graph resource and refused:
 `Forbidden: Missing scope permissions on the request. API requires one of
@@ -718,7 +723,7 @@ azd down --purge
 
 - Provisioning takes about 20 minutes; the Container Apps environment alone took 13.5 minutes in the proven run.
 - Hosted transport is measured in West US 3; native eastus2/final-footprint acceptance remains open. Optional relay 4 is retained; candidate 5 is unpromoted.
-- Final two-cycle G8 is unrun: this step's preflight failed native capacity and current privileged deployer authority is absent. Earlier smaller-runtime teardown/rebuild history does not close it.
+- Final two-cycle G8 is failed at 1/2 complete empty up/verify cycles. The full second up failed on the Foundry workspace-identity 409; independent calling-app reconciliation returned 403. Current 24-resource zavagf footprint remains allocated and unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. The capacity prerequisite is resolved; exact administrator/support actions are above. No zavagf lifecycle action belongs to this reconciliation.
 - A new-subscription run was not possible: the work used one subscription and tenant.
 
 ## Native media preparation and human gates (6a/6b, ADR 0023)

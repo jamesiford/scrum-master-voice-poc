@@ -1,6 +1,6 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 26, 2026 (M11 final validation).
+**Date:** November 27, 2026 (M11 redo reconciliation).
 
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
@@ -66,6 +66,13 @@ Actual administrator OBO exchanges n2 and initialisations n2 pass;
 tools/list n1 returns12 tools, including scoped retrieve request fields.
 The complete discovery probe9.352s,n1 is not content retrieval latency.
 Exact pre-retrieval enforcement and the content integration remain blocked.
+The metadata probe used the existing Easy Auth credential only in memory;
+deployed managed-identity federation remains unproved. API image
+`git-3d24f8e`, revision 85, includes the unregistered classes, with unchanged
+configuration. Baseline verification passed 8/8; after verification initially
+passed 7/8 because external MCAPSGovernance-AutomationApp deallocated the VM.
+One scoped restart and focused native readiness check passed 5/5, n=1,
+not a second full 8/8 run or native Teams acceptance.
 The operator has now granted WorkIQAgent.Ask; a licensed, consenting team lead with an
 approved spending-policy assignment and scoped channel/meeting fixture is
 still required. Domain consent/revoke rules, typed Application ports and
@@ -192,7 +199,7 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 - **Retrospective (M8):** start/stop/continue built in code from the sprint and standups; a model writes the opening summary. Text, not voice-led.
 - **Story Writer (M8):** drafts a user story and acceptance criteria from a parked topic. Draft only; never written to Azure DevOps.
 - **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are not set (they were placeholders): the page shows the Voice Live pricing tier from Learn and "Price unverified" until real rates are configured (ADR 0019).
-- **Teams and Copilot Q&A (M11 8, ADR 0025):** five read-only skills use `AnswerCopilotQuestionQuery`, membership team resolution and the asker's OBO Azure DevOps token. Blockers, commitments, risk, today's standup status and personal item states are computed/filtered in Domain; a model phrases only the introduction. Responses include source cards and use the Agents SDK streaming channel when supported. Unknown Copilot requests never fall through to managed-identity reporting. Other Teams reporting and planning remain. Manifest 1.25/version 1.1.0 declares the existing bot as a custom engine agent; actual Copilot discovery, SSO/OBO and permission-negative G5 acceptance remain unrun pending tenant upload/user consent.
+- **Teams and Copilot Q&A (M11 8, ADR 0025):** five read-only skills use `AnswerCopilotQuestionQuery`, membership team resolution and the asker's OBO Azure DevOps token. Blockers, commitments, risk, today's standup status and personal item states are computed/filtered in Domain; a model phrases only the introduction. Responses include source cards and use the Agents SDK streaming channel when supported. Unknown Copilot requests never fall through to managed-identity reporting. Other Teams reporting and planning remain. Manifest 1.25/version 1.1.0 declares the existing bot as a custom engine agent; actual Copilot discovery, SSO/OBO and permission-negative G5 acceptance remain unrun pending real user installation/sign-in and fixtures; the zavaw3 tenant catalogue upload is completed.
 - **Foundry agent mode (M8):** `VoiceLive:AgentName` and `AgentProjectName` bind the session to a Foundry voice agent instead of a model. Implemented, not exercised against a live agent; parameter names need verifying.
 - **Not built:** knowledge/Work IQ integrations, live transcript transport,
   hosted orchestration/channel migration, production infrastructure and

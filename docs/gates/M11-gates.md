@@ -1,5 +1,24 @@
 # M11 gates
 
+## Current reconciled acceptance (27 November 2026)
+
+This table supersedes prerequisite absence claims in historical sections;
+it does not replace their measured failures or invent retrieval samples.
+
+| Gate | Current result | Measured evidence and remaining boundary |
+| --- | --- | --- |
+| G8 final greenfield proof | Failed | 1/2 complete empty cycles. First up 1828.77 s and verify 8/8 in 344.83 s. Full second up failed after 1229.56 s: three workspace-identity 409 creations despite two successful reads; independent calling-app reconciliation returned 403 Authorization_RequestDenied. Current 24-resource zavagf footprint remains unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. No zavagf operation in reconciliation. |
+| G10 knowledge grounding | Not_run, n=0 | Consent/declaration reads n=1 each and genuine administrator Graph OBO/identity reads n=1 each pass; 5.362 s probe is not retrieval latency. Five teams have zero knowledge bases/stored memberships. Approved corpus, restricted document and real positive/negative members are missing; retrieval/citations/leakage/latency all n=0. |
+| G11 Work IQ signals | Not_run, n=0 | WorkIQAgent.Ask consent/declaration reads n=1 each; genuine administrator OBO/initialisations n=2 each; tools/list n=1, HTTP 200/12 tools. Complete discovery 9.352 s is not retrieval latency or billing approval. Approved Copilot Credits assignment, lead/channel/meeting UID/negative-user fixtures are missing; content/scoping/leakage/latency all n=0. |
+
+Both redo probes used the existing Easy Auth credential only in memory.
+Deployed managed-identity federation is unproved, even though the real
+Work IQ metadata adapters are built and unregistered in API `git-3d24f8e`.
+Completed zavaw3 consent and catalogue publication are not open human gates;
+real user/organiser RSC, source, billing, Exchange RBAC and evaluation CI
+actions remain in DEPLOY.md. Preserve Acs/Share/Direct, Simulated Room,
+native non-recording, stable hosted4 and inherited G1/G4/G7 failures.
+
 ## Work IQ redo (8B-r, 27 November 2026)
 
 Actual WorkIQAgent.Ask grant/declaration n1 each are verified; consent is

@@ -1,6 +1,6 @@
 # Demo runbook
 
-## Final M11 rehearsal boundary (26 November 2026)
+## Final M11 rehearsal boundary (27 November 2026)
 
 Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
 Simulated Room fallback. Do not switch to native media for the approval film:
@@ -76,7 +76,7 @@ as Work IQ results or M9c closure. Keep Acs/Share/Direct and Simulated Room.
 WORK-SIGNALS-CONSENT is completed. DEPLOY.md WORK-SIGNALS-BILLING /
 WORK-SIGNALS-FIXTURE name the billing owner, team lead and source owners'
 actions. After they complete, sign in as the real owner through portal OBO,
-discover the live schema and prove exact channel/meeting-only reads before
+rediscover the live schema and prove exact channel/meeting-only reads before
 building any supported use. Show source/title/link/time for real evidence;
 revoke and repeat to verify the visible **No signals available** banner.
 Run the disabled-team, other-team, expired-token and private-source negative
@@ -93,14 +93,16 @@ Continue using the existing Acs/Share/Direct and Simulated Room paths.
 
 The8A-r actual readback verifies both delegated retrieval scopes and matching
 declarations on the zavaw3 portal app; KNOWLEDGE-CONSENT is complete.
-the standards/site owner must still identify an approved
+The standards/site owner must still identify an approved
 corpus and a restricted document with real positive/negative consenting
 users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
 On resume, prove ten real questions through the knowledge base MCP endpoint
 and caller-OBO permission trimming before integration; evaluate at least
 forty source-labelled questions per knowledge base. Show answer citations
 and explicit "I don't know" for a genuine no-source result, never guesses.
-Current retrieval, leakage and latency sample sizes are all n=0 (ADRs 0026/0033).
+Current retrieval, citations, leakage and latency sample sizes are all n=0
+(ADRs 0026/0033). Consent and administrator sign-in are closed prerequisites;
+deployed managed-identity federation and real member/source trimming are unproved.
 The admin's measured OBO token exchange and Graph identity read n1 each are
 prerequisites only, not cited knowledge or a permission-trimming demonstration.
 Redo existing-zavaw3 verification passes8/8 with real approver/auditrevision59;
@@ -364,7 +366,7 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 
 ## Teams-native media (6a/6b)
 
-This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the catalogue upload, stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md. Native G6/G2/G1 and real-human barge-in currently have n=0.
+This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md; the zavaw3 catalogue upload is already completed. Native G6/G2/G1 and real-human barge-in currently have n=0.
 
 After those prerequisites, persist the choice and apply it to the existing API (an image-only deployment does not change its environment):
 
