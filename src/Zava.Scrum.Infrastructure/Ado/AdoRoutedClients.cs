@@ -5,6 +5,9 @@ using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.FollowUps;
 using Zava.Scrum.Domain.Teams;
 using Zava.Scrum.Domain.Work;
+using Zava.Scrum.Infrastructure.Demo;
+using Zava.Scrum.Infrastructure.Persistence;
+using Zava.Scrum.Domain.Standups;
 
 namespace Zava.Scrum.Infrastructure.Ado;
 
@@ -34,18 +37,51 @@ internal sealed class RoutedWorkItemReader(IAdoClientFactory factory) : IWorkIte
 }
 
 /// <summary>Writes an approved change to the organisation of the team it belongs to, as the approver (ADR 0020).</summary>
-internal sealed class RoutedWorkItemWriter(IAdoClientFactory factory) : IWorkItemWriter
+internal sealed class RoutedWorkItemWriter(IAdoClientFactory factory, IDemoStateStore publication, DemoAdoResetGate gate) : IWorkItemWriter
 {
     /// <inheritdoc />
     public Task<Result<WorkItemRevision>> ApplyAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(context);
-        return ApplyAsDelegateAsync(change, target, context, ct);
+        return gate.RunAsync(() => ApplyAsDelegateAsync(change, target, context, ct), ct);
     }
 
     private async Task<Result<WorkItemRevision>> ApplyAsDelegateAsync(ApprovedChange change, AdoSettings target, DelegatedWriteContext context, CancellationToken ct)
     {
+        var state = await publication.ReadAsync(ct);
+        var reset = change.Op == ChangeOp.ResetDemoItem
+            ? state.Operations.GetValueOrDefault(change.DemoReset?.OperationId ?? Guid.Empty)
+            : state.Operations.Values.FirstOrDefault(operation => !operation.Completed && operation.Scope.Any(team => team.Ado == target));
+        if (reset is not null && !reset.Completed)
+        {
+            var registry = state.Collections.TryGetValue("teams.json", out var json)
+                ? json.Deserialize<Dictionary<string, Team>>(JsonFile.SerializerOptions) ?? [] : [];
+            if (change.Op == ChangeOp.ResetDemoItem && target != reset.Target.Ado
+                || reset.Scope.Any(original => !registry.TryGetValue(original.Id, out var current)
+                    || current.Ado != original.Ado || !current.IsDemo || current.DemoTenantId != reset.TenantId))
+            {
+                return Result<WorkItemRevision>.Failure(Error.Conflict("demo.reset_changed", "The verified demo connection or scope changed after staging. No delegation or Azure DevOps write was attempted."));
+            }
+
+            if (state.Sessions.Values.SelectMany(s => s).Any(s => reset.Scope.Any(t => t.Id == s.TeamId)
+                && (s.Status == StandupStatus.Live || s.StartedAt is not null && s.EndedAt is null)))
+            {
+                return Result<WorkItemRevision>.Failure(Error.Conflict("demo.session_running", "A selected demo team has a running take; no Azure DevOps baseline was written."));
+            }
+
+            var baseline = reset.Approval.Changes.SingleOrDefault(proposal => proposal.WorkItemId == change.WorkItemId);
+            if (change.Op != ChangeOp.ResetDemoItem || change.DemoReset?.OperationId != reset.Id || baseline?.DemoReset is null
+                || JsonSerializer.Serialize(change.DemoReset) != JsonSerializer.Serialize(baseline.DemoReset))
+            {
+                return Result<WorkItemRevision>.Failure(Error.Conflict("demo.reset_write_guard", "Only the exact staged reset follow-up may write this demo area until apply/commit finishes."));
+            }
+        }
+        else if (change.Op == ChangeOp.ResetDemoItem)
+        {
+            return Result<WorkItemRevision>.Failure(Error.Forbidden("demo.reset_write_guard", "A demo baseline write requires its active staged operation."));
+        }
+
         var access = await context.GetAccessAsync(ct);
         return access.IsSuccess
             ? await factory.DelegatedWriterFor(target.Org, access.Value.AccessToken).ApplyAsync(change, ct)

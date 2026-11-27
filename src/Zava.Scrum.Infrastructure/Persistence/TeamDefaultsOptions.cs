@@ -34,4 +34,10 @@ public sealed class TeamDefaultsOptions
 
     /// <summary>Gets or sets the sprint goal (Azure DevOps has no sprint goal field).</summary>
     public string SprintGoal { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets explicit reset opt-in for a newly configured default team; legacy persisted teams are never upgraded.</summary>
+    public bool IsDemo { get; set; }
+
+    /// <summary>Gets or sets the owning demo tenant. Must match Demo:ResetTenantId before reset is permitted.</summary>
+    public Guid? DemoTenantId { get; set; }
 }

@@ -22,15 +22,17 @@ public sealed class DemoTeamSeeder(IServiceScopeFactory scopes, IOptions<DemoOpt
 
         await using var scope = scopes.CreateAsyncScope();
         var teams = scope.ServiceProvider.GetRequiredService<ITeamRepository>();
+        var history = scope.ServiceProvider.GetRequiredService<IDemoTeamRemovalHistory>();
         foreach (var d in demo.Value.Teams)
         {
-            if (await teams.GetAsync(d.Id, cancellationToken) is not null)
+            if (await teams.GetAsync(d.Id, cancellationToken) is not null
+                || await history.IsRemovedTeamAsync(d.Id, cancellationToken))
             {
                 continue;
             }
 
             await teams.SaveAsync(
-                new Team(d.Id, d.Name, d.TimeZone, 15, new AdoSettings(ado.Value.Org, d.Project, d.AdoTeam, d.AreaPath), new TeamBehaviours(), d.SprintGoal),
+                new Team(d.Id, d.Name, d.TimeZone, 15, new AdoSettings(ado.Value.Org, d.Project, d.AdoTeam, d.AreaPath), new TeamBehaviours(), d.SprintGoal, IsDemo: d.IsDemo, DemoTenantId: d.DemoTenantId),
                 cancellationToken);
             logger.LogInformation("Registered demo team {TeamId} ({Project})", d.Id, d.Project);
         }

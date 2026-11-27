@@ -50,6 +50,31 @@ public sealed class ApprovalIdentityTests : IAsyncDisposable
 
     private ISender Sender => _sp.GetRequiredService<ISender>();
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task Approve_ResetProposalWithoutPortalAppAdmin_RefusesBeforeDecisionOrWrite(bool teamsAdmin, bool sent)
+    {
+        var followUp = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), null, FollowUpKind.Followup, "restore",
+            [new ProposedChange(1, ChangeOp.ResetDemoItem, "seed", "restore", DemoReset: new DemoWorkItemReset(Guid.NewGuid(),
+                "Project", "Project\\Area", "demo-key-one", new Dictionary<string, string?> { ["System.Title"] = "seed" }))],
+            new DateOnly(2026, 1, 8), StandupHarness.Now, forScrumMaster: true);
+        if (sent)
+        {
+            followUp.MarkSent();
+        }
+        await _followUps.SaveAsync(followUp, default);
+
+        var result = await Sender.Send(new ApproveFollowUpCommand(followUp.Id, teamsAdmin ? Who.TeamsAdmin() : Who.Portal()));
+
+        Assert.Equal("demo.admin_required", result.Error!.Code);
+        Assert.Empty(_records.All);
+        Assert.Empty(_writer.Written);
+        Assert.Equal(sent ? FollowUpStatus.Sent : FollowUpStatus.Pending, (await _followUps.GetAsync(followUp.Id, default))!.Status);
+    }
+
     [Fact]
     public async Task Approve_TeamsMemberOnTheirOwnFollowUp_IsRecordedWithIdentityAndHash()
     {

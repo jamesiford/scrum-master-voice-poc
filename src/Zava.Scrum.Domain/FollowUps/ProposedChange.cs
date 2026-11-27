@@ -18,7 +18,8 @@ public sealed record NewWorkItem(string Type, string Title, string Description, 
 /// <param name="Rationale">Why it is proposed, shown on the card.</param>
 /// <param name="New">The item to create; set only for <see cref="ChangeOp.CreateWorkItem"/>.</param>
 /// <param name="OwnerKey">For <see cref="ChangeOp.Assign"/>, the roster key of the new owner. DEMO: the sandbox has one real user, so the writer records ownership as a <c>demo-owner-{key}</c> tag.</param>
-public sealed record ProposedChange(int WorkItemId, ChangeOp Op, string Value, string Rationale, NewWorkItem? New = null, string? OwnerKey = null)
+/// <param name="DemoReset">The exact approved baseline for an existing demo item; never used by ordinary ceremonies.</param>
+public sealed record ProposedChange(int WorkItemId, ChangeOp Op, string Value, string Rationale, NewWorkItem? New = null, string? OwnerKey = null, DemoWorkItemReset? DemoReset = null)
 {
     /// <summary>Proposes moving an item to another iteration.</summary>
     /// <param name="workItemId">The item.</param>
@@ -62,6 +63,7 @@ public sealed record ApprovedChange
         Value = change.Value;
         New = change.New;
         OwnerKey = change.OwnerKey;
+        DemoReset = change.DemoReset;
         ApprovedBy = approvedBy;
         StandupDate = standupDate;
         Ceremony = ceremony;
@@ -83,6 +85,9 @@ public sealed record ApprovedChange
 
     /// <summary>Gets the roster key of the new owner, for <see cref="ChangeOp.Assign"/>.</summary>
     public string? OwnerKey { get; }
+
+    /// <summary>Gets the approved demo baseline, if this is a re-seed operation.</summary>
+    public DemoWorkItemReset? DemoReset { get; }
 
     /// <summary>Gets who approved it.</summary>
     public string ApprovedBy { get; }

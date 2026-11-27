@@ -1,6 +1,7 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Domain.Common;
 using Microsoft.Extensions.Logging;
+using Zava.Scrum.Application.Features.Demo.ReseedDemo;
 
 namespace Zava.Scrum.Application.Behaviors;
 
@@ -18,6 +19,10 @@ internal sealed class ExceptionMappingBehavior<TRequest, TResponse>(ILogger<Exce
         try
         {
             return await next();
+        }
+        catch (DemoResetConflictException ex)
+        {
+            return TResponse.Failure(ex.Error);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
