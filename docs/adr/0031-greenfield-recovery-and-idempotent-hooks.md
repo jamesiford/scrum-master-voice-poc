@@ -117,3 +117,20 @@ Directory.ReadWrite.All OAuth scopes, requestf5606812-a404-4556-9256-78921efeb3a
 An active administrator role does not add those scopes to an Azure CLI
 token. No authentication loop; document the exact Teams administrator upload
 action and continue both core proof cycles. Existing zavaw3 uploads remain done.
+
+First mandatory verification failed395.0662s because this conductor's
+ignored wrapper put operation.json in the GateRunner result directory.
+The actual standup completed358s/12turns, but summary deserialisation of
+non-run metadata caused NullReferenceException and blocked subsequent
+approval/audit checks. Correct the wrapper to use a dedicated `runs` child,
+retain the failed attempt, and rerun complete verification; no shipped
+GateRunner/runtime/golden/threshold changes. Preserved latency3070/6599ms,
+n12,talkovers0, does not close inherited G1. Actual native task is
+SYSTEM/Running/AtStartup, executable1.0.0+bef4d5b; reboot acceptance is not claimed.
+
+Complete first verification passes8/8 in344.8298s,ending05:53:38.9021640Z.
+Actual approved write/auditn1: approverobjectaeaec64b-d720-4996-9022-02fa0dcf043d,
+item1revision55,tagzsa-6e033b0292c9. Complete standup3251/3682ms,n9,
+talkovers0, without changing inherited/native failed or unrun gates.
+Full ARM inventory25. Completed empty up/verify cycles1/2; intervening purge
+starts now. Second empty up/verify remains necessary for G8 closure.

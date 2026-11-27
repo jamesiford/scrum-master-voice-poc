@@ -74,6 +74,33 @@ retry or second equivalent upload attempt. Core Entra hooks succeeded.
 This OAuth catalogue gate belongs to the new zavagf packages, not the
 operator-completed zavaw3 uploads; exact administrator action is in DEPLOY.md.
 
+First verification iteration exited1 after395.0662s: the standup completed
+358s/12timed turns, but the conductor wrapper incorrectly placed
+operation.json beside GateRunner result JSON. SummaryWriter deserialised
+that metadata as a run and threw NullReferenceException atline27; approval
+and audit checks were consequently skipped/failed. This is an invocation
+layout defect, not a shipped runtime failure. The ignored wrapper now puts
+GateOutput in a dedicated `runs` child directory; original evidence is
+retained and the complete verify reran at05:47:54Z.
+The preserved incomplete-iteration latency is3070/6599ms p50/p95,n12,
+talkovers0,humansegments19; versus inherited Direct3262/5307ms,n12, the
+p95 point estimate still fails the10% tolerance. G1 is not promoted.
+Actual native task readback: SYSTEM,Running,AtStartup=true, executable
+1.0.0+bef4d5b,last result267009 (running). No reboot or real Teams join claimed.
+
+First complete verification **passes8/8**,05:47:54.0723372Z to
+05:53:38.9021640Z,**344.8298s,exit0,n1**. Actual positive approved comment
+verify-606d907a on item1 is authored by the signed-in approver; audit
+zsa-6e033b0292c9 binds objectaeaec64b-d720-4996-9022-02fa0dcf043d to
+revision55,session0dfba242-d1a3-4d73-ae8e-f54681252b90. No approval bypass.
+Complete-run latency3251/3682ms p50/p95,n9,questionsn6,model-read8/9,
+talkovers0,humansegments15; the different denominator and inherited failed
+points remain explicit, not formal/native G1 acceptance.
+First full footprint inventory25ARMresources; model/data-plane/Entra objects
+are additional logical objects, priced by the existing consumption ledger,
+not invented fixed charges. **Completed cycles1/2**; intervening authorised
+purge has started before the second empty up.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

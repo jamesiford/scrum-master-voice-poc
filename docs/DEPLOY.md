@@ -67,6 +67,9 @@ the failed partial footprint is purged before retrying. Completed cycles0/2.
 That purge passed1025.01s; exact group absence=false and corrected preview
 29s pass. First empty-up retry started05:09:56Z from35812cd.
 It passed1828.77s,exit0,ending05:40:25Z; mandatory verification is running.
+Complete verification subsequently passes8/8 in344.83s, with one actual
+approver-authored ADO comment and complete audit/revision55. Completed
+cycles1/2; intervening purge runs before the second empty up.
 
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:
