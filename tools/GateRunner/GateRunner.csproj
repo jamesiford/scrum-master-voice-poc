@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Playwright" />
+    <ProjectReference Include="..\..\src\Zava.Scrum.Infrastructure\Zava.Scrum.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

@@ -15,6 +15,11 @@ var outDir = Arg("--out") ?? Path.Combine("docs", "gates", "baseline-M10");
 var runs = int.TryParse(Arg("--runs"), out var n) ? n : 1;
 var timeout = TimeSpan.FromMinutes(int.TryParse(Arg("--timeout-minutes"), out var m) ? m : 12);
 
+if (Arg("--evaluate") is { } goldens)
+{
+    return await DecisionEvaluation.RunAsync(goldens, outDir, Has("--model"), Has("--release-check"), CancellationToken.None);
+}
+
 if (Arg("--summarise") is { } dir)
 {
     Console.WriteLine(Summarise(dir, Arg("--only-team")));
