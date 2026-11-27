@@ -55,6 +55,26 @@ this checkpoint supplies no new human fixtures. ADR0030 and
 
 ## Final G8 attempt and recovery
 
+**Second recovery attempt (27 November 2026, ADR0035):** current unchanged
+calling-app reconciliation succeeds, so the historical403 below is not an
+open application-write gate for this operation. Current live project
+readback still exposes the first cycle's agent despite an empty deleted
+account list. A guarded `predown` hook now deletes only the two code-owned
+hosted agents through the supported data-plane API and confirms absence
+before project identity teardown. Protected environments and unrelated
+images are refused. Controlled cleanup and same-project recreation pass:
+version1 creates30222ms/active43485ms, new instance principalc1aa55e6,
+unchanged project principal3bce4b0f/internalId2c4c5e3d. This isolates the
+retained agent/workspace binding as the observed409 cause; account
+purge alone did not clear it. Eleven focused lifecycle checks,17existing
+hook checks and all3builds pass. Both full empty cycles are pending;
+G8 is not yet passed.
+Only zavagf/eastus2 is authorised. Initial media bootstrap instead hit
+OperationNotAllowed because external governance deallocated the VM at08:46Z;
+one owned start/retry is in progress without a policy change. At the end of
+this attempt the media VM will be deallocated, not deleted.
+The chronology below describes the previous attempt, not current readiness.
+
 **Recovery attempt, 26 November 2026 after 20:00 PT:** the operator renewed
 Global Administrator. Live directory-role readback and unchanged
 zavagf application/AllPrincipals consent PATCH/readback passed. The zavagf

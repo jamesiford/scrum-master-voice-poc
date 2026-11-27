@@ -1,5 +1,20 @@
 # M11 gates
 
+## G8 second recovery attempt (27 November 2026)
+
+Current unchanged calling-app PATCH/Calls.AccessMedia.All reconciliation
+passes, n=1; historical403 is resolved for this operation. Controlled
+data-plane cleanup of the retained owned hosted relay passes with404
+readback, canary already absent. Current deleted account list[] and
+projectSucceeded/old agent identity readbacks support a retained lifecycle
+state cause: same-project recreation createsversion1 in30222ms and is
+active43485ms, unchanged project identity and new instancec1aa55e6.
+New guarded predown hook and11focused regression checks pass; existing
+greenfield17checks and all3builds pass (.NET0warnings/errors).
+Both new full empty up/verify cycles are pending, so G8 stays failed,
+not a passing cleanup proxy. Final media VM deallocation is required.
+ADR0035 and DEPLOY.md record scope/decision; older sections are historical.
+
 ## Reconciliation validation (27 November 2026)
 
 One aggregate .NET run passes **968/968**, zero failures/skips: Domain424,

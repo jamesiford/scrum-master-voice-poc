@@ -42,3 +42,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0032](0032-foundry-workspace-version-recovery.md) | Bounded service-directed hosted-version workspace conflict recovery |
 | [0033](0033-foundry-iq-consent-redo-and-fixture-boundary.md) | Knowledge consent verified; real source and permission fixtures still required |
 | [0034](0034-work-iq-live-discovery-and-source-fixtures.md) | Work IQ delegated metadata discovery succeeds; scoped content and billing fixtures remain required |
+| [0035](0035-hosted-agent-teardown-lifecycle.md) | Guarded hosted data-plane lifecycle cleanup before authorised project teardown |

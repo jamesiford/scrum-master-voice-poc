@@ -8,6 +8,13 @@
 
 ### M11 acceptance boundary
 
+**G8 second recovery (ADR0035):** a guarded predown lifecycle hook removes
+only code-owned hosted agents before project teardown and reads back
+absence. Current calling-app reconciliation and controlled same-project
+recreation succeed, resolving the observed retained agent/workspace409.
+Two full empty cycles are pending; this is not a new G8 pass. All
+historical failures and existing adapters remain unchanged.
+
 The working demo remains **Acs / Share / Direct**, with the Simulated Room
 fallback. The optional hosted relay uses stable version 4; candidate 5 returned
 424 during paired testing and is not promoted. The Windows native media/board

@@ -2,6 +2,15 @@
 
 **Date:** November 27, 2026 (M11 redo reconciliation).
 
+**G8 second recovery is in progress (ADR0035).** Guarded azd predown now
+deletes the two owned hosted data-plane agents before project identity
+teardown, with absence readback. Current calling-app PATCH succeeds;
+historical403 is resolved for that operation. Same-project recreation passes
+(version1 created30222ms/active43485ms) with unchanged project identity
+and new agent identity, isolating retained workspace binding as the409 cause.
+Eleven lifecycle and17existing hook checks pass. Two full empty cycles and final VM-only deallocation are pending. G8
+remains failed until measured; previous-attempt details below are historical.
+
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
 failed readiness/paired protocol (424, completed paired samples n=0).

@@ -41,6 +41,14 @@ Do not edit the Presenter Pack or fabricate UI/evidence for the film.
 
 ### G8 recovery evidence is not a real Teams rehearsal
 
+Second recovery is running (ADR0035), only zavagf/eastus2. Current calling-app
+PATCH succeeds and the owned retained relay is deleted with absence
+readback by the new predown hook. Same-project recreation becomes active
+in43485ms with a new agent identity and no409. Two full empty cycles are still pending.
+Do not change the untouched zavaw3 demo or infer native Teams acceptance.
+The current attempt ends with the zavagf media VM deallocated.
+The chronology below belongs to the previous attempt.
+
 Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
 verify8/8 passes344.83s; actual approved auditrevision55 is positive n1.
 Scripted standup3251/3682ms p50/p95,n9, does not replace the real meeting,
