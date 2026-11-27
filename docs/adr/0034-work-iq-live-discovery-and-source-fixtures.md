@@ -89,3 +89,11 @@ lifecycle, UI, retention and G11. Never turn the team flag on merely because
 tools/list works. Fixed added cost USD0/hour; content retrieval calls n0.
 Build, deployment and baseline/after measurements are recorded in
 [gate evidence](../gates/work-iq-redo-M11.json) and M11-gates.md.
+
+Baseline verify passes8/8; initial after verify passes7/8 because an external
+MCAPSGovernance-AutomationApp deallocates the native VM during the run.
+An explicitly scoped restart and focused native verification pass5/5,n1,
+without changing governance policy, package or runtime settings. Retain the
+initial failure rather than presenting a second full8/8 run. Direct
+3260/4421ms before and3319/3803ms after, n12 each, are ordinary standup
+measurements, not Work IQ latency; inherited release-gate failures remain.

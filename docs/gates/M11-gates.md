@@ -31,8 +31,8 @@ metadata discovery, contract tests and live content acceptance.
 Metadata-only classes are unregistered; no content fallback, connection UI,
 retention store or four integrations are claimed. All team flags stay off;
 M9c remains unbuilt. Fixed added resource cost USD0/hour, content calls0.
-Baseline/after scripted verification is reported separately below when
-complete; inherited G1/G4/G7/G8 failures and Acs/Share/Direct/native
+Baseline/after scripted verification is reported separately below;
+inherited G1/G4/G7/G8 failures and Acs/Share/Direct/native
 non-recording/stable hosted4 remain unchanged.
 
 Baseline mandatory verify passes8/8: scripted standup378s,n1, Direct
@@ -49,6 +49,39 @@ what-if has1API resourceModify/25Ignore/0Create/0Delete.
 The helper's5Modify/3Delete counts are **property lines**, not deleted
 resources. The secret-omitting snapshot is never deployed; execution changes
 only the image. Existing AcrPull remains; no provision/up/down/role change.
+
+After full verify initially passes7/8 and exits1: only optional native hosting
+fails, **"The Windows media VM is not running."** The API/bridge, scripted
+standup, actual approver write and audit all pass. Standup366s,n1;
+Direct3319/3803ms,n12 versus3260/4421,n12 gives+1.81%p50/-13.98%p95.
+Questions3319/3727ms,n9; talkovers0, decision-model reads10/12.
+Actual item1/revision61, auditzsa-caf173dba2d2,
+session4580c7dc-c287-4b57-9403-aacade6000c7.
+
+Activity readback proves an external principal deallocated the existing
+zavaw3 VM at08:46:13Z, during the run, not the API image update:
+callerda847d8c-ee71-44de-b462-6775e7d649a7,
+appa1a9c5b6-7a4f-4288-89ab-6805873f65d1, resolved by app-id readback
+to **MCAPSGovernance-AutomationApp**. No resource-group DevTestLab schedule
+or Automation account was found; the application's specific shutdown policy
+was not investigated or changed.
+
+One scoped restart succeeds. Focused `verify-media.ps1 -RequireReady`
+passes5/5 checks, exit0,n1: Standard_D4s_v5 running, correct public DNS,
+trusted HTTPS/no recording/cap1, actual1280x720 startup renderer and
+unauthenticated API401. The initial full after run remains7/8, exit1;
+the failed eighth check is recovered by this focused verification, not an
+invented second full8/8 run. API revision85 and existing bridge remain running.
+Native Teams acceptance and G11 content samples remain n0.
+
+| Hop | Before p50 / p95 ms | After p50 / p95 ms | n per run |
+| --- | --- | --- | --- |
+| Total | 3260 / 4421 | 3319 / 3803 | 12 |
+| Transcript | 0 / 208 | 0 / 289 | 12 |
+| Analyser | 25 / 27 | 26 / 40 | 12 |
+| Decision | 151 / 293 | 152 / 251 | 12 |
+| Orchestration | 1587 / 2413 | 1541 / 1821 | 12 |
+| Voice first audio | 1579 / 2480 | 1480 / 2606 | 12 |
 
 ## Foundry IQ redo (8A-r, 27 November 2026)
 
