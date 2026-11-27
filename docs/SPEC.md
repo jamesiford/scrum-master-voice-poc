@@ -214,7 +214,7 @@ External dependencies:
 | Meeting bridge | Built: ACS/Simulated saved-follow-up demo. Open: native GraphMedia attribution/join/board gates despite verified Windows hosting; non-recording only | Proven native media, recording compliance where applicable and capacity |
 | Messaging | In-process channels | Service Bus and Event Grid |
 | Knowledge | Open: Foundry IQ unbuilt; repo working agreements are not read by code (ADR 0026) | Permission-trimmed approved knowledge sources |
-| Work IQ signals | M11 8B: consent/evidence contracts and unregistered read boundary built; live spike, adapter and all four integrations blocked, G11 n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADR 0027) |
+| Work IQ signals | M11 8B-r: contracts, unregistered owner-OBO and metadata-discovery adapters built; live tools/list n1 succeeds. Content spike and all four integrations blocked, G11 content n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADRs 0027, 0034) |
 | Identity | Built: Entra bearer validation, app/team roles, federated OBO approval and portal audit. Open: live Teams SSO and agent policy acceptance | Reviewed least privilege, agent governance and access reviews |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
 | Quality | Built: final947.NET/25bridge checks have passing evidence after one unchanged retro retry; live content-free API/bridge workbook. Open: initial model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
@@ -421,9 +421,11 @@ existing ceremony end events exactly once. No new portal endpoint or voice tool.
 Native board snapshots reuse Domain `ItemMentions`, `RetroInterpreter`,
 `RetroAgenda` and `RetroSummary` without persistence or model-computed numbers.
 
-**M11 8B (ADR 0027):** typed `IWorkSignals`, consent/scope/retention ports,
+**M11 8B (ADRs 0027/0034):** typed `IWorkSignals`, consent/scope/retention ports,
 Domain consent/access rules and the unregistered `WorkSignalReader` are
-contract-stage code only. No new production command/query/event is registered;
+contract-stage code only. Real owner-OBO and metadata-only MCP discovery
+adapters are also built but unregistered; tools/list n1 succeeds without
+reading content. No new production command/query/event is registered;
 the real-mediator test entry is test-only. Enable/connect/revoke, persistence
 commands and integration queries must be catalogued when the live spike
 supports their implementation, not presented as shipped use cases now.
@@ -745,12 +747,16 @@ G10 retrieval, citation, leakage and latency samples remain n=0.
 An admin portal-to-Graph OBO token exchange and matching `/me` metadata
 succeed n1 each; they do not prove retrieval, deployed federation or trimming.
 
-**Work IQ (M11 8B, ADR 0027): contracts only.** No signal is on the live
+**Work IQ (M11 8B-r, ADRs 0027/0034): unregistered metadata adapters.**
+Administrator OBO n2 and tools/list n1 succeed; discovered channel URL and
+meeting UID constraints remain untested against real source fixtures.
+No signal is on the live
 voice path. Delegated Work IQ consent is completed; channel/helper/meeting
 reads remain blocked by billing/real-owner/source fixtures, independent of 8A.
 The existing default-off flag is not a working portal feature. Notes are
 existing evidence, not a live transcript or non-recording workaround.
-G11 and new G1 samples remain n=0; M9c review-feedback conversion is unbuilt.
+G11 content samples remain n=0; M9c review-feedback conversion is unbuilt.
+Scripted G1 regression verification is not Work IQ latency or privacy proof.
 
 ### 11.1 Voice Live session (**VERIFY** every field against the current reference)
 
@@ -1008,8 +1014,8 @@ M11 8 adds no portal data route: the five skills enter the existing authenticate
 `POST /api/messages`. `/privacy.html` and `/terms.html` are public static legal
 pages, not team data endpoints.
 
-M11 8B adds no production API route or portal connection page. Its typed
-ports and unregistered reader are contract-stage code; no endpoint can
+M11 8B-r adds no production API route or portal connection page. Its typed
+ports, unregistered reader and metadata-only discovery have no endpoint that can
 enable signals or provide an unverified Work IQ adapter.
 
 ---

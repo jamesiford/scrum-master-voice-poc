@@ -1,5 +1,55 @@
 # M11 gates
 
+## Work IQ redo (8B-r, 27 November 2026)
+
+Actual WorkIQAgent.Ask grant/declaration n1 each are verified; consent is
+completed. Real administrator OBO n2 and MCP initialisation n2 pass;
+tools/list n1 returns HTTP200/12tools/server1.0.744.0/MCP2025-03-26.
+Complete metadata probe9.352s,n1 includes CLI/credential acquisition and
+is **not retrieval latency**. Existing confidential credential is memory-only
+in the spike, not proof of the unregistered MI-federated OBO implementation.
+Live schema exposes channel URL and meeting UID/is_series constraints;
+actual pre-retrieval enforcement remains untested with real sources.
+
+Five actual teams are disabled and have no channel bindings; no approved
+named lead/meeting UID/negative-user fixture is supplied. Billing readback
+is not_run: ARM inventory is not a Microsoft365 spending-policy assignment,
+and browser readback could not be completed. No billing, grant or policy change.
+ADRs0027/0034 and [work-iq-redo-M11.json](work-iq-redo-M11.json) distinguish
+metadata discovery, contract tests and live content acceptance.
+
+| Gate/check | Result | Denominator |
+| --- | --- | --- |
+| G11 content, citations, leakage | Not_run | Channel/helper/meeting queries0 each; negative queries0 |
+| G11 content latency and product goldens | Not_run | Retrieval turns0; real product goldens0 |
+| Consent and discovery prerequisites | Measured, not G11 acceptance | Grant/declaration1 each; OBO2; init2; tools/list1 |
+| Independent code regressions | Pass | Infra15, Application44, Domain17, architecture14:90/90, no skips |
+| Greenfield declaration preservation | Pass, no live writes | One actual fixture, two merges, directory writes0 |
+| Existing pure greenfield hook regressions | Pass | 17/17; no Azure/Graph mutation |
+| Build/format/lint | Pass | Three builds, zero .NET warnings/errors; no full suites |
+
+Metadata-only classes are unregistered; no content fallback, connection UI,
+retention store or four integrations are claimed. All team flags stay off;
+M9c remains unbuilt. Fixed added resource cost USD0/hour, content calls0.
+Baseline/after scripted verification is reported separately below when
+complete; inherited G1/G4/G7/G8 failures and Acs/Share/Direct/native
+non-recording/stable hosted4 remain unchanged.
+
+Baseline mandatory verify passes8/8: scripted standup378s,n1, Direct
+3260/4421ms,n12, question3584/4421ms,n9, talkovers0. Genuine
+approver-authored item1/revision60 and complete auditzsa-a64d25c02f61,
+session3ae69a53-4433-466c-a597-bdd4cbd64793. Native HTTPS/renderer
+readiness is not live Teams acceptance; G11 content remains n0.
+
+Committed API source3d24f8e is deployed only to zavaw3, LinuxACRds12
+169.977s, ready revision85/health200. Actual identity, entire configuration
+(including secret names), env, resources, probes and scale compare exactly.
+Core validator5/5 passes after two bounded snapshot corrections; raw
+what-if has1API resourceModify/25Ignore/0Create/0Delete.
+The helper's5Modify/3Delete counts are **property lines**, not deleted
+resources. The secret-omitting snapshot is never deployed; execution changes
+only the image. Existing AcrPull remains; no provision/up/down/role change.
+
 ## Foundry IQ redo (8A-r, 27 November 2026)
 
 Actual grant/declaration reads n=1 each verify Graph delegated

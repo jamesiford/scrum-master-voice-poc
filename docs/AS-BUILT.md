@@ -60,16 +60,20 @@ Scout completed the zavaw3 Graph Files.Read.All/Sites.Read.All and Work IQ
 WorkIQAgent.Ask delegated grants and both tenant catalogue uploads.
 Real user/source/billing/Exchange/CI/organiserRSC gates remain open.
 
-**M11 8B status (26 November 2026):** Work IQ consent and advisory evidence
-contracts are built, but the live spike and integration are blocked.
+**M11 8B-r status (27 November 2026):** Work IQ consent, advisory contracts
+and unregistered real owner-OBO/metadata-discovery adapters are built.
+Actual administrator OBO exchanges n2 and initialisations n2 pass;
+tools/list n1 returns12 tools, including scoped retrieve request fields.
+The complete discovery probe9.352s,n1 is not content retrieval latency.
+Exact pre-retrieval enforcement and the content integration remain blocked.
 The operator has now granted WorkIQAgent.Ask; a licensed, consenting team lead with an
 approved spending-policy assignment and scoped channel/meeting fixture is
 still required. Domain consent/revoke rules, typed Application ports and
 the unregistered read boundary have focused tests through the real mediator
-with port fakes. No live adapter, store, cache, portal connection page,
+with port fakes. No registered retrieval adapter, store, cache, portal connection page,
 card enrichment, chase suppression, helper UI or review-to-backlog conversion
 is shipped. M9c remains open; G11 live queries/latency/leakage have n=0.
-Default-off signals and all deployed paths remain unchanged. See ADR 0027,
+All five actual team flags remain off; no content is read. See ADR 0034 and ADR 0027,
 WORK-SIGNALS-PRIVACY.md and DEPLOY.md for the exact resume boundary.
 
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.

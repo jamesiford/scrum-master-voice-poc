@@ -406,10 +406,13 @@ unbuilt and require their independent source/user/billing spike.
 
 ### WORK-SIGNALS-CONSENT, WORK-SIGNALS-BILLING and WORK-SIGNALS-FIXTURE (8B)
 
-ADR 0027 records contracts only, not an enabled runtime. The earlier
+ADRs 0027 and 0034 record an unregistered boundary and real metadata-only
+owner-OBO/discovery adapters, not an enabled content runtime. The earlier
 administrator window ended at14:27PT; the renewed window and operator
 readback above supersede the earlier absence of a declaration/grant.
-No OBO spike was attempted, and no refusal/leakage result is invented.
+The8B-r administrator OBO succeeds n2, initialisation n2 and tools/list n1,
+HTTP200/12tools; complete discovery9.352s,n1 is not retrieval latency.
+All content/source-enforcement/negative-user samples remain not_run,n0.
 Do not alter the mcm applications, grant application permissions, change
 tenant policy or create an unapproved billing plan.
 
@@ -440,11 +443,18 @@ the plan/assignment evidence without exporting credentials. A Copilot
 licence alone and an existing Work IQ service principal prove neither.
 If no approved plan exists, the responsible billing owner must approve and
 perform setup; this unattended run must not create one or change policies.
+Use Microsoft365 admin centre's Copilot Credits usage-based billing and
+spending-policy pages to read the approved plan, Work IQ API inclusion,
+named lead assignment and limits. Redo readback is **not_run**: ARM inventory
+is not Microsoft365 billing evidence; browser automation reports missing
+Chrome, and the alternative desktop browser lacks a verified page URL/tree.
+Do not infer billing approval from successful metadata discovery.
 
 **WORK-SIGNALS-FIXTURE, team lead, Teams/channel owner and meeting
 organiser:** name a real consenting licensed TeamLead with a verified Entra
 object id and current app-team membership. Approve one exact team group/
-channel and one stored team meeting with existing notes accessible to the
+channel (its **Get link to channel** URL, not a whole-team/chat link) and
+one stored team meeting with its meeting UID and existing notes accessible to the
 team's intended evidence audience. Provide a real board item and topic,
 an absent/silent member's channel update, roster helper evidence and a
 review excerpt with expected backlog feedback. Provide a consenting
@@ -452,14 +462,17 @@ negative member from another app team and private/unrelated source
 boundaries for permission/scoping checks. Each person must sign in as
 themselves; an administrator cannot supply their delegated assertion.
 No arbitrary tenant-root search or private mail/chat read is authorised.
-Discover live `tools/list` and prove pre-retrieval channel/meeting scope;
+Live `tools/list` discovery is complete; retain runtime rediscovery because
+schemas evolve. Prove pre-retrieval TeamsMessages.urls for that exact
+channel and Meetings.items_by_id with that meeting UID/is_series=false;
 post-filtering broad personal results is not proof of no private reads.
 Measure three spike uses/latency and G11 positives/negatives before shipping
 only supported integrations. Unsupported exact source scoping stays unbuilt.
 
-No Work IQ runtime, resources, roles, permission grants or settings were
-deployed in this step. The unregistered contracts have no manual enable
-switch. All real adapters, scope configuration, storage/retention, owner
+The metadata-only classes are included in the committed API artefact but
+remain unregistered; no content runtime, source, resource, role, permission
+grant or setting is added. The boundary has no manual enable switch.
+Real content adapters, scope configuration, storage/retention, owner
 connection/revoke UI, optional permissions and hooks belong in the resumed
 greenfield PR, followed by zavaw3 deployment and `infra\hooks\verify.ps1`.
 
