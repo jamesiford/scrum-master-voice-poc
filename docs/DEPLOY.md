@@ -136,7 +136,35 @@ green. Native/Copilot/source/multi-team human gates below remain exact;
 this checkpoint supplies no new human fixtures. ADR0030 and
 `gates/final-validation-M11.json` distinguish test, readiness and acceptance.
 
-## Final G8 attempt and recovery
+## Current G8 proof: fresh westus3 environment
+
+The operator moved G8 to **fresh zavag8/westus3**, resource group
+`rg-zava-scrum-zavag8`, existing subscription
+`4b0dd31f-5379-4acc-8dcd-60f2929d2513` (ADR0038). The former eastus2
+resources and dedicated applications were deleted by the operator.
+All former-target commands, owner actions and endpoints below are
+historical evidence only, not authorised targets or current human gates.
+No support case is a prerequisite for the new westus3 investigation.
+Never mutate or delete zavaw3, mcm or their Entra applications.
+
+The new environment has automated baseline portal delegated consent,
+three administrator app roles and dedicated media Calls.AccessMedia.All
+consent. Actual writes succeeded before the administrator window expired.
+Organiser RSC/lobby, real users, source/billing fixtures, Exchange RBAC and
+evaluation CI remain separately named human gates, not cycle shortcuts.
+
+Run two full empty up/verify cycles with an intervening guarded purge.
+Read back exact group, matching soft-deleted account/vault absence and
+the preserved native opt-in before cycle two. Record every failed attempt;
+only successful FULL up plus mandatory verification earns cycle credit.
+After the proof, deallocate only the zavag8 media VM and keep its resources.
+Measurements and costs are pending; the current G8 verdict is not a pass.
+
+## Historical final G8 attempts and recovery
+
+**Historical only:** the following former-target actions cannot be run.
+Use the fresh westus3 scope above instead; original error bodies and
+measurements are retained verbatim for provenance.
 
 **Second recovery attempt (27 November 2026, ADR0035):** current unchanged
 calling-app reconciliation succeeds, so the historical403 below is not an

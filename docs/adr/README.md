@@ -45,3 +45,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0035](0035-hosted-agent-teardown-lifecycle.md) | Guarded hosted data-plane lifecycle cleanup before authorised project teardown |
 | [0036](0036-film-evidence-surfaces.md) | Team-authorised audit page, measured Live counters and Entra/guest participant names |
 | [0037](0037-guarded-demo-reseed-publication.md) | Explicit demo opt-in, approved recoverable ADO baseline and atomic application publication |
+| [0038](0038-greenfield-proof-westus3.md) | Fresh westus3 greenfield proof with protected-environment lifecycle guards |

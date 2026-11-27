@@ -1,5 +1,17 @@
 # Zava Scrum Master voice PoC: as built
 
+## Current G8 proof scope (27 November 2026)
+
+G8 moved by operator decision to fresh **zavag8/westus3** (ADR0038).
+The former eastus2 resources/apps were operator-deleted; previous404/409
+and support actions below are historical, not active deployment targets
+or prerequisites. Exact destructive guards now permit only zavag8/westus3
+and refuse the former target and protected deployments.
+Fresh portal baseline consent/administrator roles and dedicated media
+Calls.AccessMedia.All setup have succeeded automatically. Two full empty
+up/verify cycles and final VM-only deallocation are pending; no G8 pass.
+No default adapter, public API, Domain rule or zavaw3 runtime change.
+
 **Date:** November 27, 2026 (M11 film features).
 
 **Film product reads (ADR0036):** the portal has an Audit chain page for a

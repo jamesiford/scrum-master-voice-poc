@@ -1,0 +1,42 @@
+{
+  "step": "g8-proof-3",
+  "environment": "zavag8",
+  "region": "westus3",
+  "resourceGroup": "rg-zava-scrum-zavag8",
+  "source": "88d07566fd65a3f997aad7223f0063bffc751178",
+  "gate": "G8",
+  "verdict": "not_run",
+  "requiredFullEmptyCycles": 2,
+  "completedFullEmptyCycles": 0,
+  "administrator": {
+    "privilegedReadSucceeded": true,
+    "sampleSize": 1,
+    "portalConsentAndRolesSucceeded": true,
+    "mediaConsentSucceeded": true
+  },
+  "validation": {
+    "lifecycleChecks": 14,
+    "greenfieldChecks": 17,
+    "builds": 3,
+    "dotnetWarnings": 0,
+    "dotnetErrors": 0,
+    "schema": "pass",
+    "package": "pass",
+    "initialPreviewSeconds": 25
+  },
+  "media": {
+    "size": "Standard_D4als_v7",
+    "imageSku": "2022-datacenter-g2",
+    "windowsComputeUsdPerHour": 0.345,
+    "finalPowerState": "not_created"
+  },
+  "iterations": [],
+  "defaults": {"bridge":"Acs","board":"Share","voice":"Direct"},
+  "protectedEnvironmentsMutated": false,
+  "humanGates": [],
+  "notes": [
+    "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
+    "Previous failures remain historical and do not establish a support prerequisite.",
+    "Readiness, scripted verification and real Teams acceptance are distinct."
+  ]
+}

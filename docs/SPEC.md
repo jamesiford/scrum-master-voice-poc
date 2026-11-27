@@ -8,6 +8,14 @@
 
 ### M11 acceptance boundary
 
+**Current G8 scope (ADR0038):** the operator moved the proof to fresh
+zavag8/westus3 and deleted the former eastus2 resources/apps. Earlier
+target/support instructions below are historical only, not current
+prerequisites. Two FULL empty up/verify cycles with an intervening guarded
+purge are required; then retain resources and deallocate only its media VM.
+Exact lifecycle guards admit only the fresh target. No API/use-case,
+Domain invariant or default-adapter change.
+
 **G8 second recovery (ADR0035), provider-blocked, newcycles0/2:** a guarded predown lifecycle hook removes
 only code-owned hosted agents before project teardown and reads back
 absence. Current calling-app reconciliation and controlled same-project

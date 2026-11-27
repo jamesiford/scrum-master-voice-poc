@@ -1,5 +1,18 @@
 # M11 gates
 
+## Current G8 fresh westus3 proof
+
+Operator-selected fresh **zavag8/westus3** replaces the deleted former
+eastus2 target (ADR0038). New successful full empty cycles0/2, pending.
+Prior404/409 failures remain historical evidence, not a support prerequisite
+or an authorised target. Portal baseline consent/app roles and dedicated
+media Calls.AccessMedia.All setup succeed automatically. Native and
+real Teams acceptance remain separate. No protected deployment is mutated.
+
+| Gate | Current verdict | Actual evidence |
+| --- | --- | --- |
+| G8 fresh westus3 greenfield | Not_run, fullcycles0/2 | Privileged read n1; automated portal/media consent pass; lifecycle14/14, greenfield17/17 and all3builds/.NET0warnings/errors; preview25s/schema/package pass. Full up/verify cycles and VM-only deallocation pending. See g8-proof-3-M11.json and ADR0038. |
+
 ## Film implementation checkpoint (27 November 2026)
 
 Scope is only zavaw3/westus3. ADR0036 adds real authorised audit/latency

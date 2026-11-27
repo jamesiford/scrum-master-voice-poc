@@ -1,5 +1,14 @@
 # Demo runbook
 
+## Current G8 rehearsal boundary
+
+The greenfield proof runs only in fresh **zavag8/westus3** (ADR0038);
+the operator-deleted former eastus2 target and its recovery commands below
+are historical only. Keep the zavaw3 demo untouched and Acs/Share/Direct
+as defaults. Two full empty up/verify cycles are pending, not claimed as
+a rehearsal or a passing G8. After the proof, its media VM will be
+deallocated with the final application resources retained.
+
 ## Final M11 rehearsal boundary (27 November 2026)
 
 Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
