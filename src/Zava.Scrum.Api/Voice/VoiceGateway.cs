@@ -546,9 +546,9 @@ public sealed class VoiceGateway(
             case ResponseDone d:
                 await OnResponseDoneAsync(d);
                 break;
-            case VoiceFault f when _truncatedAt is { } at && clock.UtcNow - at < TimeSpan.FromSeconds(3):
+            case VoiceFault when _truncatedAt is { } at && clock.UtcNow - at < TimeSpan.FromSeconds(3):
                 // A refused truncate only costs the model some context about what was heard; it is not a failure the room needs to see.
-                logger.LogWarning("Voice Live refused a truncate or cancel after a barge-in: {Message}", f.Message);
+                logger.LogWarning("Voice Live refused a truncate or cancel after a barge-in; response body omitted");
                 break;
             case VoiceFault f:
                 await _bridge.SendAsync(new { type = "error", code = "VOICE_FAULT", message = f.Message }, _run);

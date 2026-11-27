@@ -59,8 +59,12 @@ export class TeamsLauncher {
     });
     const context = await this.browser.newContext();
     const page = await context.newPage();
-    page.on('console', (m) => console.log(`[call ${request.sessionId}] ${m.text()}`));
-    page.on('pageerror', (e) => console.error(`[call ${request.sessionId}] ${e.message}`));
+    // Browser/SDK diagnostics can repeat meeting content or token-bearing URLs; the call page still displays its actual error.
+    page.on('console', (m) => {
+      if (m.type() === 'warning' || m.type() === 'error')
+        console.warn(`[call ${request.sessionId}] browser console severity=${m.type()}`);
+    });
+    page.on('pageerror', () => console.error(`[call ${request.sessionId}] browser page error`));
     this.calls.set(request.sessionId, { context, page });
     const query = new URLSearchParams({
       token: request.bridgeToken,

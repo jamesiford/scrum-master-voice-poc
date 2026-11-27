@@ -40,10 +40,34 @@ public static class TelemetryBootstrap
             });
     }
 
+    /// <summary>Removes non-metadata tags and suppresses spans whose immutable events cannot be safely redacted.</summary>
     private sealed class MetadataOnlyProcessor : BaseProcessor<Activity>
     {
+        public override void OnStart(Activity activity)
+        {
+            if (activity.GetTagItem(SessionTelemetry.TeamTag) is not null) { return; }
+            for (var parent = activity.Parent; parent is not null; parent = parent.Parent)
+            {
+                if (parent.GetTagItem(SessionTelemetry.TeamTag) is not string team) { continue; }
+                activity.SetTag(SessionTelemetry.TeamTag, team);
+                activity.SetTag("session.id", parent.GetTagItem("session.id"));
+                if (activity.Source.Name == "Zava.Scrum.Agents") { activity.SetTag("hop", "model.sdk"); }
+                break;
+            }
+        }
+
         public override void OnEnd(Activity activity)
         {
+            // Activity events cannot be removed. Never export SDK exception/message events containing arbitrary text.
+            if (activity.Events.Any())
+            {
+                activity.ActivityTraceFlags &= ~ActivityTraceFlags.Recorded;
+                if (activity.GetTagItem(SessionTelemetry.TeamTag) is string team)
+                {
+                    SessionTelemetry.Count("privacy", team, "span_with_events_suppressed");
+                }
+            }
+
             foreach (var tag in activity.TagObjects.ToArray())
             {
                 if (!IsMetadata(tag.Key)) { activity.SetTag(tag.Key, null); }
