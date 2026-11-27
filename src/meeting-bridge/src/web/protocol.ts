@@ -4,10 +4,24 @@
 export interface RoomMember {
   memberId: string;
   displayName: string;
+  /** Verified roster id used only to label participant names, never to approve a change. */
+  entraObjectId?: string | null;
 }
 
 /** State pushed by the gateway about once a second and after every action. */
 export interface UiState {
+  /** Owning team and session for film evidence emitted on this authenticated connection. */
+  teamId?: string;
+  sessionId?: string;
+  /** Actual participant labels, independent of name-based ACS floor/presence matching. */
+  participants?: {
+    participantId: string;
+    memberId: string | null;
+    displayName: string;
+    guest: boolean;
+  }[];
+  /** Locally measured browser send/playback intervals, not network delivery. */
+  bridgeHops?: { hop: string; p50Ms: number; p95Ms: number; n: number }[];
   floor: string;
   currentSpeaker: string | null;
   agentSpeaking: boolean;
@@ -79,6 +93,12 @@ export type ServerMessage =
 
 /** Room to gateway. */
 export type ClientMessage =
+  | {
+      type: 'participantNames';
+      teamId: string;
+      sessionId: string;
+      items: { participantId: string; objectId: string | null; displayName: string }[];
+    }
   | { type: 'telemetry'; hop: 'bridge.audio' | 'bridge.playback'; durationMs: number }
   | { type: 'participants'; items: { memberId: string; displayName: string; present: boolean }[] }
   | { type: 'localSpeaker'; memberId: string }
