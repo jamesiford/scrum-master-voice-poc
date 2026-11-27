@@ -41,7 +41,7 @@ delegated permission; dedicated media `Calls.AccessMedia.All` consent passed.
 The cheapest unrestricted compatible x64 eastus2 catalogue candidate is
 **Standard_D4als_v7**, four available vCPUs, 8 GB, family/regional quota
 used0/limit100, Windows consumption **USD0.345/hour** (compute/licence only).
-It is Gen2-only. Both proof cycles remain pending at this checkpoint;
+It is Gen2-only. Only one of the two proof cycles is complete;
 [ADR 0031](adr/0031-greenfield-recovery-and-idempotent-hooks.md) records
 the iteration and the historical failure below is not current authority.
 
@@ -92,6 +92,52 @@ not retried. Reduced-footprint purge passed1742.02s with complete absence;
 all13 documented inputs were read back before the full native-enabled empty
 restart at07:15:07Z. The second mandatory verification remains required.
 
+**Current outcome: blocked, completed cycles 1/2.** The full second empty
+up ended 07:35:37.0795566Z after 1229.5552 s, exit 1. Native was actually
+enabled; all three hosted-version creation calls returned the exact
+workspace-identity 409 despite two successful current-agent reads. Final
+request: `f5e2882b465eff0ce347b4f56906cecc`. No more equivalent creation
+retries were attempted. Current project identity is SystemAssigned,
+`3bce4b0f-7f02-4430-aff8-5bd65045e8a2`; the retained owned agent
+`zava-voice-relay`, version 1, still exposes the first cycle's image and
+instance principal `ff6d1ab3-68c0-47c9-aa11-894f161b4db2`.
+Whether separate data-plane lifecycle cleanup or a stale provider binding
+caused this is unproven; no speculative deletion or identity toggle was made.
+The subscription/project owner should escalate the exact request, identities
+and project ARM id to Microsoft support before another full empty proof:
+`/subscriptions/4b0dd31f-5379-4acc-8dcd-60f2929d2513/resourceGroups/rg-zava-scrum-zavagf/providers/Microsoft.CognitiveServices/accounts/fdy-zava-scrum-pi7fumnppr2hk/projects/proj-zava-scrum`.
+
+**G8-PRIVILEGED-WRITE, attempted and blocked:** independent media completion
+failed after 7.9184 s at the application reconciliation write, before
+certificate/bootstrap. The exact one-attempt response was:
+
+```text
+ERROR: Forbidden({"error":{"code":"Authorization_RequestDenied","message":"Insufficient privileges to complete the operation.","innerError":{"date":"2026-11-27T07:40:44","request-id":"07d95ae3-fd0a-4479-9442-9e7d14dd3abf","client-request-id":"07d95ae3-fd0a-4479-9442-9e7d14dd3abf"}}})
+```
+
+An authorised Entra administrator must restore appropriate active
+application-write authority for `admin@MngEnvMCAP763514.onmicrosoft.com`
+on the existing zavagf calling app `aef240bc-3943-4f28-83f2-c7829c69a847`,
+application object `25ab2fd7-c291-4560-b8c4-3a755b19697f`. The authorised
+deployment operator then runs
+`azd exec -e zavagf -- pwsh -NoProfile -File infra\hooks\media-host.ps1`,
+including certificate registration, not a RuntimeOnly bypass.
+Earlier successful consent writes do not establish current write authority;
+their grants remain complete. There was no authentication retry or role
+activation. No zavaw3/mcm object or tenant policy was changed.
+
+Independent public legal exclusions and messaging package generation both
+passed, exit 0, in 4.1405 s total. The package is
+`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`,
+id `df7bb1a7-ba3c-4bae-839b-e1ea1a628d2f`; no catalogue authentication was
+attempted. Hosted identity reconciliation requires the failed hosted output
+and was not run. The surviving footprint has 24 ARM resources including
+the D4als_v7/127 GB StandardSSD_LRS/V2 VM and disposable vault. Provisioning
+is not certificate/task/renderer readiness: the current native host is
+unbootstrapped. It remains allocated for authorised continuation at a known
+VM/disk/IP tariff of USD0.363150685/hour plus variable charges.
+The first cycle's native readiness below is historical, not current readiness.
+
 **ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
 POST of the exact new media package returned403 Forbidden at05:41:36Z:
 `Missing scope permissions on the request. API requires one of
@@ -100,8 +146,9 @@ Requestf5606812-a404-4556-9256-78921efeb3a5. No sign-in retry was attempted.
 A Teams administrator must use Teams admin centre > Teams apps > Manage apps
 > Upload new app for `appPackage\dist\zava-media-bot.zip` (current zavagf
 calling appaef240bc-3943-4f28-83f2-c7829c69a847) and
-`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`, generated again by the
-final successful up. Alternatively obtain delegated AppCatalog.Submit through
+`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`, independently regenerated
+after the failed up. Regenerate the media package after authorised bootstrap.
+Alternatively obtain delegated AppCatalog.Submit through
 the documented interactive package hook. Do not upload historical zavaw3
 packages again, replace the old mcm app or mistake a role for OAuth scopes.
 This does not undo the completed zavaw3 uploads or successful core Entra hooks.
@@ -136,9 +183,10 @@ administrator. The explicitly authorised Global Administrator window ended
 at 14:27 PT on 26 November; cached OAuth scopes do not prove current role
 authority. No role activation, consent mutation or authentication loop was run.
 
-**G8-DEPLOYER-AUTHORITY, completed for this recovery window:** actual
+**G8-DEPLOYER-AUTHORITY, initially completed; later write refused:** actual
 Global Administrator and privileged operation readback passed as recorded
-above. For any later recovery, an authorised Entra Application Administrator
+above, but the later G8-PRIVILEGED-WRITE refusal now blocks native completion.
+For any later recovery, an authorised Entra Application Administrator
 (application changes) and Privileged Role Administrator/Global Administrator
 (required tenant consents) must run the existing hooks for **zavagf**, using
 their own approved active role. A Subscription Owner or equivalent scoped

@@ -13,7 +13,7 @@ and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
 model deviation remains a reliability risk. G8 recovery has one complete
 verified empty up/verify cycle of two; intervening purge passed1639.20s
-with group/vault/Foundry absence readback. The second cycle is next.
+with group/vault/Foundry absence readback. The second cycle is incomplete.
 The attempted second deployment was reduced because teardown erased the
 native opt-in's colliding output; it is not counted. The input-only fix and
 compiled cleanup regression17/17 pass, and a full empty retry is required.
@@ -24,6 +24,14 @@ errors remain explicit. Focused recovery tests6/6 and all three builds pass;
 the isolated preview tool retains its existing dependency-resolution warning.
 Invalid-footprint purge passes1742.02s; full native-enabled empty retry
 started07:15:07Z after complete absence and13 documented input readbacks.
+It failed 1229.5552 s later: three hosted-version creations returned the
+same409 despite two successful reads. Independent native completion then
+received403 Authorization_RequestDenied, request
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 is human-blocked at 1/2;
+legal pages and messaging package generation independently passed.
+Current24-resource native VM/vault provisioning is not certificate,
+SYSTEM task or renderer readiness; the current host is unbootstrapped.
+DEPLOY.md records exact administrator/support actions and continuing costs.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 
@@ -35,7 +43,7 @@ zavagf vault is purgeable with soft delete retained. Hook scope guards,
 native-capacity validation, registry-role gate and optional permission merge
 are implemented (ADR0031). First full empty up passes1828.77s; mandatory
 verify8/8 passes344.83s with a real approver-authored write/auditrevision55.
-The actual D4als_v7 has127GB StandardSSD_LRS/V2 disk, trusted HTTPS,
+The first complete cycle's D4als_v7 had127GB StandardSSD_LRS/V2 disk, trusted HTTPS,
 no-recording/cap1/1280x720renderer and SYSTEM/AtStartup task readiness.
 Known VM/disk/IP tariffUSD0.363150685/hour excludes variable charges.
 The failed first vault iteration and conductor verification-layout failure

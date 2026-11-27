@@ -36,9 +36,9 @@ Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
 verify8/8 passes344.83s; actual approved auditrevision55 is positive n1.
 Scripted standup3251/3682ms p50/p95,n9, does not replace the real meeting,
 permission-negative, board-visibility or native attribution matrix.
-Native trusted HTTPS/no-recording/cap1/1280x720renderer and SYSTEM startup
-task are ready, not proof of a stored-link Teams join. Second empty cycle
-is pending after intervening purge passed1639.20s with complete absence
+First-cycle native trusted HTTPS/no-recording/cap1/1280x720renderer and SYSTEM
+startup task were ready, not proof of a stored-link Teams join. Second empty cycle
+is incomplete after intervening purge passed1639.20s with complete absence
 readback. New zavagf package publication was
 attempted and refused403 for OAuth catalogue scopes; use DEPLOY.md's exact
 administrator upload action. Completed zavaw3 uploads remain complete.
@@ -49,6 +49,13 @@ deployment's optional native SKIP for actual hosting verification.
 It also exited1 after1036.69s with a hosted-version workspace-identity409.
 The tool's bounded service-directed recovery is not a completed second
 deployment or a native/live acceptance sample.
+The full native-enabled retry failed1229.5552s after three409 creations/two
+successful reads. Independent media completion then failed403
+Authorization_RequestDenied, request07d95ae3-fd0a-4479-9442-9e7d14dd3abf.
+G8 is human-blocked,1/2 complete cycles; the allocated current native VM is
+not bootstrapped. Independent legal pages/messaging package generation
+passed without a catalogue authentication retry. Follow DEPLOY.md's exact
+administrator/support actions; retain the untouched zavaw3 demo.
 
 ## Work IQ signals readiness (M11 8B)
 

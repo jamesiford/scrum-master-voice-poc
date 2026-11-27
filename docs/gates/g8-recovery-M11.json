@@ -3,7 +3,7 @@
   "location": "eastus2",
   "subscription": "4b0dd31f-5379-4acc-8dcd-60f2929d2513",
   "resourceGroup": "rg-zava-scrum-zavagf",
-  "status": "running",
+  "status": "blocked",
   "source": "35812cd29061436b0688abd4512899943ab63fc6",
   "authority": {
     "globalAdministratorReadback": true,
@@ -11,7 +11,8 @@
     "unchangedAllPrincipalsConsentPatchAndReadback": {"passed": 1, "total": 1},
     "zavagfPortalReconciliation": "pass",
     "dedicatedMediaConsent": "Calls.AccessMedia.All",
-    "extraTenantJoinPermission": false
+    "extraTenantJoinPermission": false,
+    "laterPrivilegedApplicationWrite": {"start": "2026-11-27T07:40:40.4906998Z", "end": "2026-11-27T07:40:48.4090944Z", "seconds": 7.9183946, "exit": 1, "attempts": 1, "status": 403, "code": "Authorization_RequestDenied", "message": "Insufficient privileges to complete the operation.", "serviceDate": "2026-11-27T07:40:44", "requestId": "07d95ae3-fd0a-4479-9442-9e7d14dd3abf", "clientRequestId": "07d95ae3-fd0a-4479-9442-9e7d14dd3abf", "applicationId": "aef240bc-3943-4f28-83f2-c7829c69a847", "applicationObjectId": "25ab2fd7-c291-4560-b8c4-3a755b19697f", "authenticationRetried": false, "earlierGrantsStillComplete": true}
   },
   "sku": {
     "name": "Standard_D4als_v7",
@@ -44,11 +45,18 @@
     {"operation": "interveningDown", "start": "2026-11-27T05:54:02.8015505Z", "end": "2026-11-27T06:21:22.0028777Z", "seconds": 1639.2013272, "exit": 0, "status": "pass", "emptyGroupReadback": false, "deletedVaultMatches": 0, "deletedFoundryMatches": 0},
     {"operation": "secondUpIteration1", "start": "2026-11-27T06:23:09.5200057Z", "end": "2026-11-27T06:40:26.2085805Z", "seconds": 1036.6885748, "exit": 1, "status": "failed_and_invalid_full_scope", "source": "8c8ade9bba5b6fcbdb0ef1d4d5fc91e0d71762c9", "actualNativeParameter": "false", "armResourceCount": 14, "countsAsCompleteCycle": false, "foundryError": {"status": 409, "requestId": "279ff8f7e9fdc6c39b993d57de16d99f", "message": "The project workspace identity changed during version creation. Read the current agent and retry."}, "currentAgentRead": {"status": 200, "attempts": 1, "instancePrincipalMatchesFirstCycle": true}},
     {"operation": "invalidSecondDown", "start": "2026-11-27T06:42:11.3489783Z", "end": "2026-11-27T07:11:13.3733913Z", "seconds": 1742.024413, "exit": 0, "status": "pass", "emptyGroupReadback": false, "deletedVaultMatches": 0, "deletedFoundryMatches": 0},
-    {"operation": "secondUpIteration2", "start": "2026-11-27T07:15:07.5243294Z", "status": "running", "source": "ebfc0853bb431bf19dd7cbf802398d7cd34c8f97", "documentedNativeInput": "true", "actualNativeParameter": "true", "armDeployment": "zavagf-1795763991", "documentedInputReadbacks": 13, "emptyGroupReadback": false, "vault": {"state": "Succeeded", "purgeProtection": null, "softDelete": true, "retentionDays": 7, "rbac": true}},
-    {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}
+    {"operation": "secondUpIteration2", "start": "2026-11-27T07:15:07.5243294Z", "end": "2026-11-27T07:35:37.0795566Z", "seconds": 1229.5552272, "exit": 1, "status": "fail", "source": "ebfc0853bb431bf19dd7cbf802398d7cd34c8f97", "documentedNativeInput": "true", "actualNativeParameter": "true", "armDeployment": "zavagf-1795763991", "documentedInputReadbacks": 13, "emptyGroupReadback": false, "armResourceCount": 24, "targetChildScopeArmRoles": 11, "acrPullAssignments": 2, "versionCreations": 3, "successfulCurrentAgentReads": 2, "foundryError": {"status": 409, "requestId": "f5e2882b465eff0ce347b4f56906cecc", "message": "The project workspace identity changed during version creation. Read the current agent and retry."}, "vault": {"state": "Succeeded", "purgeProtection": null, "softDelete": true, "retentionDays": 7, "rbac": true}, "countsAsCompleteCycle": false},
+    {"operation": "independentPublicPagesAndMessagingPackage", "start": "2026-11-27T07:44:58.8972806Z", "end": "2026-11-27T07:45:03.0378062Z", "seconds": 4.1405256, "publicPagesExit": 0, "teamsPackageExit": 0, "status": "pass", "catalogueAuthenticationAttempted": false, "package": "appPackage\\dist\\zava-scrum-agent-zavagf-1.1.0.zip", "externalId": "df7bb1a7-ba3c-4bae-839b-e1ea1a628d2f"},
+    {"operation": "secondVerifyAfterFailedUp", "start": "2026-11-27T07:46:27.3643022Z", "status": "running", "source": "7501b981f36c277f2a6d5d2fb128dd03aee59e9d", "countsAsCompleteCycle": false},
+    {"operation": "secondUpVerify", "status": "blocked", "completedCycles": 0}
   ],
   "completedCycles": 1,
   "requiredCycles": 2,
+  "currentArmResourceCount": 24,
+  "currentNativeReady": false,
+  "currentNativeState": "Allocated Windows VM/vault but application reconciliation refused before certificate/bootstrap; first-cycle task/TLS/renderer evidence is historical",
+  "hostedWorkspaceReadback": {"agent": "zava-voice-relay", "version": 1, "state": "active", "image": "acrzavascrumpi7fumnppr2hk.azurecr.io/zava-scrum-agent/agenthost:20261126212950", "instancePrincipal": "ff6d1ab3-68c0-47c9-aa11-894f161b4db2", "currentProjectIdentityType": "SystemAssigned", "currentProjectPrincipal": "3bce4b0f-7f02-4430-aff8-5bd65045e8a2", "rootCauseEstablished": false, "speculativeCleanupAttempted": false, "equivalentRetriesRemaining": 0},
+  "humanContinuation": ["Entra administrator restores appropriate active existing calling-app write authority; authorised operator completes media-host.ps1/certificate registration as documented in DEPLOY.md G8-PRIVILEGED-WRITE", "Project/subscription owner escalates exact persistent409/project/agent/identity evidence to Microsoft support and resolves supported lifecycle before another full proof", "Teams administrator uploads current zavagf packages; completed zavaw3 grants/uploads stay complete"],
   "newAzureResourcesCreated": 25,
   "resourceCountBasis": "First complete footprint ARM inventory25; failed first iteration17 was purged, no simultaneous copy or second environment",
   "actualMediaAllocation": {"vm": "vm-media-pi7fumnppr2hk", "size": "Standard_D4als_v7", "state": "Succeeded", "disk": "vm-media-pi7fumnppr2hk-disk-os-01", "diskSizeGB": 127, "diskSku": "StandardSSD_LRS", "generation": "V2", "knownVmDiskIPv4HourlyUSD": 0.363150685, "priceBasis": "Public USD Windows consumption/E10/staticIPv4 tariffs, excludes variable charges and conditional disk mount"},

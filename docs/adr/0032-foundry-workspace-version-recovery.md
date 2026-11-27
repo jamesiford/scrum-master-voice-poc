@@ -1,6 +1,6 @@
 # ADR 0032: Bounded hosted-version workspace recovery
 
-Date:27November2026. Status:accepted implementation; repeat deployment pending.
+Date:27November2026. Status:accepted bounded implementation; live recovery failed.
 
 ## Context
 
@@ -38,5 +38,16 @@ Focused retry-path tests6/6 and all three builds pass; solution .NET has
 its existing NU1603 dependency-resolution warning; package versions remain
 unchanged. Tests cover read-before-create order, the two-retry cap,
 unrelated409/403/429 no-retry and refused refresh propagation.
-Live recovery and the second complete empty native-enabled up/verify
-remain necessary; implementation alone is not G8 acceptance.
+The full native-enabled second up failed1229.5552s, ending07:35:37Z.
+All three creation calls returned the same409 despite two successful
+current-agent reads; final requestf5e2882b465eff0ce347b4f56906cecc.
+The cap and failure propagation work, but the recovery did not resolve the
+platform conflict. No fourth creation or speculative cleanup was attempted.
+Readback shows the first cycle's hosted version1/image/instance principal
+survives account purge, while the recreated project has a different actual
+SystemAssigned principal. Whether omitted data-plane cleanup or a stale
+provider binding caused this remains unproven. Escalate scoped evidence to
+the project owner/Microsoft support; DEPLOY.md has the exact identifiers.
+Independent native completion also received a privileged Entra403 and
+requires authorised human action. Thus G8 is blocked at1/2 complete cycles,
+not accepted merely because bounded recovery is implemented.

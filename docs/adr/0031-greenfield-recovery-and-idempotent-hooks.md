@@ -1,6 +1,6 @@
 # ADR 0031: Greenfield recovery preserves protected defaults
 
-Date:26November2026. Status:accepted implementation; G8 cycles pending.
+Date:26November2026. Status:accepted implementation; G8 blocked at1/2 cycles.
 
 ## Evidence
 
@@ -183,3 +183,17 @@ Exact group=false/deleted-vault and Foundry[] confirm cleanup. Restored
 and read all13 documented inputs only after purge, including native=true.
 Full second empty up started07:15:07.5243294Z from pushebfc085; no optional
 native omission is accepted. Completed verified cycles remain1/2.
+
+Full retry ended07:35:37Z,1229.5552s,exit1: the hosted workspace409
+persisted through all three creations/two successful reads (ADR0032).
+The native ARM parameter was true and VM/vault/private images provisioned;
+current24resources are not a full successful up or native bootstrap.
+Independent media reconciliation received privileged403
+Authorization_RequestDenied at07:40:44Z, request
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf, after7.9184s.
+Legal pages/messaging package independently pass in4.1405s; no further
+creation/authentication retry, unrelated role or environment mutation.
+Exact Entra administrator/support actions and continuing
+USD0.363150685/hour VM/disk/IP tariff are in DEPLOY.md. G8 is blocked,
+not complete; earlier first-cycle native readiness does not describe the
+current unbootstrapped VM.

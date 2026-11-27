@@ -141,6 +141,35 @@ At07:22Z actual ARM deploymentzavagf-1795763991 submits native=true and
 the real second media vault is Succeeded, protection omitted, softDelete/
 EntraRBAC=true, retention7days. This is full provisioning, not native SKIP.
 
+**Current G8 outcome: human-blocked, goal failed, 1/2 complete cycles.**
+Full second empty up ended07:35:37.0795566Z after1229.5552272s,exit1,n1.
+All three hosted creation calls returned the exact workspace409 despite
+two successful current-agent reads; final request
+f5e2882b465eff0ce347b4f56906cecc. No further equivalent retry.
+Actual D4als_v7/127GB StandardSSD_LRS/V2/vault/private API/bridge images
+provisioned, target roles11 including AcrPull2, footprint24resources.
+Retained hosted version1/first image/instance principal differs from the
+recreated project's SystemAssigned principal; root cause is unproven.
+No speculative cleanup or SDK/identity change was made.
+
+Independent media reconciliation failed7.9183946s,exit1,n1, before native
+certificate/bootstrap. Exact403 Authorization_RequestDenied:
+`Insufficient privileges to complete the operation.`
+Date2026-11-27T07:40:44; request/client-request
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf. DEPLOY.md quotes the complete
+error and administrator/support actions. No authentication retry or role
+activation. Current native VM is unbootstrapped, unlike first-cycle
+TLS/task/renderer readiness; known VM/disk/IPUSD0.363150685/hour remains
+allocated plus variable charges for authorised continuation.
+Independent public-pages and messaging-package hooks passed,exit0,n1
+each,4.1405256s total (07:44:58.8972806Z to07:45:03.0378062Z).
+Catalogue upload remains a named OAuth gate; no new auth attempt.
+
+| Gate | Current status | Denominator and decisive evidence |
+|---|---|---|
+| G8 full greenfield | Human-blocked; failed goal | 1/2 complete cycles; persistent409 plus actual privileged403 |
+| Native G6/live G1/board | Not_run | New native meeting samples n0; allocated VM is not bootstrapped |
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.
