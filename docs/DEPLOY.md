@@ -110,6 +110,41 @@ failed/not_run gates separately, including G7 dates and G10/G11 n=0.
 Exchange, catalogue, organiser RSC and real-user actions below remain exact
 human gates; package generation is not tenant publication.
 
+## Edition C owner actions (final consolidation)
+
+**FILM-SCOPE, James Ford/product owner and Scout:** before booking a take,
+choose the truthful recording scope. The original native-media chapters and
+saved spoken follow-ups cannot be one demonstrated path: GraphMedia is
+non-recording and cannot persist meeting-derived proposals. Use
+**Acs / Share / Direct** for the approval story and label the Simulated Room
+fallback. Film native join/share/identity/barge-in separately only after the
+existing MEDIA-RSC, native voice and NATIVE-BOARD-ACCEPTANCE checks have real
+samples. Do not describe an admitted lobby join as unattended G6 success,
+the earlier smaller-footprint rebuild as final G8, or unbuilt knowledge/
+Work IQ as delivered. Conditional Access policy changes remain outside this
+run. Record the approved chapter substitutions and outstanding gates in the
+film brief before narration or capture; no Presenter Pack change is authorised.
+The dedicated audit portal page, Live per-hop panel, complete readable speaker
+names and atomic Sprint 43/roster/cast reset are still separate product work.
+
+**FILM-ASSETS, James Ford (recordings/backup owner) and Scout (film tooling):**
+restore the authorised Edition B tooling, raw clips and original seven Admin
+recordings from the owner's backup into a separate film workspace. The plan
+names `C:\Projects\film-work`; its absence was recorded on 24 November, not
+rechecked by final consolidation. Neither `video\README.md` nor
+`video\admin-lines\record-admin-lines.html` exists in this checkout, and no
+tracked film/recording assets were found. If the backup is unavailable,
+Scout must first rebuild the capture/audio preflight/persona host/assembly
+tooling and recording page in that workspace before asking James to record
+the seven original and three new interruption lines (08 to 10) in his own
+voice. Do not substitute TTS for the presenter's interruption.
+Obtain consenting participants and complete real meeting/Copilot dry runs
+before recording. Keep Daniel/Maya synthetic and labelled; use light theme,
+right-monitor native 16:9 capture, eased scrolling, separate pre-brief/recap
+clips and labelled fast-forwarded waits. Deliver the chaptered MP4 and
+transcript only for the owner-approved, evidence-backed scope; the original
+fourteen-chapter 15-to-17-minute plan is not currently ready to film as built.
+
 ## Parameters
 
 Set once with `azd env set`. None is a secret.
