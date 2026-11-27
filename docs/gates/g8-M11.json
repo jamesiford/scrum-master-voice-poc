@@ -1,0 +1,51 @@
+{
+  "step": "10",
+  "environment": "zavagf",
+  "location": "eastus2",
+  "subscriptionId": "4b0dd31f-5379-4acc-8dcd-60f2929d2513",
+  "resourceGroup": "rg-zava-scrum-zavagf",
+  "startingResourceCount": 13,
+  "preflight": {
+    "samples": 1,
+    "startedUtc": "2026-11-27T03:04:32.2709665Z",
+    "completedUtc": "2026-11-27T03:08:23.5667972Z",
+    "durationSeconds": 231.2965,
+    "exitCode": 1,
+    "message": "FAIL quota: Windows VM Standard_D4s_v5: Not enough  vCPU quota in eastus2",
+    "azureResourceRoles": "pass",
+    "azureDevOpsAdministrator": "pass",
+    "graphScopeCheck": "pass, not current privileged directory-role proof"
+  },
+  "mediaSkuDiagnostic": {
+    "samples": 1,
+    "name": "Standard_D4s_v5",
+    "family": "standardDSv5Family",
+    "locationRestriction": "NotAvailableForSubscription",
+    "zoneRestrictions": ["1", "3", "2"],
+    "familyQuota": {"current": 0, "limit": 100},
+    "regionalCoreQuota": {"current": 0, "limit": 100},
+    "conclusion": "SKU unavailable, not quota exhaustion; preflight hides restricted SKU and reports an empty family"
+  },
+  "currentDirectDirectoryRoles": [
+    "Agent Registry Administrator",
+    "Agent ID Developer",
+    "Agent ID Administrator",
+    "Global Reader"
+  ],
+  "privilegedAdministratorWindowExpiredPt": "2026-11-26T14:27:00-08:00",
+  "cycles": {
+    "initialTeardown": "not_run",
+    "firstEmptyUp": "not_run",
+    "firstVerify": "not_run",
+    "betweenCycleTeardown": "not_run",
+    "secondEmptyUp": "not_run",
+    "secondVerify": "not_run",
+    "completedSamples": 0
+  },
+  "resourcesAdded": 0,
+  "fixedAddedCostUsdPerHour": 0,
+  "zavaw3Modified": false,
+  "mcmModified": false,
+  "humanGates": ["G8-DEPLOYER-AUTHORITY", "G8-MEDIA-CAPACITY"],
+  "verdict": "failed prerequisite; final G8 proof not_run"
+}

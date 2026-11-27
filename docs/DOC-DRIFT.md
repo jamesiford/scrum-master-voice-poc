@@ -1,6 +1,33 @@
 # Documentation drift report
 
-**Date:** November 23, 2026 (reconciliation at `36d25ad`, 22 November; the latency, shared board and decision model notes updated after M10).
+**Date:** November 26, 2026 (M11 final documentation checkpoint).
+
+## Current M11 corrections
+
+Earlier tables below record the November 22 baseline, not today's exhaustive
+route/test inventory. Code wins; current implementation is AS-BUILT, acceptance
+is `gates/M11-gates.md`, decisions are indexed in `adr/README.md`.
+
+| Drift | Current evidence/correction |
+| --- | --- |
+| Payments-only architecture | Team registry/membership/routing/capacity are implemented; Payments is a demo seed, not a global runtime team |
+| Hosted agents absent or orchestration hosted | Optional stateless relay with Agent ID exists; gateway/ceremony/channel handlers remain in API. Stable 4 retained; candidate 5 failed readiness/424, n=0 completed paired samples |
+| Four default model deployments | `foundry.bicep` defaults to chat + one realtime + decision: three; rejected models were removed |
+| Cards globally broadcast | `CardRouting.Select` uses owning-team bindings/purposes; unbound teams stay in outbox |
+| Managed identity fixes approval writes | `IWorkItemWriter` uses the recorded approver's OBO context; that person's project access/consent is required |
+| Typed approval names | Portal **Deciding as** comes from validated Entra identity; display names/request-body names never grant authority |
+| Calendar app/secret workaround | Greenfield hook uses existing managed identity and mailbox-scoped Exchange RBAC; no new calendar app or mcm change |
+| Native media equals saved-follow-up demo | Native hosting/renderer verified, Teams joins/attribution/board/events open; native meeting-derived persistence is prohibited |
+| Copilot delivered end to end | Five skills and 1.1.0 package implemented; catalogue, real-user SSO/streaming/negative G5 are still open |
+| Knowledge/Work IQ delivered | 8A/8B integrations unbuilt; exact existing consent/source/billing gates retained; G10/G11 not_run n=0 |
+| Quality/telemetry wholly deferred | API/bridge content-free workbook verified (211 hop samples); G7 dates75% n8 fails, employee-content quality remains off, real-model CI variables empty |
+| Earlier G8 closure proves final runtime | Old smaller-footprint proof is historical; final zavagf attempt failed preflight, both full-solution cycles n=0 |
+| Failed native preflight means quota is exhausted | Actual D4s_v5 is NotAvailableForSubscription in eastus2; regional/DSv5 quota used0/limit100. Empty-family preflight message misdiagnoses SKU availability |
+| Film features already covered by audit API/metrics | Dedicated audit page, Live per-hop panel/all-participant names and atomic roster/cast/Sprint 43 reset remain follow-ons |
+
+This documentation step changes no runtime, Domain rules, golden expectations
+or gate thresholds. ADR 0029 records the deployment acceptance boundary and
+the exact preflight defect/gates; full suites run at the following checkpoint.
 
 Generated while reconciling the documents with `main` at `36d25ad`. **The code wins** over every document (see ADR 0009). Paths are relative to the repository root. "Test" means a test that exercises the use case directly; a domain-only test is noted in the cell.
 

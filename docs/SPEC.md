@@ -4,7 +4,19 @@
 >
 > **Companions:** *Zava AI Scrum Master Agent - Solution Architecture* (the why and the options) and *Zava AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
-> **Owner:** James Ford (Microsoft). **Version 0.6 (as built, M9 ceremony and carry-over features, M10 decision model)**, November 23, 2026. Status: updated to describe what was actually built. **The code wins** where this document and the code disagree; `DOC-DRIFT.md` lists every difference found and how it was resolved. Companions: `AS-BUILT.md`, `CEREMONIES.md` and the decision records (`adr/0001` to `0014`).
+> **Owner:** James Ford (Microsoft). **Version 0.7 (M11 implementation and measured acceptance)**, November 26, 2026. **The code wins** where this document and the code disagree. `AS-BUILT.md` describes implementation; `gates/M11-gates.md` distinguishes measured acceptance from open work; `DOC-DRIFT.md` records corrections. Decision records are indexed in `adr/README.md`.
+
+### M11 acceptance boundary
+
+The working demo remains **Acs / Share / Direct**, with the Simulated Room
+fallback. The optional hosted relay uses stable version 4; candidate 5 returned
+424 during paired testing and is not promoted. The Windows native media/board
+adapter is hosted but its real Teams attribution, joins and board acceptance
+remain open, and it saves no meeting-derived proposals. Five delegated
+Teams/Copilot skills and package 1.1.0 are implemented; live Copilot G5 is open.
+Foundry IQ and Work IQ integrations are not built (G10/G11 not_run, n=0).
+G7 fails revised dates (75%, n=8); latest fallback p50 regression is +6.19%
+(n=10 before, n=12 after). No threshold or Domain rule was changed to pass.
 
 ### What changed in v0.6 (M9)
 
@@ -76,7 +88,12 @@ Anything marked **VERIFY** is an API detail that is new or in preview. Copilot m
 | H5 | The agent can do this inside a real Teams meeting | The agent joins a Teams meeting, is heard, hears participants and completes the standup |
 | H6 | The experience is responsive enough for a live conversation | Median time from end of speech to agent audio is about one second for US participants; India latency is measured |
 
-**Not proven by the PoC (production specification):** scale to ten teams, the production meeting bridge, enterprise identity and governance, formal evaluation, private networking, resilience and cost at volume.
+**Current proof:** portal approval identity and approver-authored writes have
+live G3 evidence; three concurrent Simulated Room sessions have historical
+G9 evidence; API/bridge content-free telemetry is checked live. These do not
+prove native media, live Copilot, full multi-team isolation, one-second latency,
+final-solution greenfield repeatability or production scale/governance.
+Private networking, resilience and cost at volume remain production scope.
 
 ---
 
@@ -102,7 +119,9 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 
 - **Roster:** three members, in speaking order Daniel Park, Maya Lin and Admin (`demo/seed-ado.json`). "Admin" matches the Teams user "System Administrator". The sandbox organisation has one real user, so every seeded item is assigned to that user and tagged `demo-owner-{key}`; the roster resolves ownership from the tag (ADR 0002, `Demo:HonorOwnerTags`).
 - **Scene 5 (absent member):** the shipped cast script (`demo/cast/payments-standup.yaml`) has nobody absent. In Teams, a roster member who does not join is marked absent; the cast format supports `absent: true`.
-- **Scene 6 (recap and cards):** `PostRecapOnStandupEnded` and `SendPreBriefCardOnStandupPrepared` send cards through `ITeamsMessenger`. `TeamsBotMessenger` sends every card to every stored conversation (everyone who has messaged or installed the bot); it does not post to the meeting chat or a channel and does not address the Scrum Master separately (ADR 0005). `// PROD: route to the meeting chat, the channel and the Scrum Master`. The card actions are Approve and Reject; there is no Edit action.
+- **Scene 6 (recap and cards):** cards use `ITeamsMessenger` and the owning
+  team's bound conversations (`CardRouting`, ADR 0018). No binding means
+  outbox only. Card actions remain Approve/Reject; there is no Edit action.
 
 **Fallback rule for every live demo:** if the Teams join fails, the same session runs in the Simulated Room (section 7.3) with no other change.
 
@@ -119,7 +138,7 @@ Everything in this spec exists to make these scenes work. Build in the order of 
 | F5 | Prepare sprint planning and review the backlog | **Partial:** planning prep page (load per person, carry-over, Definition-of-Ready gaps, suggested owners). No voice-led planning | M8 |
 | F6 | Facilitate sprint review and retrospective | **Partial:** retrospective is a text draft (start-stop-continue built in code, model-written summary), not voice-led. Sprint review not built | M8 |
 | F7 | KPIs and monthly report over three to six sprints | **Full** (fixture-backed history if the demo project is new) | 10.4, M6 |
-| F8 | Recommend assignments and escalate risks | Escalation **built** as a follow-up kind for long-blocked items (a card to every stored conversation). Assignment suggestions are **advice only** (`PlanningPlanner`; nothing is written) | 10.3, M3, M8 |
+| F8 | Recommend assignments and escalate risks | Escalation follow-ups are team-routed; planning owner suggestions are written only after plan approval (M9a) | 10.3, 10.6, M3, M9a |
 | F9 | Write user stories and acceptance criteria | **Draft only:** Story Writer page (model draft, or a template when no model is available); never written to Azure DevOps | M8 |
 | F10 | Admin portal for teams, rosters, cadence and prompts | **Full** | 13, M5 |
 | N5 | About one second voice latency | Target 1 s; **measured 3.7 s p50** in the 23 Nov Teams take (2 to 3 s was the earlier note); the M10 decision model adds latency (ADR 0014). Shown in the portal | 11.2 |
@@ -154,16 +173,16 @@ External dependencies:
 | Concern | PoC shortcut | Production (see Production Specification) |
 |---|---|---|
 | Services | One .NET service plus bridge plus portal | Separate orchestrator, voice gateway and session manager scaled independently; scheduler as Container Apps jobs |
-| Agent runtime | **As built:** Microsoft Agent Framework chat-client agents over the Foundry v2 SDK (`Azure.AI.Projects` 2.x, `Microsoft.Agents.AI.Foundry`) with `DefaultAzureCredential`, behind agent ports (ADR 0009b; ADR 0002 was the earlier `HttpClient` version) | Foundry hosted agents with Entra Agent ID, published to Microsoft 365 |
+| Agent runtime | Built: API chat-client agents; optional hosted stateless voice relay with Agent ID, historical paired transport measurements. Open: candidate 5 readiness and moving orchestration/channel handlers into the host (ADRs 0021, 0022, 0028) | Hosted orchestration and production lifecycle/governance |
 | Tools | In-process C# tool classes | Scrum MCP server on Azure Functions behind API Management; Foundry Toolbox with tool policies |
 | Azure DevOps access | REST with Entra token (`az login` / managed identity) or a PAT in user secrets | **As built (M11 5A/8, ADRs 0020/0025):** scheduled voice reads use the managed identity; approved writes use the approver and five Copilot reads use the asker through OBO, no fallback. PROD: agent identity with least privilege (5B); Azure DevOps Remote MCP |
-| Meeting bridge | Simulated Room plus ACS Teams interop | Decision between ACS interop and Graph media bot after the PoC; Work IQ is advisory retrieval, not a verified real-time transcript transport (ADR 0027) |
+| Meeting bridge | Built: ACS/Simulated saved-follow-up demo. Open: native GraphMedia attribution/join/board gates despite verified Windows hosting; non-recording only | Proven native media, recording compliance where applicable and capacity |
 | Messaging | In-process channels | Service Bus and Event Grid |
-| Knowledge | Working agreements as Markdown in the repo, injected into prompts | Foundry IQ knowledge base on Azure AI Search |
+| Knowledge | Open: Foundry IQ unbuilt; repo working agreements are not read by code (ADR 0026) | Permission-trimmed approved knowledge sources |
 | Work IQ signals | M11 8B: consent/evidence contracts and unregistered read boundary built; live spike, adapter and all four integrations blocked, G11 n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADR 0027) |
-| Identity | Bot app registration; portal sign-in with any tenant user | App roles, Agent 365 registration, Conditional Access for agents |
+| Identity | Built: Entra bearer validation, app/team roles, federated OBO approval and portal audit. Open: live Teams SSO and agent policy acceptance | Reviewed least privilege, agent governance and access reviews |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
-| Quality | Human judgement in demos, a few unit tests, latency metric | Foundry evaluations, CI gates, online monitoring |
+| Quality | Built: unit/architecture/E2E checkpoint and live content-free API/bridge workbook. Open: failed G7 dates/latency, final full-suite checkpoint, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
 | History for KPIs | Azure DevOps Analytics if history exists, else a JSON fixture | Fabric OneLake plus Power BI semantic model |
 
 ---
@@ -176,21 +195,21 @@ External dependencies:
 | CQRS / mediator | **Hand-rolled mediator** in the Application layer (section 6.1.3): `ICommand`, `IQuery`, `ISender`, `IPublisher`, pipeline behaviours. No third-party mediator package |
 | Validation | FluentValidation, run by `ValidationBehavior` |
 | Code quality | Central package management, `.editorconfig`, `TreatWarningsAsErrors`, XML docs required, `dotnet format`; ESLint + Prettier for TypeScript |
-| Local orchestration | **Aspire** AppHost (runs the API, bridge and portal together with one command; **VERIFY** current Aspire version). If Aspire blocks progress, fall back to a `Makefile` or `docker compose` |
+| Local orchestration | **Aspire 13.x** AppHost; no Makefile. `global.json` pins .NET SDK 10.0.100 |
 | Agents | **As built:** `FoundryChat` runs each prompt through a Microsoft Agent Framework agent that `FoundryAgentFactory` creates with `AIProjectClient.AsAIAgent` (model `Foundry:ReasoningDeployment`, instructions from `agents/instructions`, JSON response format, `Foundry:TimeoutSeconds` timeout) with an Entra token (`DefaultAzureCredential`, no keys), behind the ports `IBacklogRiskAgent`, `IReconcileAgent`, `IReportingAgent` and `IDraftingAgent`; each returns `null` on any model failure and the caller falls back to code (ADR 0009b). `// PROD: Microsoft Agent Framework and Foundry hosted agents` |
 | Voice | **Azure Voice Live API** over WebSocket `wss://<foundry-resource>.services.ai.azure.com/voice-live/realtime`, API version `2026-04-10` (**As built**; configurable). Use the .NET Voice Live client if available, else `ClientWebSocket` |
 | Realtime model | Config-driven: `gpt-realtime-2.1` default (**As built**, chosen over `gpt-realtime-2.1-mini` by measurement, ADR 0019); alternatives compared on the Models page. Optional Foundry voice-agent binding via `VoiceLive:AgentName` |
 | Reasoning model | A GPT mini-class deployment for reconciliation, follow-ups and summaries (config-driven) |
 | Teams and Copilot | **Microsoft 365 Agents SDK** for .NET (`Microsoft.Agents.*`), Azure Bot Service (single tenant), app package built with the Microsoft 365 Agents Toolkit |
 | Azure DevOps | REST API 7.x via `HttpClient` (WIQL, work items, iterations, team members, Analytics OData) |
-| Meeting bridge | **Node.js 22 + TypeScript**, Playwright headless Chromium hosting the ACS Calling Web SDK (pattern from Azure-Samples `voicelive-webapp/samples/teams-meeting-delegate`, **VERIFY**) |
+| Meeting bridge | **Node.js 22 + strict TypeScript**, Playwright/ACS; selectable **Windows .NET Graph media host** with aligned Communications/Skype media SDK and SkiaSharp board renderer (ADRs 0023, 0024) |
 | Demo cast voices | Azure AI Speech text to speech (neural voices, varied accents) |
 | Admin portal | **React 19 + Vite + TypeScript + Tailwind CSS v4 + lucide-react**, MSAL.js and Container Apps Easy Auth (**As built**: Fluent UI was replaced for a modern layout) |
 | State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
 | Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
 | Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export uses `APPLICATIONINSIGHTS_CONNECTION_STRING` or explicit `AzureMonitor:ConnectionString` SDK configuration. Live API/bridge/model/approved-write trace is checked (211hop samples); native/hosted acceptance is not established. G7 fails dates75%n8; live Foundry quality conflicts with content capture OFF and real-model CI needs its approved OIDC configuration (ADR 0028, DEPLOY.md). |
-| Tests | xUnit for Domain rules, state machine, handlers (hand-written fakes) and the mediator; NetArchTest.Rules architecture tests (**VERIFY** version; ArchUnitNET fallback); one Playwright end-to-end test of a scripted standup |
+| Tests | xUnit, hand-written port fakes and real mediator; NetArchTest.Rules 1.3.2; standup and retrospective Simulated Room E2E. Portal has no test suite |
 
 ---
 
@@ -251,6 +270,13 @@ zava-scrum-agent/
 ```
 
 **Multi-team (M11, ADR 0018).** Team model and pure rules live in `Domain/Teams` (`TeamAccess`, `WorkItemScope`, `AdoOrganisation`, `TeamsBinding`) and `Domain/Capacity` (`CapacityGovernor`); use cases in `Application/Features/Teams`; `Infrastructure/Ado` holds the per-organisation client factory; `Api/Auth` holds the team filter; `Api/Seeding` the demo team seeder.
+
+**Additional M11 hosts/tools:** `src/Zava.Scrum.AgentHost` is the optional
+stateless hosted voice relay; `src/Zava.Scrum.MediaBot` is the Windows native
+media alternative. Both have dedicated test projects. `tools/GateRunner`,
+`tools/VoiceRelayBench`, `tools/DecisionEval` and `tools/AgentDeploy` provide
+measurement/deployment tooling, not additional portal services. The portal
+remains served by the API; orchestration and channel handlers remain there.
 
 ### 6.1 Architecture and coding standards
 
@@ -709,6 +735,13 @@ G11 and new G1 samples remain n=0; M9c review-feedback conversion is unbuilt.
 ### 11.2 Latency
 The gateway logs inside a scope carrying the session's `CorrelationId` and `SessionId` (M11, ADR 0017), so every structured line for a turn can be tied to the audit chain. It measures end of speech (`input_audio_buffer.speech_stopped`) to the first agent audio byte for every agent turn. It stores p50 and p95 per session and shows them live in the portal. Target p50 is about 1,000 ms for US participants. Pre-computing `reconcile_update` (section 10.2) is the main lever.
 
+Latest Direct scripted before/after: 3200/5600 ms p50/p95 (n=10) versus
+3398/4707 ms (n=12); p50 +6.19% fails the historical 5% tolerance.
+Simulated transcript p50=0 is not speech-to-text proof. Timing events and the
+live Insights workbook hold per-hop evidence; dedicated Live per-hop counters
+and readable names for every participant are still film-feature follow-ons,
+not delivered by this documentation step.
+
 ### 11.3 Floor control (state machine in the gateway)
 
 ```
@@ -770,24 +803,30 @@ contribute only ordinary lifecycle metadata, not saved meeting commitments.
 
 - One Azure-managed bot (Microsoft 365 Agents SDK) and one app package in `appPackage/` (manifest 1.25, version 1.1.0). Scopes are personal, team, groupChat and copilot; `copilotAgents.customEngineAgents` references that same bot id. The deployment hook fills the environment's app/bot/Copilot ids together, SSO information, legal URLs and exact valid domains. Use `appPackage/dist/zava-scrum-agent-<env>-1.1.0.zip`, not the historical root zip. No personal board tab was built in prompt 7, so none or any additional tab RSC is declared. Live G5 rollout remains gated in DEPLOY.md.
 - **Approver identity (M11, ADR 0017).** A card action's approver is `Activity.From.AadObjectId` with the activity's tenant, never `From.Name`. The decision is accepted only when the tenant is the deployment's and the object id is a configured administrator (`Identity:AdminObjectIds`) or the roster member (`Member.EntraObjectId`) the follow-up is for; plans, calendars and ceremony packs are administrator only. The chat command "prepare sprint planning" is decided the same way.
-- Proactive messages use conversation references captured when a user messages the bot or it is added (`ScrumAgent` stores them). The portal does not show who has the app installed. `TeamsBotMessenger` sends every card to **every stored conversation** and updates the card in place (ADR 0005). `// PROD: route to the meeting chat, the team channel and the Scrum Master by Entra object id.`
+- Proactive messages use stored conversation references and team bindings.
+  `CardRouting` restricts delivery to the owning team's bound conversations;
+  no binding means outbox only, not a global broadcast (ADR 0018). The portal
+  does not show installed users.
 
 **Cards** (`CardKind`: `PreBrief`, `FollowUp`, `Absent`, `Escalation`, `FollowUpResult`, `Recap`, `Unblock`, `PlanningPack`, `RetroActions`, `ReviewPack`):
 
 | Card | Built | Recipient as built |
 |---|---|---|
-| Pre-brief (`SendPreBriefCardOnStandupPrepared`) | yes | Every stored conversation |
-| Per-person follow-up with Approve and Reject | yes | Every stored conversation (the card names the member) |
-| Absent-member or no-response request | yes | Every stored conversation |
-| Blocker escalation | yes, as a follow-up kind; no Acknowledge or Reassign | Every stored conversation |
-| Recap (`PostRecapOnStandupEnded`) | yes | The team's recap channel and any meeting chat the bot is in (`CardRouting`, M9-R5); every stored conversation only when neither exists |
-| Unblock request (`Unblock`) | yes (M9-R2), no actions | Every stored conversation (the card names the member) |
-| Sprint plan (`PlanningPack`, M9a) | yes, **Approve plan** (`approve-plan`) and **Reject** (`reject-plan`) | Every stored conversation |
-| Retrospective and review packs | yes (M9), **Approve all** and **Reject** | Every stored conversation |
+| Pre-brief (`SendPreBriefCardOnStandupPrepared`) | yes | Owning team's bound conversations |
+| Per-person follow-up with Approve and Reject | yes | Owning team's bound conversations (the card names the member) |
+| Absent-member or no-response request | yes | Owning team's bound conversations |
+| Blocker escalation | yes, as a follow-up kind; no Acknowledge or Reassign | Owning team's bound conversations |
+| Recap (`PostRecapOnStandupEnded`) | yes | Owning team's bound Standup/Recap conversations; no global fallback |
+| Unblock request (`Unblock`) | yes (M9-R2), no actions | Owning team's bound conversations (the card names the member) |
+| Sprint plan (`PlanningPack`, M9a) | yes, **Approve plan** (`approve-plan`) and **Reject** (`reject-plan`) | Owning team's bound conversations |
+| Retrospective and review packs | yes (M9), **Approve all** and **Reject** | Owning team's bound conversations |
 | Follow-up result (same card, no actions) | yes | Same conversations |
 | Sprint summary, monthly report | **not built as cards**; both are portal pages and `/api/reports/*` | n/a |
 
-**Recap routing (M9-R5).** `Team.RecapChannelKey` holds the Teams conversation id of the channel; `ScrumAgent` captures it when the bot is added in a channel (`SetRecapChannelCommand`; also `PUT /api/teams/{id}/recap-channel`). `CardRouting.Select` sends the recap to that channel and to any stored meeting chat (conversation id starting `19:meeting_`), and falls back to every stored conversation when neither exists. `// PROD: route by Entra object id.`
+**Recap routing (M11, ADR 0018).** Team bindings and their purposes determine
+delivery. Standup/Recap bindings receive ordinary cards; Planning/Recap
+bindings receive planning cards. `RecapChannelKey` is retained for compatibility,
+not permission to broadcast to unrelated stored conversations.
 
 **Chat skills (M11 8).** `AnswerCopilotQuestionQuery` answers "What is blocked
 on my team?", "What did I commit to?", "What is at risk in this sprint?",
@@ -839,7 +878,19 @@ indexed Blob content. No catalogue or use-case entry is added without code.
 
 **As built:** the portal has 13 pages in a sidebar layout (light and dark) and Prompts edits are stored in Cosmos so they survive restarts.
 
-**Sign-in and roles (M11, ADR 0017).** The SPA signs in with MSAL.js and sends the Entra bearer token (scope `api://{portal client id}/access_as_user`) on every call; the public client id and tenant come from `GET /portal-config.json`. The API validates the token itself (signature, issuer, audience, lifetime, `tid` equal to the tenant, a valid `oid`) and never reads Easy Auth headers; Easy Auth stays in front as an outer gate only. Three app roles on the portal app registration: `Zava.Scrum.Admin` (operate sessions, schedules and settings), `Zava.Scrum.Approver` (approve or reject follow-ups, plans and calendars) and `Zava.Scrum.Reader` (read, including `GET /api/audit/{correlationId}`). They are app-wide; team-scoped access comes later. The approver is the caller's Entra identity: the pages show **Deciding as {signed-in account}** and the request body names nobody. With no `Portal:ClientId` the API accepts a fixed local principal holding every role in the Development environment only; elsewhere it refuses every portal call.
+M11 also adds administration/team-switcher pages. The existing audit API is
+not a dedicated correlation-id portal page. The Live console shows aggregate
+latency and events, not the requested per-hop film counters. Knowledge and
+Work IQ connection pages are unbuilt. Do not claim a completed film UI from
+the API/workbook or substitute screenshots of contract tests.
+
+**Sign-in and roles (ADRs 0017, 0018).** MSAL sends the portal-scoped bearer
+token on every call. The API validates signature, issuer, audience, lifetime,
+tenant and object id; Easy Auth is only an outer gate. App roles and the
+team authorisation filter/memberships jointly control access. The approver
+is **Deciding as {signed-in account}**, never request-body text. Without a
+portal client id only Development accepts the fixed local principal; deployed
+portal calls fail closed.
 
 ---
 
@@ -1056,6 +1107,13 @@ or comment kinds. Foundry live quality requires prohibited message content and
 remains not_run with an explicit rubric; knowledge/Work IQ remain unbuilt.
 No new use case or API route is introduced; existing AnalyseUtterance and
 approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
+
+**M11 10 status (documentation/deployment subset).** Reconcile documentation,
+human prerequisites and final gate evidence; attempt G8 only in the authorised
+old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
+prove the final solution. The final full-suite checkpoint, real Teams/Copilot
+rehearsal and film UI/reset enhancements remain separate follow-ons. No native,
+knowledge or Work IQ acceptance is inferred from scripted Direct runs.
 
 ---
 

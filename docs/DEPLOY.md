@@ -1,6 +1,94 @@
-# Deploying from an empty subscription
+# Deploying the current solution
 
-`azd up` builds the whole current solution in a new resource group: Foundry with its four model deployments, Azure Communication Services, Cosmos DB, the container registry, Container Apps (API and meeting bridge), the Azure Bot, the Entra objects, the Azure DevOps project and seed data, and the Teams package. Decisions and their evidence are in [ADR 0015a](adr/0015a-greenfield-deployment-model.md).
+The checked-in Bicep/hooks describe a new-resource-group deployment: Foundry
+with chat, realtime and decision deployments (three by default), ACS, Cosmos,
+ACR, API/bridge Container Apps, Bot/portal Entra configuration, Azure DevOps
+project/seed and Teams/Copilot package 1.1.0. Postdeploy adds the hosted relay
+and Agent ID checks; opt-in adds the native Windows host/certificate/package.
+This is infrastructure coverage, **not a passed final-solution G8 proof**.
+See [ADR 0015a](adr/0015a-greenfield-deployment-model.md),
+[ADR 0029](adr/0029-final-documentation-and-greenfield-proof.md) and the
+[measured gates](gates/M11-gates.md). Knowledge/Work IQ are unbuilt and add
+no delivered sources, Search service or signal resources.
+
+## Final G8 attempt and recovery
+
+Only the old **zavagf/eastus2**, resource group `rg-zava-scrum-zavagf`,
+subscription `4b0dd31f-5379-4acc-8dcd-60f2929d2513`, is authorised for
+this destructive proof. Never tear down zavaw3 or touch mcm. The inspected
+old group contains 13 resources; an update is not an empty-environment run.
+One full preflight took **231.30 s**, 2026-11-27 03:04:32Z to 03:08:23Z,
+and exited 1 with:
+
+```text
+FAIL quota: Windows VM Standard_D4s_v5
+Not enough  vCPU quota in eastus2
+1 check(s) failed. Nothing was provisioned.
+```
+
+No `up`, teardown, new resource or successful verification cycle is claimed.
+Both required full-solution up/verify cycles remain **not_run, n=0**.
+The diagnostic read with `az vm list-skus --all` establishes the actual
+cause: Standard_D4s_v5 has **NotAvailableForSubscription** location and
+zone restrictions in eastus2. Both DSv5-family and total regional quota are
+used0/limit100. This is SKU availability, **not exhausted vCPU quota**;
+the preflight's missing-family message is misleading. Public metadata
+evidence is `gates/g8-M11.json`.
+The preflight Graph scope check passes, but read-only live directory-role
+assignments list Agent Registry Administrator, Agent ID Developer, Agent ID
+Administrator and Global Reader, not an application/privileged consent
+administrator. The explicitly authorised Global Administrator window ended
+at 14:27 PT on 26 November; cached OAuth scopes do not prove current role
+authority. No role activation, consent mutation or authentication loop was run.
+
+**G8-DEPLOYER-AUTHORITY:** an authorised Entra Application Administrator
+(application changes) and Privileged Role Administrator/Global Administrator
+(required tenant consents) must run the existing hooks for **zavagf**, using
+their own approved active role. A Subscription Owner or equivalent scoped
+resource/RBAC permissions and Azure DevOps Project Collection Administrator
+are also required. Do not grant unrelated roles or change tenant policy.
+Revalidate actual role authority, not just the token's `scp` field.
+
+**G8-MEDIA-CAPACITY:** the deployment owner must review
+`az vm list-skus -l eastus2 --size Standard_D4s_v5 --all` and its
+`NotAvailableForSubscription` restrictions. Approve an actually available
+minimum-four-vCPU alternative through the existing `MEDIA_VM_SIZE` parameter
+under existing eastus2 subscription capacity, then record its catalogue
+restrictions/family/quota before a new approved run. Do not retry the unavailable
+default or interpret used0/limit100 as a quota shortage.
+Do not file a quota request, change subscription/region or silently omit
+the native host to label the partial footprint complete.
+
+After those prerequisites and fresh validation pass, an authorised operator
+runs the following **only for zavagf**, recording UTC start/end, commit,
+resource inventory and actual verification output for each numbered run.
+The initial teardown is needed because the old group is currently nonempty.
+Do not delete it while rebuilding remains blocked.
+
+```pwsh
+# Confirm the intended subscription, environment and eastus2 group first.
+azd env set MEDIA_HOST_ENABLED true -e zavagf
+azd env set MEDIA_VM_SIZE <approved-available-four-vCPU-sku> -e zavagf
+azd env set VOICE_ROUTE Direct -e zavagf
+azd env set BRIDGE_MODE Acs -e zavagf
+azd env set BOARD_MODE Share -e zavagf
+# Only after preflight and current deployment validation pass:
+azd down --purge --force --no-prompt -e zavagf
+azd up --no-prompt -e zavagf
+azd exec -e zavagf -- pwsh infra\hooks\verify.ps1 -GateOutput <run-1-folder>
+azd down --purge --force --no-prompt -e zavagf
+azd up --no-prompt -e zavagf
+azd exec -e zavagf -- pwsh infra\hooks\verify.ps1 -GateOutput <run-2-folder>
+```
+
+`verify.ps1` already runs the GateRunner subset and prints eight mandatory
+PASS/FAIL checks, including portal approval/author/audit. Its optional native
+hosting check is not G6 or a human meeting test. It does not print a complete
+formal G1-G11 verdict; that broader gate-status enhancement belongs to the
+remaining full prompt, not this documentation-only subset. Record actual
+failed/not_run gates separately, including G7 dates and G10/G11 n=0.
+Exchange, catalogue, organiser RSC and real-user actions below remain exact
+human gates; package generation is not tenant publication.
 
 ## Parameters
 
@@ -8,7 +96,7 @@ Set once with `azd env set`. None is a secret.
 
 | Name | Required | Meaning |
 | --- | --- | --- |
-| `AZURE_LOCATION` | yes | Region. It must offer the realtime models and Voice Live; `preflight.ps1` checks. `eastus2` is proven. |
+| `AZURE_LOCATION` | yes | Must offer the configured models, Voice Live and selected native host. Earlier eastus2 API/bridge proof does not prove the final footprint. |
 | `AZURE_TENANT_ID` | yes | The Entra tenant. |
 | `ADO_ORG_URL` | yes | For example `https://dev.azure.com/your-org`. The project and seed data are created inside it. |
 | `ADMIN_UPN` | yes | The administrator. Also the calendar organiser. |
@@ -46,7 +134,9 @@ Resources are named with the `zava-scrum` prefix. The original environment (`mcm
 | postdeploy | `infra/hooks/teams-app.ps1` | Builds `appPackage/dist/zava-scrum-agent-<env>-<version>.zip` with the deployed bot id. |
 | postdeploy | `infra/hooks/media-host.ps1` | Opt-in only: separate calling app/Bot registration, minimum media permission, artefact upload, vault delivery, Windows startup task and native Teams package; reports TLS/RSC gates. |
 
-Every script is idempotent; re-running `azd up` creates no duplicates.
+Hooks are intended to reuse their tagged objects. A re-run can create an
+immutable hosted version and rotate Easy Auth credentials; it is not a no-op.
+Final repeatability and native eastus2 provisioning remain unverified.
 
 ## Identity model
 
@@ -362,8 +452,8 @@ azd down --purge
 ## Known limits
 
 - Provisioning takes about 20 minutes; the Container Apps environment alone took 13.5 minutes in the proven run.
-- `eastus2` hosted-agent support is documented on Learn but was measured only in West US 3 (ADR 0015 S3). The current application does not use hosted agents.
-- The destroy-and-rebuild proof is incomplete (G8): the second `azd up` stopped at preprovision because the deployer's privileged Entra role had lapsed. See docs/gates/M11-gates.md.
+- Hosted transport is measured in West US 3; native eastus2/final-footprint acceptance remains open. Optional relay 4 is retained; candidate 5 is unpromoted.
+- Final two-cycle G8 is unrun: this step's preflight failed native capacity and current privileged deployer authority is absent. Earlier smaller-runtime teardown/rebuild history does not close it.
 - A new-subscription run was not possible: the work used one subscription and tenant.
 
 ## Native media preparation and human gates (6a/6b, ADR 0023)
@@ -436,5 +526,5 @@ no default was switched, and all deployed services remain running.
 
 | Gate | Who | Action |
 | --- | --- | --- |
-| Conditional Access for agents | Conditional Access Administrator | Entra admin centre > Protection > Conditional Access > New policy > Target resources > Agents (agent identities): (1) block agent identities with high risk (Agent ID Protection risk); (2) block agent identities tagged non-production from production resources. Test in report-only first. |
+| Conditional Access for agents | Tenant policy owner in a separately authorised production governance activity | Policy creation/change is outside this conductor contract. Existing-policy review and a future report-only design do not authorise changing tenant policy here. |
 | Sponsor attestation | The agent's sponsor (`admin@` by default) | Quarterly: Entra admin centre > Agent ID > the agent > Sponsors and Access reviews; confirm the agent is still needed and its roles (Cognitive Services User and Azure AI User on the Foundry account) are still right. Replace the sponsor when they leave. |

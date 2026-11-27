@@ -1,5 +1,92 @@
 # M11 gates
 
+## Final documentation checkpoint (conductor 10, 26 November 2026)
+
+This is the final **measured status**, not an all-green release claim.
+Historical stage results below remain evidence, not current native/Copilot
+proof. Full suites run once at the following conductor checkpoint.
+
+| Gate | Final status | Measurement and denominator |
+| --- | --- | --- |
+| G1 latency | Failed; formal/native acceptance open | Latest Direct p50 3200 -> 3398 ms (+6.19%, tolerance5%), n10/12; p95 5600 -> 4707 ms. Earlier 4A held relay point estimates, not confidence bounds; no native samples |
+| G2 identity/attribution | Identity checks measured; native not_run | Verified portal actor/revision n1; native speaker/human overlap n0. Synthetic tagged bytes are not attribution |
+| G3 audit/author | Measured portal subset | Actual session/proposal/approved/applied/revision52 chain n1; separate unapproved403/refusal n1. Live Teams/Copilot approval n0 |
+| G4 parity/rehearsal | Failed exact board parity; final rehearsal open | Native/Chromium exact identity differs11/11; prior full checkpoint849.NET+24bridge pass. Final Teams/Copilot rehearsal n0 |
+| G5 Copilot | Not_run | Five skills/package1.1.0 implemented and local checks62/62; live consenting/negative/streaming turns n0 |
+| G6 native join | Not_run | Trusted TLS/SYSTEM reboot readiness measured; actual stored-link unattended joins0/10 |
+| G7 trace/evaluation | Failed release gate | API/bridge workbook211hop samples/433team-tagged records, prohibited keys0; model dates75%n8, overall goldensn72. Hosted5 completed paired samples0, modelCI/livequality n0 |
+| G8 final greenfield | Failed prerequisite; proof not_run | One preflight231.30s/exit1, native-capacity failure; existing zavagf group13resources. Both final up/verify cycles n0; no teardown |
+| G9 multi-team | Historical partial measurement; full matrix open | Three concurrent scripted sessions completed,36turns,3audit chains; ten-team/second-org/human matrix unrun |
+| G10 knowledge | Not_run, unbuilt | Retrieval/citation/permission/latency n0; consent/corpus/two-user fixture outstanding |
+| G11 Work IQ | Not_run, unbuilt | Owner-OBO/source/privacy/latency n0; consent/billing/source fixtures outstanding |
+
+### Latency chronology
+
+Nearest-rank total p50/p95; scripted cast is not real speech transcription.
+Different regions/capacities/windows are not causal comparisons. No failed
+sample is removed by a later better run.
+
+| Baseline/stage | Total p50/p95 ms | Samples | Verdict/boundary |
+| --- | ---: | --- | --- |
+| M10 local decision/rules | 3827/4907;3116/3905 | 35turns each,3runs | Local baseline only |
+| M10 deployed eastus2 decision/rules | 2994/4081;2828/3876 | 36turns each,3runs | Deployed baseline |
+| 3 identity | 3071/4755 | 32turns,3runs | Measured, not native |
+| 3A concurrency | 3400/4919 | 36turns,3concurrent sessions | Three sessions, not ten |
+| 3B realtime/silence | 2.1rules3301;mini3342 p50 | 18standups/model quality review | Mini rejected; preserve2.1/800ms. About25% window drift |
+| 5A delegated writes | 3806/4626 | 32turns,3runs | Tolerances not established; author proof separate |
+| 4 initial hosted/model | 5679p95 vs4720direct | 35-36turns/cell | Failed+20%p95 |
+| 4A larger hosted/model | 3239/4504 vs3197/4269direct | 201-211turns/cell,6rounds | Point estimates+1.3%/+5.5%; confidence bounds do not establish tolerances |
+| 6B fallback before/after | 3419/4435 ->3311/5115 | 11turns each | Failed+15.3%p95 |
+| 7 fallback before/after | 3230/3958 ->3338/5508 | 12turns each | Failed+39.16%p95 |
+| 8 initial/final fallback | 3301/7343;3304/4503 vs3272/4379before | 12turns/run | Initial+67.69%p95 failed; final+0.98%/+2.83% point estimates held |
+| 8A/8B | Not_run | n0 | No runtime/integration change |
+| 9 fallback before/after | 3200/5600 ->3398/4707 | 10/12turns | Failed+6.19%p50; improvedp95 does not erase it |
+| 10 docs/G8 | Not_run | n0 new turns/cycles | No runtime deployment or repeated latency proxy |
+
+### Final G8 attempt
+
+Target is only `zavagf`/`eastus2`, subscription
+`4b0dd31f-5379-4acc-8dcd-60f2929d2513`; the existing resource group
+`rg-zava-scrum-zavagf` contains13resources. One current full preflight ran
+03:04:32.2709665Z to03:08:23.5667972Z on27November (231.2965s):
+
+```text
+FAIL quota: Windows VM Standard_D4s_v5
+Not enough  vCPU quota in eastus2
+1 check(s) failed. Nothing was provisioned.
+```
+
+Model quota: chat1300/2000free need100; realtime10/10free need10
+(own10addedback); decision4300/4500free need100. Azure resource/RBAC and
+Azure DevOps administrator checks pass. Graph's delegated-scope preflight
+passes, but the actual current direct directory roles are only Agent Registry
+Administrator, Agent ID Developer, Agent ID Administrator and Global Reader.
+The time-limited Global Administrator authorisation ended14:27PT; there is
+no current application/privileged-consent administrator proof.
+No Entra mutation, role activation or auth retry was made.
+
+One explicit `list-skus --all` diagnostic confirms Standard_D4s_v5
+`NotAvailableForSubscription` in eastus2 (location plus zones1/2/3).
+Actual quota is used0/limit100 for both standardDSv5Family and total cores:
+the failed preflight's empty-family/quota wording is incorrect. The failure
+is SKU availability, not a reason to request quota. `g8-M11.json` freezes
+these public metadata results and zero completed deployment cycles.
+
+| Required cycle | Outcome | Timing/sample |
+| --- | --- | --- |
+| Initial teardown of existing old group | Not_run; cannot safely rebuild with failed prerequisites | n0 |
+| First final-solution empty `azd up` + verify | Not_run | n0; preflight failure above, not a deployment |
+| `azd down --purge` between verified runs | Not_run | n0 |
+| Second final-solution empty `azd up` + verify | Not_run | n0 |
+
+Exact recovery actions/owners are DEPLOY.md G8-DEPLOYER-AUTHORITY and
+G8-MEDIA-CAPACITY; no quota/subscription/policy change is authorised.
+Keep the old group and zavaw3 running; earlier smaller-runtime cycles below
+do not prove this footprint. This step adds no resource, USD0/hour fixed cost.
+The existing verify subset already prints PASS/FAIL and runs actual
+GateRunner/portal-author/audit checks; formal G1-G11 reporting and film UI
+remain out of this documentation-only subset.
+
 ## Content-free observability and evaluation (conductor 9, 2026-11-26)
 
 G7 is **release-blocking and failed**, not a reason to discard working adapters.
@@ -560,7 +647,8 @@ Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStand
 
 Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
 
-Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. `zavaw3` is torn down.
+Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. That teardown is historical; zavaw3 was subsequently rebuilt and is running.
+It is protected from this final G8 proof, which targets only zavagf/eastus2.
 
 ## 3B: realtime model and silence (ADR 0019)
 
