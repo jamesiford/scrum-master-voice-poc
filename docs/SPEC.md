@@ -24,8 +24,9 @@ remain mandatory; no API/use-case or runtime adapter changes.
 
 First fresh full cycle passes: up1665.7626s, mandatoryverify8/8/407.4025s,
 native5/5 and real managed Voice Live3417/3871ms,n10, with genuine
-approverrevision71/completeaudit. Intervening guarded purge is running;
-second full empty cycle/finalVMdeallocation remain. No project404 was
+approverrevision71/completeaudit. Intervening guarded purge passed1700.1703s,
+exact absence/all13 inputs preserved; second full empty up is running.
+Its verification/finalVMdeallocation remain. No project404 was
 reproduced in this first fresh westus3 cycle. G8 is pending at1/2.
 
 **Historical G8 second recovery (ADR0035), provider-blocked at newcycles0/2:** a guarded predown lifecycle hook removes

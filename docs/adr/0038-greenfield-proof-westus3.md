@@ -51,6 +51,8 @@ First full retryup1665.7626s/mandatoryverify8/8/407.4025s/native5/5 pass.
 Real managed Direct3417/3871ms,n10, approverrevision71/auditcomplete and
 24 resources are measured. Owned hosted version1 reads HTTP200/active;
 this first fresh cycle does not reproduce the former project404.
-Intervening guarded purge is running; G8 remains1/2. The fresh catalogue
+Intervening guarded purge passed1700.1703s, with exact absence and all13
+inputs preserved. The second full empty up is running; G8 remains1/2.
+The fresh catalogue
 POST403 is a separate OAuth-scope human gate, not a support prerequisite.
 No runtime feature, Domain invariant, default adapter or public API changes.

@@ -161,8 +161,10 @@ After the proof, deallocate only the zavag8 media VM and keep its resources.
 First full cycle passes: up1665.7626s and mandatoryverify8/8/407.4025s,
 nativeRequireReady5/5, Direct3417/3871ms,n10, approverrevision71 with
 complete audit. All24 resources and the real hosted version1 are present;
-the guarded intervening purge is running. The second full empty cycle and
-final VM-only deallocation remain required, so G8 is not yet a pass.
+the guarded intervening purge passed1700.1703s with exact group/deleted
+account/deleted vault absence and all13 inputs preserved. The second full
+empty up is running; its verification and final VM-only deallocation remain,
+so G8 is not yet a pass.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not

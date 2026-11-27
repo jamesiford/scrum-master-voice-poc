@@ -8,7 +8,8 @@ are historical only. Keep the zavaw3 demo untouched and Acs/Share/Direct
 as defaults. First full up/verify/native readiness passes, cycles1/2;
 real Direct3417/3871ms,n10 and approved revision71 are scripted proof,
 not a live Teams rehearsal or a passing final G8. The guarded intervening
-purge is running; cycle two remains. After the proof, its media VM will be
+purge passed1700.1703s with exact absence/all13 inputs preserved; the second
+full empty up is running. After the proof, its media VM will be
 deallocated with the final application resources retained.
 
 The first empty up failed preflight206.1921s without creating resources.

@@ -34,6 +34,19 @@
     "chatAndDecisionDeploymentsRequired": true,
     "protectedQuotaChanged": false
   },
+  "finalBuilds": {
+    "source": "3a6057569369e85588622ff1031428cd7304f227",
+    "observationTime": "2026-11-27T23:43:20.3975677+00:00",
+    "dotnet": {
+      "exitCode": 0,
+      "wallSeconds": 26.8438681,
+      "warnings": 0,
+      "errors": 0
+    },
+    "portal": { "exitCode": 0, "wallSeconds": 14.1266183 },
+    "bridge": { "exitCode": 0, "wallSeconds": 11.5057035 },
+    "fullTestSuitesRepeated": false
+  },
   "provisioningObservation": {
     "time": "2026-11-27T23:09:45.9543113+00:00",
     "armState": "Succeeded",
@@ -99,12 +112,20 @@
   ],
   "defaults": { "bridge": "Acs", "board": "Share", "voice": "Direct" },
   "interveningPurge": {
-    "observationTime": "2026-11-27T23:34:55.6274142+00:00",
-    "state": "running",
+    "observationTime": "2026-11-27T23:39:23.5173093+00:00",
+    "state": "succeeded",
+    "start": "2026-11-27T23:10:22.8576135+00:00",
+    "end": "2026-11-27T23:38:43.0278705+00:00",
+    "seconds": 1700.170257,
+    "exitCode": 0,
     "guardedPredownPassed": true,
-    "remainingOwnedResources": 2,
-    "exactGroupAbsent": false,
-    "requiredInputsSnapshotted": 13
+    "remainingOwnedResources": 0,
+    "exactGroupAbsent": true,
+    "matchingDeletedAccountCount": 0,
+    "matchingDeletedVaultCount": 0,
+    "preservedInputs": 13,
+    "provisionRealtimeModelsValue": "false",
+    "mediaHostEnabledValue": "true"
   },
   "protectedEnvironmentsMutated": false,
   "humanGates": [
@@ -113,7 +134,7 @@
   "notes": [
     "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
     "Previous failures remain historical and do not establish a support prerequisite.",
-    "First full postdeploy/verification pass; real managed Voice Live audio has10 timed turns without standalone deployments. Intervening guarded purge is running.",
+    "First full postdeploy/verification pass; real managed Voice Live audio has10 timed turns without standalone deployments. Intervening purge/readbacks/preserved13inputs pass; second full empty up is running.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]
 }

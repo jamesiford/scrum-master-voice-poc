@@ -11,8 +11,9 @@ Fresh portal baseline consent/administrator roles and dedicated media
 Calls.AccessMedia.All setup have succeeded automatically. First full
 empty up1665.7626s and mandatoryverify8/8/407.4025s/native5/5 pass,
 with real managed Voice Live3417/3871ms,n10 and approverrevision71/audit
-complete. The guarded intervening purge is running; cycle two and final
-VM-only deallocation remain required, so G8 is not yet a pass.
+complete. The guarded intervening purge passed1700.1703s, with exact
+absence and all13 inputs preserved. The second full empty up is running;
+its verification and final VM-only deallocation remain, so G8 is not yet a pass.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the
