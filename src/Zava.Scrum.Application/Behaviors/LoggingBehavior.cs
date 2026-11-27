@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Zava.Scrum.Application.Behaviors;
 
 /// <summary>
-/// Outermost behaviour: one structured log line per request with latency in ms (demo metric). A request that carries a <c>TeamId</c> has it
+/// Outermost behaviour: one structured log line per request with latency in ms (demo metric). A request that carries or resolves a team has it
 /// on the log scope, the span and the duration metric, so every record can be filtered by team (ADR 0018).
 /// </summary>
 /// <typeparam name="TRequest">The request type.</typeparam>
@@ -27,6 +27,13 @@ internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavi
         activity?.SetTag(ScrumTelemetry.TeamTag, teamId);
         using var scope = teamId is null ? null : logger.BeginScope(new Dictionary<string, object?> { ["TeamId"] = teamId });
         var response = await next();
+        if (request is IResolvedTeamRequest<TResponse> resolved)
+        {
+            teamId = resolved.GetResolvedTeamId(response) ?? (activity?.GetTagItem(ScrumTelemetry.TeamTag) as string);
+            activity?.SetTag(ScrumTelemetry.TeamTag, teamId);
+        }
+
+        using var resolvedScope = scope is null && teamId is not null ? logger.BeginScope(new Dictionary<string, object?> { ["TeamId"] = teamId }) : null;
         var elapsed = Stopwatch.GetElapsedTime(started).TotalMilliseconds;
         ScrumTelemetry.UseCaseDuration.Record(elapsed, new KeyValuePair<string, object?>("use_case", typeof(TRequest).Name), new KeyValuePair<string, object?>(ScrumTelemetry.TeamTag, teamId ?? "none"));
         logger.LogInformation("Handled {Request} for team {TeamId} in {ElapsedMs} ms", typeof(TRequest).Name, teamId ?? "none", elapsed);

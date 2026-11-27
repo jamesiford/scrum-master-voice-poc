@@ -2,8 +2,8 @@
 param([Parameter(Mandatory)][ValidateSet('api', 'bridge')][string]$Service)
 . "$PSScriptRoot\lib.ps1"
 Import-AzdEnvironment
-if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3') {
-  throw 'This conductor deployment is authorised only for zavaw3/westus3.'
+if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3' -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513') {
+  throw 'This conductor deployment is authorised only for zavaw3/westus3 in the designated subscription.'
 }
 $repo = (Resolve-Path "$PSScriptRoot\..\..").Path
 $dirty = git -C $repo diff HEAD --name-only -- src agents demo global.json Directory.Build.props Directory.Packages.props Dockerfile.api Dockerfile.bridge
@@ -19,13 +19,13 @@ try {
   $context = Join-Path $work 'context'
   Expand-Archive -Path $zip -DestinationPath $context
   $registry = ($env:AZURE_CONTAINER_REGISTRY_ENDPOINT -split '\.')[0]
-  $tag = "m11-7-$head"
+  $tag = "git-$head"
   $image = "zava-scrum-agent/$Service-$($env:AZURE_ENV_NAME):$tag"
   $dockerfile = if ($Service -eq 'api') { 'Dockerfile.api' } else { 'Dockerfile.bridge' }
-  az acr build --registry $registry --image $image --file $dockerfile $context --no-logs -o none
+  az acr build --subscription $env:AZURE_SUBSCRIPTION_ID --registry $registry --image $image --file $dockerfile $context --no-logs -o none
   if ($LASTEXITCODE -ne 0) { throw "$Service remote image build failed; inspect the ACR run log." }
   $app = if ($Service -eq 'api') { $env:API_APP_NAME } else { $env:BRIDGE_APP_NAME }
-  az containerapp update -g $env:AZURE_RESOURCE_GROUP -n $app `
+  az containerapp update --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP -n $app `
     --image "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image" -o none
   if ($LASTEXITCODE -ne 0) { throw "$Service revision deployment failed." }
   Write-Check PASS "$Service deployed" "$($env:AZURE_CONTAINER_REGISTRY_ENDPOINT)/$image; existing environment/secrets retained"

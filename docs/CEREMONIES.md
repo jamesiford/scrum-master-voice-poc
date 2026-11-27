@@ -55,6 +55,26 @@ The agent covers four Scrum events, one ongoing Scrum activity and three recurri
 
 ## 3. Ceremony definitions
 
+### Read-only chat capability mapping (M11 8, ADR 0025)
+
+The same five Teams/Copilot starters reuse P2's code-computed facts, not a new
+ceremony or a P3 write path. Every skill resolves the asker's team memberships
+and checks Azure DevOps through their OBO token; no team means no data and
+multiple memberships require an explicit choice. Native non-recording remains.
+
+| Skill | Capability | Fact boundary |
+| --- | --- | --- |
+| What is blocked on my team? | C1 prep / O3 risk context | Readable current-sprint blockers from the Domain rules |
+| What did I commit to? | C1 follow-up inspection | Only this member's unretracted commitments with fully readable current-sprint ids; no new writes |
+| What is at risk in this sprint? | C1 prep / O3 | Domain at-risk and overdue flags, not a model forecast |
+| What is the standup status today? | C1 lifecycle | Team-local date and ordinary lifecycle metadata; no native transcript |
+| Show my items and their state. | C1 personal preparation | Actual Azure DevOps assignee mapped to the asker's unique Entra roster identity |
+
+Counts and citations are code-owned, with at most five lines and a read-only
+source card. Model phrasing is a guarded introduction. Implementation is built;
+real Copilot discovery, streaming and permission-negative G5 samples require
+the rollout and consenting users described in DEPLOY.md/DEMO.md.
+
 ### C1. Daily Scrum
 
 | Aspect | Definition |

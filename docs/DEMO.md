@@ -9,6 +9,68 @@ Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secret
 5. Optional: re-seed Azure DevOps with `dotnet run --project tools\SeedAdo -- --tenant <tenant-id> --org https://dev.azure.com/<your-organisation>` (idempotent; `--org` can be replaced by the `Ado__Org` environment variable).
 6. Teams: the app package `appPackage/zava-scrum-agent.zip` is sideloaded and you have messaged the bot once, so it can send you cards.
 
+## Microsoft 365 Copilot rollout and five skills (M11 8)
+
+Use only the zavaw3 package; do not update the old mcm application.
+`azd env select zavaw3` then `pwsh infra\hooks\teams-app.ps1` builds
+`appPackage\dist\zava-scrum-agent-zavaw3-1.1.0.zip` with the existing
+zavaw3 bot id `bed81a44-b97d-4687-9ad3-c4cf546f6689`. Validate with
+`atk validate --package-file appPackage\dist\zava-scrum-agent-zavaw3-1.1.0.zip --telemetry false`.
+
+1. A Teams administrator opens **Teams admin centre > Teams apps > Manage
+   apps**. For an existing Zava Scrum Agent, open its details and **Upload
+   file** to replace 1.0.5 (or the earlier 1.0.4) with 1.1.0; do not create
+   another app or change its id. If it was never published, use **Upload new
+   app**. Review/approve the submission and its permissions under existing
+   policy. This retains meeting `OnlineMeeting.ReadBasic.Chat` RSC; upgrading
+   from 1.0.4 introduces that permission and requires approval/reconsent.
+2. Each user accepts **Update** if Teams asks for consent, then reinstalls or
+   reopens the updated app using its install link. An administrator cannot
+   force a consent-required update on a user or consent for them. Current
+   Learn says one user's consent can propagate to existing chats/channels/
+   meetings they manage; it is not necessarily a separate update per context.
+   A team-owner update does not grant that user's consent in other contexts.
+   Accept any remaining context-specific prompt. Do not change tenant policy.
+3. Open **Microsoft 365 Copilot** in Teams or
+   [m365.cloud.microsoft](https://m365.cloud.microsoft/), select the Zava Scrum
+   Agent in the agent picker, and confirm its five starters. Sign in once in
+   that context with the Bot Service OAuth prompt. OBO uses the same dedicated
+   portal app and existing Azure DevOps delegated permission; an Entra admin
+   consent is not a grant of Azure DevOps project access.
+4. Try the five questions below. A user in multiple teams repeats
+   `team <id>: <question>` after the team-choice response; no team is guessed.
+   The answer is short, contains code-computed figures and cited item ids,
+   and offers **Open #id in Azure DevOps** on a read-only card. Streaming uses
+   a checking-access update followed by the validated answer and final card
+   where the channel supports it.
+5. Use a second consenting team member with no Azure DevOps project access.
+   Each skill must explain that Azure DevOps refused that person's access,
+   without item ids, titles, figures or a source card. Also test an account
+   with no team membership and one with multiple memberships. Record samples
+   and elapsed time, not just a screenshot of the manifest.
+
+| Starter | What to demonstrate |
+| --- | --- |
+| What is blocked on my team? | Only readable current-sprint blockers |
+| What did I commit to? | The asker's unretracted saved commitments, linked only to readable current-sprint items |
+| What is at risk in this sprint? | Existing Domain at-risk/overdue flags, not a model forecast |
+| What is the standup status today? | Team-local date and lifecycle status, without native meeting content |
+| Show my items and their state. | Actual Azure DevOps assignee, not demo owner tags or display-name guessing |
+
+Personal questions require a uniquely verified Entra roster mapping; ask the
+team lead to fix it if refused. The synthetic cast is not a substitute for that
+identity. Native non-recording runs do not create saved commitments, so use
+existing authorised ACS/Simulated history if demonstrating that skill.
+An unavailable/ungrounded model produces an explicitly labelled code answer.
+Other Teams reporting, planning, follow-ups and approvals are unchanged.
+
+Live G5 remains unrun until catalogue upload and consenting users are available.
+The actual Graph catalogue read was refused for missing AppCatalog scopes after
+the administrator window expired; DEPLOY.md names the exact gate. Current
+references: [enable Copilot](https://learn.microsoft.com/microsoftteams/platform/m365-apps/enable-agent-app-copilot),
+[custom app updates](https://learn.microsoft.com/microsoftteams/teams-custom-app-policies-and-settings#update-a-custom-app-using-teams-admin-center),
+[user update consent](https://learn.microsoft.com/microsoftteams/apps-update-experience).
+
 ## Scripted run (Simulated Room, about 3 minutes)
 1. **Sessions** > **Prepare now** > open the pre-brief with **View** (burndown, flags, questions).
 2. **Simulated Room**. Tick **Autopilot (cast plays my lines)** in the room, then press **Start standup**, to let the demo cast play the three-person standup (Daniel Park, Maya Lin and Admin).

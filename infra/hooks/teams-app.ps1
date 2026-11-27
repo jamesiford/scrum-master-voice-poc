@@ -17,10 +17,18 @@ New-Item -ItemType Directory -Force $dist | Out-Null
 $manifest = Get-Content (Join-Path $src 'manifest.json') -Raw | ConvertFrom-Json
 $manifest.id = $botId
 $manifest.bots[0].botId = $botId
+$manifest.copilotAgents.customEngineAgents[0].id = $botId
+if (-not $env:API_URI -or -not $env:BRIDGE_URI) { throw 'API_URI and BRIDGE_URI are required for package domains and legal pages.' }
+$manifest.validDomains = @(([Uri]$env:API_URI).Host, ([Uri]$env:BRIDGE_URI).Host) | Select-Object -Unique
+$manifest.developer.privacyUrl = "$($env:API_URI.TrimEnd('/'))/privacy.html"
+$manifest.developer.termsOfUseUrl = "$($env:API_URI.TrimEnd('/'))/terms.html"
 # Teams single sign-on for card actions (ADR 0020): the Entra app that holds the Azure DevOps delegated permission and the bot OAuth connection.
 # Checked against Learn (bots/how-to/authentication/bot-sso-register-aad): the manifest names the Entra app that holds the exposed scope and the bot OAuth connection, with resource api://botid-<app id>.
 if ($env:PORTAL_CLIENT_ID) {
   $manifest | Add-Member -NotePropertyName webApplicationInfo -NotePropertyValue ([ordered]@{ id = $env:PORTAL_CLIENT_ID; resource = "api://botid-$($env:PORTAL_CLIENT_ID)" }) -Force
+}
+if ($env:TEAMS_APP_VERSION -and [version]$env:TEAMS_APP_VERSION -lt [version]$manifest.version) {
+  throw "TEAMS_APP_VERSION $($env:TEAMS_APP_VERSION) would downgrade required manifest $($manifest.version). Remove the override or set it to the source version."
 }
 if ($env:TEAMS_APP_VERSION) { $manifest.version = $env:TEAMS_APP_VERSION }
 $stage = Join-Path ([IO.Path]::GetTempPath()) "zava-teams-$([guid]::NewGuid().ToString('N'))"

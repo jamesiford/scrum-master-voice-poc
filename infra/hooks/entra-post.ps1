@@ -94,7 +94,7 @@ if ($cur -ne $clientId) {
 else { Write-Check PASS 'API portal validation' 'already configured' }
 # ---- Easy Auth --------------------------------------------------------------------------------------------------------------
 $apps = @(
-  @{ Name = $env:API_APP_NAME; Excluded = @('/api/messages', '/healthz', '/ws/bridge/*', '/api/media/context', '/invocations_ws') }
+  @{ Name = $env:API_APP_NAME; Excluded = @('/api/messages', '/healthz', '/ws/bridge/*', '/api/media/context', '/invocations_ws', '/privacy.html', '/terms.html') }
   @{ Name = $env:BRIDGE_APP_NAME; Excluded = @('/teams/*', '/healthz') }
 )
 

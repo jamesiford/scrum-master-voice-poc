@@ -1,5 +1,90 @@
 # M11 gates
 
+## Copilot channel (conductor 8, 2026-11-26)
+
+ADR 0025 implements five real-mediator skills using membership resolution and
+the asker's OBO token, never the service reader. Toolkit schema/rules pass on
+both source and generated 1.25/version 1.1.0 manifests. The actual generated
+zavaw3 app/bot/Copilot ids all match `bed81a44-b97d-4687-9ad3-c4cf546f6689`;
+portal SSO is `265790b8-88a7-4975-bb8f-3fe381bb19ea`. There is no personal tab
+or new RSC. Existing Azure DevOps AllPrincipals `user_impersonation` consent
+was read back, not assumed from app declarations.
+
+The signed-in Graph catalogue read returned Forbidden for missing AppCatalog
+scopes after the administrator window expired. No authentication loop or
+tenant policy/role change. DEPLOY.md/DEMO.md give the exact tenant upload,
+admin review and consenting-user acceptance steps. Eligible user update
+consent can propagate between contexts according to current Learn; an
+administrator cannot force the user update.
+
+| Gate/check | Step 8 result | Sample and evidence |
+| --- | --- | --- |
+| G1 native conversational latency | Not run | n=0 native; the Direct before/after harness is fallback regression only |
+| G2 native attribution | Not run | n=0 new live samples; prior failures/prerequisites unchanged |
+| G3 approver-authored writes | Measured portal subset | n=1 final approved comment, real approver author and complete audit chain; verify 8/8, not Copilot SSO |
+| G4 full parity / rehearsal | Prior exact board parity failed; no full suite rerun | Prior checkpoint 849 .NET / 24 bridge passes retained; exact identity still fails 11/11 |
+| G5 real Copilot skills, permission-negative and streaming | Not run | n=0 authorised Copilot turns; local tests/package validation are separate evidence |
+| G6 stored-link native joins | Not run | n=0; existing catalogue/calendar/verified-roster/organiser-RSC gates unchanged |
+| G7 observability / decision goldens | Not run | n=0 new live acceptance samples |
+| G9 live multi-team matrix / concurrency | Not run | n=0 live; local membership/no-team/multi-team/isolation checks pass |
+| G10 Foundry IQ grounding | Not run in step 8 | No new source or acceptance sample |
+| G11 Work IQ consent / privacy | Not run in step 8 | Native non-recording and existing consent boundary unchanged |
+| Local skill / permission / manifest checks | Pass | Domain 4, real-mediator skills 17 plus mediator compatibility 7, Infrastructure 11, Api 9, architecture 14: 62/62 |
+
+All three builds, both TypeScript typechecks/linters and full C# formatting
+pass. Focused tests cover actual-assignee selection, unretracted/readable
+commitments, team-local dates, no-team/admin/multi-team/roster/consent refusals,
+cross-credential HTTP isolation and model/id guards. Custom title/state labels
+with unknown references are omitted; cards offer at most five source actions.
+The automatically resolved team's use-case span/log/metric and model-source
+context carry its identifier, tested through the real mediator.
+No full suite rerun before the post-prompt-10 checkpoint. Added fixed cost
+USD 0/hour.
+
+### Step 8 Direct Simulated Room regression
+
+Before: one deployed run, **12 timed turns**, **387 s**, **19 transcript
+pieces**, **zero talk-overs**, API/native source `0d07e83`, bridge `c25287f`.
+Total p50/p95 **3272/4379 ms**; analyser **26/27**, decision **160/240**,
+orchestration **1522/2449**, Voice Live first audio **1718/2646**.
+Decision model used **10/12** turns. Initial deployment `29f87e7` passed all
+eight mandatory checks: one run, **12 turns**, **390 s**, **19 transcript
+pieces**, zero talk-overs, total **3301/7343 ms**. Its p95 point estimate
+failed (**+67.69%**) with Voice Live first-audio p95 **5496 ms**. That failed
+sample is retained, not replaced by the final measurement.
+
+Final committed runtime `d041890` is deployed as API image `git-d041890`,
+ready revision `ca-api-3fsyvjqqjw5go--0000082`. ACR run `dss` succeeded
+in **162 s**. The final mandatory verification passes **8/8**: one run,
+**12 turns**, **379 s**, **19 transcript pieces**, **zero talk-overs**.
+
+| Hop | Before p50/p95 ms | Final p50/p95 ms | Timed turns per run |
+| --- | ---: | ---: | ---: |
+| Total, speech end to first audio | 3272/4379 | 3304/4503 | 12 |
+| Speech end to transcript | 0/212 | 0/201 | 12 |
+| Analyser, rules and grounding | 26/27 | 26/57 | 12 |
+| Decision model call | 160/240 | 161/240 | 12 |
+| Orchestration | 1522/2449 | 1554/2488 | 12 |
+| Voice Live first audio | 1718/2646 | 1439/2436 | 12 |
+
+Final total point estimates change **+0.98% p50 / +2.83% p95**, within
+the historical 5%/10% fallback regression thresholds. Questions alone:
+before **3615/4379 ms**, final **3349/4503 ms**, **n=9** each; the decision
+model reads **10/12** turns in each run. Percentiles are nearest-rank.
+This is one before/final pair, not the formal three-run/model matrix or
+native G1; absolute p50 remains above the SPEC's 1 s target.
+No native or Copilot latency claim, or erased historical tail failure.
+
+Final G3 sample: comment `verify-31084cd3`, ADO revision **51**, session
+`ddbb0ca4-139f-4e84-be88-df73c296591f`, audit tag `zsa-c3e96bb06f29`,
+authored by the real approver. The bridge remains `m11-7-c25287f`,
+ready revision `--0000007`; native host and non-recording are unchanged.
+Existing env, secrets, identity, scale and other Easy Auth properties
+hash-match; only the two exact public legal paths were added. Both return
+HTTP 200. Final gate summary/raw turns and verification are retained in
+the untracked run log, `p8-final-after-verify` and `8-final-verify.txt`.
+Later documentation-only commits do not change this deployed runtime.
+
 ## Full test checkpoint after prompt 7 (tests-1, 2026-11-26)
 
 One aggregate `dotnet test ZavaScrum.slnx --no-build --no-restore` run passed

@@ -54,6 +54,7 @@ public sealed partial class ScrumAgent : AgentApplication
         _identity = identity;
         RegisterMeetingEvents();
         OnConversationUpdate("membersAdded", OnMembersAddedAsync);
+        RegisterCopilotSkills();
         OnActivity(ActivityTypes.Message, OnMessageAsync);
         AdaptiveCards.OnActionExecute("bind-team", (ctx, _, data, ct) => BindAsync(ctx, data, ct));
         AdaptiveCards.OnActionExecute("approve", (ctx, state, data, ct) => DecideAsync(ctx, state, data, approve: true, ct), autoSignInHandlers: _ssoHandlers!);
@@ -66,6 +67,12 @@ public sealed partial class ScrumAgent : AgentApplication
 
     private async Task OnMembersAddedAsync(ITurnContext turnContext, ITurnState turnState, CancellationToken ct)
     {
+        if (CopilotMessage.IsCopilot(turnContext.Activity))
+        {
+            await SendCopilotWelcomeAsync(turnContext, ct);
+            return;
+        }
+
         await RememberAsync(turnContext, ct);
         var team = await ResolveTeamAsync(turnContext, ct);
         if (team is null)
