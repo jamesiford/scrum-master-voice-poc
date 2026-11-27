@@ -9,6 +9,8 @@ namespace Zava.Scrum.Tools.GateRunner;
 /// <param name="OrchestrationMs">Floor control, the wait for silence and the reconcile, up to the response request.</param>
 /// <param name="VoiceFirstAudioMs">From asking Voice Live to speak to the first audio.</param>
 /// <param name="Source">Whether the decision model or the rules read the utterance.</param>
+/// <param name="TraceId">Persisted session trace id exported to Insights.</param>
+/// <param name="SpanId">The corresponding reactive-turn span.</param>
 internal sealed record TimingTurn(
     string Reason,
     int TotalMs,
@@ -17,4 +19,6 @@ internal sealed record TimingTurn(
     int DecisionModelMs,
     int OrchestrationMs,
     int VoiceFirstAudioMs,
-    string Source);
+    string Source,
+    string? TraceId = null,
+    string? SpanId = null);

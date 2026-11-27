@@ -1,22 +1,43 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Zava.Scrum.Telemetry;
 
 namespace Zava.Scrum.Application.Behaviors;
 
-/// <summary>The OpenTelemetry source and meter of the use-case pipeline. The Api subscribes to <see cref="SourceName"/>; with no listener it costs nothing.</summary>
+/// <summary>The use-case pipeline's shared content-free session telemetry.</summary>
 public static class ScrumTelemetry
 {
     /// <summary>The activity source and meter name.</summary>
-    public const string SourceName = "Zava.Scrum.Application";
+    public const string SourceName = SessionTelemetry.SourceName;
 
-    /// <summary>The tag every span, metric and log scope carries for the team a request is about (ADR 0018). Reports and the gate harness filter on it.</summary>
-    public const string TeamTag = "team.id";
+    /// <summary>The verified owning team tag.</summary>
+    public const string TeamTag = SessionTelemetry.TeamTag;
 
-    private static readonly Meter ScrumMeter = new(SourceName);
+    /// <summary>Gets the shared activity source.</summary>
+    public static ActivitySource Source => SessionTelemetry.Source;
 
-    /// <summary>Gets the activity source.</summary>
-    public static ActivitySource Source { get; } = new(SourceName);
+    /// <summary>Gets measured use-case durations.</summary>
+    public static Histogram<double> UseCaseDuration => SessionTelemetry.UseCaseDuration;
 
-    /// <summary>Gets the duration of each use case in milliseconds, tagged with the use case and the team.</summary>
-    public static Histogram<double> UseCaseDuration { get; } = ScrumMeter.CreateHistogram<double>("zava.scrum.usecase.duration", "ms", "Use case duration");
+    /// <summary>Starts a hop in the persisted session trace.</summary>
+    /// <param name="hop">Fixed operation name.</param>
+    /// <param name="teamId">Verified team.</param>
+    /// <param name="sessionId">Session, when known.</param>
+    /// <param name="correlationId">Persisted trace id; absent legacy ids are counted, not invented.</param>
+    /// <param name="startTime">An already measured interval start, or the current instant.</param>
+    /// <returns>The activity, or null when no listener or correlation exists.</returns>
+    public static Activity? StartHop(string hop, string teamId, Guid? sessionId, string? correlationId, DateTimeOffset startTime = default) =>
+        SessionTelemetry.StartHop(hop, teamId, sessionId, correlationId, startTime);
+
+    /// <summary>Counts an event without meeting content.</summary>
+    /// <param name="name">Fixed event name.</param>
+    /// <param name="teamId">Verified team.</param>
+    /// <param name="outcome">Fixed result classification.</param>
+    public static void Count(string name, string teamId, string outcome) => SessionTelemetry.Count(name, teamId, outcome);
+
+    /// <summary>Records a measured hop duration.</summary>
+    /// <param name="hop">Fixed operation name.</param>
+    /// <param name="teamId">Verified team.</param>
+    /// <param name="milliseconds">Measured duration.</param>
+    public static void RecordHop(string hop, string teamId, double milliseconds) => SessionTelemetry.RecordHop(hop, teamId, milliseconds);
 }

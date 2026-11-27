@@ -1,5 +1,69 @@
 # M11 gates
 
+## Content-free observability and evaluation (conductor 9, 2026-11-26)
+
+G7 is **release-blocking and failed**, not a reason to discard working adapters.
+The frozen72 authored synthetic goldens are not employee utterances or live
+knowledge/Work IQ source evidence. Final measured report and both line-ending
+hashes are in `docs/gates/decision-M11`.
+
+| Check | Measured result | Samples |
+| --- | --- | --- |
+| Real Microsoft-Decision plus unchanged grounding | Intent/items98.6%,kinds95.8%; no model faults,4rulesfallbacks | n72 |
+| Spoken dates | Failed75% against >=95% release policy; first spoken phrase is not necessarily the revised target | n8 eligible, not72 |
+| Rules fallback | Intent95.8%,items97.2%,kinds55.6%,dates0%; no probabilities or comment capability invented | n72; datesn8 |
+| Calibration0.7 | Accepted precision94.5%,Brier0.0298,ECE0.0750,missing0 | 648binary probabilities;73accepted |
+| Calibration0.6 | Accepted intent precision98.5%,Brier0.0415,ECE0.1109,missing0 | 72intent probabilities;68accepted |
+| Item guard | Zero escaped ids;0/36 rejected candidates. Adapter bounds candidates itself, so zero is not a universal adversarial guarantee | 3explicit outside-id challenge mentions |
+| Foundry live quality/safety/groundedness | Not run: required message inputs conflict with content capture OFF; explicit rubric disabled, not an invalid scheduled pass | n0 |
+| Knowledge and Work IQ quality | Not run, sources unbuilt; no invented citations/signals | n0 |
+| Local privacy/trace/approval/architecture | Pass; actual normal exporter suppresses immutable content events; verified parent metadata never replaces explicit team ownership | privacy/native16,approval9,decision14,relay3,architecture14,bridgeHTTPtrace1 |
+| Build/format/typecheck/lint | All three builds, full C# format and both TS typechecks/linters pass | targeted only; no full-suite rerun |
+| Workbook/live deployment acceptance | Saved template matches; all4 panels queried live;16hop rows,211session-hop samples across API/bridge/model/approval/write; approval precedes the1successful write | one Direct scripted session, not native/hosted acceptance |
+| Before Direct Simulated Room latency | p50/p95 total3200/5600ms,356s,zero talk-overs | n10 turns |
+| After Direct Simulated Room latency | p50/p95 total3398/4707ms,397s,zero talk-overs; p50+6.19%,p95-15.95% | n12 turns, one run |
+| Real refusal/approval/audit | Mandatory verify8/8; approver-authored revision52; unapproved apply403followup.not_approved, then fixture rejected; writes remain1 | positive1,negative1 |
+| Live metadata privacy | 18dimension keys on433team-tagged requests/dependencies; prohibited key occurrences0; Insights logs/exceptions0 in probe window | bounded metadata-only read, not a universal proof |
+| Hosted candidate5 | Two creates exceeded readiness deadline; own sessions became active, paired protocol probe returned424 and produced no completed report; both stopped, stable4 at100% retained | validated paired/hosted trace samples0 |
+| CI real-model configuration | Rules reporting wired; actual repository variables empty, model job not enabled; default-branch schedule requires merge | live CI model samples0; named identity-owner prerequisite |
+
+Release policy/commands are in `demo/evaluation/README.md`; daily CI reports
+non-blockingly, `--release-check` returns1 for unmet or absent model evidence.
+Initial n72 with one timeout and kinds94.4% remains in the run log. The corrected
+calibration inventory omits Progress because the real adapter never asks it;
+goldens, thresholds and Domain rules were not tuned to improve results.
+Frozen live metadata and all before/after denominators are in
+`observability-M11.json`. API/bridge8859a7a revisions84/9 are latest=ready;
+nativee8c95b6 DLL hash/SYSTEM boot task/content-off settings and real renderer
+are verified. Non-telemetry environment hashes, identities, scale and secret
+names match the original snapshot. Hosted5 was not promoted.
+One established Voice Live connection span is not a Teams join sample; join
+reliability and human barge-in remain n0. Turn/approval/rejection/refusal counters
+are12/1/1/1. The workbook's approval check is a necessary session-level
+condition, not a substitute for the exact follow-up/caller/revision audit.
+The fallback p50 point estimate fails the historical5% tolerance and remains
+above the1s target; n12/one run cannot pass formal G1's matrix. The improved
+p95 does not erase earlier failures or prove a causal improvement.
+
+| Gate | Step9 handoff |
+| --- | --- |
+| G1 | Formal/native not_run; fallback measured, p50 tolerance failed |
+| G2 | Native speaker/human barge-in not_run; scripted talk-overs0 is not attribution proof |
+| G3 | Measured positive1/negative1; exact real caller/revision chain passes |
+| G4 | Inherited exact-board identity failure retained; no new encoder/participant sample |
+| G5 | Copilot human/permission-negative acceptance not_run |
+| G6 | Native Teams joins/roster/organiser RSC not_run |
+| G7 | Failed dates75%n8; actual API/bridge workbook checked; hosted5/live quality/real-model CI gaps explicit |
+| G9 | No new multi-team human samples; local ownership guards retained |
+| G10 | Knowledge unbuilt/not_run |
+| G11 | Work IQ unbuilt/not_run |
+
+Native G1/G2/G6, CopilotG5, multi-teamG9 and G10/G11 have no new human samples.
+Prior exact-board/fallback failures remain. Preserve Acs/Share/Direct and native
+non-recording; there is no native decision/approval/write path to trace.
+Added fixed cost USD0/hour; existing variable model/ingestion/build charges
+and two temporary hosted-session allocations, both stopped. No tariff invented.
+
 ## Work IQ contract and blocked spike (conductor 8B, 2026-11-26)
 
 ADR 0027 adds independent consent/evidence contracts and an **unregistered**

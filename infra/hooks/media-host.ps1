@@ -1,31 +1,37 @@
 # Opt-in postdeploy hook. Provisioning and the public certificate gate precede selecting GraphMedia (ADR 0023).
-param([switch]$ConsentOnly)
+param([switch]$ConsentOnly, [switch]$RuntimeOnly)
 . "$PSScriptRoot/lib.ps1"
 Import-AzdEnvironment
 if ($env:MEDIA_HOST_ENABLED -ne 'true') { Write-Check SKIP 'Windows media host' 'MEDIA_HOST_ENABLED is false'; return }
-if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3') {
+if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3' -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513') {
   throw 'This conductor media deployment is authorised only for zavaw3 in westus3.'
 }
+if ($ConsentOnly -and $RuntimeOnly) { throw 'ConsentOnly and RuntimeOnly cannot be combined.' }
 $displayName = "zava-media-$($env:AZURE_ENV_NAME)"
 $app = (Invoke-Graph GET "/applications?`$filter=displayName eq '$displayName'").value
 if (@($app).Count -gt 1) { throw "More than one calling application is named $displayName." }
 if (-not $app) {
+  if ($RuntimeOnly) { throw 'RuntimeOnly requires the existing dedicated calling application.' }
   $app = Invoke-Graph POST '/applications' @{ displayName = $displayName; signInAudience = 'AzureADMyOrg' }
 }
 else { $app = @($app)[0] }
 Set-AzdValue MEDIA_APP_ID $app.appId
 Set-AzdValue MEDIA_APP_OBJECT_ID $app.id
 $sp = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '$($app.appId)'").value
-if (-not $sp) { $sp = Invoke-Graph POST '/servicePrincipals' @{ appId = $app.appId } }
+if (-not $sp) {
+  if ($RuntimeOnly) { throw 'RuntimeOnly requires the existing calling service principal.' }
+  $sp = Invoke-Graph POST '/servicePrincipals' @{ appId = $app.appId }
+}
 else { $sp = @($sp)[0] }
 $graph = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '00000003-0000-0000-c000-000000000000'&`$select=id,appRoles").value[0]
 $role = $graph.appRoles | Where-Object { $_.value -eq 'Calls.AccessMedia.All' -and $_.allowedMemberTypes -contains 'Application' }
 if (-not $role) { throw 'Graph did not expose Calls.AccessMedia.All.' }
-Invoke-Graph PATCH "/applications/$($app.id)" @{
+if (-not $RuntimeOnly) { Invoke-Graph PATCH "/applications/$($app.id)" @{
   requiredResourceAccess = @(@{ resourceAppId = '00000003-0000-0000-c000-000000000000'; resourceAccess = @(@{ id = $role.id; type = 'Role' }) })
-} | Out-Null
+} | Out-Null }
 $grants = (Invoke-Graph GET "/servicePrincipals/$($sp.id)/appRoleAssignments").value
 if (-not ($grants | Where-Object { $_.appRoleId -eq $role.id -and $_.resourceId -eq $graph.id })) {
+  if ($RuntimeOnly) { throw 'RuntimeOnly requires the existing Calls.AccessMedia.All consent.' }
   Invoke-Graph POST "/servicePrincipals/$($sp.id)/appRoleAssignments" @{ principalId = $sp.id; resourceId = $graph.id; appRoleId = $role.id } | Out-Null
 }
 Write-Check PASS 'media app Graph permission' 'Calls.AccessMedia.All; join consent is per-meeting RSC, not a tenant-wide join role.'
@@ -33,10 +39,12 @@ if ($ConsentOnly) { return }
 foreach ($name in @('MEDIA_VM_NAME', 'MEDIA_FQDN', 'MEDIA_PUBLIC_IP', 'MEDIA_VAULT_NAME', 'MEDIA_STORAGE_NAME', 'API_URI')) {
   if (-not [Environment]::GetEnvironmentVariable($name)) { throw "$name is missing; provision the opt-in Bicep module first." }
 }
+if (-not $RuntimeOnly) {
 az deployment group create -g $env:AZURE_RESOURCE_GROUP --name media-bot-registration `
   --template-file "$PSScriptRoot\..\modules\media-bot-registration.bicep" `
   --parameters "appId=$($app.appId)" "tenantId=$($env:AZURE_TENANT_ID)" "botName=bot-media-$($env:AZURE_ENV_NAME)" "fqdn=$($env:MEDIA_FQDN)" -o none
 if ($LASTEXITCODE -ne 0) { throw 'Cannot register the Azure-managed calling bot and Teams calling webhook.' }
+}
 
 $certificate = az keyvault certificate show --vault-name $env:MEDIA_VAULT_NAME --name media-tls -o json 2>&1
 $issueCertificate = $false
@@ -47,10 +55,20 @@ if ($LASTEXITCODE -ne 0) {
   $issueCertificate = $true
 }
 else {
-  $expires = ($certificate | ConvertFrom-Json).attributes.expires
+  $certificateInfo = $certificate | ConvertFrom-Json
+  $expires = $certificateInfo.attributes.expires
   $issueCertificate = [DateTimeOffset]$expires -le [DateTimeOffset]::UtcNow.AddDays(30)
+  if ($RuntimeOnly) {
+    # Graph's Binary identifier is returned as hex by this tenant and as base64 by other clients.
+    $thumbprintHex = $certificateInfo.x509ThumbprintHex
+    $thumbprintBase64 = [Convert]::ToBase64String([Convert]::FromHexString($thumbprintHex))
+    $registered = (Invoke-Graph GET "/applications/$($app.id)?`$select=keyCredentials").keyCredentials |
+      Where-Object { $_.displayName -eq 'media-tls' -and ($_.customKeyIdentifier -eq $thumbprintHex -or $_.customKeyIdentifier -eq $thumbprintBase64) }
+    if (-not $registered) { throw 'RuntimeOnly requires the current vault certificate to be registered before stopping the host.' }
+  }
 }
 if ($issueCertificate) {
+  if ($RuntimeOnly) { throw 'RuntimeOnly cannot renew/register certificates; run the full authorised certificate hook first.' }
   $issued = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
     --scripts "@$PSScriptRoot\media-certificate.ps1" --parameters "Fqdn=$($env:MEDIA_FQDN)" "VaultName=$($env:MEDIA_VAULT_NAME)" -o json | ConvertFrom-Json
   if ($LASTEXITCODE -ne 0 -or ($issued.value.message -join "`n") -notmatch 'MEDIA_TLS_IMPORTED:') {
@@ -87,6 +105,12 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'Cannot deliver the control key to the media vault.' }
   Remove-Item -LiteralPath $secretFile
   $key = $null
+  if (-not $env:APPLICATIONINSIGHTS_CONNECTION_STRING) { $env:APPLICATIONINSIGHTS_CONNECTION_STRING = Get-InsightsConnectionString }
+  $insightsFile = Join-Path $work 'insights.txt'
+  [IO.File]::WriteAllText($insightsFile, $env:APPLICATIONINSIGHTS_CONNECTION_STRING)
+  az keyvault secret set --vault-name $env:MEDIA_VAULT_NAME --name media-insights --file $insightsFile -o none
+  if ($LASTEXITCODE -ne 0) { throw 'Cannot deliver the existing Insights connection to the media vault.' }
+  Remove-Item -LiteralPath $insightsFile
   $result = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
     --scripts "@$PSScriptRoot\media-bootstrap.ps1" --parameters "StorageName=$($env:MEDIA_STORAGE_NAME)" "PackageName=$blob" `
       "PackageSha256=$hash" "VaultName=$($env:MEDIA_VAULT_NAME)" "AppId=$($app.appId)" "TenantId=$($env:AZURE_TENANT_ID)" `
@@ -101,7 +125,14 @@ try {
     type = 'AsymmetricX509Cert'; usage = 'Verify'; key = $public; displayName = 'media-tls'
     startDateTime = $cert.NotBefore.ToUniversalTime().ToString('o'); endDateTime = $cert.NotAfter.ToUniversalTime().ToString('o')
   })
-  Invoke-Graph PATCH "/applications/$($app.id)" @{ keyCredentials = $keys } | Out-Null
+  if ($RuntimeOnly) {
+    $thumbprintHex = $cert.Thumbprint
+    $thumbprintBase64 = [Convert]::ToBase64String($cert.GetCertHash())
+    $registered = (Invoke-Graph GET "/applications/$($app.id)?`$select=keyCredentials").keyCredentials |
+      Where-Object { $_.displayName -eq 'media-tls' -and ($_.customKeyIdentifier -eq $thumbprintHex -or $_.customKeyIdentifier -eq $thumbprintBase64) }
+    if (-not $registered) { throw 'RuntimeOnly refuses to start an unregistered certificate.' }
+  }
+  else { Invoke-Graph PATCH "/applications/$($app.id)" @{ keyCredentials = $keys } | Out-Null }
   $started = az vm run-command invoke -g $env:AZURE_RESOURCE_GROUP -n $env:MEDIA_VM_NAME --command-id RunPowerShellScript `
     --scripts "`$ErrorActionPreference = 'Stop'; Start-ScheduledTask -TaskName 'ZavaMediaBot'; Write-Output 'MEDIA_TASK_STARTED'" -o json | ConvertFrom-Json
   if ($LASTEXITCODE -ne 0 -or ($started.value.message -join "`n") -notmatch 'MEDIA_TASK_STARTED') {

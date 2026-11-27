@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.WebSockets;
+using Zava.Scrum.Telemetry;
 
 namespace Zava.Scrum.AgentHost.Voice;
 
@@ -46,6 +47,8 @@ public static class VoiceRelay
     private static async Task PumpAsync(WebSocket from, WebSocket to, CancellationToken ct)
     {
         var buffer = new byte[BufferSize];
+        var teamId = Activity.Current?.GetTagItem(SessionTelemetry.TeamTag) as string;
+        var lastSample = Stopwatch.GetTimestamp();
         try
         {
             while (from.State == WebSocketState.Open && !ct.IsCancellationRequested)
@@ -56,7 +59,13 @@ public static class VoiceRelay
                     return;
                 }
 
+                var started = Stopwatch.GetTimestamp();
                 await to.SendAsync(new ArraySegment<byte>(buffer, 0, received.Count), received.MessageType, received.EndOfMessage, ct);
+                if (teamId is not null && Stopwatch.GetElapsedTime(lastSample).TotalSeconds >= 1)
+                {
+                    lastSample = started;
+                    SessionTelemetry.RecordHop("agent.frame.forward", teamId, Stopwatch.GetElapsedTime(started).TotalMilliseconds);
+                }
             }
         }
         catch (Exception ex) when (ex is WebSocketException or OperationCanceledException)

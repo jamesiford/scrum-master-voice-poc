@@ -1,6 +1,7 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Application.Features.Standups.JoinMeeting;
 
@@ -22,6 +23,10 @@ internal sealed class JoinMeetingHandler(ISessionRepository sessions, IMeetingBr
             return Result.Failure(StandupErrors.JoinUrlRequired);
         }
 
-        return await bridge.JoinAsync(new MeetingJoinRequest(session.Id, session.JoinUrl, request.BridgeToken, request.ApiBase, DisplayName), ct);
+        using var hop = ScrumTelemetry.StartHop("meeting.join", session.TeamId, session.Id, session.CorrelationId);
+        var result = await bridge.JoinAsync(new MeetingJoinRequest(session.Id, session.JoinUrl, request.BridgeToken, request.ApiBase, DisplayName), ct);
+        hop?.SetTag("join.outcome", result.IsSuccess ? "accepted" : "refused");
+        ScrumTelemetry.Count("join", session.TeamId, result.IsSuccess ? "accepted" : "refused");
+        return result;
     }
 }

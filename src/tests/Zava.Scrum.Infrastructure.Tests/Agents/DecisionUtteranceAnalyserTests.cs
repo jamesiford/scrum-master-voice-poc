@@ -66,6 +66,31 @@ public sealed class DecisionUtteranceAnalyserTests
     }
 
     [Fact]
+    public async Task ReadWithEvidence_SubThresholdProbabilities_PreservesCalibrationEvidenceWithoutChangingReading()
+    {
+        var stub = new Stub(HttpStatusCode.OK, Reply("update", 0.59, yes: [("item_1", 0.69), ("kind_Blocker", 0.7)]));
+
+        var evidence = await Analyser(stub).ReadWithEvidenceAsync(Said("blocked"), CancellationToken.None);
+
+        Assert.Null(evidence.Failure);
+        Assert.Equal(0.59, evidence.Probabilities["intent"]);
+        Assert.Equal(0.69, evidence.Probabilities["item_1"]);
+        Assert.Equal(0.7, evidence.Probabilities["kind_Blocker"]);
+        Assert.Empty(evidence.Reading!.WorkItemIds);
+        Assert.Single(evidence.Reading.Comments);
+    }
+
+    [Fact]
+    public async Task ReadWithEvidence_HttpRefusal_ReportsFailureRatherThanZeroConfidence()
+    {
+        var evidence = await Analyser(new Stub(HttpStatusCode.Forbidden, "{}")).ReadWithEvidenceAsync(Said("hi"), CancellationToken.None);
+
+        Assert.Equal("http_403", evidence.Failure);
+        Assert.Null(evidence.Reading);
+        Assert.Empty(evidence.Probabilities);
+    }
+
+    [Fact]
     public async Task Read_Update_ReturnsIntentItemsAndCommentKindsFromProbabilities()
     {
         var stub = new Stub(HttpStatusCode.OK, Reply("update", 0.93, yes: [("item_1", 0.95), ("item_14", 0.1), ("kind_Blocker", 0.99), ("kind_DateChange", 0.9), ("kind_Commitment", 0.2)]));

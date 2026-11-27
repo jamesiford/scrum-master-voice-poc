@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Include="..\telemetry\SessionTelemetry.cs" Link="Behaviors\SessionTelemetry.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Zava.Scrum.Domain\Zava.Scrum.Domain.csproj" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />

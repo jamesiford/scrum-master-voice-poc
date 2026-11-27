@@ -6,4 +6,5 @@ namespace Zava.Scrum.MediaBot;
 /// <param name="JoinUrl">The stored calendar link.</param>
 /// <param name="BridgeToken">The session-bound gateway capability.</param>
 /// <param name="ApiBase">The configured, trusted API origin.</param>
-public sealed record MeetingJoin(Guid SessionId, string TeamId, string JoinUrl, string BridgeToken, string ApiBase);
+/// <param name="TraceParent">The session trace propagated from the authenticated API.</param>
+public sealed record MeetingJoin(Guid SessionId, string TeamId, string JoinUrl, string BridgeToken, string ApiBase, string? TraceParent = null);

@@ -1,0 +1,9 @@
+{
+  "evaluatedGoldenByteSha256": "6f2e250500ada5c9d317657e981c4fe6ceeb84056a3174f77f58ebd35c5991d8",
+  "committedLfGoldenByteSha256": "e1c580be02de6629818a22f597b2b1c721eae3efc87b397ed52b055812c8ae37",
+  "difference": "CRLF to LF normalization only; reconstructed CRLF bytes were verified to match the measured report hash. Parsed JSON and every expected reading are unchanged.",
+  "modelSamples": 72,
+  "report": "decision-evaluation.json",
+  "initialRun": "Retained separately in the conductor run log; n72 with one timeout, no replacement of failed evidence.",
+  "releasePassed": false
+}

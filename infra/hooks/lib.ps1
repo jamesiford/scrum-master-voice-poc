@@ -13,6 +13,20 @@ function Import-AzdEnvironment {
   }
 }
 
+# Read the existing ingestion setting without logging it or persisting it in the azd environment.
+function Get-InsightsConnectionString {
+  if (-not $env:APPINSIGHTS_NAME) {
+    $names = az resource list --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP `
+      --resource-type Microsoft.Insights/components --query '[].name' -o json | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0 -or @($names).Count -ne 1) { throw 'Expected exactly one Insights component in the intended environment.' }
+    $env:APPINSIGHTS_NAME = @($names)[0]
+  }
+  $connection = az resource show --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP `
+    --resource-type Microsoft.Insights/components -n $env:APPINSIGHTS_NAME --query properties.ConnectionString -o tsv
+  if ($LASTEXITCODE -ne 0 -or -not $connection) { throw 'Cannot read the existing Insights ingestion setting.' }
+  return $connection
+}
+
 # Writes a value into the azd environment so later hooks and `azd deploy` see it. Never used for secrets.
 function Set-AzdValue([string]$Name, [string]$Value) {
   azd env set $Name $Value | Out-Null

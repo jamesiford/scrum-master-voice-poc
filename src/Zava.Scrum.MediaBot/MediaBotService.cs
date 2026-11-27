@@ -91,6 +91,12 @@ public sealed class MediaBotService : BackgroundService
             return Results.BadRequest(new { error = "media.session_mismatch", detail = "Use the live session's stored calendar link." });
         }
 
+        if (join.TraceParent is not null && (!System.Diagnostics.ActivityContext.TryParse(join.TraceParent, null, out var trace)
+            || trace.TraceId.ToHexString() != verified.CorrelationId))
+        {
+            return Results.BadRequest(new { error = "media.trace_mismatch", detail = "The trace must belong to the verified session." });
+        }
+
         var (chat, meeting) = MeetingCoordinates.Parse(join.JoinUrl, _options.TenantId);
         await _gate.WaitAsync(ct);
         try
@@ -213,5 +219,5 @@ public sealed class MediaBotService : BackgroundService
         return certificate ?? throw new InvalidOperationException("A valid media TLS certificate with a private key is required in LocalMachine/My.");
     }
 
-    private sealed record MeetingContext(Guid SessionId, string TeamId, string JoinUrl, string BoardMode);
+    private sealed record MeetingContext(Guid SessionId, string TeamId, string JoinUrl, string BoardMode, string? CorrelationId);
 }

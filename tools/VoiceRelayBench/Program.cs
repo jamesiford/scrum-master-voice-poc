@@ -25,12 +25,16 @@ var speechEndpoint = Arg("--speech") ?? throw new ArgumentException("--speech is
 var alternations = int.Parse(Arg("--alternations") ?? "4", System.Globalization.CultureInfo.InvariantCulture);
 var turns = int.Parse(Arg("--turns") ?? "8", System.Globalization.CultureInfo.InvariantCulture);
 var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { TenantId = Arg("--tenant") });
+var teamId = Arg("--team") ?? "team-bench";
+using var benchHop = new Activity("voice.relay.bench").SetIdFormat(ActivityIdFormat.W3C).Start();
+benchHop.ActivityTraceFlags = ActivityTraceFlags.Recorded;
+benchHop.SetTag("team.id", teamId);
 
 IVoiceSessionFactory Factory(bool relay, string sessionId = "") => new VoiceLiveSessionFactory(
     credential,
-    Options.Create(new VoiceLiveOptions { Endpoint = directEndpoint, RelayEndpoint = relay ? relayEndpoint : string.Empty, RelaySessionId = sessionId }),
+    Options.Create(new VoiceLiveOptions { Endpoint = directEndpoint, RelayEndpoint = relay ? relayEndpoint : string.Empty, RelaySessionId = relay ? Arg("--relay-session") ?? sessionId : sessionId }),
     Options.Create(new FoundryOptions { ProjectEndpoint = "https://" + new Uri(directEndpoint.Replace("wss://", "https://", StringComparison.Ordinal)).Host + "/api/projects/p" }));
-var config = new VoiceSessionConfig("You are a brief, friendly scrum master. Answer in one short sentence.", [], 800, "team-bench");
+var config = new VoiceSessionConfig("You are a brief, friendly scrum master. Answer in one short sentence.", [], 800, teamId);
 
 string[] questions =
 [
@@ -71,7 +75,7 @@ foreach (var q in questions)
 }
 
 Console.Error.WriteLine($"synthesised {audio.Count} questions, {audio.Sum(a => a.Length) / 48000.0:F1} s of audio");
-var result = new Dictionary<string, object>();
+var result = new Dictionary<string, object> { ["traceId"] = benchHop.TraceId.ToHexString(), ["teamId"] = teamId };
 
 switch (mode)
 {
@@ -187,6 +191,7 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
     var created = channel.Now;
     await session.CreateResponseAsync("Answer the question in one short sentence.", CancellationToken.None);
     double? firstAudio = null;
+    double? responseDone = null;
     while (await channel.ReadAsync(TimeSpan.FromSeconds(25)) is { } e)
     {
         if (e.Event is AgentAudio && firstAudio is null)
@@ -202,6 +207,7 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
 
         if (e.Event is ResponseDone)
         {
+            responseDone = e.At;
             break;
         }
     }
@@ -209,6 +215,12 @@ async Task<Turn> RunTurn(IVoiceSession session, EventChannel channel, byte[] pcm
     if (firstAudio is null)
     {
         turn.Failed = "no audio";
+        return turn;
+    }
+
+    if (responseDone is null)
+    {
+        turn.Failed = "no response completion";
         return turn;
     }
 

@@ -71,6 +71,14 @@ The approval trail is the Cosmos container `ApprovalRecords`. The managed identi
 
 ## Container registry permissions
 
+The hosted exporter hook uses `AzureMonitor__ConnectionString` to configure
+the existing .NET SDK directly. Foundry reserves
+`APPLICATIONINSIGHTS_CONNECTION_STRING` for project-monitoring injection and
+rejects a version declaring it. Do not enable project-wide content capture as
+a workaround. API/bridge/native retain the ordinary setting; all hosts refuse
+`Telemetry:CaptureContent=true`. The workbook update uses a temporary typed
+parameter file because Windows `az.cmd` strips inline JSON quotes.
+
 The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, set explicitly. In that mode the Foundry project identity needs **AcrPull**, not Container Registry Repository Reader (ADR 0015 S3). Both identities get AcrPull in `data.bicep`. If you switch the mode to ABAC, change the role to Container Registry Repository Reader.
 
 ## Human gates
@@ -261,6 +269,87 @@ Human gates for the hosted agent: none new. The greenfield environment's bot id 
 
 - `infra/hooks/verify.ps1` prints PASS or FAIL per check: health routes, the Easy Auth bearer path, the bot endpoint rejecting unauthenticated calls, a Simulated Room standup through the gate harness, a follow-up approved through the API and its comment found in Azure DevOps. It retries the two health routes for up to three minutes, because a new revision can still be starting.
 - CI (`.github/workflows/infra.yml`) lints the Bicep and runs `az deployment sub what-if`. ARM cannot expand nested modules that depend on earlier outputs, so what-if shows the resource group and outputs only; `azd up` in a scratch group is the full proof.
+
+## Content-free observability and evaluation (M11 9, ADR 0028)
+
+Empty-environment Bicep creates the shared Insights workbook and supplies the
+existing connection string to API/bridge. Hosted/native hooks fetch that
+setting without printing or storing it in azd; native delivery uses the existing
+vault, Secrets User and protected SYSTEM settings. No new role, SKU or policy.
+`Telemetry__CaptureContent=false` is explicit; true is refused at startup.
+MAF/GenAI messages and application log-body export are off. Fixed added cost
+USD0/hour; normal variable Insights ingestion/retention and build charges remain.
+
+For the authorised existing `zavaw3`/`westus3` environment, after validation and
+the deployment workflow, use only these scoped hooks, never full provision:
+
+```powershell
+pwsh infra\hooks\observability-update.ps1
+pwsh infra\hooks\deploy-service.ps1 -Service api
+pwsh infra\hooks\deploy-service.ps1 -Service bridge
+$env:AZURE_TOKEN_CREDENTIALS = 'AzureCliCredential'
+pwsh infra\hooks\agent-host.ps1 -Tag <committed-source-tag>
+pwsh infra\hooks\media-host.ps1 -RuntimeOnly
+pwsh infra\hooks\verify.ps1 -GateOutput .m11-plan\run-log\p9-after
+```
+
+The native runtime-only hook refuses missing existing consent or an unregistered/
+near-expiry certificate before stopping the host, skips Entra/registration/
+certificate renewal writes, verifies its package hash and restarts the existing
+SYSTEM task. Full greenfield/renewal hooks retain the existing consent gates.
+The registered thumbprint must match exactly; Graph's Binary identifier may
+be returned as hex or base64. Runtime-only accepts those two encodings, not a
+new credential.
+The hosted version does not change traffic/default voice selection. Preserve
+Acs/Share/Direct. Native media still cannot save decision/approval content.
+
+Open the shared workbook in the environment's Insights resource; select one
+team. Query its actual live role/hop, join-event and approval-chain tables.
+Counter counts describe events, not unique successful meetings. Compare the
+gate's trace id to `operation_Id`; inspect only allowed metadata, never full
+employee bodies. Record exact samples and missing hops in G7. Native/vendor
+and multi-team human acceptance are not established by a Direct scripted run.
+
+Step9 live handoff: API/bridge8859a7a revisions84/9 are latest=ready; native
+e8c95b6 has the checked DLL hash, running SYSTEM boot task and content-off
+settings. All8 mandatory checks pass, including approver-authored revision52
+and exact audit chain. Saved workbookb628a627-0f45-5727-a57e-a4f367cc4bf4
+matches source; actual metadata/latency evidence is in
+`docs/gates/observability-M11.json`. Non-telemetry hashes, scale, identity and
+secret names were preserved.
+Hosted5 is an unpromoted candidate: both fresh own sessions exceeded readiness,
+the paired probe returned424 without a completed report, and both sessions
+were stopped (platform log confirms Stopped). Stable selector4 remains100%.
+Investigate the candidate startup/readiness log during a bounded synthetic
+session before promoting; never switch defaults on version-active metadata
+or an old ready revision's health. Temporary session compute/model/ingestion
+is variable-cost; no unverified hourly tariff is claimed.
+
+G7 release runs the real synthetic decision command in
+`demo/evaluation/README.md`. The existing OIDC CI identity and
+`EVALUATION_PROJECT_ENDPOINT`/optional `EVALUATION_DECISION_DEPLOYMENT`
+variables enable its daily real-model report; absent configuration is not_run,
+not fabricated evidence. Reporting is non-blocking, `--release-check` is not.
+The checked-in final n72 report fails dates75% on n8; retain that failure.
+Actual repository variable names were empty at the step9 check, so the
+real-model CI job is not enabled here. **EVALUATION-CI-IDENTITY:** the repository
+and Azure identity owners must approve a least-privileged model-inference OIDC
+identity/federation for this repository, then configure `AZURE_CLIENT_ID`,
+`AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` and `EVALUATION_PROJECT_ENDPOINT`
+under repository Settings > Secrets and variables > Actions > Variables.
+Do not expose the broadly privileged runtime identity or a client secret to CI.
+The daily workflow starts after merge to the default branch; this run leaves
+the PR in draft. The rules report runs without Azure credentials.
+
+**FOUNDRY-EVAL-PRIVACY prerequisite:** live Foundry quality/safety/groundedness
+evaluation requires captured input/output messages. This deployment contract
+prohibits employee content, so no valid employee-trace schedule is enabled and
+no score is claimed. A product/data owner may supply an explicitly approved
+synthetic full-input/output and source-ground-truth corpus for a separate
+synthetic Foundry evaluation, using the checked-in tone/cited-item/refusal
+rubric. Do not enable employee content or waive privacy to close G7.
+Knowledge and Work IQ evaluations still require their existing8A/8B consent/
+source fixtures and remain n0; this step grants none of those permissions.
 
 ## Teardown
 

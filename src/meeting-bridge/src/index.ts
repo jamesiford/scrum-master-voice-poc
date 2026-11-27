@@ -7,7 +7,9 @@ import { createAcsTokenService } from './services/acs.js';
 import { loadCast } from './services/castFile.js';
 import { AzureSpeechSynthesizer } from './services/speech.js';
 import { TeamsLauncher } from './services/teamsLauncher.js';
+import { startTelemetry } from './services/telemetry.js';
 
+startTelemetry();
 const config = loadConfig();
 const cast = new CastRoutes(
   (kind) => loadCast(kind === 'Retrospective' ? config.retroCastFile : config.castFile),

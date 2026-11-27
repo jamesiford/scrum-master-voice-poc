@@ -116,7 +116,9 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
                 ReadInt(d, "decisionModelMs"),
                 ReadInt(d, "orchestrationMs"),
                 ReadInt(d, "voiceFirstAudioMs"),
-                d.TryGetProperty("source", out var s) ? s.GetString() ?? "none" : "none"));
+                d.TryGetProperty("source", out var s) ? s.GetString() ?? "none" : "none",
+                d.TryGetProperty("traceId", out var trace) ? trace.GetString() : null,
+                d.TryGetProperty("spanId", out var span) ? span.GetString() : null));
         }
 
         return turns;

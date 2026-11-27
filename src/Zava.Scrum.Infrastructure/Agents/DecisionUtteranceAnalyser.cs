@@ -52,14 +52,21 @@ public sealed class DecisionUtteranceAnalyser(
     ];
 
     /// <inheritdoc />
-    public async Task<UtteranceReading?> ReadAsync(UtteranceContext context, CancellationToken ct)
+    public async Task<UtteranceReading?> ReadAsync(UtteranceContext context, CancellationToken ct) =>
+        (await ReadWithEvidenceAsync(context, ct)).Reading;
+
+    /// <summary>Runs the real adapter with its pre-threshold probabilities for repeatable offline evaluation.</summary>
+    /// <param name="context">Synthetic evaluation context, or the ordinary live context.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The live reading and explicit calibration evidence; no prompts or completions are logged.</returns>
+    public async Task<DecisionReadingEvidence> ReadWithEvidenceAsync(UtteranceContext context, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(context);
         var o = options.Value;
         if (!o.UseModel || !o.UseDecisionEngine || string.IsNullOrWhiteSpace(o.DecisionDeployment)
             || string.IsNullOrWhiteSpace(foundry.Value.ProjectEndpoint) || string.IsNullOrWhiteSpace(context.Text))
         {
-            return null;
+            return new(null, new Dictionary<string, double>(), "not_configured");
         }
 
         var items = context.Items.Take(MaxItems).ToList();
@@ -75,22 +82,37 @@ public sealed class DecisionUtteranceAnalyser(
             if (!response.IsSuccessStatusCode)
             {
                 // 429 is the usual one: the deployment's rate limit. The rules carry the standup meanwhile.
-                var detail = await response.Content.ReadAsStringAsync(budget.Token);
-                logger.LogWarning("Decision model returned {Status}: {Detail}; using rules", (int)response.StatusCode, detail.Length > 300 ? detail[..300] : detail);
-                return null;
+                logger.LogWarning("Decision model returned {Status}; using rules without logging the response body", (int)response.StatusCode);
+                return new(null, new Dictionary<string, double>(), $"http_{(int)response.StatusCode}");
             }
 
             using var doc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(budget.Token), cancellationToken: budget.Token);
-            return Read(doc.RootElement, context, items, o.Threshold);
+            var reading = Read(doc.RootElement, context, items, o.Threshold);
+            var probabilities = new Dictionary<string, double>(StringComparer.Ordinal);
+            if (doc.RootElement.TryGetProperty("answers", out var answers) && answers.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var answer in answers.EnumerateObject())
+                {
+                    var field = answer.Name == "intent" ? "confidence" : "noul";
+                    if (answer.Value.TryGetProperty(field, out var probability) && probability.TryGetDouble(out var value)
+                        && double.IsFinite(value) && value is >= 0 and <= 1)
+                    {
+                        probabilities[answer.Name] = value;
+                    }
+                }
+            }
+
+            return new(reading, probabilities, reading is null ? "unreadable" : null);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
-            return null;
+            logger.LogWarning("Decision model timed out; using rules");
+            return new(null, new Dictionary<string, double>(), "timeout");
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException)
         {
-            logger.LogWarning(ex, "Decision model call failed; using rules");
-            return null;
+            logger.LogWarning("Decision model call failed ({Failure}); using rules", ex.GetType().Name);
+            return new(null, new Dictionary<string, double>(), ex.GetType().Name);
         }
     }
 

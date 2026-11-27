@@ -47,7 +47,7 @@ public sealed class FoundryChat(IFoundryAgentFactory agents, IOptions<FoundryOpt
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
             // Model faults are expected (timeout, 429, no credential); the caller has a code fallback, so log and carry on.
-            logger.LogWarning(ex, "Foundry call failed; using deterministic text");
+            logger.LogWarning("Foundry call failed ({Failure}); using deterministic text", ex.GetType().Name);
             return null;
         }
     }

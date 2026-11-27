@@ -26,6 +26,8 @@ using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Standups;
 using Zava.Scrum.Domain.Voice;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Api.Voice;
 
@@ -146,6 +148,7 @@ public sealed class VoiceGateway(
 
         // One structured scope per run (set here, not in PrepareAsync, because a scope set in a callee does not flow back), so every line the gateway writes for a turn carries the session's correlation id (ADR 0017).
         using var correlation = logger.BeginScope(new Dictionary<string, object?> { ["CorrelationId"] = _session.CorrelationId, ["SessionId"] = sessionId, ["TeamId"] = _session.TeamId });
+        using var sessionHop = ScrumTelemetry.StartHop("voice.session", _session.TeamId, sessionId, _session.CorrelationId);
         WarmUpAnalyser();
         var readers = new[] { ReadBridgeAsync(), ReadVoiceAsync(), TickAsync() };
         live.Register(sessionId, a => _inbox.Writer.TryWrite(new FromControl(a)));
@@ -204,6 +207,7 @@ public sealed class VoiceGateway(
         }
 
         _session = session.Value;
+        using var connectHop = ScrumTelemetry.StartHop("voice.connect", _session.TeamId, _sessionId, _session.CorrelationId);
         _roster = _session.PreBrief?.Members.Select(m => new NameRef(m.MemberId, m.DisplayName)).ToList() ?? [];
         var o = options.Value;
         _floor = new FloorControl(new FloorOptions(TimeSpan.FromMinutes(_session.StandupMinutes), o.SilenceMs, o.ParkAfterSeconds * 1000, o.NoResponseSeconds * 1000, PauseMs: o.PauseMs));
@@ -231,6 +235,8 @@ public sealed class VoiceGateway(
             new
             {
                 type = "hello",
+                teamId = _session.TeamId,
+                traceParent = connectHop?.Id,
                 sessionId = _sessionId,
                 mode = _session.Mode,
                 kind = _session.Kind.ToString(),
@@ -371,6 +377,9 @@ public sealed class VoiceGateway(
 
     private async Task HandleAsync(Msg msg)
     {
+        using var hop = msg is FromVoice { Event: UserTranscript } || msg is FromBridge bridgeMessage && Str(bridgeMessage.Json, "type") == "utterance"
+            ? ScrumTelemetry.StartHop("voice.transcript", _session.TeamId, _sessionId, _session.CorrelationId)
+            : null;
         switch (msg)
         {
             case FromBridge b:
@@ -425,7 +434,16 @@ public sealed class VoiceGateway(
                 await MaybeFinishSpeechAsync();
                 break;
             case "callState":
+                ScrumTelemetry.Count("join", _session.TeamId, Str(json, "state") == "Connected" ? "success" : "state_change");
                 await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Bridge, null, $"{Str(json, "state")}: {Str(json, "message")}"), _run);
+                break;
+            case "telemetry":
+                if (Str(json, "hop") is "bridge.audio" or "bridge.playback" && Int(json, "durationMs") is >= 0 and <= 60000)
+                {
+                    var name = Str(json, "hop")!;
+                    using var bridgeHop = ScrumTelemetry.StartHop(name, _session.TeamId, _sessionId, _session.CorrelationId);
+                    ScrumTelemetry.RecordHop(name, _session.TeamId, Int(json, "durationMs"));
+                }
                 break;
             case "command":
                 await OnCommandAsync(Str(json, "action") ?? string.Empty, Str(json, "memberId"));
@@ -528,9 +546,9 @@ public sealed class VoiceGateway(
             case ResponseDone d:
                 await OnResponseDoneAsync(d);
                 break;
-            case VoiceFault f when _truncatedAt is { } at && clock.UtcNow - at < TimeSpan.FromSeconds(3):
+            case VoiceFault when _truncatedAt is { } at && clock.UtcNow - at < TimeSpan.FromSeconds(3):
                 // A refused truncate only costs the model some context about what was heard; it is not a failure the room needs to see.
-                logger.LogWarning("Voice Live refused a truncate or cancel after a barge-in: {Message}", f.Message);
+                logger.LogWarning("Voice Live refused a truncate or cancel after a barge-in; response body omitted");
                 break;
             case VoiceFault f:
                 await _bridge.SendAsync(new { type = "error", code = "VOICE_FAULT", message = f.Message }, _run);
@@ -547,12 +565,12 @@ public sealed class VoiceGateway(
         {
             _interrupted = (barge.MemberId, Saying(last.Speak, last.Question));
             logger.LogInformation(
-                "Barge-in session={SessionId} by={MemberId} holder={HolderId} sustained={Sustained} saying={Saying}",
+                "Barge-in session={SessionId} by={MemberId} holder={HolderId} sustained={Sustained}",
                 _sessionId,
                 barge.MemberId,
                 _floor.CurrentMemberId,
-                barge.Sustained,
-                _interrupted.Value.Saying);
+                barge.Sustained);
+            ScrumTelemetry.Count("barge_in", _session.TeamId, "cancelled");
             await RecordTalkOverAsync(barge.MemberId);
         }
 
@@ -644,8 +662,23 @@ public sealed class VoiceGateway(
     private async Task RecordTimingAsync(int totalMs, int toCreateMs, int voiceMs)
     {
         var orchestrationMs = Math.Max(0, toCreateMs - _turnTranscriptMs - _turnAnalysisMs);
+        var ended = clock.UtcNow;
+        using var turnHop = ScrumTelemetry.StartHop("voice.turn", _session.TeamId, _sessionId, _session.CorrelationId, ended.AddMilliseconds(-totalMs));
+        turnHop?.SetEndTime(ended.UtcDateTime);
+        ScrumTelemetry.Count("turn", _session.TeamId, "first_audio");
+        ScrumTelemetry.RecordHop("voice.total", _session.TeamId, totalMs);
+        ScrumTelemetry.RecordHop("voice.transcription", _session.TeamId, _turnTranscriptMs);
+        ScrumTelemetry.RecordHop("decision.grounding", _session.TeamId, Math.Max(0, _turnAnalysisMs - _turnModelMs));
+        ScrumTelemetry.RecordHop("voice.orchestration", _session.TeamId, orchestrationMs);
+        ScrumTelemetry.RecordHop("voice.first_audio", _session.TeamId, voiceMs);
+        RecordMeasuredHop("voice.transcription", ended.AddMilliseconds(-totalMs), _turnTranscriptMs);
+        RecordMeasuredHop("decision.grounding", ended.AddMilliseconds(-totalMs + _turnTranscriptMs + _turnModelMs), Math.Max(0, _turnAnalysisMs - _turnModelMs));
+        RecordMeasuredHop("voice.orchestration", _createSentAt.AddMilliseconds(-orchestrationMs), orchestrationMs);
+        RecordMeasuredHop("voice.first_audio", _createSentAt, voiceMs);
         var json = JsonSerializer.Serialize(new
         {
+            traceId = turnHop?.TraceId.ToHexString() ?? _session.CorrelationId,
+            spanId = turnHop?.SpanId.ToHexString(),
             reason = _lastSpeak?.Speak.Reason.ToString() ?? "unknown",
             totalMs,
             speechEndToTranscriptMs = _turnTranscriptMs,
@@ -656,6 +689,12 @@ public sealed class VoiceGateway(
             source = _turnSource,
         });
         await sender.Send(new RecordStandupEventCommand(_sessionId, StandupEventType.Timing, _floor.CurrentMemberId, json), _run);
+    }
+
+    private void RecordMeasuredHop(string name, DateTimeOffset started, int milliseconds)
+    {
+        using var hop = ScrumTelemetry.StartHop(name, _session.TeamId, _sessionId, _session.CorrelationId, started);
+        hop?.SetEndTime(started.AddMilliseconds(milliseconds).UtcDateTime);
     }
 
     // One event each time the agent is cut off by someone speaking. In a scripted run nobody talks over the agent on purpose, so each one

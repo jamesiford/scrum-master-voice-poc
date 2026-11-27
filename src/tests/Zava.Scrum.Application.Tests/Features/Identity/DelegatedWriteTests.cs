@@ -7,6 +7,8 @@ using Zava.Scrum.Application.Tests.TestDoubles;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.FollowUps;
 using Zava.Scrum.Domain.Members;
+using System.Diagnostics;
+using Zava.Scrum.Application.Behaviors;
 
 namespace Zava.Scrum.Application.Tests.Features.Identity;
 
@@ -40,6 +42,58 @@ public sealed class DelegatedWriteTests
     }
 
     private ISender Sender => _sp.GetRequiredService<ISender>();
+
+    [Fact]
+    public void StartHop_MeasuredInterval_PreservesDurationWithoutInventingAParent()
+    {
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == ScrumTelemetry.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+        };
+        ActivitySource.AddActivityListener(listener);
+        var correlation = ActivityTraceId.CreateRandom().ToHexString();
+        var started = StandupHarness.Now;
+
+        using var hop = ScrumTelemetry.StartHop("voice.turn", "t1", Guid.NewGuid(), correlation, started);
+        hop!.SetEndTime(started.AddMilliseconds(321).UtcDateTime);
+        hop.Stop();
+
+        Assert.Equal(correlation, hop.TraceId.ToHexString());
+        Assert.Equal(TimeSpan.FromMilliseconds(321), hop.Duration);
+        Assert.Null(hop.ParentId);
+        Assert.Equal("t1", hop.GetTagItem(ScrumTelemetry.TeamTag));
+    }
+
+    [Fact]
+    public async Task Approve_ThroughMediator_UsesPersistedTraceForDecisionAndWriteWithoutContent()
+    {
+        var followUp = await AddAsync();
+        var spans = new List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == ScrumTelemetry.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.TraceId.ToHexString() == followUp.CorrelationId) { spans.Add(activity); }
+            },
+        };
+        ActivitySource.AddActivityListener(listener);
+        using var incoming = new Activity("portal.request").Start();
+
+        var result = await Sender.Send(new ApproveFollowUpCommand(followUp.Id, Who.TeamsUser(PriyaId)));
+
+        Assert.True(result.IsSuccess);
+        var decision = Assert.Single(spans, span => span.OperationName == "approval.decision");
+        var write = Assert.Single(spans, span => span.OperationName == "ado.write");
+        Assert.Equal(followUp.CorrelationId, write.TraceId.ToHexString());
+        Assert.Equal("t1", write.GetTagItem(ScrumTelemetry.TeamTag));
+        Assert.Contains(decision.Links, link => link.Context.TraceId == incoming.TraceId);
+        Assert.DoesNotContain(spans.SelectMany(span => span.TagObjects), tag =>
+            tag.Key.Contains("text", StringComparison.OrdinalIgnoreCase) || tag.Key.Contains("token", StringComparison.OrdinalIgnoreCase));
+        Assert.Single(_writer.Written);
+    }
 
     [Fact]
     public async Task Approve_WithTheApproversOwnToken_WritesWithADelegatedTokenForThatPerson()

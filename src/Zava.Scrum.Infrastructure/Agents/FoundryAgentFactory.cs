@@ -42,6 +42,6 @@ public sealed class FoundryAgentFactory : IFoundryAgentFactory
         _client.Value
             .AsAIAgent(model: string.IsNullOrWhiteSpace(model) ? _model : model, instructions: instructions, name: name)
             .AsBuilder()
-            .UseOpenTelemetry(TelemetrySource)
+            .UseOpenTelemetry(TelemetrySource, options => options.EnableSensitiveData = false)
             .Build();
 }
