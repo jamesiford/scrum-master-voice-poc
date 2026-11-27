@@ -66,6 +66,21 @@ a127GB StandardSSD_LRS/V2 OS disk. ADR0031 records the omission correction;
 the failed partial footprint is purged before retrying. Completed cycles0/2.
 That purge passed1025.01s; exact group absence=false and corrected preview
 29s pass. First empty-up retry started05:09:56Z from35812cd.
+It passed1828.77s,exit0,ending05:40:25Z; mandatory verification is running.
+
+**ZAVAGF-CATALOGUE, attempted and still human-gated:** an actual authorised
+POST of the exact new media package returned403 Forbidden at05:41:36Z:
+`Missing scope permissions on the request. API requires one of
+'AppCatalog.Submit, AppCatalog.ReadWrite.All, Directory.ReadWrite.All'.`
+Requestf5606812-a404-4556-9256-78921efeb3a5. No sign-in retry was attempted.
+A Teams administrator must use Teams admin centre > Teams apps > Manage apps
+> Upload new app for `appPackage\dist\zava-media-bot.zip` (current zavagf
+calling appaef240bc-3943-4f28-83f2-c7829c69a847) and
+`appPackage\dist\zava-scrum-agent-zavagf-1.1.0.zip`, generated again by the
+final successful up. Alternatively obtain delegated AppCatalog.Submit through
+the documented interactive package hook. Do not upload historical zavaw3
+packages again, replace the old mcm app or mistake a role for OAuth scopes.
+This does not undo the completed zavaw3 uploads or successful core Entra hooks.
 
 ### Historical finalisation attempt (superseded prerequisites)
 

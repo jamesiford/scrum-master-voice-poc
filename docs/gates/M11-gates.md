@@ -52,6 +52,28 @@ The corrected vault now reaches Succeeded: actual readback has omitted
 purge protection=null, softDelete=true, retention7days, EntraRBAC=true.
 That resolves the observed BadRequest without modifying an existing vault.
 
+At05:40Z both private-image apps are Succeeded with ready revisions
+api--azd-1795757354/bridge--azd-1795757372 and image tag
+azd-deploy-1795757159. Actual target child-scope ARM role assignments13,
+including two registry-scoped AcrPull assignments; no unrelated role added.
+The automatically issued media certificate is enabled and expires
+2027-02-25T04:36:54Z. Native postdeploy bootstrap remains running; these are
+provisioning observations, not yet a passed up or mandatory verification.
+
+First corrected empty up **passed1828.7691s (30m28.77s),exit0,n1**,
+05:09:56.5199151Z to05:40:25.2889925Z. Mandatory verify started05:40:51Z;
+native trusted HTTPS/no-recording/cap1, real1280x720renderer and protected
+401 checks pass. The standup/approved-write/audit portion is still running.
+Completed verified cycles remain0/2 until that runner exits.
+
+One authorised new-zavagf catalogue POST returned403 Forbidden:
+`Missing scope permissions on the request. API requires one of
+'AppCatalog.Submit, AppCatalog.ReadWrite.All, Directory.ReadWrite.All'.`
+Requestf5606812-a404-4556-9256-78921efeb3a5,05:41:36Z. No authentication
+retry or second equivalent upload attempt. Core Entra hooks succeeded.
+This OAuth catalogue gate belongs to the new zavagf packages, not the
+operator-completed zavaw3 uploads; exact administrator action is in DEPLOY.md.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

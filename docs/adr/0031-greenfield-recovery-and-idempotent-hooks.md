@@ -103,3 +103,17 @@ from35812cd. This restart preserves the genuinely empty-cycle criterion.
 Live corrected-vault creation succeeds: purgeProtection=null (omitted),
 softDelete=true, retention7days, EntraRBAC=true. The original API defect is
 resolved; full runtime/verification remains pending.
+
+05:40Z checkpoint: both private-image Container Apps have ready revisions,
+target child-scope ARM roles13 (including AcrPull2) read back, and the
+automatically issued media certificate is enabled through25February2027.
+Native bootstrap and complete verification still run; no manual resource
+or certificate creation is substituted for the hooks.
+
+First corrected empty up passed1828.7691s,exit0,ending05:40:25.2889925Z.
+All core Entra hooks completed. One optional new-zavagf catalogue POST
+returned403 Forbidden for missing AppCatalog.Submit/AppCatalog.ReadWrite.All/
+Directory.ReadWrite.All OAuth scopes, requestf5606812-a404-4556-9256-78921efeb3a5.
+An active administrator role does not add those scopes to an Azure CLI
+token. No authentication loop; document the exact Teams administrator upload
+action and continue both core proof cycles. Existing zavaw3 uploads remain done.
