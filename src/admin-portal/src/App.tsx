@@ -22,6 +22,7 @@ import {
 import { useState } from 'react';
 import { HealthBadge } from './features/health/HealthBadge';
 import { FollowUpsPage } from './features/followups/FollowUpsPage';
+import { AuditPage } from './features/audit/AuditPage';
 import { LivePage } from './features/live/LivePage';
 import { OverviewPage } from './features/overview/OverviewPage';
 import { ModelsPage } from './features/models/ModelsPage';
@@ -70,6 +71,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { id: 'sessions', label: 'Sessions', icon: ClipboardList },
       { id: 'live', label: 'Live console', icon: Radio },
       { id: 'followups', label: 'Follow-ups', icon: CheckSquare },
+      { id: 'audit', label: 'Audit chain', icon: Network },
     ],
   },
   {
@@ -123,9 +125,11 @@ function Page({ page, go }: { page: PageId; go: (p: PageId) => void }) {
     case 'sessions':
       return <SessionsPage />;
     case 'live':
-      return <LivePage />;
+      return <LivePage key={team.id} />;
     case 'followups':
       return <FollowUpsPage />;
+    case 'audit':
+      return <AuditPage key={team.id} />;
     case 'reports':
       return <ReportsPage />;
     case 'planning':

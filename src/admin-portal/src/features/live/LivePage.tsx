@@ -14,8 +14,9 @@ import { useTeamId } from '../../team/TeamContext';
 import {
   controlSession,
   getSession,
+  getRoster,
+  getSessionLatency,
   listSessions,
-  resetDemo,
   startTeamsSession,
 } from '../../api/client';
 import { useApiAction } from '../../hooks/useApiAction';
@@ -29,6 +30,8 @@ import { Field, Input, Select } from '../../ui/Form';
 import { PageHeader } from '../../ui/PageHeader';
 import { QueryStatus } from '../QueryStatus';
 import { SessionTimeline } from '../sessions/SessionTimeline';
+import { speakerLabel } from './speakerLabel';
+import { DemoReseedPanel } from '../demo/DemoReseedPanel';
 
 /**
  * Live console: watch the floor, timebox, parking lot and bridge status of a running standup, and take over or end it.
@@ -41,23 +44,35 @@ export function LivePage() {
   const [joinUrl, setJoinUrl] = useState('');
   const sessions = useApiQuery((signal) => listSessions(teamId, signal), teamId);
   const detail = useApiQuery((signal) => getSession(sessionId ?? '', signal), sessionId);
+  const roster = useApiQuery((signal) => getRoster(teamId, signal), teamId);
+  const latency = useApiQuery((signal) => getSessionLatency(sessionId ?? '', signal), sessionId);
   const { state, connected } = useLiveState(sessionId);
   const control = useApiAction((action: string) => controlSession(sessionId ?? '', action));
   const join = useApiAction(() => startTeamsSession(sessionId ?? '', joinUrl, 15));
-  const reset = useApiAction(() => resetDemo());
+  const reloadDetail = detail.reload;
+  const reloadLatency = latency.reload;
 
   useEffect(() => {
     if (!sessionId) return;
-    const timer = setInterval(detail.reload, 4000);
+    const timer = setInterval(() => {
+      reloadDetail();
+      reloadLatency();
+    }, 4000);
     return () => clearInterval(timer);
-  }, [sessionId, detail.reload]);
+  }, [sessionId, reloadDetail, reloadLatency]);
 
   const refresh = () => {
     sessions.reload();
     detail.reload();
+    latency.reload();
   };
   const send = (action: string) => void control.run(action).then(refresh);
   const live = state && !state.ended ? state : undefined;
+  const speaker = speakerLabel(live?.currentSpeaker ?? null, roster.data ?? []);
+  const hops =
+    latency.data?.sessionId === sessionId && latency.data.teamId === teamId
+      ? latency.data.hops
+      : [];
   const bridgeEvents = detail.data?.events.filter((e) => e.type === 'Bridge') ?? [];
   const bridge = bridgeEvents[bridgeEvents.length - 1]?.text;
   const bridgeTone =
@@ -80,29 +95,20 @@ export function LivePage() {
               aria-label="Refresh"
               onClick={refresh}
             />
-            <Button
-              variant="danger"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    'Delete all sessions, follow-ups and cards? Azure DevOps is not touched.',
-                  )
-                )
-                  void reset.run().then(() => {
-                    setSessionId(null);
-                    sessions.reload();
-                  });
-              }}
-            >
-              Reset demo
-            </Button>
           </>
         }
       />
       <div className="grid gap-6">
+        <DemoReseedPanel
+          onCompleted={() => {
+            setSessionId(null);
+            sessions.reload();
+            roster.reload();
+          }}
+        />
         <QueryStatus
           loading={sessions.loading}
-          error={sessions.error ?? control.error ?? join.error ?? reset.error}
+          error={sessions.error ?? control.error ?? join.error ?? roster.error}
         />
         <Card>
           <Field label="Session" className="max-w-md">
@@ -196,7 +202,14 @@ export function LivePage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted">Speaker</p>
-                      <p className="text-lg font-semibold">{live.currentSpeaker ?? '–'}</p>
+                      <p className="text-lg font-semibold">
+                        {live.recording === false
+                          ? (live.currentSpeaker ?? '–')
+                          : (speaker?.displayName ?? '–')}
+                      </p>
+                      {speaker && live.recording !== false && (
+                        <p className="text-xs text-muted">{speaker.identity}</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-xs text-muted">Latency p50 / p95</p>
@@ -251,6 +264,71 @@ export function LivePage() {
                     </Button>
                   </div>
                 </div>
+              )}
+            </Card>
+            <Card
+              title="Participant names"
+              description="Verified roster identities are distinguished from unmapped guests and synthetic cast. When no live participant list is available, this shows the roster, not attendance. Names never grant approval access."
+            >
+              <div className="flex flex-wrap gap-2">
+                {live?.participants && live.participants.length > 0
+                  ? live.participants.map((participant) => (
+                      <Badge
+                        key={participant.participantId}
+                        tone={participant.guest ? 'warn' : 'ok'}
+                      >
+                        {participant.displayName}
+                        {participant.guest ? ' (guest)' : ' (Entra roster)'}
+                      </Badge>
+                    ))
+                  : (roster.data ?? []).map((member) => (
+                      <Badge key={member.id} tone={member.entraObjectId ? 'ok' : 'warn'}>
+                        {member.displayName}
+                        {member.entraObjectId ? ' (Entra roster)' : ' (guest / synthetic cast)'}
+                      </Badge>
+                    ))}
+              </div>
+            </Card>
+            <Card
+              title="Per-hop latency"
+              description="Nearest-rank p50 / p95 and actual sample count for this session. Intervals can overlap; do not add their percentiles."
+            >
+              <QueryStatus loading={latency.loading} error={latency.error} />
+              {live?.recording === false ? (
+                <p className="text-sm text-muted">
+                  Not retained on the native non-recording route.
+                </p>
+              ) : (
+                <>
+                  {hops.length === 0 && (
+                    <p className="text-sm text-muted">No recorded turn measurements yet.</p>
+                  )}
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr>
+                        <th>Hop</th>
+                        <th>p50 ms</th>
+                        <th>p95 ms</th>
+                        <th>n</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...hops, ...(live?.bridgeHops ?? [])].map((hop) => (
+                        <tr key={hop.hop}>
+                          <td className="py-2">{hop.hop}</td>
+                          <td>{hop.p50Ms}</td>
+                          <td>{hop.p95Ms}</td>
+                          <td>{hop.n}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="mt-3 text-xs text-muted">
+                    Bridge rows measure the browser's local send/playback interval, not network
+                    delivery. They are live-only. Model rows include only actual model calls;
+                    missing hops have no samples.
+                  </p>
+                </>
               )}
             </Card>
             {detail.data && <SessionTimeline session={detail.data} />}
