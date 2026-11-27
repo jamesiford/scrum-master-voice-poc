@@ -746,8 +746,8 @@ An admin portal-to-Graph OBO token exchange and matching `/me` metadata
 succeed n1 each; they do not prove retrieval, deployed federation or trimming.
 
 **Work IQ (M11 8B, ADR 0027): contracts only.** No signal is on the live
-voice path. Channel/helper/meeting reads are blocked by missing delegated
-Work IQ consent and billing/real-owner/source fixtures, independent of 8A.
+voice path. Delegated Work IQ consent is completed; channel/helper/meeting
+reads remain blocked by billing/real-owner/source fixtures, independent of 8A.
 The existing default-off flag is not a working portal feature. Notes are
 existing evidence, not a live transcript or non-recording workaround.
 G11 and new G1 samples remain n=0; M9c review-feedback conversion is unbuilt.

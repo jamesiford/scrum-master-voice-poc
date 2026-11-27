@@ -94,3 +94,15 @@ the existing approval invariant is unchanged. Knowledge remains off live voice.
 Acs/Share/Direct, native non-recording, stable hosted4 and inherited failed
 G1/G4/G7/G8 remain unchanged. Added resources and fixed cost: none,
 USD0/hour; knowledge retrieval consumption n=0.
+
+All three existing builds pass, .NET0warnings/errors; no full suites.
+Mandatory zavaw3 verification passes8/8, one scripted standup363s,
+2969/4875ms p50/p95,n12,talkovers0. Actual approver-authored item1/revision59
+and complete audit are verified. Compared with preceding documented
+zavaw3 3262/5307ms,n12, point estimates improve8.98%/8.14%; unchanged runtime
+and different windows are not a causal or paired knowledge-path result.
+Inherited G1 failures remain failed. Native HTTPS/renderer readiness is
+separate from the still-unrun native meeting acceptance.
+No runtime was added, so no gratuitous redeployment was performed; zavaw3
+remains running with APIgit-8859a7a/revision84. Safe source-free metadata
+and exact gate results are in `docs/gates/knowledge-redo-M11.json`.

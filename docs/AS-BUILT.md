@@ -89,6 +89,8 @@ succeed n1 each, using the existing confidential-client credential only in a
 bounded memory-only probe; deployed federation/source permissions are unproved.
 ADRs 0026/0033 and DEPLOY.md give the exact resume prerequisites.
 The existing zavaw3 runtime and voice/approval boundaries are unchanged.
+Redo mandatory verification passes8/8, real approver/audit revision59 and
+Direct2969/4875ms,n12,talkovers0; this is not knowledge or native acceptance.
 
 ## 1. What it is
 A team-scoped voice-led "junior Scrum Master", with Payments as the demo

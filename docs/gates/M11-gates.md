@@ -29,6 +29,28 @@ source, resource, grant or fixed cost; no gratuitous redeployment.
 Knowledge stays off live voice; Acs/Share/Direct, native non-recording,
 stable hosted4 and inherited G1/G4/G7/G8 failures remain unchanged.
 
+Mandatory existing-zavaw3 verify passes **8/8**, one run, scripted standup363s.
+Actual approval author and complete audit match the caller, item1/revision59,
+sessiond3cbef01-2b6d-4fe0-a239-62cea13e854a/tagzsa-ab6774e90361.
+Harness source label655a6bb is not deployed imagegit-8859a7a/revision84.
+
+| Hop | p50 / p95 ms | n |
+| --- | --- | --- |
+| Total | 2969 / 4875 | 12 |
+| Transcript | 0 / 188 | 12 |
+| Analyser | 25 / 26 | 12 |
+| Decision | 152 / 335 | 12 |
+| Orchestration | 1515 / 2747 | 12 |
+| Voice first audio | 1289 / 2991 | 12 |
+
+Questions3167/4875ms,n9; modelread10/12; talkovers0,n1run;
+human transcript pieces19. Versus preceding documented zavaw3
+3262/5307ms,n12, current point estimates are -8.98%/-8.14%.
+Unchanged runtime/different windows are not paired knowledge-path proof.
+No before/after knowledge samples exist; inherited G1 failures remain failed.
+Optional native HTTPS/renderer/capability readiness passes, but organiser-RSC,
+native Teams joins/attribution/board/barge-in remain not_run. No full suites.
+
 ## G8 recovery attempt 1 (26 November 2026 after20:00PT)
 
 Only zavagf/eastus2 is used; zavaw3/mcm are not modified. Actual Global

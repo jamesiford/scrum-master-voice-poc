@@ -100,6 +100,9 @@ and explicit "I don't know" for a genuine no-source result, never guesses.
 Current retrieval, leakage and latency sample sizes are all n=0 (ADRs 0026/0033).
 The admin's measured OBO token exchange and Graph identity read n1 each are
 prerequisites only, not cited knowledge or a permission-trimming demonstration.
+Redo existing-zavaw3 verification passes8/8 with real approver/auditrevision59;
+Direct2969/4875ms,n12,talkovers0. Native hosting readiness does not establish
+native meeting acceptance; inherited failed gates remain visible.
 For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
 exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 
