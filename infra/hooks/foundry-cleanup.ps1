@@ -23,8 +23,16 @@ if (-not $env:FOUNDRY_NAME -or -not $env:FOUNDRY_PROJECT_NAME -or -not $env:AZUR
 $projectId = "/subscriptions/$($env:AZURE_SUBSCRIPTION_ID)/resourceGroups/$($env:AZURE_RESOURCE_GROUP)/providers/Microsoft.CognitiveServices/accounts/$($env:FOUNDRY_NAME)/projects/$($env:FOUNDRY_PROJECT_NAME)"
 $expectedEndpoint = "https://$($env:FOUNDRY_NAME).services.ai.azure.com/api/projects/$($env:FOUNDRY_PROJECT_NAME)"
 if ($env:FOUNDRY_PROJECT_ENDPOINT -ne $expectedEndpoint) { throw 'Foundry cleanup refuses a mismatched project endpoint.' }
-$project = az resource show --ids $projectId --api-version 2025-06-01 -o json | ConvertFrom-Json
-if ($LASTEXITCODE -ne 0 -or $project.tags.'azd-env-name' -ne 'zavagf' -or $project.location -ne 'eastus2') {
+$projectOutput = az resource show --ids $projectId --api-version 2025-06-01 -o json 2>&1
+if ($LASTEXITCODE -ne 0) {
+  if (($projectOutput -join "`n") -match '\(ResourceNotFound\)') {
+    Write-Check SKIP 'Foundry cleanup' 'The intended project is already absent.'
+    return
+  }
+  throw "Cannot read the intended Foundry project: $($projectOutput -join "`n")"
+}
+$project = $projectOutput | ConvertFrom-Json
+if ($project.tags.'azd-env-name' -ne 'zavagf' -or $project.location -ne 'eastus2') {
   throw 'Cannot verify the intended Foundry project ownership before cleanup.'
 }
 $token = az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv

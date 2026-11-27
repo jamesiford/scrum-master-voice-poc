@@ -4,6 +4,7 @@ $hook = "$PSScriptRoot\..\infra\hooks\foundry-cleanup.ps1"
 $global:foundryCleanupFixture = @{
   calls = [Collections.Generic.List[string]]::new()
   groupExists = 'true'
+  projectMissing = $false
   responses = [Collections.Generic.Queue[object]]::new()
 }
 $calls = $global:foundryCleanupFixture.calls
@@ -12,7 +13,13 @@ function az {
   switch ("$($args[0]) $($args[1])") {
     'account show' { '{"id":"4b0dd31f-5379-4acc-8dcd-60f2929d2513","tenantId":"tenant"}' }
     'group exists' { $global:foundryCleanupFixture.groupExists }
-    'resource show' { '{"location":"eastus2","tags":{"azd-env-name":"zavagf"}}' }
+    'resource show' {
+      if ($global:foundryCleanupFixture.projectMissing) {
+        $global:LASTEXITCODE = 1
+        'ERROR: (ResourceNotFound) The intended project is absent.'
+      }
+      else { '{"location":"eastus2","tags":{"azd-env-name":"zavagf"}}' }
+    }
     'account get-access-token' { 'test-token' }
     default { throw "Unexpected CLI invocation: $args" }
   }
@@ -27,6 +34,7 @@ function Start-Sleep { param($Seconds) }
 function Reset-Case {
   $calls.Clear()
   $global:foundryCleanupFixture.groupExists = 'true'
+  $global:foundryCleanupFixture.projectMissing = $false
   $global:foundryCleanupFixture.responses = [Collections.Generic.Queue[object]]::new()
   $env:AZURE_ENV_NAME = 'zavagf'
   $env:AZURE_LOCATION = 'eastus2'
@@ -60,6 +68,10 @@ $global:foundryCleanupFixture.groupExists = 'false'
 & $hook
 if ($calls.Count) { throw 'Missing group reached the data plane.' }
 Reset-Case
+$global:foundryCleanupFixture.projectMissing = $true
+& $hook
+if ($calls.Count) { throw 'Missing project reached the data plane.' }
+Reset-Case
 Add-Response 404
 Add-Response 404
 & $hook
@@ -89,5 +101,5 @@ Add-Response 202
 for ($i = 0; $i -lt 60; $i++) { Add-Response 200 $owned }
 Assert-Refused 'still visible'
 if ($calls.Count -ne 62) { throw 'Deletion visibility polling exceeded its bound.' }
-Write-Host 'PASS 10 focused Foundry cleanup checks'
+Write-Host 'PASS 11 focused Foundry cleanup checks'
 Remove-Variable -Name foundryCleanupFixture -Scope Global
