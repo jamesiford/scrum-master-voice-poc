@@ -24,7 +24,7 @@ They used the existing Easy Auth credential only in memory; deployed
 managed-identity federation and real source/member enforcement remain
 unproved. Work IQ metadata adapters are real but unregistered in the
 deployed API image `git-3d24f8e`; no content consumer is enabled.
-G7 fails revised dates (75%, n=8); latest fallback p50 regression is +6.19%
+G7 fails revised dates (75%, n=8); historical fallback p50 regression is +6.19%
 (n=10 before, n=12 after). No threshold or Domain rule was changed to pass.
 
 **G8 recovery (ADR0031):** exact zavagf/eastus2 is admitted by native hooks,
@@ -226,7 +226,7 @@ External dependencies:
 | Work IQ signals | M11 8B-r: contracts, unregistered owner-OBO and metadata-discovery adapters built; live tools/list n1 succeeds. Content spike and all four integrations blocked, G11 content n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADRs 0027, 0034) |
 | Identity | Built: Entra bearer validation, app/team roles, federated OBO approval and portal audit. Open: live Teams SSO and agent policy acceptance | Reviewed least privilege, agent governance and access reviews |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
-| Quality | Built: final947.NET/25bridge checks have passing evidence after one unchanged retro retry; live content-free API/bridge workbook. Open: initial model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
+| Quality | Built: reconciliation968.NET/25bridge checks pass in first aggregate runs, plus17pure hook checks; live content-free API/bridge workbook. Open: historical model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
 | History for KPIs | Azure DevOps Analytics if history exists, else a JSON fixture | Fabric OneLake plus Power BI semantic model |
 
 ---
@@ -1166,13 +1166,26 @@ approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
 **M11 10 status (documentation/deployment subset).** Reconcile documentation,
 human prerequisites and final gate evidence; attempt G8 only in the authorised
 old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
-prove the final solution. Final validation now records947.NET/25bridge
+prove the final solution. Historical final validation records947.NET/25bridge
 checks with passing evidence after one unchanged retrospective retry, all
 three builds/checks and zavaw3 verify8/8. Initial retro11/12 aggregate,
 latest fallback p95+12.75% and G7 dates75%n8 remain explicit failures/risks;
 goldens, thresholds and Domain rules are unchanged (ADR0030).
 Real Teams/Copilot rehearsal and film UI/reset enhancements remain follow-ons. No native,
 knowledge or Work IQ acceptance is inferred from scripted Direct runs.
+
+**M11 redo reconciliation (27 November 2026):** one aggregate.NET run
+passes968/968 across all seven suites, including architecture14 and
+WindowsMediaBot20. Bridge unit13/13 and first sequential E2E12/12 pass
+(retro310.03s, standup387.26s), plus17pure greenfield hook checks. All three
+builds, full format and both TypeScript lint/typechecks pass. Initial Debug
+CS2012 output lock is recovered with an isolated Release build before tests;
+no code/threshold/golden/prompt change. Mandatory zavaw3 verify8/8,
+revision62/audit, Direct3065/3933ms,n12 passes with native readiness5/5 and
+no restart. This is not G8/G10/G11 acceptance or proof of deployed MI-OBO.
+No new use case/API, runtime deployment, resource or zavagf operation;
+the section6.1.4/14 catalogues remain unchanged. See
+`gates/reconcile-M11.json` for exact counts and retained failures.
 
 ---
 

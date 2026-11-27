@@ -8,7 +8,7 @@ failed readiness/paired protocol (424, completed paired samples n=0).
 Native Windows hosting/TLS/renderer are verified, not native Teams
 attribution/join/board acceptance. Five delegated Copilot skills and package
 1.1.0 are implemented, with real Copilot G5 still open. G7 revised dates fail
-(75%, n=8); latest fallback p95 regression fails (+12.75%, n=12/12),
+(75%, n=8); historical fallback p95 regression fails (+12.75%, n=12/12),
 and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
 model deviation remains a reliability risk. G8 recovery has one complete
@@ -244,7 +244,26 @@ Azure DevOps, external meeting state or the whole roster/cast configuration.
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-The M11 final checkpoint (26 November 2026) passes947.NET tests:
+The redo reconciliation (27 November 2026) passes968/968.NET tests in one
+aggregate run: Domain424, Application225, Infrastructure108, Api168,
+architecture14, AgentHost9 and WindowsMediaBot20, zero failures/skips.
+Bridge unit13/13 and real retrospective6/6 in310.03s/standup6/6 in387.26s
+pass on the first sequential E2E aggregate, no retries or code/prompt changes:
+993unique.NET/bridge checks, plus17pure hook checks (1010including hooks).
+All three builds/full C# format/both TypeScript lint/typecheck/Prettier pass;
+the portal still has no configured tests. Initial Debug CS2012 file lock
+during concurrent GateRunner compilation is recovered by an isolated
+Release build,35.18s/zero warnings/errors, before the first.NET test run.
+Mandatory zavaw3 verify8/8 passes443.50s with actual approver-authored
+revision62/audit; Direct3065/3933ms,n12,talkovers0. Compared with preceding
+8B-r3319/3803ms,n12, -7.65%/+3.42% is within unchanged regression tolerances,
+not formal/native or retrieval acceptance. Native readiness5/5 passes
+without a restart; existing APIgit-3d24f8e/revision85 and bridgegit-8859a7a/
+revision9 remain Running/HTTP200. No feature/runtime/resource/policy change.
+Historical failures below and G8failed1/2/G10-G11not_run,n0 remain.
+See [reconciliation evidence](gates/reconcile-M11.json).
+
+The previous M11 final checkpoint (26 November 2026) passes947.NET tests:
 424Domain,225Application,93Infrastructure,168Api,14architecture,
 3AgentHost and20WindowsMediaBot in one aggregate run, no failures/skips.
 Bridge unit tests pass13/13. All three

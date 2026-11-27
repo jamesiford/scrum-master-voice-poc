@@ -9,6 +9,15 @@ stable 4 is an optional previously measured relay; candidate 5 is unpromoted
 after readiness/protocol 424 failure (completed paired samples n=0).
 Knowledge and Work IQ are not built and the demo does not rely on either.
 
+Redo reconciliation passes968.NET, bridgeunit13 and real E2E12 on first
+aggregate runs, plus17pure hook checks; all builds/format/lints pass.
+Mandatory zavaw3 verify8/8 includes actual approver-authored revision62/audit,
+Direct3065/3933ms,n12,talkovers0 and native readiness5/5 without a restart.
+The E2E retrospective takes310.03s and standup387.26s, not real Teams
+acceptance. Historical failed gates and prior retrospective model deviation
+remain visible; G8 is failed1/2, G10/G11not_run,n0. No feature/runtime or
+golden/threshold change. See [reconciliation evidence](gates/reconcile-M11.json).
+
 The final real Teams meeting and Copilot rehearsal are **not run, n=0**.
 Scout has completed both zavaw3 catalogue uploads and delegated IQ consents.
 An organiser and consenting users must complete DEPLOY.md's installation,
@@ -249,12 +258,14 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 ## Retrospective by voice (M9b)
 Needs the stack running, a seeded sandbox and an Azure Speech resource for the cast voices (as for the scripted standup). About 5 minutes in the Simulated Room.
 
-Final validation observed one omitted circle-back question, leaving Daniel's
+Historical final validation observed one omitted circle-back question, leaving Daniel's
 self-correction unspoken; the effective default prompt was correct. Initial
 retrospective5/6, then one unchanged focused retry6/6 in267.29s. This is a
 live model reliability risk, not a removed assertion or a deterministic fix.
 Retain that evidence when rehearsing; scripted success does not prove Teams
 or native acceptance. See ADR0030 and `gates/M11-gates.md`.
+Redo reconciliation's first aggregate retrospective passes6/6 in310.03s,
+without a prompt, cast, assertion change or retry; the historical risk remains.
 
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Retrospective** tab > **Prepare retro**. A card **Run it by voice** appears.

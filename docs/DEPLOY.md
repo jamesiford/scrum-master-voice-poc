@@ -11,7 +11,29 @@ See [ADR 0015a](adr/0015a-greenfield-deployment-model.md),
 [measured gates](gates/M11-gates.md). Knowledge/Work IQ are unbuilt and add
 no delivered sources, Search service or signal resources.
 
-## Final validation is not an all-green release
+## Redo reconciliation is not an all-green release
+
+On27November2026 the requested first aggregate runs pass968/968.NET and
+25/25bridge checks (unit13, real E2E12), plus17pure hook checks. All three
+builds/full C# format/both TypeScript typechecks/ESLint/Prettier pass;
+portal has no configured tests. Initial concurrent Debug compilation hit
+CS2012 before tests; isolated Release compilation passes35.18s with
+zero warnings/errors, without stopping shared compiler/security processes.
+No new feature/runtime deployment, grant, billing, resource, governance
+policy or zavagf lifecycle action was made.
+
+Explicit `azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\verify.ps1
+-Runs 1 -GateOutput .m11-plan\run-log\reconcile-zavaw3-gates\runs` passes
+8/8 in443.50s, including native readiness5/5 without a restart and one
+genuine approver-authored item1/revision62/complete audit. Direct scripted
+latency3065/3933ms,n12,talkovers0 is within regression tolerances versus
+preceding8B-r, not a formal/native/retrieval result. Existing APIgit-3d24f8e/
+revision85 and bridgegit-8859a7a/revision9 remain Running/HTTP200.
+Inherited failures, G8failed1/2 and G10/G11not_run,n0 remain explicit.
+[Aggregate evidence](gates/reconcile-M11.json) retains initial compilation
+failure, current measurements and unchanged golden hash.
+
+### Historical final validation (26 November 2026)
 
 On26November2026, explicit `azd exec -e zavaw3 -- pwsh -NoProfile -File
 infra\hooks\verify.ps1 -Runs 1` passes all8mandatory checks. It includes one

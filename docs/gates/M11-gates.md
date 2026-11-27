@@ -1,5 +1,53 @@
 # M11 gates
 
+## Reconciliation validation (27 November 2026)
+
+One aggregate .NET run passes **968/968**, zero failures/skips: Domain424,
+Application225, Infrastructure108, Api168, architecture14, AgentHost9 and
+WindowsMediaBot20. Bridge unit13/13 and one sequential real E2E aggregate
+12/12 pass: retrospective6/6 in310.03s, standup6/6 in387.26s, total698.74s.
+No test retry or code/prompt/cast/assertion change. This is **993 unique
+.NET/bridge checks** plus17/17 pure greenfield hook checks,1010 including
+hooks. Expected negative hook fixtures are asserted refusals, not live
+failures. Portal has no configured tests; build/lint is not a test pass.
+
+All three builds, full C# formatting and both TypeScript typechecks,
+ESLint/Prettier pass. Initial Debug compilation failed CS2012 on a locked
+Infrastructure intermediate DLL during concurrent GateRunner compilation,
+before any .NET tests ran. One isolated Release build with shared compilation
+disabled passes35.18s, zero warnings/errors; no shared process was killed.
+GateRunner's initial MSB3026 copy retry and the portal's existing606.42KB
+chunk advisory are retained. No runtime change or redeployment.
+
+Mandatory **zavaw3 verify8/8**, n=1, passes443.50s including compilation,
+native hosting5/5, one genuine approver-authored item1/revision62 and complete
+auditzsa-3bdc5aed233a, session3f38db03-353e-473f-ad06-72718b549bf8.
+API imagegit-3d24f8e/revision85 and bridgegit-8859a7a/revision9 remain
+Running/HTTP200; native VM running, no scoped restart. External governance's
+prior8B-r7/8 failure/focused recovery remains historical, not erased.
+
+| Hop | p50 / p95 ms | n |
+| --- | --- | --- |
+| Total | 3065 / 3933 | 12 |
+| Transcript | 0 / 193 | 12 |
+| Analyser | 25 / 29 | 12 |
+| Decision | 147 / 177 | 12 |
+| Orchestration | 1394 / 1750 | 12 |
+| Voice first audio | 1577 / 2854 | 12 |
+
+Questions3065/3651ms,n9; modelread10/12, humansegments19, talkovers0,
+scripted standup368s. Versus preceding8B-r3319/3803ms,n12, point changes
+-7.65%p50/+3.42%p95 are within the unchanged5%/10% regression tolerances.
+Different windows and no runtime change do not prove causal/native/retrieval
+parity. G1 stays failed on inherited measurements, G4 exact board and G7
+dates/calibration failures remain; no new model evaluation. G8/G10/G11
+are reconciled below, not passed by this checkpoint. Golden SHA256 matches
+before/after; no thresholds, Domain rules, prompts or cast changed.
+No new resource/grant/billing/governance policy or zavagf lifecycle operation;
+fixed added costUSD0/hour, not an all-in consumption bill.
+[Content-free aggregate evidence](reconcile-M11.json) records denominators,
+runtime ids, failure/recovery and unchanged gate statuses.
+
 ## Current reconciled acceptance (27 November 2026)
 
 This table supersedes prerequisite absence claims in historical sections;
