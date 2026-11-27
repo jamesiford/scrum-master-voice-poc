@@ -16,6 +16,8 @@
     "voiceRoute": { "value": "${VOICE_ROUTE=Direct}" },
     "mediaHostEnabled": { "value": "${MEDIA_HOST_ENABLED=false}" },
     "mediaVmSize": { "value": "${MEDIA_VM_SIZE=Standard_D4s_v5}" },
+    "mediaVmImageSku": { "value": "${MEDIA_VM_IMAGE_SKU=2022-datacenter}" },
+    "mediaVaultPurgeProtection": { "value": "${MEDIA_VAULT_PURGE_PROTECTION=true}" },
     "mediaServiceFqdn": { "value": "${MEDIA_SERVICE_FQDN=}" },
     "bridgeMode": { "value": "${BRIDGE_MODE=Acs}" },
     "boardMode": { "value": "${BOARD_MODE=Share}" }

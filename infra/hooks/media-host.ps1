@@ -3,9 +3,7 @@ param([switch]$ConsentOnly, [switch]$RuntimeOnly)
 . "$PSScriptRoot/lib.ps1"
 Import-AzdEnvironment
 if ($env:MEDIA_HOST_ENABLED -ne 'true') { Write-Check SKIP 'Windows media host' 'MEDIA_HOST_ENABLED is false'; return }
-if ($env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCATION -ne 'westus3' -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513') {
-  throw 'This conductor media deployment is authorised only for zavaw3 in westus3.'
-}
+Assert-MediaDeploymentEnvironment
 if ($ConsentOnly -and $RuntimeOnly) { throw 'ConsentOnly and RuntimeOnly cannot be combined.' }
 $displayName = "zava-media-$($env:AZURE_ENV_NAME)"
 $app = (Invoke-Graph GET "/applications?`$filter=displayName eq '$displayName'").value

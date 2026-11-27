@@ -13,6 +13,12 @@ param adminObjectId string
 @description('VM size, initially four vCPU for audio and the later board encoder.')
 param vmSize string = 'Standard_D4s_v5'
 
+@description('Windows Server 2022 image SKU. Use 2022-datacenter-g2 for Gen2-only VM sizes.')
+param imageSku string = '2022-datacenter'
+
+@description('Protect the media vault from purge. Disable only for an explicitly disposable proof environment.')
+param vaultPurgeProtection bool = true
+
 @description('Optional certificate-covered owned DNS name; empty uses the Azure public IP DNS name.')
 param serviceFqdn string = ''
 
@@ -85,7 +91,7 @@ module vm 'br/public:avm/res/compute/virtual-machine:0.23.0' = {
     osType: 'Windows'
     adminUsername: 'zavaMediaAdmin'
     adminPassword: adminPassword
-    imageReference: { publisher: 'MicrosoftWindowsServer', offer: 'WindowsServer', sku: '2022-datacenter', version: 'latest' }
+    imageReference: { publisher: 'MicrosoftWindowsServer', offer: 'WindowsServer', sku: imageSku, version: 'latest' }
     osDisk: { createOption: 'FromImage', managedDisk: { storageAccountType: 'StandardSSD_LRS' } }
     managedIdentities: { systemAssigned: true }
     bootDiagnostics: true
@@ -109,7 +115,7 @@ resource vault 'Microsoft.KeyVault/vaults@2024-11-01' = {
     sku: { name: 'standard', family: 'A' }
     enableRbacAuthorization: true
     enableSoftDelete: true
-    enablePurgeProtection: true
+    enablePurgeProtection: vaultPurgeProtection
     softDeleteRetentionInDays: 7
     publicNetworkAccess: 'Enabled'
   }

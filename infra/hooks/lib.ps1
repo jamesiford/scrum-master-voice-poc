@@ -40,6 +40,33 @@ function Write-Check([string]$Status, [string]$Name, [string]$Detail = '') {
   if ($Status -eq 'FAIL') { $script:Failures++ }
 }
 
+# Preserve separately approved optional permissions when reconciling the baseline application declarations.
+function Merge-RequiredResourceAccess($Existing, $Required) {
+  $resources = [ordered]@{}
+  foreach ($resource in @($Existing) + @($Required)) {
+    if (-not $resource) { continue }
+    if (-not $resources.Contains($resource.resourceAppId)) { $resources[$resource.resourceAppId] = [ordered]@{} }
+    foreach ($permission in $resource.resourceAccess) {
+      $resources[$resource.resourceAppId]["$($permission.type):$($permission.id)"] = @{
+        id = $permission.id; type = $permission.type
+      }
+    }
+  }
+  foreach ($id in $resources.Keys) {
+    @{ resourceAppId = $id; resourceAccess = @($resources[$id].Values) }
+  }
+}
+
+# Keep the existing deployment protected while permitting the explicitly authorised old-environment G8 proof.
+function Assert-MediaDeploymentEnvironment {
+  $allowed = ($env:AZURE_ENV_NAME -eq 'zavaw3' -and $env:AZURE_LOCATION -eq 'westus3') -or
+    ($env:AZURE_ENV_NAME -eq 'zavagf' -and $env:AZURE_LOCATION -eq 'eastus2')
+  if (-not $allowed -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513' -or
+    $env:AZURE_RESOURCE_GROUP -ne "rg-zava-scrum-$($env:AZURE_ENV_NAME)") {
+    throw 'Media deployment requires zavaw3/westus3 or zavagf/eastus2 and its exact resource group in the designated subscription.'
+  }
+}
+
 # Microsoft Graph through the signed-in Azure CLI session (the CLI's own token carries Application.ReadWrite.All and
 # AppRoleAssignment.ReadWrite.All for an administrator).
 function Invoke-Graph([string]$Method, [string]$Path, $Body = $null) {

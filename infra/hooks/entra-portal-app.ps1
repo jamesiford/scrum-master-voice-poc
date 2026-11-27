@@ -45,15 +45,17 @@ $adoScope = $adoSp.oauth2PermissionScopes | Where-Object { $_.value -eq 'user_im
 if (-not $adoScope) { throw 'Azure DevOps exposes no user_impersonation scope in this tenant.' }
 
 # Scope first, then the pre-authorised client (Graph rejects a pre-authorisation for a scope that does not exist yet).
+$existingAccess = (Invoke-Graph GET "/applications/$($app.id)?`$select=requiredResourceAccess").requiredResourceAccess
+$requiredAccess = @(
+  @{ resourceAppId = $graphAppId; resourceAccess = @(@{ id = $graphUserRead; type = 'Scope' }) }
+  @{ resourceAppId = $adoAppId; resourceAccess = @(@{ id = $adoScope.id; type = 'Scope' }) })
 Invoke-Graph PATCH "/applications/$($app.id)" @{
   displayName    = $displayName
   # The second URI is the form Teams single sign-on for bots expects (api://botid-<app id>); the portal keeps api://<app id>.
   identifierUris = @("api://$($app.appId)", "api://botid-$($app.appId)")
   web            = @{ implicitGrantSettings = @{ enableIdTokenIssuance = $true } }
   appRoles       = @($roles)
-  requiredResourceAccess = @(
-    @{ resourceAppId = $graphAppId; resourceAccess = @(@{ id = $graphUserRead; type = 'Scope' }) }
-    @{ resourceAppId = $adoAppId; resourceAccess = @(@{ id = $adoScope.id; type = 'Scope' }) })
+  requiredResourceAccess = @(Merge-RequiredResourceAccess $existingAccess $requiredAccess)
   api            = @{
     requestedAccessTokenVersion = 2
     oauth2PermissionScopes      = @(@{

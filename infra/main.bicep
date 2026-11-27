@@ -41,6 +41,14 @@ param mediaHostEnabled string = 'false'
 @description('The media VM SKU. Four vCPU is the initial floor for audio and board encoding.')
 param mediaVmSize string = 'Standard_D4s_v5'
 
+@allowed([ '2022-datacenter', '2022-datacenter-g2' ])
+@description('Windows Server 2022 image SKU; Gen2-only VM sizes require 2022-datacenter-g2.')
+param mediaVmImageSku string = '2022-datacenter'
+
+@allowed([ 'false', 'true' ])
+@description('Media vault purge protection. Keep true except for an explicitly disposable teardown/rebuild proof.')
+param mediaVaultPurgeProtection string = 'true'
+
 @description('Optional owned DNS name for the trusted media certificate. Point it at the output public IP before bootstrap.')
 param mediaServiceFqdn string = ''
 
@@ -170,6 +178,8 @@ module mediaHost 'modules/media-host.bicep' = if (mediaHostEnabled == 'true') {
     tags: tags
     adminObjectId: adminObjectId
     vmSize: mediaVmSize
+    imageSku: mediaVmImageSku
+    vaultPurgeProtection: mediaVaultPurgeProtection == 'true'
     serviceFqdn: mediaServiceFqdn
   }
 }
