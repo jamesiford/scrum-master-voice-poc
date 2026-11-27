@@ -1,4 +1,7 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Reflection;
 using OpenTelemetry;
@@ -9,6 +12,23 @@ namespace Zava.Scrum.Api.Tests;
 
 public sealed class TelemetryTests
 {
+    [Theory]
+    [InlineData(null)]
+    [InlineData("InstrumentationKey=22222222-2222-2222-2222-222222222222")]
+    public void Configure_ExplicitExporterDestination_DoesNotRequireOrOverrideReservedPlatformVariable(string? platformConnection)
+    {
+        var builder = WebApplication.CreateBuilder();
+        const string destination = "InstrumentationKey=11111111-1111-1111-1111-111111111111";
+        builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"] = platformConnection;
+        builder.Configuration["AzureMonitor:ConnectionString"] = destination;
+
+        TelemetryBootstrap.Configure(builder, "test");
+        using var provider = builder.Services.BuildServiceProvider();
+
+        Assert.Equal(destination, provider.GetRequiredService<IOptions<AzureMonitorOptions>>().Value.ConnectionString);
+        Assert.Equal(platformConnection, builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+    }
+
     private sealed class RecordingExporter : BaseExporter<Activity>
     {
         public List<Activity> Activities { get; } = [];

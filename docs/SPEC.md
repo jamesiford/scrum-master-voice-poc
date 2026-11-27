@@ -189,7 +189,7 @@ External dependencies:
 | State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
 | Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
-| Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export requires `APPLICATIONINSIGHTS_CONNECTION_STRING`; live evidence is in G7. Foundry quality evaluation stays unrun because required messages conflict with content capture OFF (ADR 0028). |
+| Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export uses `APPLICATIONINSIGHTS_CONNECTION_STRING` or explicit `AzureMonitor:ConnectionString` SDK configuration; live evidence is in G7. Foundry quality evaluation stays unrun because required messages conflict with content capture OFF (ADR 0028). |
 | Tests | xUnit for Domain rules, state machine, handlers (hand-written fakes) and the mediator; NetArchTest.Rules architecture tests (**VERIFY** version; ArchUnitNET fallback); one Playwright end-to-end test of a scripted standup |
 
 ---
@@ -1082,6 +1082,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Bot:AppId`, `Bot:TenantId`, `Bot:TunnelHostSuffix` | Teams bot (an empty `Bot:AppId` turns the bot off); dev-tunnel guard | `.devtunnels.ms` locally, empty in Azure |
 | `Connections:ServiceConnection:Settings:ClientId`, `:ClientSecret` (**secret**), `:TenantId`, `:AuthorityEndpoint`, `:AuthType`, `:Scopes`; `ConnectionsMap` | Microsoft 365 Agents SDK connection | `AuthType` `ClientSecret` |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` (environment variable) | Turns on OpenTelemetry export to Application Insights; empty means no telemetry | Set by Bicep in Azure; empty locally |
+| `AzureMonitor:ConnectionString` | Explicit existing .NET exporter destination; does not mutate the platform variable | Hosted hook uses `AzureMonitor__ConnectionString` because Foundry reserves the ordinary setting for project monitoring |
 | `Telemetry:CaptureContent` (all four hosts) | Must remain false; true fails startup rather than exporting employee prompts, completions or utterances | Explicit false in deployed templates/hooks; no development content switch shipped |
 | `Identity:TenantId` (falls back to `Azure:TenantId`, `Bot:TenantId`) | The tenant every approver must belong to; blank means nothing can be approved | Empty |
 | `Identity:AdminObjectIds` | Entra object ids that count as administrators in Teams (decide any follow-up, plan or calendar; run "prepare sprint planning"); replaces `Team:ScrumMasters` | Empty |

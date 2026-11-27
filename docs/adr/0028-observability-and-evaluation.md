@@ -31,6 +31,20 @@ with a team privacy counter. Raw browser console/error and model exception
 bodies are omitted; actual call errors remain visible in the UI.
 Console/container operational logs remain a separate diagnostic surface.
 
+Live Foundry creation rejected `APPLICATIONINSIGHTS_CONNECTION_STRING` with
+HTTP400/`invalid_payload`: that variable is platform-reserved. Current
+[hosted export guidance](https://learn.microsoft.com/azure/foundry/agents/how-to/configure-hosted-agent-telemetry)
+requires project monitoring for automatic injection. This project has no
+monitoring connection. Do not enable broader platform capture to evade the
+content policy. Instead configure our actual .NET Azure Monitor exporter via
+its documented `AzureMonitorOptions.ConnectionString`, supplied as
+`AzureMonitor__ConnectionString`; never mutate/override the reserved variable.
+The shared bootstrap supports the ordinary platform setting when no explicit
+SDK destination is supplied. No additional collector, exporter, role or
+project connection. Tests resolve the real SDK options with and without an
+injected value. Windows `az.cmd` removed inline JSON quotes for workbook tags;
+use a typed parameter file and delete only that unique temporary file.
+
 The workbook filters one team and queries real hop spans, join event outcomes
 and approved decisions preceding writes in the same session operation id.
 Accepted requests are not established calls or unique join-success rates.

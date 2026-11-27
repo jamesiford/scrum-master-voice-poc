@@ -35,7 +35,7 @@ Write-Check PASS 'agent host image' $image
 $model = if ($env:VOICELIVE_MODEL) { $env:VOICELIVE_MODEL } else { 'gpt-realtime-2.1' }
 $out = dotnet run --project (Join-Path $repo 'tools/AgentDeploy') -- --endpoint $endpoint --name $agent --image $image --tenant $env:AZURE_TENANT_ID `
   --env "VOICELIVE_ENDPOINT=wss://$account.services.ai.azure.com/voice-live/realtime" --env "VOICELIVE_MODEL=$model" --env 'VOICELIVE_API_VERSION=2026-04-10' `
-  --env "APPLICATIONINSIGHTS_CONNECTION_STRING=$($env:APPLICATIONINSIGHTS_CONNECTION_STRING)" --env 'Telemetry__CaptureContent=false'
+  --env "AzureMonitor__ConnectionString=$($env:APPLICATIONINSIGHTS_CONNECTION_STRING)" --env 'Telemetry__CaptureContent=false'
 if ($LASTEXITCODE -ne 0) { throw 'Creating the hosted agent version failed.' }
 $version = ($out | Where-Object { $_ -like 'VERSION=*' } | Select-Object -Last 1).Split('=')[1]
 if ($Canary) { Set-AzdValue AGENT_HOST_CANARY_VERSION $version }

@@ -24,7 +24,9 @@ public static class TelemetryBootstrap
         }
 
         AppContext.SetSwitch("Azure.Experimental.TraceGenAIMessageContent", false);
-        if (string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"])) { return; }
+        var connectionString = builder.Configuration["AzureMonitor:ConnectionString"]
+            ?? builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        if (string.IsNullOrWhiteSpace(connectionString)) { return; }
         builder.Logging.AddFilter<OpenTelemetryLoggerProvider>((_, _) => false);
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(service))
@@ -33,6 +35,7 @@ public static class TelemetryBootstrap
             .WithMetrics(metrics => metrics.AddMeter(SessionTelemetry.SourceName, "Zava.Scrum.Agents"))
             .UseAzureMonitor(options =>
             {
+                options.ConnectionString = connectionString;
                 // One decision for the session trace, not independently rate-limited hops.
                 options.TracesPerSecond = null;
                 options.SamplingRatio = 1;

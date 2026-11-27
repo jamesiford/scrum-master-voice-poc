@@ -71,6 +71,14 @@ The approval trail is the Cosmos container `ApprovalRecords`. The managed identi
 
 ## Container registry permissions
 
+The hosted exporter hook uses `AzureMonitor__ConnectionString` to configure
+the existing .NET SDK directly. Foundry reserves
+`APPLICATIONINSIGHTS_CONNECTION_STRING` for project-monitoring injection and
+rejects a version declaring it. Do not enable project-wide content capture as
+a workaround. API/bridge/native retain the ordinary setting; all hosts refuse
+`Telemetry:CaptureContent=true`. The workbook update uses a temporary typed
+parameter file because Windows `az.cmd` strips inline JSON quotes.
+
 The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, set explicitly. In that mode the Foundry project identity needs **AcrPull**, not Container Registry Repository Reader (ADR 0015 S3). Both identities get AcrPull in `data.bicep`. If you switch the mode to ABAC, change the role to Container Registry Repository Reader.
 
 ## Human gates

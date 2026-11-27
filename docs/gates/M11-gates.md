@@ -20,7 +20,7 @@ hashes are in `docs/gates/decision-M11`.
 | Local privacy/trace/approval/architecture | Pass; actual normal exporter suppresses immutable content events; verified parent metadata never replaces explicit team ownership | privacy/native16,approval9,decision14,relay3,architecture14,bridgeHTTPtrace1 |
 | Build/format/typecheck/lint | All three builds, full C# format and both TS typechecks/linters pass | targeted only; no full-suite rerun |
 | Workbook/live deployment acceptance | Pending scoped deployment and actual live queries; local exporter tests alone do not close it | n0 at this checkpoint |
-| Before Direct Simulated Room latency | p50/p95 total3200/5600ms,356s,zero talk-overs | n10 turns,15human transcript pieces |
+| Before Direct Simulated Room latency | p50/p95 total3200/5600ms,356s,zero talk-overs | n10 turns |
 
 Release policy/commands are in `demo/evaluation/README.md`; daily CI reports
 non-blockingly, `--release-check` returns1 for unmet or absent model evidence.

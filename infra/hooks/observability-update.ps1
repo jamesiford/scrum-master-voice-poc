@@ -12,8 +12,21 @@ foreach ($app in @($env:API_APP_NAME, $env:BRIDGE_APP_NAME)) {
   if ($LASTEXITCODE -ne 0) { throw "Cannot update the exporter settings on $app." }
 }
 $connection = $null
-az deployment group create --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP `
-  --name observability-workbook --template-file "$PSScriptRoot\..\modules\workbook.bicep" `
-  --parameters "location=$($env:AZURE_LOCATION)" "appInsightsName=$($env:APPINSIGHTS_NAME)" 'tags={"azd-env-name":"zavaw3"}' -o none
-if ($LASTEXITCODE -ne 0) { throw 'The scoped workbook deployment failed.' }
+$parameterFile = Join-Path ([IO.Path]::GetTempPath()) ("zava-workbook-$([Guid]::NewGuid().ToString('N')).json")
+try {
+  @{
+    '$schema' = 'https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#'
+    contentVersion = '1.0.0.0'
+    parameters = @{
+      location = @{ value = $env:AZURE_LOCATION }
+      appInsightsName = @{ value = $env:APPINSIGHTS_NAME }
+      tags = @{ value = @{ 'azd-env-name' = 'zavaw3' } }
+    }
+  } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $parameterFile -Encoding utf8
+  az deployment group create --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP `
+    --name observability-workbook --template-file "$PSScriptRoot\..\modules\workbook.bicep" `
+    --parameters "@$parameterFile" -o none
+  if ($LASTEXITCODE -ne 0) { throw 'The scoped workbook deployment failed.' }
+}
+finally { Remove-Item -LiteralPath $parameterFile -Force }
 Write-Check PASS 'observability' 'Existing API/bridge exporters content-off; shared metadata workbook deployed from Bicep.'
