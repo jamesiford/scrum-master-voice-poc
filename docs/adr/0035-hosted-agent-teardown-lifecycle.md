@@ -67,3 +67,58 @@ Initial full purge passes1641.7849s. Exact resource group and matching
 soft-deleted Foundry/vault absence read back19:13:50Z; first new full up
 starts19:13:52Z with native enabled, approved D4als_v7/Gen2 and unchanged
 Direct/Acs/Share. This is0/2 completed new cycles, not a passing G8.
+
+### Full empty proof rejects a complete repair claim
+
+New full up fails1205.4765s at19:33:57Z after successful version1 creation
+30402ms. The immediate version read returns404 `Project not found`.
+Two bounded version/agent follow-ups and the distinct supported list route
+return the same error. ARM remains Succeeded with new SystemAssigned
+principal35f5f03b-0e70-446e-a30d-929756941fd3/internalId34539814c5034cb8aab9ebf782176a64.
+The endpoint is unchanged/documented and existing deployer subscription
+Owner/Foundry User access is verified without a grant.
+
+Deleting retained agents fixes the observed same-project binding but does
+not prove full account/project data-plane lifecycle reconciliation. Provider
+internals remain unknown. [Current Learn](https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent#troubleshooting) documents the version-read poll and
+directs support for unavailable project identity/provisioning; it does not
+document a blind project404 retry, naming rotation or identity toggle.
+
+The real failure exposed a safety defect: generic404 was treated as agent
+absence even when the response said the whole project was missing. The hook
+now refuses that exact error before deletion and during absence readback.
+Two new regressions pass,13focused checks total. No success-shaped fallback,
+authentication retry or speculative SDK/identity workaround is shipped.
+
+G8 remains failed/newcycles0/2. Another purge cannot safely credit absence
+of the created agent while its project namespace is unavailable. The Azure
+subscription owner must obtain Microsoft Foundry support reconciliation and
+prove real agent/version/list reads before both new full cycles resume.
+DEPLOY.md gives the exact resource, identity, version, times and owner action.
+Independent native/Direct recovery and final VM-only deallocation completed;
+they do not credit the failed full deployment.
+
+Final independent native5/5 and mandatoryverify8/8 pass376.6268s,
+Direct2862/4397ms,n12, questions3247/4397ms,n9, modelread10/12,
+humansegments19/talkovers0 and actual approverrevision66/auditzsa-67e38e91111a.
+Baseline3021/4168ms,n12 yields-5.26%/+5.49% point deltas, not a paired
+sample; inherited G1 failures and original baseline7/8 remain.
+Only the media VM is deallocated19:51:52Z;25 resources remain,
+API/bridgeHTTP200 and native HTTPS intentionally unavailable.
+
+A final safe lifecycle restart through the published guard at19:53:32Z
+fails11.7053s before any resource deletion on the same project404. This
+live check proves the new refusal, not merely its fake-HTTP regression.
+No additional project read/authentication loop or unsafe guard bypass
+follows. Provider repair is the only remaining prerequisite for2/2 cycles.
+Known media computeUSD0.345/hour is removed; disk/IPUSD0.018150685/hour
+and foundations/variable usage remain. Existing F0nativebot USD0/hour
+is the only additional ARM recovery registration; no new code resource type.
+
+Independent legal-page/package hooks also pass. One real catalogue POST
+20:00:28Z refuses403Forbidden for missing AppCatalog.Submit/
+AppCatalog.ReadWrite.All/Directory.ReadWrite.All OAuth scopes, request
+47576c18-613e-4c3b-bb4a-8124f00f84d1. This is not the resolved calling-app
+permission gate; no CLI scope widening or authentication retry follows.
+DEPLOY documents the already-listed Teams administrator upload for only
+the newzavagf package/id654a0c74; existingzavaw3/mcm entries remain untouched.

@@ -41,12 +41,20 @@ Do not edit the Presenter Pack or fabricate UI/evidence for the film.
 
 ### G8 recovery evidence is not a real Teams rehearsal
 
-Second recovery is running (ADR0035), only zavagf/eastus2. Current calling-app
+Second recovery is provider-blocked (ADR0035), only zavagf/eastus2. Current calling-app
 PATCH succeeds and the owned retained relay is deleted with absence
 readback by the new predown hook. Same-project recreation becomes active
-in43485ms with a new agent identity and no409. Two full empty cycles are still pending.
+in43485ms with a new agent identity and no409. The first NEW empty up
+fails1205.4765s: version1 creation30402ms succeeds, then version/agent/list
+reads return404 `Project not found` despite ARM Succeeded. Newcycles0/2;
+do not label independent native/Direct recovery as a completed cycle.
+Provider repair precedes another safe purge; cleanup fails closed on this404.
 Do not change the untouched zavaw3 demo or infer native Teams acceptance.
 The current attempt ends with the zavagf media VM deallocated.
+Final independent verify8/8/native5/5/revision66 and Direct2862/4397ms,n12
+pass, not a full-cycle or Teams sample. VMdeallocated19:51:52Z, all25
+resources retained/API+bridge200; native HTTPS unavailable by design.
+Final guarded down fails11.71s before deletion on the same project404.
 The chronology below belongs to the previous attempt.
 
 Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
@@ -69,7 +77,7 @@ deployment or a native/live acceptance sample.
 The full native-enabled retry failed1229.5552s after three409 creations/two
 successful reads. Independent media completion then failed403
 Authorization_RequestDenied, request07d95ae3-fd0a-4479-9442-9e7d14dd3abf.
-G8 is human-blocked,1/2 complete cycles; the allocated current native VM is
+G8 was then human-blocked,1/2 complete cycles; that allocated native VM was
 not bootstrapped. Independent legal pages/messaging package generation
 passed without a catalogue authentication retry. Follow DEPLOY.md's exact
 administrator/support actions; retain the untouched zavaw3 demo.

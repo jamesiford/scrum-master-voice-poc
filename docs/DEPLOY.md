@@ -57,18 +57,18 @@ this checkpoint supplies no new human fixtures. ADR0030 and
 
 **Second recovery attempt (27 November 2026, ADR0035):** current unchanged
 calling-app reconciliation succeeds, so the historical403 below is not an
-open application-write gate for this operation. Current live project
-readback still exposes the first cycle's agent despite an empty deleted
+open application-write gate for this operation. Before the initial purge, live project
+readback exposed the first cycle's agent despite an empty deleted
 account list. A guarded `predown` hook now deletes only the two code-owned
 hosted agents through the supported data-plane API and confirms absence
 before project identity teardown. Protected environments and unrelated
 images are refused. Controlled cleanup and same-project recreation pass:
 version1 creates30222ms/active43485ms, new instance principalc1aa55e6,
 unchanged project principal3bce4b0f/internalId2c4c5e3d. This isolates the
-retained agent/workspace binding as the observed409 cause; account
-purge alone did not clear it. Eleven focused lifecycle checks,17existing
-hook checks and all3builds pass. Both full empty cycles are pending;
-G8 is not yet passed.
+retained agent/workspace binding; account purge alone did not clear it.
+This controlled probe is NOT a complete project-lifecycle repair.
+Thirteen focused lifecycle checks,17existing hook checks and all3builds pass.
+G8 remains failed at0/2 new complete cycles.
 Only zavagf/eastus2 is authorised. Initial media bootstrap instead hit
 OperationNotAllowed because external governance deallocated the VM at08:46Z;
 one owned start/retry completed without a policy change. At the end of
@@ -79,6 +79,74 @@ BaselineDirect3021/4168ms,n12/revision64 is recorded with its original
 7/8 result because the SSL check preceded completed bootstrap; do not
 silently relabel it8/8. Initial purge now precedes both new emptycycles.
 The chronology below describes the previous attempt, not current readiness.
+
+**Current provider gate, not an expired-administrator gate:** initial purge
+passes1641.7849s and exact group/deletedaccount/deletedvault absence reads
+back19:13:50Z with all native/default inputs. The first NEW full up starts
+19:13:52Z and fails19:33:57Z after1205.4765s. Version1 creation succeeds30402ms,
+then `GetAgentVersion` fails HTTP404 NotFound:
+`{"error":{"code":"NotFound","message":"Project not found"}}`.
+Two bounded follow-up version/agent reads and a distinct agent-list
+diagnostic reproduce the same error. ARM remains Succeeded/SystemAssigned,
+principal `35f5f03b-0e70-446e-a30d-929756941fd3`, internalId
+`34539814c5034cb8aab9ebf782176a64`, with the documented endpoint.
+Existing subscription Owner/Foundry User access is read back; no role is added.
+No documented evidence supports a naming/identity toggle or authentication
+retry. The hook now refuses this project404 rather than falsely reporting
+that the successfully created agent is absent. A second purge/up is therefore
+not safely countable until the provider restores project lookup.
+
+**Exact owner action:** the Azure subscription owner opens a Microsoft
+Foundry support request for
+`/subscriptions/4b0dd31f-5379-4acc-8dcd-60f2929d2513/resourceGroups/rg-zava-scrum-zavagf/providers/Microsoft.CognitiveServices/accounts/fdy-zava-scrum-pi7fumnppr2hk/projects/proj-zava-scrum`,
+including the fresh principal/internalId, version1/image
+`agenthost:20261127113210`, creation30402ms and19:33-19:40Z read failures.
+Microsoft must reconcile the account/project data-plane mapping; the owner
+must prove real agent/version/list reads succeed before resuming TWO new
+full empty up/verify cycles with intervening purge. Do not toggle identity,
+randomise names, change policy/quota/region/subscription or grant more roles.
+See [content-free evidence](gates/g8-proof-2-M11.json) and ADR0035.
+
+**Final independent result and cost:** new-footprint calling-app/certificate/
+bootstrap and native RequireReady5/5 pass. Mandatory Direct verify8/8 passes
+376.6268s, total2862/4397ms,n12, questions3247/4397ms,n9, modelread10/12,
+humansegments19/talkovers0; genuine approverrevision66/auditzsa-67e38e91111a.
+Baseline3021/4168ms,n12 gives point deltas-5.26%/+5.49%, within existing
+5%/10% regression tolerances, not paired/native/hosted acceptance; G1's
+historical failures remain. Original baseline7/8 SSL failure is retained.
+These checks do not credit the failed full up.
+
+Only `vm-media-pi7fumnppr2hk` is deallocated, confirmed
+`PowerState/deallocated` at19:51:52Z. The final safe restart through the
+published guard fails in11.7053s at19:53:44Z, before any resource deletion,
+with the same project404; no bypass or further retry is made. All25 rebuilt
+resources remain, API/bridge healthHTTP200. Native HTTPS is intentionally
+unavailable after deallocation; Acs/Share/Direct remain working defaults.
+The recovery activates the existing F0 `bot-media-zavagf` registration,
+USD0/hour fixed; no new designed resource type or permission is added.
+Known media computeUSD0.345/hour is removed; retained E10disk/staticIPv4
+subtotalUSD0.018150685/hour remains, plus ACR/foundations and variable
+model/hosting/events/storage/ingestion charges, not an all-in bill.
+
+Retained application endpoints:
+https://ca-api-pi7fumnppr2hk.bluebay-467a80ea.eastus2.azurecontainerapps.io
+and https://ca-bridge-pi7fumnppr2hk.bluebay-467a80ea.eastus2.azurecontainerapps.io.
+
+Remaining independent postdeploy hooks also run: public legal pages and
+`zava-scrum-agent-zavagf-1.1.0.zip` generation pass. One actual authorised
+catalogue POST at20:00:28Z returns HTTP403 `Forbidden`, request
+`47576c18-613e-4c3b-bb4a-8124f00f84d1`:
+`Missing scope permissions on the request. API requires one of 'AppCatalog.Submit, AppCatalog.ReadWrite.All, Directory.ReadWrite.All'.`
+The CLI token has none of those OAuth scopes; administrator privilege does
+not add them. This is NOT the resolved calling-app403. No authentication
+retry, unrelated CLI grant or broader permission is made.
+**Exact catalogue owner action:** a Teams administrator uploads
+`appPackage/dist/zava-scrum-agent-zavagf-1.1.0.zip` in Teams admin centre >
+Teams apps > Manage apps > Upload new app, external/bot id
+`654a0c74-9a31-4383-9dc3-f6a44450d419`. Only this new zavagf package;
+do not replace zavaw3's completed catalogue entries or the old mcm app.
+The already-listed interactive catalogue gate is separate from G8
+hosted-project repair and from organiser RSC/native Teams acceptance.
 
 **Recovery attempt, 26 November 2026 after 20:00 PT:** the operator renewed
 Global Administrator. Live directory-role readback and unchanged
@@ -776,7 +844,7 @@ DevOps project and Teams catalogue entry remain for the next `azd up`.
 
 - Provisioning takes about 20 minutes; the Container Apps environment alone took 13.5 minutes in the proven run.
 - Hosted transport is measured in West US 3; native eastus2/final-footprint acceptance remains open. Optional relay 4 is retained; candidate 5 is unpromoted.
-- Previous G8 proof failed at1/2 complete cycles with409/403. Current actual privileged/native recovery and same-project recreation pass; both new full empty cycles and final VM-only deallocation are running requirements, not yet a G8 pass. See the authoritative second-attempt evidence above and ADR0035; no operation touches zavaw3/mcm.
+- Previous G8 proof failed at1/2 with409/403. Second proof is provider-blocked at0/2 new cycles: full up1205.4765s fails persistent project404 after version creation. Independent native/Direct checks do not credit that cycle. Exact provider action/final VM-only state are recorded above and in ADR0035; zavaw3/mcm remain untouched.
 - A new-subscription run was not possible: the work used one subscription and tenant.
 
 ## Native media preparation and human gates (6a/6b, ADR 0023)

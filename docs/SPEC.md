@@ -8,12 +8,20 @@
 
 ### M11 acceptance boundary
 
-**G8 second recovery (ADR0035):** a guarded predown lifecycle hook removes
+**G8 second recovery (ADR0035), provider-blocked, newcycles0/2:** a guarded predown lifecycle hook removes
 only code-owned hosted agents before project teardown and reads back
 absence. Current calling-app reconciliation and controlled same-project
-recreation succeed, resolving the observed retained agent/workspace409.
-Two full empty cycles are pending; this is not a new G8 pass. All
+recreation succeed, demonstrating retained-binding cleanup, not a full
+project lifecycle fix. The first new empty up fails1205.4765s after version1
+creation30402ms with persistent404 `Project not found` despite ARM Succeeded.
+The hook refuses project404 as false agent absence; provider repair is
+required before the two successful full empty cycles. This is not a G8 pass. All
 historical failures and existing adapters remain unchanged.
+
+Independent Direct verify8/8/native5/5 and approvedrevision66 pass after
+the failed full up, not cycle credit. Final media VM is deallocated;
+API/bridge remain healthy and the25-resource footprint is retained. The final
+guarded down refuses persistent project404 before any deletion.
 
 The working demo remains **Acs / Share / Direct**, with the Simulated Room
 fallback. The optional hosted relay uses stable version 4; candidate 5 returned

@@ -2,17 +2,27 @@
 
 ## G8 second recovery attempt (27 November 2026)
 
+**Current G8 failed/provider-blocked, newcycles0/2.** Initial purge
+1641.7849s and exact empty readbacks pass. New fullup1205.4765s fails after
+version1 creation30402ms: persistent HTTP404 `Project not found` on version,
+agent and list routes, despite ARM Succeeded/fresh principal/internalId.
+Controlled same-project cleanup removed the observed retained binding,
+not the provider's entire project lifecycle problem. Thirteen focused
+cleanup checks pass, including refusal of project404 as false agent absence.
+Provider repair is required before another safe purge; independent native/
+Direct verification and final VM-only deallocation are separate evidence.
+
 Current unchanged calling-app PATCH/Calls.AccessMedia.All reconciliation
 passes, n=1; historical403 is resolved for this operation. Controlled
 data-plane cleanup of the retained owned hosted relay passes with404
-readback, canary already absent. Current deleted account list[] and
+readback, canary already absent. Pre-purge deleted account list[] and
 projectSucceeded/old agent identity readbacks support a retained lifecycle
 state cause: same-project recreation createsversion1 in30222ms and is
 active43485ms, unchanged project identity and new instancec1aa55e6.
-New guarded predown hook and11focused regression checks pass; existing
+New guarded predown hook and13focused regression checks pass; existing
 greenfield17checks and all3builds pass (.NET0warnings/errors).
 Both new full empty up/verify cycles are pending, so G8 stays failed,
-not a passing cleanup proxy. Final media VM deallocation is required.
+not a passing cleanup proxy. Final media VM deallocation is complete below.
 ADR0035 and DEPLOY.md record scope/decision; older sections are historical.
 
 Early privileged native recovery is now complete: actual certificate
@@ -27,6 +37,23 @@ back19:13:50Z. First NEW full up starts19:13:52Z from12be35e;
 completed newcycles0/2.
 [Content-free second-attempt evidence](g8-proof-2-M11.json) retains the
 historical failure and controlled root-cause measurements.
+
+Final independent recovery: native5/5 and mandatoryverify8/8 in376.6268s;
+Direct total2862/4397ms,n12, questions3247/4397ms,n9, modelread10/12,
+humansegments19/talkovers0, approverrevision66/auditzsa-67e38e91111a.
+Baseline point deltas-5.26%/+5.49% satisfy existing5%/10% tolerances,
+not paired/native/hosted acceptance; inherited G1 failures remain.
+Final VMdeallocated19:51:52Z;25 resources retained/API+bridge200.
+The final guarded down fails11.7053s at19:53:44Z before any deletion on
+the same project404, proving live fail-closed handling. G8 newcycles0/2.
+Known retained media disk/IPUSD0.018150685/hour plus foundations/usage;
+computeUSD0.345/hour removed. F0nativebot fixedUSD0/hour.
+
+Independent legal pages/package generation pass. Actual catalogue POST
+20:00:28Z refuses403Forbidden for missing delegated catalogue scopes,
+request47576c18-613e-4c3b-bb4a-8124f00f84d1, distinct from resolved
+calling-app403. Teams administrator uploads only the generatedzavagf1.1.0
+package/id654a0c74 per DEPLOY. No auth retry/CLI grant or zavaw3/mcm change.
 
 ## Reconciliation validation (27 November 2026)
 
@@ -83,7 +110,7 @@ it does not replace their measured failures or invent retrieval samples.
 
 | Gate | Current result | Measured evidence and remaining boundary |
 | --- | --- | --- |
-| G8 final greenfield proof | Failed; second recovery running | Previous proof1/2, second full up1229.56s failed409 and later403, retained below. Current calling-app/fullnative recovery and same-project recreation pass; retained data-plane workspace binding is corrected by guarded predown cleanup. Both new emptycycles0/2 pending after initial purge. Baseline7/8/401.92s (SSL before completed bootstrap), focusednative5/5, Direct3021/4168ms,n12/revision64. Final VM-only deallocation required. |
+| G8 final greenfield proof | Failed; provider-blocked | Previous1/2 proof/409/403 retained. Newcycles0/2: purge1641.7849s/empty readbacks pass; full up1205.4765s fails project404 afterversion1 creation30402ms. ARM Succeeded/newidentity; version/agent/list reads404. Guarded down11.7053s refuses before deletion. Independentverify8/8/376.63s/native5/5, Direct2862/4397ms,n12/revision66 are not cycle credit. VMdeallocated,25 resources retained/API+bridge200;13new/17existingchecks/all3builds pass. Exact provider action: DEPLOY/ADR0035. |
 | G10 knowledge grounding | Not_run, n=0 | Consent/declaration reads n=1 each and genuine administrator Graph OBO/identity reads n=1 each pass; 5.362 s probe is not retrieval latency. Five teams have zero knowledge bases/stored memberships. Approved corpus, restricted document and real positive/negative members are missing; retrieval/citations/leakage/latency all n=0. |
 | G11 Work IQ signals | Not_run, n=0 | WorkIQAgent.Ask consent/declaration reads n=1 each; genuine administrator OBO/initialisations n=2 each; tools/list n=1, HTTP 200/12 tools. Complete discovery 9.352 s is not retrieval latency or billing approval. Approved Copilot Credits assignment, lead/channel/meeting UID/negative-user fixtures are missing; content/scoping/leakage/latency all n=0. |
 

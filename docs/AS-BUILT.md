@@ -2,14 +2,25 @@
 
 **Date:** November 27, 2026 (M11 redo reconciliation).
 
-**G8 second recovery is in progress (ADR0035).** Guarded azd predown now
+**G8 second recovery is provider-blocked (ADR0035), newcycles0/2.** Guarded azd predown now
 deletes the two owned hosted data-plane agents before project identity
 teardown, with absence readback. Current calling-app PATCH succeeds;
 historical403 is resolved for that operation. Same-project recreation passes
 (version1 created30222ms/active43485ms) with unchanged project identity
-and new agent identity, isolating retained workspace binding as the409 cause.
-Eleven lifecycle and17existing hook checks pass. Two full empty cycles and final VM-only deallocation are pending. G8
-remains failed until measured; previous-attempt details below are historical.
+and new agent identity, demonstrating the retained-binding cleanup.
+However, the new empty up fails1205.4765s after version1 creation30402ms:
+GET version/agent/list returns persistent404 `Project not found` while
+ARM is Succeeded with a fresh project identity. Cleanup now refuses this
+ambiguous404 instead of falsely proving agent absence;13focused and17existing
+hook checks/all3builds pass. Provider repair is required before another safe
+purge; independent native/Direct checks and final VM-only deallocation completed
+separately. G8 remains failed; previous-attempt details below are historical.
+
+Final independent verify8/8/376.63s, native5/5, Direct2862/4397ms,n12 and
+real approverrevision66/auditzsa-67e38e91111a pass, not cycle credit.
+Final VM is deallocated19:51:52Z; all25 resources remain and API/bridge200.
+The guarded restart refuses the same project404 before deletion in11.71s.
+Native HTTPS is intentionally down; inherited gates/adapters are unchanged.
 
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
@@ -20,7 +31,7 @@ attribution/join/board acceptance. Five delegated Copilot skills and package
 (75%, n=8); historical fallback p95 regression fails (+12.75%, n=12/12),
 and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
-model deviation remains a reliability risk. G8 recovery has one complete
+model deviation remains a reliability risk. The previous G8 recovery had one complete
 verified empty up/verify cycle of two; intervening purge passed1639.20s
 with group/vault/Foundry absence readback. The second cycle is incomplete.
 The attempted second deployment was reduced because teardown erased the
@@ -36,10 +47,10 @@ started07:15:07Z after complete absence and13 documented input readbacks.
 It failed 1229.5552 s later: three hosted-version creations returned the
 same409 despite two successful reads. Independent native completion then
 received403 Authorization_RequestDenied, request
-07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 is human-blocked at 1/2;
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 was then human-blocked at 1/2;
 legal pages and messaging package generation independently passed.
-Current24-resource native VM/vault provisioning is not certificate,
-SYSTEM task or renderer readiness; the current host is unbootstrapped.
+That24-resource native VM/vault provisioning was not certificate,
+SYSTEM task or renderer readiness; the host was then unbootstrapped.
 DEPLOY.md records exact administrator/support actions and continuing costs.
 Final independent mandatory verify passes8/8 in361.4580s, approved audit/
 revision58, Direct2821/4189ms p50/p95,n10,talkovers0. It explicitly prints
