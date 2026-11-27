@@ -15,9 +15,20 @@ model deviation remains a reliability risk. Final G8 proof remains failed.
 See [gate evidence](gates/M11-gates.md), [deployment gates](DEPLOY.md) and
 [ADR index](adr/README.md); knowledge and Work IQ are not demo dependencies.
 
+**G8 recovery and operator update:** renewed Global Administrator and
+unchanged zavagf privileged writes passed. Recovery uses the unrestricted
+x64 Standard_D4als_v7 (4vCPUs, Gen2, Windows USD0.345/hour) in eastus2.
+Image/purge parameters preserve existing defaults; the explicitly disposable
+zavagf vault is purgeable with soft delete retained. Hook scope guards,
+native-capacity validation, registry-role gate and optional permission merge
+are implemented (ADR0031). Two full proof cycles are pending.
+Scout completed the zavaw3 Graph Files.Read.All/Sites.Read.All and Work IQ
+WorkIQAgent.Ask delegated grants and both tenant catalogue uploads.
+Real user/source/billing/Exchange/CI/organiserRSC gates remain open.
+
 **M11 8B status (26 November 2026):** Work IQ consent and advisory evidence
 contracts are built, but the live spike and integration are blocked.
-The portal has no Work IQ grant; a licensed, consenting team lead with an
+The operator has now granted WorkIQAgent.Ask; a licensed, consenting team lead with an
 approved spending-policy assignment and scoped channel/meeting fixture is
 still required. Domain consent/revoke rules, typed Application ports and
 the unregistered read boundary have focused tests through the real mediator

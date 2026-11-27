@@ -18,6 +18,15 @@ Foundry IQ and Work IQ integrations are not built (G10/G11 not_run, n=0).
 G7 fails revised dates (75%, n=8); latest fallback p50 regression is +6.19%
 (n=10 before, n=12 after). No threshold or Domain rule was changed to pass.
 
+**G8 recovery (ADR0031):** exact zavagf/eastus2 is admitted by native hooks,
+capacity checks include restrictions/generation/available cores and both
+quota rows, and the registry image-pull role is verified before deployment.
+Optional approved Entra declarations survive baseline reconciliation.
+Gen2 image and disposable-vault purge parameters preserve original defaults;
+the selected unrestricted four-core D4als_v7 costs USD0.345/hour Windows.
+Full two-cycle proof is pending. Operator-completed zavaw3 retrieval/WorkIQ
+consents and catalogue uploads do not prove G5/G6/G10/G11 or their fixtures.
+
 ### What changed in v0.6 (M9)
 
 Built after the v0.5 reconciliation; the detail is in ADR 0010 and `AS-BUILT.md` section 11.

@@ -38,3 +38,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0028](0028-observability-and-evaluation.md) | Content-free telemetry and failed date release gate |
 | [0029](0029-final-documentation-and-greenfield-proof.md) | Final documentation and G8 acceptance boundary |
 | [0030](0030-final-validation-and-live-model-variance.md) | Final validation and retained live model failures |
+| [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Authorised eastus2 recovery, compatible image/purge parameters and idempotent hooks |

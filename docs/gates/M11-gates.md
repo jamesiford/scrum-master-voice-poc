@@ -1,5 +1,25 @@
 # M11 gates
 
+## G8 recovery attempt 1 (26 November 2026 after20:00PT)
+
+Only zavagf/eastus2 is used; zavaw3/mcm are not modified. Actual Global
+Administrator readback, unchanged application/AllPrincipals consent
+PATCH/readback n1 each, portal reconciliation and dedicated native
+Calls.AccessMedia.All consent pass. Old group13resources.
+Cheapest unrestricted compatible catalogue candidate: Standard_D4als_v7,
+4available vCPUs,8GB,x64,Gen2-only,Windows consumption USD0.345/hour.
+Family and regional quota used0/limit100; no quota request.
+Gen2/purge parameters and native/permission/RBAC hook defects are addressed
+in ADR0031; protected defaults remain unchanged for existing environments.
+Focused hook regressions16/16 and all three builds pass, .NET0warnings/errors.
+No full suites rerun. Both full empty up/verify cycles remain pending,
+not passed at this checkpoint. Exact durations/failures will be appended.
+
+The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
+consents and both catalogue uploads. Those administrator gates are closed;
+real fixture/billing/Exchange/CI/user/organiserRSC gates remain.
+G5/G6/G10/G11 still not_run,n0; old absence/refusal entries below are historical.
+
 ## Final validation (26 November 2026)
 
 The final checkpoint runs the configured suites once, aggregated, without

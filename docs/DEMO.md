@@ -10,7 +10,8 @@ after readiness/protocol 424 failure (completed paired samples n=0).
 Knowledge and Work IQ are not built and the demo does not rely on either.
 
 The final real Teams meeting and Copilot rehearsal are **not run, n=0**.
-An organiser and consenting users must complete DEPLOY.md's catalogue,
+Scout has completed both zavaw3 catalogue uploads and delegated IQ consents.
+An organiser and consenting users must complete DEPLOY.md's installation,
 roster, meeting/RSC and Copilot gates. Record the actual session id, full
 correlation id, proposal/approval records and Azure DevOps revisions from
 each run; do not reuse the scripted trace as real meeting/Copilot evidence.
@@ -55,8 +56,8 @@ shipped. Do not present the prompt editor, repo working agreements, existing
 Story Writer or ordinary escalation cards as cited knowledge retrieval.
 Continue using the existing Acs/Share/Direct and Simulated Room paths.
 
-An Entra administrator must approve both delegated retrieval scopes on the
-zavaw3 portal app, and the standards/site owner must identify an approved
+Scout has approved both delegated retrieval scopes on the zavaw3 portal app;
+the standards/site owner must still identify an approved
 corpus and a restricted document with real positive/negative consenting
 users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
 On resume, prove ten real questions through the knowledge base MCP endpoint
@@ -64,6 +65,8 @@ and caller-OBO permission trimming before integration; evaluate at least
 forty source-labelled questions per knowledge base. Show answer citations
 and explicit "I don't know" for a genuine no-source result, never guesses.
 Current retrieval, leakage and latency sample sizes are all n=0 (ADR 0026).
+For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
+exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 
 ## Before the demo (5 minutes)
 Placeholders: `<tenant-id>` and `<your-organisation>` come from your user secrets (`Azure:TenantId`, `Ado:Org`) or the azd environment (`AZURE_TENANT_ID`, `ADO_ORG_URL`); see README.
