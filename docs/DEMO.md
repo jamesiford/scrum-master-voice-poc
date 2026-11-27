@@ -1,6 +1,6 @@
 # Demo runbook
 
-## Final M11 rehearsal boundary (26 November 2026)
+## Final M11 rehearsal boundary (27 November 2026)
 
 Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
 Simulated Room fallback. Do not switch to native media for the approval film:
@@ -8,6 +8,15 @@ it is non-recording and cannot persist spoken updates or proposals. Hosted
 stable 4 is an optional previously measured relay; candidate 5 is unpromoted
 after readiness/protocol 424 failure (completed paired samples n=0).
 Knowledge and Work IQ are not built and the demo does not rely on either.
+
+Redo reconciliation passes968.NET, bridgeunit13 and real E2E12 on first
+aggregate runs, plus17pure hook checks; all builds/format/lints pass.
+Mandatory zavaw3 verify8/8 includes actual approver-authored revision62/audit,
+Direct3065/3933ms,n12,talkovers0 and native readiness5/5 without a restart.
+The E2E retrospective takes310.03s and standup387.26s, not real Teams
+acceptance. Historical failed gates and prior retrospective model deviation
+remain visible; G8 is failed1/2, G10/G11not_run,n0. No feature/runtime or
+golden/threshold change. See [reconciliation evidence](gates/reconcile-M11.json).
 
 The final real Teams meeting and Copilot rehearsal are **not run, n=0**.
 Scout has completed both zavaw3 catalogue uploads and delegated IQ consents.
@@ -64,21 +73,24 @@ windows; do not call it a native/paired acceptance sample.
 
 ## Work IQ signals readiness (M11 8B)
 
-**Not available for the demo.** Only the consent/evidence contracts and
-unregistered read boundary are built. No connection/Revoke page, channel
+**Not available for the demo.** Consent/evidence contracts, unregistered
+owner-OBO and metadata-discovery adapters are built; real administrator
+tools/list succeeds n1 with12 tools. This reads no workplace content and
+does not prove team scope, billing or G11. The existing read boundary also
+remains unregistered. No connection/Revoke page, channel
 enrichment, absent-member chase suppression, helper confirmation or cited
 review-backlog draft is enabled. Do not present synthetic contract fixtures
 as Work IQ results or M9c closure. Keep Acs/Share/Direct and Simulated Room.
 
-DEPLOY.md WORK-SIGNALS-CONSENT / WORK-SIGNALS-BILLING /
-WORK-SIGNALS-FIXTURE name the administrator, billing owner and team lead
+WORK-SIGNALS-CONSENT is completed. DEPLOY.md WORK-SIGNALS-BILLING /
+WORK-SIGNALS-FIXTURE name the billing owner, team lead and source owners'
 actions. After they complete, sign in as the real owner through portal OBO,
-discover the live schema and prove exact channel/meeting-only reads before
+rediscover the live schema and prove exact channel/meeting-only reads before
 building any supported use. Show source/title/link/time for real evidence;
 revoke and repeat to verify the visible **No signals available** banner.
 Run the disabled-team, other-team, expired-token and private-source negative
 cases and review proposal approval guard. Current live G11 samples are n=0,
-not a privacy pass. See ADR 0027 and WORK-SIGNALS-PRIVACY.md.
+not a privacy pass. See ADRs 0027/0034 and WORK-SIGNALS-PRIVACY.md.
 
 ## Foundry IQ readiness (M11 8A)
 
@@ -90,14 +102,16 @@ Continue using the existing Acs/Share/Direct and Simulated Room paths.
 
 The8A-r actual readback verifies both delegated retrieval scopes and matching
 declarations on the zavaw3 portal app; KNOWLEDGE-CONSENT is complete.
-the standards/site owner must still identify an approved
+The standards/site owner must still identify an approved
 corpus and a restricted document with real positive/negative consenting
 users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
 On resume, prove ten real questions through the knowledge base MCP endpoint
 and caller-OBO permission trimming before integration; evaluate at least
 forty source-labelled questions per knowledge base. Show answer citations
 and explicit "I don't know" for a genuine no-source result, never guesses.
-Current retrieval, leakage and latency sample sizes are all n=0 (ADRs 0026/0033).
+Current retrieval, citations, leakage and latency sample sizes are all n=0
+(ADRs 0026/0033). Consent and administrator sign-in are closed prerequisites;
+deployed managed-identity federation and real member/source trimming are unproved.
 The admin's measured OBO token exchange and Graph identity read n1 each are
 prerequisites only, not cited knowledge or a permission-trimming demonstration.
 Redo existing-zavaw3 verification passes8/8 with real approver/auditrevision59;
@@ -244,12 +258,14 @@ Needs the stack running and a seeded sandbox (re-run `SeedAdo` first: it adds th
 ## Retrospective by voice (M9b)
 Needs the stack running, a seeded sandbox and an Azure Speech resource for the cast voices (as for the scripted standup). About 5 minutes in the Simulated Room.
 
-Final validation observed one omitted circle-back question, leaving Daniel's
+Historical final validation observed one omitted circle-back question, leaving Daniel's
 self-correction unspoken; the effective default prompt was correct. Initial
 retrospective5/6, then one unchanged focused retry6/6 in267.29s. This is a
 live model reliability risk, not a removed assertion or a deterministic fix.
 Retain that evidence when rehearsing; scripted success does not prove Teams
 or native acceptance. See ADR0030 and `gates/M11-gates.md`.
+Redo reconciliation's first aggregate retrospective passes6/6 in310.03s,
+without a prompt, cast, assertion change or retry; the historical risk remains.
 
 1. **Reset:** **Live console** > **Reset demo**.
 2. **Retrospective** tab > **Prepare retro**. A card **Run it by voice** appears.
@@ -361,7 +377,7 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 
 ## Teams-native media (6a/6b)
 
-This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the catalogue upload, stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md. Native G6/G2/G1 and real-human barge-in currently have n=0.
+This alternative is hosted in zavaw3/westus3 but not live-verified in Teams, and is not the full saved-follow-up demo. Trusted TLS and dedicated media consent are automated/verified. Before native acceptance, complete the stored real calendar link, real roster identities and organiser RSC actions in DEPLOY.md; the zavaw3 catalogue upload is already completed. Native G6/G2/G1 and real-human barge-in currently have n=0.
 
 After those prerequisites, persist the choice and apply it to the existing API (an image-only deployment does not change its environment):
 

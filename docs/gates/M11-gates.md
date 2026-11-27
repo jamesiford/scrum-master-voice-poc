@@ -1,5 +1,155 @@
 # M11 gates
 
+## Reconciliation validation (27 November 2026)
+
+One aggregate .NET run passes **968/968**, zero failures/skips: Domain424,
+Application225, Infrastructure108, Api168, architecture14, AgentHost9 and
+WindowsMediaBot20. Bridge unit13/13 and one sequential real E2E aggregate
+12/12 pass: retrospective6/6 in310.03s, standup6/6 in387.26s, total698.74s.
+No test retry or code/prompt/cast/assertion change. This is **993 unique
+.NET/bridge checks** plus17/17 pure greenfield hook checks,1010 including
+hooks. Expected negative hook fixtures are asserted refusals, not live
+failures. Portal has no configured tests; build/lint is not a test pass.
+
+All three builds, full C# formatting and both TypeScript typechecks,
+ESLint/Prettier pass. Initial Debug compilation failed CS2012 on a locked
+Infrastructure intermediate DLL during concurrent GateRunner compilation,
+before any .NET tests ran. One isolated Release build with shared compilation
+disabled passes35.18s, zero warnings/errors; no shared process was killed.
+GateRunner's initial MSB3026 copy retry and the portal's existing606.42KB
+chunk advisory are retained. No runtime change or redeployment.
+
+Mandatory **zavaw3 verify8/8**, n=1, passes443.50s including compilation,
+native hosting5/5, one genuine approver-authored item1/revision62 and complete
+auditzsa-3bdc5aed233a, session3f38db03-353e-473f-ad06-72718b549bf8.
+API imagegit-3d24f8e/revision85 and bridgegit-8859a7a/revision9 remain
+Running/HTTP200; native VM running, no scoped restart. External governance's
+prior8B-r7/8 failure/focused recovery remains historical, not erased.
+
+| Hop | p50 / p95 ms | n |
+| --- | --- | --- |
+| Total | 3065 / 3933 | 12 |
+| Transcript | 0 / 193 | 12 |
+| Analyser | 25 / 29 | 12 |
+| Decision | 147 / 177 | 12 |
+| Orchestration | 1394 / 1750 | 12 |
+| Voice first audio | 1577 / 2854 | 12 |
+
+Questions3065/3651ms,n9; modelread10/12, humansegments19, talkovers0,
+scripted standup368s. Versus preceding8B-r3319/3803ms,n12, point changes
+-7.65%p50/+3.42%p95 are within the unchanged5%/10% regression tolerances.
+Different windows and no runtime change do not prove causal/native/retrieval
+parity. G1 stays failed on inherited measurements, G4 exact board and G7
+dates/calibration failures remain; no new model evaluation. G8/G10/G11
+are reconciled below, not passed by this checkpoint. Golden SHA256 matches
+before/after; no thresholds, Domain rules, prompts or cast changed.
+No new resource/grant/billing/governance policy or zavagf lifecycle operation;
+fixed added costUSD0/hour, not an all-in consumption bill.
+[Content-free aggregate evidence](reconcile-M11.json) records denominators,
+runtime ids, failure/recovery and unchanged gate statuses.
+
+## Current reconciled acceptance (27 November 2026)
+
+This table supersedes prerequisite absence claims in historical sections;
+it does not replace their measured failures or invent retrieval samples.
+
+| Gate | Current result | Measured evidence and remaining boundary |
+| --- | --- | --- |
+| G8 final greenfield proof | Failed | 1/2 complete empty cycles. First up 1828.77 s and verify 8/8 in 344.83 s. Full second up failed after 1229.56 s: three workspace-identity 409 creations despite two successful reads; independent calling-app reconciliation returned 403 Authorization_RequestDenied. Current 24-resource zavagf footprint remains unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. No zavagf operation in reconciliation. |
+| G10 knowledge grounding | Not_run, n=0 | Consent/declaration reads n=1 each and genuine administrator Graph OBO/identity reads n=1 each pass; 5.362 s probe is not retrieval latency. Five teams have zero knowledge bases/stored memberships. Approved corpus, restricted document and real positive/negative members are missing; retrieval/citations/leakage/latency all n=0. |
+| G11 Work IQ signals | Not_run, n=0 | WorkIQAgent.Ask consent/declaration reads n=1 each; genuine administrator OBO/initialisations n=2 each; tools/list n=1, HTTP 200/12 tools. Complete discovery 9.352 s is not retrieval latency or billing approval. Approved Copilot Credits assignment, lead/channel/meeting UID/negative-user fixtures are missing; content/scoping/leakage/latency all n=0. |
+
+Both redo probes used the existing Easy Auth credential only in memory.
+Deployed managed-identity federation is unproved, even though the real
+Work IQ metadata adapters are built and unregistered in API `git-3d24f8e`.
+Completed zavaw3 consent and catalogue publication are not open human gates;
+real user/organiser RSC, source, billing, Exchange RBAC and evaluation CI
+actions remain in DEPLOY.md. Preserve Acs/Share/Direct, Simulated Room,
+native non-recording, stable hosted4 and inherited G1/G4/G7 failures.
+
+## Work IQ redo (8B-r, 27 November 2026)
+
+Actual WorkIQAgent.Ask grant/declaration n1 each are verified; consent is
+completed. Real administrator OBO n2 and MCP initialisation n2 pass;
+tools/list n1 returns HTTP200/12tools/server1.0.744.0/MCP2025-03-26.
+Complete metadata probe9.352s,n1 includes CLI/credential acquisition and
+is **not retrieval latency**. Existing confidential credential is memory-only
+in the spike, not proof of the unregistered MI-federated OBO implementation.
+Live schema exposes channel URL and meeting UID/is_series constraints;
+actual pre-retrieval enforcement remains untested with real sources.
+
+Five actual teams are disabled and have no channel bindings; no approved
+named lead/meeting UID/negative-user fixture is supplied. Billing readback
+is not_run: ARM inventory is not a Microsoft365 spending-policy assignment,
+and browser readback could not be completed. No billing, grant or policy change.
+ADRs0027/0034 and [work-iq-redo-M11.json](work-iq-redo-M11.json) distinguish
+metadata discovery, contract tests and live content acceptance.
+
+| Gate/check | Result | Denominator |
+| --- | --- | --- |
+| G11 content, citations, leakage | Not_run | Channel/helper/meeting queries0 each; negative queries0 |
+| G11 content latency and product goldens | Not_run | Retrieval turns0; real product goldens0 |
+| Consent and discovery prerequisites | Measured, not G11 acceptance | Grant/declaration1 each; OBO2; init2; tools/list1 |
+| Independent code regressions | Pass | Infra15, Application44, Domain17, architecture14:90/90, no skips |
+| Greenfield declaration preservation | Pass, no live writes | One actual fixture, two merges, directory writes0 |
+| Existing pure greenfield hook regressions | Pass | 17/17; no Azure/Graph mutation |
+| Build/format/lint | Pass | Three builds, zero .NET warnings/errors; no full suites |
+
+Metadata-only classes are unregistered; no content fallback, connection UI,
+retention store or four integrations are claimed. All team flags stay off;
+M9c remains unbuilt. Fixed added resource cost USD0/hour, content calls0.
+Baseline/after scripted verification is reported separately below;
+inherited G1/G4/G7/G8 failures and Acs/Share/Direct/native
+non-recording/stable hosted4 remain unchanged.
+
+Baseline mandatory verify passes8/8: scripted standup378s,n1, Direct
+3260/4421ms,n12, question3584/4421ms,n9, talkovers0. Genuine
+approver-authored item1/revision60 and complete auditzsa-a64d25c02f61,
+session3ae69a53-4433-466c-a597-bdd4cbd64793. Native HTTPS/renderer
+readiness is not live Teams acceptance; G11 content remains n0.
+
+Committed API source3d24f8e is deployed only to zavaw3, LinuxACRds12
+169.977s, ready revision85/health200. Actual identity, entire configuration
+(including secret names), env, resources, probes and scale compare exactly.
+Core validator5/5 passes after two bounded snapshot corrections; raw
+what-if has1API resourceModify/25Ignore/0Create/0Delete.
+The helper's5Modify/3Delete counts are **property lines**, not deleted
+resources. The secret-omitting snapshot is never deployed; execution changes
+only the image. Existing AcrPull remains; no provision/up/down/role change.
+
+After full verify initially passes7/8 and exits1: only optional native hosting
+fails, **"The Windows media VM is not running."** The API/bridge, scripted
+standup, actual approver write and audit all pass. Standup366s,n1;
+Direct3319/3803ms,n12 versus3260/4421,n12 gives+1.81%p50/-13.98%p95.
+Questions3319/3727ms,n9; talkovers0, decision-model reads10/12.
+Actual item1/revision61, auditzsa-caf173dba2d2,
+session4580c7dc-c287-4b57-9403-aacade6000c7.
+
+Activity readback proves an external principal deallocated the existing
+zavaw3 VM at08:46:13Z, during the run, not the API image update:
+callerda847d8c-ee71-44de-b462-6775e7d649a7,
+appa1a9c5b6-7a4f-4288-89ab-6805873f65d1, resolved by app-id readback
+to **MCAPSGovernance-AutomationApp**. No resource-group DevTestLab schedule
+or Automation account was found; the application's specific shutdown policy
+was not investigated or changed.
+
+One scoped restart succeeds. Focused `verify-media.ps1 -RequireReady`
+passes5/5 checks, exit0,n1: Standard_D4s_v5 running, correct public DNS,
+trusted HTTPS/no recording/cap1, actual1280x720 startup renderer and
+unauthenticated API401. The initial full after run remains7/8, exit1;
+the failed eighth check is recovered by this focused verification, not an
+invented second full8/8 run. API revision85 and existing bridge remain running.
+Native Teams acceptance and G11 content samples remain n0.
+
+| Hop | Before p50 / p95 ms | After p50 / p95 ms | n per run |
+| --- | --- | --- | --- |
+| Total | 3260 / 4421 | 3319 / 3803 | 12 |
+| Transcript | 0 / 208 | 0 / 289 | 12 |
+| Analyser | 25 / 27 | 26 / 40 | 12 |
+| Decision | 151 / 293 | 152 / 251 | 12 |
+| Orchestration | 1587 / 2413 | 1541 / 1821 | 12 |
+| Voice first audio | 1579 / 2480 | 1480 / 2606 | 12 |
+
 ## Foundry IQ redo (8A-r, 27 November 2026)
 
 Actual grant/declaration reads n=1 each verify Graph delegated

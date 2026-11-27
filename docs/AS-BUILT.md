@@ -1,6 +1,6 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 26, 2026 (M11 final validation).
+**Date:** November 27, 2026 (M11 redo reconciliation).
 
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
@@ -8,7 +8,7 @@ failed readiness/paired protocol (424, completed paired samples n=0).
 Native Windows hosting/TLS/renderer are verified, not native Teams
 attribution/join/board acceptance. Five delegated Copilot skills and package
 1.1.0 are implemented, with real Copilot G5 still open. G7 revised dates fail
-(75%, n=8); latest fallback p95 regression fails (+12.75%, n=12/12),
+(75%, n=8); historical fallback p95 regression fails (+12.75%, n=12/12),
 and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
 model deviation remains a reliability risk. G8 recovery has one complete
@@ -60,16 +60,27 @@ Scout completed the zavaw3 Graph Files.Read.All/Sites.Read.All and Work IQ
 WorkIQAgent.Ask delegated grants and both tenant catalogue uploads.
 Real user/source/billing/Exchange/CI/organiserRSC gates remain open.
 
-**M11 8B status (26 November 2026):** Work IQ consent and advisory evidence
-contracts are built, but the live spike and integration are blocked.
+**M11 8B-r status (27 November 2026):** Work IQ consent, advisory contracts
+and unregistered real owner-OBO/metadata-discovery adapters are built.
+Actual administrator OBO exchanges n2 and initialisations n2 pass;
+tools/list n1 returns12 tools, including scoped retrieve request fields.
+The complete discovery probe9.352s,n1 is not content retrieval latency.
+Exact pre-retrieval enforcement and the content integration remain blocked.
+The metadata probe used the existing Easy Auth credential only in memory;
+deployed managed-identity federation remains unproved. API image
+`git-3d24f8e`, revision 85, includes the unregistered classes, with unchanged
+configuration. Baseline verification passed 8/8; after verification initially
+passed 7/8 because external MCAPSGovernance-AutomationApp deallocated the VM.
+One scoped restart and focused native readiness check passed 5/5, n=1,
+not a second full 8/8 run or native Teams acceptance.
 The operator has now granted WorkIQAgent.Ask; a licensed, consenting team lead with an
 approved spending-policy assignment and scoped channel/meeting fixture is
 still required. Domain consent/revoke rules, typed Application ports and
 the unregistered read boundary have focused tests through the real mediator
-with port fakes. No live adapter, store, cache, portal connection page,
+with port fakes. No registered retrieval adapter, store, cache, portal connection page,
 card enrichment, chase suppression, helper UI or review-to-backlog conversion
 is shipped. M9c remains open; G11 live queries/latency/leakage have n=0.
-Default-off signals and all deployed paths remain unchanged. See ADR 0027,
+All five actual team flags remain off; no content is read. See ADR 0034 and ADR 0027,
 WORK-SIGNALS-PRIVACY.md and DEPLOY.md for the exact resume boundary.
 
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
@@ -188,7 +199,7 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 - **Retrospective (M8):** start/stop/continue built in code from the sprint and standups; a model writes the opening summary. Text, not voice-led.
 - **Story Writer (M8):** drafts a user story and acceptance criteria from a parked topic. Draft only; never written to Azure DevOps.
 - **Models page (M8):** estimated cost per standup and measured latency for realtime models. Prices are not set (they were placeholders): the page shows the Voice Live pricing tier from Learn and "Price unverified" until real rates are configured (ADR 0019).
-- **Teams and Copilot Q&A (M11 8, ADR 0025):** five read-only skills use `AnswerCopilotQuestionQuery`, membership team resolution and the asker's OBO Azure DevOps token. Blockers, commitments, risk, today's standup status and personal item states are computed/filtered in Domain; a model phrases only the introduction. Responses include source cards and use the Agents SDK streaming channel when supported. Unknown Copilot requests never fall through to managed-identity reporting. Other Teams reporting and planning remain. Manifest 1.25/version 1.1.0 declares the existing bot as a custom engine agent; actual Copilot discovery, SSO/OBO and permission-negative G5 acceptance remain unrun pending tenant upload/user consent.
+- **Teams and Copilot Q&A (M11 8, ADR 0025):** five read-only skills use `AnswerCopilotQuestionQuery`, membership team resolution and the asker's OBO Azure DevOps token. Blockers, commitments, risk, today's standup status and personal item states are computed/filtered in Domain; a model phrases only the introduction. Responses include source cards and use the Agents SDK streaming channel when supported. Unknown Copilot requests never fall through to managed-identity reporting. Other Teams reporting and planning remain. Manifest 1.25/version 1.1.0 declares the existing bot as a custom engine agent; actual Copilot discovery, SSO/OBO and permission-negative G5 acceptance remain unrun pending real user installation/sign-in and fixtures; the zavaw3 tenant catalogue upload is completed.
 - **Foundry agent mode (M8):** `VoiceLive:AgentName` and `AgentProjectName` bind the session to a Foundry voice agent instead of a model. Implemented, not exercised against a live agent; parameter names need verifying.
 - **Not built:** knowledge/Work IQ integrations, live transcript transport,
   hosted orchestration/channel migration, production infrastructure and
@@ -233,7 +244,26 @@ Azure DevOps, external meeting state or the whole roster/cast configuration.
 - The shared board was seen working in a live Teams meeting on 23 November 2026 (the recorded take); it stays best effort.
 
 ## 9. Tests and quality gates
-The M11 final checkpoint (26 November 2026) passes947.NET tests:
+The redo reconciliation (27 November 2026) passes968/968.NET tests in one
+aggregate run: Domain424, Application225, Infrastructure108, Api168,
+architecture14, AgentHost9 and WindowsMediaBot20, zero failures/skips.
+Bridge unit13/13 and real retrospective6/6 in310.03s/standup6/6 in387.26s
+pass on the first sequential E2E aggregate, no retries or code/prompt changes:
+993unique.NET/bridge checks, plus17pure hook checks (1010including hooks).
+All three builds/full C# format/both TypeScript lint/typecheck/Prettier pass;
+the portal still has no configured tests. Initial Debug CS2012 file lock
+during concurrent GateRunner compilation is recovered by an isolated
+Release build,35.18s/zero warnings/errors, before the first.NET test run.
+Mandatory zavaw3 verify8/8 passes443.50s with actual approver-authored
+revision62/audit; Direct3065/3933ms,n12,talkovers0. Compared with preceding
+8B-r3319/3803ms,n12, -7.65%/+3.42% is within unchanged regression tolerances,
+not formal/native or retrieval acceptance. Native readiness5/5 passes
+without a restart; existing APIgit-3d24f8e/revision85 and bridgegit-8859a7a/
+revision9 remain Running/HTTP200. No feature/runtime/resource/policy change.
+Historical failures below and G8failed1/2/G10-G11not_run,n0 remain.
+See [reconciliation evidence](gates/reconcile-M11.json).
+
+The previous M11 final checkpoint (26 November 2026) passes947.NET tests:
 424Domain,225Application,93Infrastructure,168Api,14architecture,
 3AgentHost and20WindowsMediaBot in one aggregate run, no failures/skips.
 Bridge unit tests pass13/13. All three

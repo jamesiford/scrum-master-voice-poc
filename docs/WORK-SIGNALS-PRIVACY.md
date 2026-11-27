@@ -1,7 +1,11 @@
 # Work signals privacy note
 
-**Status:** consent and evidence contracts only (M11 8B, ADR 0027).
-No Work IQ adapter, portal connection page or live signal feature is enabled.
+**Status:** consent/evidence contracts and unregistered real owner-OBO,
+metadata-only discovery adapters (M11 8B-r, ADRs 0027 and 0034).
+No retrieval adapter, portal connection page or live signal feature is enabled.
+Administrator OBO/tools-list discovery reads protocol metadata only; no
+workplace content or raw content response is stored. All five team flags
+remain off. Available source-constraint fields are not a live privacy proof.
 
 Work signals are optional per team and default off. A deployment Admin must
 enable them. A named Scrum Master/TeamLead who belongs to that team must
@@ -50,6 +54,7 @@ No proposal conversion or M9c closure is built in this contract-only step.
 
 Consent requires review of Work IQ's broad `WorkIQAgent.Ask` permission
 (it includes write access even though this integration must remain read-only).
-Billing assignment also requires a responsible owner. Exact human actions
+Administrator consent is completed and verified; do not request it again.
+Billing assignment still requires a responsible owner. Exact human actions
 are DEPLOY.md WORK-SIGNALS-CONSENT / WORK-SIGNALS-BILLING /
 WORK-SIGNALS-FIXTURE. No tenant policy or billing change is made by this step.

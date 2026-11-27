@@ -4,7 +4,7 @@
 >
 > **Companions:** *Zava AI Scrum Master Agent - Solution Architecture* (the why and the options) and *Zava AI Scrum Master Agent - Production Specification* (how the real system is built and run).
 >
-> **Owner:** James Ford (Microsoft). **Version 0.7 (M11 implementation and measured acceptance)**, November 26, 2026. **The code wins** where this document and the code disagree. `AS-BUILT.md` describes implementation; `gates/M11-gates.md` distinguishes measured acceptance from open work; `DOC-DRIFT.md` records corrections. Decision records are indexed in `adr/README.md`.
+> **Owner:** James Ford (Microsoft). **Version 0.7 (M11 implementation and measured acceptance)**, November 27, 2026. **The code wins** where this document and the code disagree. `AS-BUILT.md` describes implementation; `gates/M11-gates.md` distinguishes measured acceptance from open work; `DOC-DRIFT.md` records corrections. Decision records are indexed in `adr/README.md`.
 
 ### M11 acceptance boundary
 
@@ -15,7 +15,16 @@ adapter is hosted but its real Teams attribution, joins and board acceptance
 remain open, and it saves no meeting-derived proposals. Five delegated
 Teams/Copilot skills and package 1.1.0 are implemented; live Copilot G5 is open.
 Foundry IQ and Work IQ integrations are not built (G10/G11 not_run, n=0).
-G7 fails revised dates (75%, n=8); latest fallback p50 regression is +6.19%
+Graph Files.Read.All/Sites.Read.All and WorkIQAgent.Ask AllPrincipals
+consents and matching declarations are completed. Real administrator
+Graph OBO/identity reads n=1 each and Work IQ OBO/initialisations n=2 each,
+tools/list n=1 with HTTP 200/12 tools, establish prerequisites only.
+The 5.362 s Graph and 9.352 s Work IQ probes are not retrieval latency.
+They used the existing Easy Auth credential only in memory; deployed
+managed-identity federation and real source/member enforcement remain
+unproved. Work IQ metadata adapters are real but unregistered in the
+deployed API image `git-3d24f8e`; no content consumer is enabled.
+G7 fails revised dates (75%, n=8); historical fallback p50 regression is +6.19%
 (n=10 before, n=12 after). No threshold or Domain rule was changed to pass.
 
 **G8 recovery (ADR0031):** exact zavagf/eastus2 is admitted by native hooks,
@@ -214,10 +223,10 @@ External dependencies:
 | Meeting bridge | Built: ACS/Simulated saved-follow-up demo. Open: native GraphMedia attribution/join/board gates despite verified Windows hosting; non-recording only | Proven native media, recording compliance where applicable and capacity |
 | Messaging | In-process channels | Service Bus and Event Grid |
 | Knowledge | Open: Foundry IQ unbuilt; repo working agreements are not read by code (ADR 0026) | Permission-trimmed approved knowledge sources |
-| Work IQ signals | M11 8B: consent/evidence contracts and unregistered read boundary built; live spike, adapter and all four integrations blocked, G11 n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADR 0027) |
+| Work IQ signals | M11 8B-r: contracts, unregistered owner-OBO and metadata-discovery adapters built; live tools/list n1 succeeds. Content spike and all four integrations blocked, G11 content n=0 | Delegated owner, default-off team setting, exact channel/meeting scope, source-labelled short excerpts and human-approved proposals; no application identity or private mail/chat reads (ADRs 0027, 0034) |
 | Identity | Built: Entra bearer validation, app/team roles, federated OBO approval and portal audit. Open: live Teams SSO and agent policy acceptance | Reviewed least privilege, agent governance and access reviews |
 | Networking | Public endpoints with Entra auth | VNet, private endpoints, Front Door WAF, egress controls |
-| Quality | Built: final947.NET/25bridge checks have passing evidence after one unchanged retro retry; live content-free API/bridge workbook. Open: initial model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
+| Quality | Built: reconciliation968.NET/25bridge checks pass in first aggregate runs, plus17pure hook checks; live content-free API/bridge workbook. Open: historical model deviation, exact board parity, failed G7 dates/latency, model CI identity and privacy-approved synthetic quality scoring | Release-qualified evaluations and online monitoring |
 | History for KPIs | Azure DevOps Analytics if history exists, else a JSON fixture | Fabric OneLake plus Power BI semantic model |
 
 ---
@@ -421,9 +430,11 @@ existing ceremony end events exactly once. No new portal endpoint or voice tool.
 Native board snapshots reuse Domain `ItemMentions`, `RetroInterpreter`,
 `RetroAgenda` and `RetroSummary` without persistence or model-computed numbers.
 
-**M11 8B (ADR 0027):** typed `IWorkSignals`, consent/scope/retention ports,
+**M11 8B (ADRs 0027/0034):** typed `IWorkSignals`, consent/scope/retention ports,
 Domain consent/access rules and the unregistered `WorkSignalReader` are
-contract-stage code only. No new production command/query/event is registered;
+contract-stage code only. Real owner-OBO and metadata-only MCP discovery
+adapters are also built but unregistered; tools/list n1 succeeds without
+reading content. No new production command/query/event is registered;
 the real-mediator test entry is test-only. Enable/connect/revoke, persistence
 commands and integration queries must be catalogued when the live spike
 supports their implementation, not presented as shipped use cases now.
@@ -745,12 +756,16 @@ G10 retrieval, citation, leakage and latency samples remain n=0.
 An admin portal-to-Graph OBO token exchange and matching `/me` metadata
 succeed n1 each; they do not prove retrieval, deployed federation or trimming.
 
-**Work IQ (M11 8B, ADR 0027): contracts only.** No signal is on the live
+**Work IQ (M11 8B-r, ADRs 0027/0034): unregistered metadata adapters.**
+Administrator OBO n2 and tools/list n1 succeed; discovered channel URL and
+meeting UID constraints remain untested against real source fixtures.
+No signal is on the live
 voice path. Delegated Work IQ consent is completed; channel/helper/meeting
 reads remain blocked by billing/real-owner/source fixtures, independent of 8A.
 The existing default-off flag is not a working portal feature. Notes are
 existing evidence, not a live transcript or non-recording workaround.
-G11 and new G1 samples remain n=0; M9c review-feedback conversion is unbuilt.
+G11 content samples remain n=0; M9c review-feedback conversion is unbuilt.
+Scripted G1 regression verification is not Work IQ latency or privacy proof.
 
 ### 11.1 Voice Live session (**VERIFY** every field against the current reference)
 
@@ -1008,8 +1023,8 @@ M11 8 adds no portal data route: the five skills enter the existing authenticate
 `POST /api/messages`. `/privacy.html` and `/terms.html` are public static legal
 pages, not team data endpoints.
 
-M11 8B adds no production API route or portal connection page. Its typed
-ports and unregistered reader are contract-stage code; no endpoint can
+M11 8B-r adds no production API route or portal connection page. Its typed
+ports, unregistered reader and metadata-only discovery have no endpoint that can
 enable signals or provide an unverified Work IQ adapter.
 
 ---
@@ -1131,7 +1146,7 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M9 status as built (ceremony kinds, ceremony packs and carry-over).** Built: `CeremonyKind`; `SetIteration`, `Assign` and `CreateWorkItem` changes with the generalised attribution; planning, review and retrospective packs with cards; R1 Graph email (unverified against a live mailbox); R2 unblock loop; R3 commitment carry-over; R4 `AtRiskRule` (one at-risk task seeded: "Prepare reconciliation report for audit"); R5 recap routing. **Not built:** per-item checkboxes on pack cards (the card approves the whole follow-up); a portal page for packs (use the API route); a live-meeting run of the new voice turns (the unblock and carry-over turns are unit tested at the use-case level, not exercised against a live Voice Live session). Demo check: `docs/DEMO.md`, "M9 features".
 
-**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts. M11 8B adds consent/evidence contracts only; current Learn supports delegated OBO advisory retrieval with Work IQ-specific consent and usage-based billing, not the historical unverified `EnableWorkIQTranscriptAccess` setting or a live transcript transport. Live source scoping and all four integrations remain blocked with G11 n=0 (ADR 0027).
+**M8 status as built:** planning prep, retrospective (text-based), Story Writer (draft only), email follow-ups (outbox, behind `Features:EmailFollowUps`), cost and latency comparison, assignment suggestions and the Foundry voice-agent binding are built (the voice-agent query parameters are unverified against a live agent). **Not built:** Work IQ transcripts. M11 8B/8B-r adds consent/evidence contracts and unregistered real MI-OBO/metadata-discovery adapters, not content retrieval; current Learn supports delegated OBO advisory retrieval with Work IQ-specific consent and usage-based billing, not the historical unverified `EnableWorkIQTranscriptAccess` setting or a live transcript transport. Live source scoping and all four integrations remain blocked by approved billing/real-owner/source fixtures with G11 n=0 (ADRs 0027/0034); delegated consent and administrator discovery are completed.
 
 **M11 6a/6b status (Teams-native media alternative).** The Windows Graph media host, selectable bridge, identity-tagged ephemeral gateway, focused tests and opt-in hosting are built; the D4s_v5 Windows VM, trusted Azure DNS-label TLS and SYSTEM startup task are deployed in zavaw3. Application stays unchanged and ACS remains the default. Native G1/G2/G6 and real-human barge-in remain n=0 pending catalogue/calendar/roster/RSC prerequisites. Synthetic tagged-frame and stop probes do not establish native acceptance, and unconditional opening-state barge-in fails. The native path saves no audio-derived transcript or follow-up; limits and exact actions are in ADR 0023 and DEPLOY.md.
 
@@ -1151,13 +1166,26 @@ approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
 **M11 10 status (documentation/deployment subset).** Reconcile documentation,
 human prerequisites and final gate evidence; attempt G8 only in the authorised
 old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
-prove the final solution. Final validation now records947.NET/25bridge
+prove the final solution. Historical final validation records947.NET/25bridge
 checks with passing evidence after one unchanged retrospective retry, all
 three builds/checks and zavaw3 verify8/8. Initial retro11/12 aggregate,
 latest fallback p95+12.75% and G7 dates75%n8 remain explicit failures/risks;
 goldens, thresholds and Domain rules are unchanged (ADR0030).
 Real Teams/Copilot rehearsal and film UI/reset enhancements remain follow-ons. No native,
 knowledge or Work IQ acceptance is inferred from scripted Direct runs.
+
+**M11 redo reconciliation (27 November 2026):** one aggregate.NET run
+passes968/968 across all seven suites, including architecture14 and
+WindowsMediaBot20. Bridge unit13/13 and first sequential E2E12/12 pass
+(retro310.03s, standup387.26s), plus17pure greenfield hook checks. All three
+builds, full format and both TypeScript lint/typechecks pass. Initial Debug
+CS2012 output lock is recovered with an isolated Release build before tests;
+no code/threshold/golden/prompt change. Mandatory zavaw3 verify8/8,
+revision62/audit, Direct3065/3933ms,n12 passes with native readiness5/5 and
+no restart. This is not G8/G10/G11 acceptance or proof of deployed MI-OBO.
+No new use case/API, runtime deployment, resource or zavagf operation;
+the section6.1.4/14 catalogues remain unchanged. See
+`gates/reconcile-M11.json` for exact counts and retained failures.
 
 ---
 

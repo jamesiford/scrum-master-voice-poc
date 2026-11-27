@@ -3,11 +3,23 @@
 Date: 2026-11-26
 Status: Accepted contract and design; live integration blocked
 
+**27 November 2026 redo:** ADR0034 records verified AllPrincipals
+WorkIQAgent.Ask consent and matching declarations, n=1 each. Genuine
+administrator OBO exchanges n=2 and MCP initialisations n=2 succeed;
+tools/list n=1 returns HTTP 200 and 12 tools. The complete discovery
+probe took 9.352 s, not content retrieval latency, using the existing
+Easy Auth credential only in memory. Real request-local MI-OBO and
+metadata-discovery adapters are built but unregistered, and deployed
+managed-identity federation is unproved. Approved Copilot Credits
+assignment, named lead, exact channel/meeting UID and negative-user
+fixtures remain open. G11 content, scoping, leakage and latency are
+not_run, n=0; consent and administrator sign-in must not be reopened.
+
 **20:00PT operator update:** Scout granted and read back actual zavaw3
 portal AllPrincipals WorkIQAgent.Ask with matching declaration.
 WORK-SIGNALS-CONSENT is completed; no Act/settings/application permission.
-Billing/spending owner, consenting lead, scoped fixtures and live OBO remain
-open, n0. Earlier absence of grant below is historical. ADR0031 preserves
+Billing/spending owner, consenting lead, scoped fixtures and live content
+retrieval remain open, n=0. Earlier absence of grant below is historical. ADR0031 preserves
 the approved declaration without enabling the unbuilt signal adapter.
 
 ## Evidence and current Learn
@@ -34,7 +46,7 @@ establish that it authorises `retrieve`. Do not substitute it or request
 description differs from the three entries in the permission reference and
 the six scopes actually exposed by this tenant; discover rather than guess.
 
-Live, read-only Graph metadata proves:
+Historical read-only Graph metadata from the original 8B attempt established:
 
 - Work IQ service principal already exists: app
   `fdcc1f02-fc51-4226-8753-f668596af7f7`, object
@@ -55,7 +67,7 @@ of the calling user to a spending policy including Work IQ API. A Copilot
 licence alone is not enough. No billing plan, policy, permission, role or
 resource was changed. Explicit Graph resource was used on all reads.
 
-Spike OBO calls **n=0**, channel questions **n=0**, helper questions **n=0**,
+Original 8B spike OBO calls **n=0**, channel questions **n=0**, helper questions **n=0**,
 meeting-note questions **n=0**, negative-user/private-source checks **n=0**.
 Latency and G11 leakage are not measured, not zero or passing.
 There is no invented authentication failure: prerequisite metadata succeeded.
@@ -84,7 +96,9 @@ failures, distinct from a genuine successful empty response.
 
 These contracts and the reader are **not registered in production DI**.
 There is no new production command/query, endpoint, portal page, store
-implementation, credential cache, Work IQ adapter, scheduler or integration.
+implementation, credential cache, scheduler or content integration.
+ADR0034 adds unregistered real MI-OBO/metadata-discovery adapters, not a
+content provider or an enabled signal runtime.
 Tests register only a test presentation query in the real mediator and fake
 the external ports; the actual reader, rules and pipeline execute. This is
 contract evidence, not a golden pass for the four live product integrations.
@@ -102,8 +116,9 @@ refresh under another identity; missing/expired tokens show a banner.
 Any future delegated cache must be encrypted, keyed by tenant/team/owner and
 connection, and invalidated on revoke, removal or role change.
 
-First obtain the exact DEPLOY.md consent, billing and fixture gates. Then
-discover live `tools/list` and verify a server-enforced selected channel and
+Consent and live `tools/list` discovery are complete. Obtain DEPLOY.md's
+remaining billing and real fixture gates, rediscover evolving schemas and
+verify a server-enforced selected channel and
 meeting scope before querying. A `TeamsMessages` capability alone may include
 private chats; filtering after retrieval does not meet the no-private-read
 requirement. If exact pre-retrieval scoping is unsupported, do not ship that
@@ -135,7 +150,14 @@ G11 is blocked at its prerequisites, not failed by a measured leakage sample.
 Local consent/revoke and real-mediator boundary tests are separate from live
 acceptance; counts and build evidence are recorded in M11-gates.md.
 G1 has no new turns because the voice/runtime paths are unchanged.
-No runtime deployment or `verify.ps1` approval write is appropriate for
-unregistered contracts. Existing zavaw3 stays running; Acs/Share/Direct,
+The original contract-only attempt made no deployment. ADR0034's real
+metadata adapters are included in API image `git-3d24f8e`, revision 85,
+deployed only to zavaw3 with unchanged configuration. Baseline verify
+passed 8/8; after verify initially passed 7/8 because external governance
+deallocated the native VM. One scoped restart and focused media check
+passed 5/5, n=1; this is not a second full 8/8 run or native acceptance.
+Existing zavaw3 stays running; Acs/Share/Direct,
 native non-recording and inherited failed gates are preserved.
-Added fixed cost **USD 0/hour**, Work IQ billable calls **n=0**.
+Added fixed resource cost **USD 0/hour**, Work IQ content retrieval calls
+**n=0**. Successful metadata discovery does not prove billing approval or
+that all existing compute/model consumption is free.
