@@ -1,0 +1,72 @@
+{
+  "step": "8A-r",
+  "attempt": 1,
+  "date": "2026-11-27",
+  "environment": "zavaw3",
+  "region": "westus3",
+  "gate": "G10",
+  "status": "not_run",
+  "consent": {
+    "status": "verified",
+    "grantReads": 1,
+    "declarationReads": 1,
+    "portalServicePrincipal": "2b69cbf8-a7e7-432c-8441-726b72a9fffc",
+    "type": "AllPrincipals delegated",
+    "graphScopes": ["User.Read", "openid", "profile", "Files.Read.All", "Sites.Read.All"],
+    "permissionsChanged": false
+  },
+  "fixture": {
+    "registryTeamsRead": 5,
+    "configuredKnowledgeBases": 0,
+    "storedTeamMemberships": 0,
+    "approvedSourceFixtures": 0,
+    "searchServiceInventoryReads": 1,
+    "searchServices": 0,
+    "callerObjectId": "aeaec64b-d720-4996-9022-02fa0dcf043d",
+    "callerPortalAssertion": "acquired; intended portal audience and tenant",
+    "callerCopilotLicenceMetadataReads": 1,
+    "callerCopilotLicensed": true,
+    "positiveNegativeUserPairs": 0
+  },
+  "measurements": {
+    "realSpikeQuestions": 0,
+    "knowledgeMcpCalls": 0,
+    "permissionNegativeQueries": 0,
+    "goldenQuestionsPerKnowledgeBase": 0,
+    "correctCitationRate": null,
+    "uncitedAnswerRate": null,
+    "leakageRate": null,
+    "retrievalLatencyMs": null
+  },
+  "oboPrerequisite": {
+    "status": "measured",
+    "tokenExchanges": 1,
+    "matchingGraphMeReads": 1,
+    "startedUtc": "2026-11-27T08:23:16.9612065Z",
+    "finishedUtc": "2026-11-27T08:23:22.3227933Z",
+    "totalProbeElapsedMs": 5362,
+    "clientAuthentication": "Existing portal Easy Auth confidential-client credential, memory only",
+    "deployedManagedIdentityFederationExercised": false,
+    "knowledgeRetrievalRequests": 0,
+    "permissionTrimmingProved": false
+  },
+  "inheritedHook": {
+    "liveDeclarationFixtures": 1,
+    "mergeApplications": 2,
+    "idempotent": true,
+    "allExistingPermissionsPreserved": true,
+    "liveWrites": 0
+  },
+  "reviewedVersions": {
+    "searchAndMcp": "2026-11-01-preview",
+    "projectConnectionArm": "2025-10-01-preview",
+    "liveKnowledgeApiVersion": null
+  },
+  "runtimeAdded": false,
+  "runtimeRedeployed": false,
+  "resourcesAdded": 0,
+  "addedFixedUsdPerHour": 0,
+  "humanGates": ["KNOWLEDGE-FIXTURE"],
+  "preserved": ["Acs", "Share", "Direct", "native non-recording", "stable hosted4", "inherited failed gates"],
+  "adr": "../adr/0033-foundry-iq-consent-redo-and-fixture-boundary.md"
+}

@@ -40,3 +40,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0030](0030-final-validation-and-live-model-variance.md) | Final validation and retained live model failures |
 | [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Authorised eastus2 recovery, compatible image/purge parameters and idempotent hooks |
 | [0032](0032-foundry-workspace-version-recovery.md) | Bounded service-directed hosted-version workspace conflict recovery |
+| [0033](0033-foundry-iq-consent-redo-and-fixture-boundary.md) | Knowledge consent verified; real source and permission fixtures still required |

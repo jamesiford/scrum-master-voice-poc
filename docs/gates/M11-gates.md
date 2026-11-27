@@ -1,5 +1,34 @@
 # M11 gates
 
+## Foundry IQ redo (8A-r, 27 November 2026)
+
+Actual grant/declaration reads n=1 each verify Graph delegated
+Files.Read.All/Sites.Read.All on the zavaw3 portal app. Consent is complete.
+Current registry reads find five teams, zero configured knowledge bases and
+zero stored memberships; Search inventory n=1 finds zero services.
+The actual administrator has a portal-audience caller assertion and a
+Copilot licence, but no approved corpus or positive/negative fixture exists.
+ADR0033 and [knowledge-redo-M11.json](knowledge-redo-M11.json) preserve evidence.
+Genuine administrator portal-to-Graph OBO succeeds n1; matching Graph `/me`
+identity read n1. Total bounded probe5.362s is not knowledge retrieval latency.
+It uses the existing confidential-client credential in memory, not a shipped
+secret-based adapter or deployed managed-identity federation proof.
+The inherited hook preserves all actual declarations idempotently on n1 live
+fixture/two merge applications/no live writes.
+
+| Gate/check | Redo result | Denominator |
+| --- | --- | --- |
+| G10 retrieval/correct citations | Not_run | Real spike questions0/10; golden questions0/40 per knowledge base |
+| G10 uncited answers/leakage | Not_run, not zero rates | Knowledge answers n0; denied-user queries n0 |
+| G10 retrieval latency | Not_run | Knowledge-MCP calls n0 |
+| Caller-OBO prerequisite | Measured, not G10 acceptance | Token exchange n1; same-caller Graph identity metadata n1 |
+| Build regression | Pass | All three builds; .NET0warnings/errors; no full suites |
+
+KNOWLEDGE-FIXTURE remains a real owner/user gate in DEPLOY.md. No new runtime,
+source, resource, grant or fixed cost; no gratuitous redeployment.
+Knowledge stays off live voice; Acs/Share/Direct, native non-recording,
+stable hosted4 and inherited G1/G4/G7/G8 failures remain unchanged.
+
 ## G8 recovery attempt 1 (26 November 2026 after20:00PT)
 
 Only zavagf/eastus2 is used; zavaw3/mcm are not modified. Actual Global
@@ -503,6 +532,10 @@ No full suites or E2E rerun; the next full checkpoint remains after prompt 10.
 Portal's existing >500kB bundle advisory is unchanged.
 
 ## Foundry IQ prerequisites (conductor 8A, 2026-11-26)
+
+**Historical attempt:** both absent retrieval scopes below were subsequently
+granted by the operator and verified in8A-r. ADR0033 records current evidence.
+The source/two-user fixture is still open; G10 remains not_run,n=0.
 
 **Blocked before the required permission spike**, not a measured gate
 failure or completed integration (ADR 0026). Live metadata reads succeeded:

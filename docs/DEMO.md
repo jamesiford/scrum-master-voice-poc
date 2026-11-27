@@ -88,7 +88,8 @@ shipped. Do not present the prompt editor, repo working agreements, existing
 Story Writer or ordinary escalation cards as cited knowledge retrieval.
 Continue using the existing Acs/Share/Direct and Simulated Room paths.
 
-Scout has approved both delegated retrieval scopes on the zavaw3 portal app;
+The8A-r actual readback verifies both delegated retrieval scopes and matching
+declarations on the zavaw3 portal app; KNOWLEDGE-CONSENT is complete.
 the standards/site owner must still identify an approved
 corpus and a restricted document with real positive/negative consenting
 users. Exact actions are DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE.
@@ -96,7 +97,9 @@ On resume, prove ten real questions through the knowledge base MCP endpoint
 and caller-OBO permission trimming before integration; evaluate at least
 forty source-labelled questions per knowledge base. Show answer citations
 and explicit "I don't know" for a genuine no-source result, never guesses.
-Current retrieval, leakage and latency sample sizes are all n=0 (ADR 0026).
+Current retrieval, leakage and latency sample sizes are all n=0 (ADRs 0026/0033).
+The admin's measured OBO token exchange and Graph identity read n1 each are
+prerequisites only, not cited knowledge or a permission-trimming demonstration.
 For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
 exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 

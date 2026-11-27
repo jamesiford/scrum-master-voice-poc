@@ -735,11 +735,15 @@ The retrospective runs on the standup's voice gateway and `FloorControl`; only t
 
 ## 11. Voice design
 
-**Foundry IQ (M11 8A, ADR 0026): blocked before the permission spike.**
+**Foundry IQ (M11 8A/8A-r, ADRs 0026/0033): blocked before the permission spike.**
 Knowledge retrieval is not on the live voice path, and no standards answer
 or citation is implemented. Caller-OBO permission trimming must be proved
 before consumers are added; advisory text must never create item links,
-`ProposedChange` records or state changes. G10 and new G1 samples are not run.
+`ProposedChange` records or state changes. Actual Graph retrieval consent is
+verified; approved sources and real permission fixtures remain absent.
+G10 retrieval, citation, leakage and latency samples remain n=0.
+An admin portal-to-Graph OBO token exchange and matching `/me` metadata
+succeed n1 each; they do not prove retrieval, deployed federation or trimming.
 
 **Work IQ (M11 8B, ADR 0027): contracts only.** No signal is on the live
 voice path. Channel/helper/meeting reads are blocked by missing delegated
@@ -888,10 +892,11 @@ planning" and all existing approval/rejection actions remain.
 
 ## 13. Admin portal (demo scope)
 
-**Knowledge page (M11 8A): not built.** `KnowledgeBaseIds` remains reserved;
-there is no source-management or knowledge-query API. Missing Graph delegated
-retrieval consent and an approved two-user source fixture block the mandatory
-spike (ADR 0026; DEPLOY.md KNOWLEDGE-CONSENT / KNOWLEDGE-FIXTURE).
+**Knowledge page (M11 8A/8A-r): not built.** `KnowledgeBaseIds` remains reserved;
+there is no source-management or knowledge-query API. Graph delegated retrieval
+consent and matching declarations are verified, not open human gates.
+Approved sources and a two-user permission fixture still block the mandatory
+spike (ADRs 0026/0033; DEPLOY.md KNOWLEDGE-FIXTURE).
 Do not treat repo working agreements or the existing prompt editor as Foundry
 IQ. The planned page must show sources, access basis, sync/failure state and
 last ingestion, distinguishing remote SharePoint (no Search ingestion) from
