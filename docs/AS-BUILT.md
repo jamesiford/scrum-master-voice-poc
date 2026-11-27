@@ -131,7 +131,7 @@ Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Repo
 - ACS is reached with Entra only (a role on the resource); there is no connection string or key (ADR 0020).
 - `JsonFile*` class names are historical; they sit on `ICollectionStore` (file or Cosmos).
 - Repository contract test: `SessionRepositoryContract` exists for `ISessionRepository` only and runs against the JSON-file store only; there is no Cosmos run.
-- OpenTelemetry to Application Insights is basic (requests, outgoing HTTP, one span per use case, Agent Framework model calls) and is on only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set; it has not been checked in a live Application Insights resource and has no custom metrics, sampling or bridge traces. The gateway logs one structured line per agent turn through `ILogger`.
+- OpenTelemetry now includes content-free session hops, counters/histograms and the bridge (M11 9, ADR 0028). Export still needs `APPLICATIONINSIGHTS_CONNECTION_STRING`; actual live acceptance is recorded in G7. Native vendor spans and Foundry live quality evaluation are not established. The gateway retains its structured console turn log.
 - Agents are Microsoft Agent Framework chat-client agents (`AIProjectClient.AsAIAgent`, Azure.AI.Projects 2.x) behind the same ports (ADR 0009b). Foundry hosted agents are not used. `// PROD: Foundry hosted agents`.
 - `knowledge/working-agreements.md` is not read by any code.
 - The sprint calendar's Graph app (`Calendars.ReadWrite`, application) is not yet scoped to one mailbox with an Exchange application access policy; the `.ics` download is the fallback when `Calendar:Organizer` is empty.
@@ -290,3 +290,52 @@ Opt-in Bicep/azd adds a public four-vCPU Windows Server 2022 D4s_v5 host (D3_v2 
 Real SDK/HTTPS readiness reports no recording and cap 1, including after an idle VM reboot without manual task start; the task runs as SYSTEM with an at-startup trigger. The aligned direct native-package reference and explicit Graph v1.0 service URL fix startup defects that managed unit tests did not exercise. This does not establish native call capacity or a Teams media handshake.
 
 Native G1/G2/G6 and real-human barge-in remain n=0: the catalogue POST lacked delegated OAuth scopes, no real meeting link is stored, Daniel/Maya lack roster Entra ids, and organiser RSC/voices are outstanding. Synthetic probes passed 90/90 tagged frames and dispatched stop 29.6 ms after threshold (n=1), not SDK attribution or live audio. Opening-state 600 ms speech does not cancel, so unconditional barge-in fails synthetically. See DEPLOY.md for exact human actions and the gate table for fallback measurements.
+
+## 23. M11: content-free observability and evaluation
+
+The persisted session correlation is the W3C trace id. Verified owning-team
+metadata follows native sampled PCM frames, API forwarding, the optional hosted
+relay, decision calls and approved Azure DevOps writes. A different incoming
+portal trace is linked, not mistaken for the session trace. Authenticated hello
+metadata binds browser/bridge requests to it. PCM remains unchanged; at most
+one actual native frame per second receives a producer span. Native facilitation
+still saves no meeting data and has no decision/approval/write path: do not
+claim one live native-frame-to-write chain or a vendor Voice Live span.
+
+Shared BCL `SessionTelemetry` avoids a writable Application dependency in the
+media host. API/agent/media use the existing Azure Monitor exporter; the Node
+bridge emits explicit HTTP spans, not automatic URL/SDK/log-body traces.
+`Telemetry:CaptureContent=true` is refused. MAF sensitive data and GenAI content
+capture are disabled, non-allowlisted span tags are removed and application
+log bodies are not exported to Insights. Immutable SDK events cause a span
+to be suppressed, with a team privacy counter, rather than exporting its text.
+Raw browser console/error and model exception bodies are not logged.
+Console/container diagnostic logs are
+separate, not a new content archive. Metrics carry the team and fixed labels:
+hop/use-case duration, join accepted/refused and established connection events,
+turns, barge-in cancellation, approval and refusal counts.
+
+Gate timing events retain trace/span ids. Turn and phase spans use the already
+measured intervals; the decision call has its actual enclosing span. A shared
+Insights workbook is deployed by `observability.bicep` and the scoped existing
+environment hook. It filters one team for hop latency, join events and the
+approved-decision-to-write chain. Connection events are not unique-call rates;
+missing data is never passing evidence.
+
+The repeatable runner and daily non-blocking CI use 72 authored synthetic
+goldens, not employees or real work items. Final real model n=72: intent/items
+98.6%, comment kinds95.8%, dates75% on n=8, four rules fallbacks, no failures,
+zero escaped ids and0/36 rejected candidates (the adapter bounds candidates).
+Threshold0.7 precision94.5% n73; threshold0.6 precision98.5% n68, with648binary
+and72intent probabilities and no missing answers. Rules n72:95.8%/97.2%/55.6%,
+dates0% n8; no invented probabilities/comment capability. The release command
+fails dates; unchanged code takes the first spoken date phrase.
+`docs/gates/decision-M11` retains the real report and golden hash.
+
+Foundry live quality/safety/groundedness scoring remains not_run, n=0: its
+required input/output messages conflict with content capture OFF. The checked-in
+rubric states that restriction, rather than enabling an invalid scheduled
+evaluation. The daily decision report is synthetic, not live quality scoring.
+Knowledge and Work IQ remain unbuilt/unrun. ADR0028 and G7 record the measured
+deployment evidence and privacy deviation; no default adapter or Domain rule
+is changed to make a gate pass.

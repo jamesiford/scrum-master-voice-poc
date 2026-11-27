@@ -5,6 +5,8 @@ not employee transcripts or an Azure DevOps export. Expected roster and sprint
 ids belong only to `team-evaluation`; the tool never prepares sessions or writes
 work items. Freeze its hash before a model run and review expectation changes
 independently, never to match the latest model output.
+The retained M11 report used CRLF input bytes; `docs/gates/decision-M11/provenance.json`
+records its measured hash and the semantically identical LF source hash.
 
 ```powershell
 dotnet run --project tools\GateRunner -c Release -- --evaluate demo\evaluation\decision-goldens.json --out .m11-plan\run-log\evaluation-rules

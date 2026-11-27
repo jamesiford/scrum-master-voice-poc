@@ -1,5 +1,38 @@
 # M11 gates
 
+## Content-free observability and evaluation (conductor 9, 2026-11-26)
+
+G7 is **release-blocking and failed**, not a reason to discard working adapters.
+The frozen72 authored synthetic goldens are not employee utterances or live
+knowledge/Work IQ source evidence. Final measured report and both line-ending
+hashes are in `docs/gates/decision-M11`.
+
+| Check | Measured result | Samples |
+| --- | --- | --- |
+| Real Microsoft-Decision plus unchanged grounding | Intent/items98.6%,kinds95.8%; no model faults,4rulesfallbacks | n72 |
+| Spoken dates | Failed75% against >=95% release policy; first spoken phrase is not necessarily the revised target | n8 eligible, not72 |
+| Rules fallback | Intent95.8%,items97.2%,kinds55.6%,dates0%; no probabilities or comment capability invented | n72; datesn8 |
+| Calibration0.7 | Accepted precision94.5%,Brier0.0298,ECE0.0750,missing0 | 648binary probabilities;73accepted |
+| Calibration0.6 | Accepted intent precision98.5%,Brier0.0415,ECE0.1109,missing0 | 72intent probabilities;68accepted |
+| Item guard | Zero escaped ids;0/36 rejected candidates. Adapter bounds candidates itself, so zero is not a universal adversarial guarantee | 3explicit outside-id challenge mentions |
+| Foundry live quality/safety/groundedness | Not run: required message inputs conflict with content capture OFF; explicit rubric disabled, not an invalid scheduled pass | n0 |
+| Knowledge and Work IQ quality | Not run, sources unbuilt; no invented citations/signals | n0 |
+| Local privacy/trace/approval/architecture | Pass; actual normal exporter suppresses immutable content events; verified parent metadata never replaces explicit team ownership | privacy/native16,approval9,decision14,relay3,architecture14,bridgeHTTPtrace1 |
+| Build/format/typecheck/lint | All three builds, full C# format and both TS typechecks/linters pass | targeted only; no full-suite rerun |
+| Workbook/live deployment acceptance | Pending scoped deployment and actual live queries; local exporter tests alone do not close it | n0 at this checkpoint |
+| Before Direct Simulated Room latency | p50/p95 total3200/5600ms,356s,zero talk-overs | n10 turns,15human transcript pieces |
+
+Release policy/commands are in `demo/evaluation/README.md`; daily CI reports
+non-blockingly, `--release-check` returns1 for unmet or absent model evidence.
+Initial n72 with one timeout and kinds94.4% remains in the run log. The corrected
+calibration inventory omits Progress because the real adapter never asks it;
+goldens, thresholds and Domain rules were not tuned to improve results.
+The live deployment and after latency check are appended here when measured.
+Native G1/G2/G6, CopilotG5, multi-teamG9 and G10/G11 have no new human samples.
+Prior exact-board/fallback failures remain. Preserve Acs/Share/Direct and native
+non-recording; there is no native decision/approval/write path to trace.
+Added fixed cost USD0/hour; existing variable model/ingestion/build charges.
+
 ## Work IQ contract and blocked spike (conductor 8B, 2026-11-26)
 
 ADR 0027 adds independent consent/evidence contracts and an **unregistered**

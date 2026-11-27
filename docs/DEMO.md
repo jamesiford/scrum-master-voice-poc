@@ -194,6 +194,16 @@ Needs the stack running, a seeded sandbox (the next iteration "Sprint 43" suppli
 7. Delete the meetings from the agent's calendar before the next run.
 
 ## Gate runner (latency and traceability)
+M11 9 timing events carry the persisted session trace id and turn span id. Open
+**Zava content-free observability** under the environment's Application Insights
+Workbooks, select the actual team and the last hour. Inspect hop latency and the
+same operation id's approval/write chain. An accepted join is not an established
+call; native live samples remain absent until the organiser/roster gates pass.
+Never enable content capture for a demo. The72 synthetic decision report and
+blocking release command are in `demo/evaluation/README.md`; G7 currently fails
+spoken dates, not item leakage. Rules do not supply model probabilities or
+comment kinds. Foundry live quality, knowledge and Work IQ remain unrun.
+
 For the bridge's automated `e2e` and `e2e:retro` checks, run the local API and
 bridge with a dedicated Json data folder and the intended environment's Foundry,
 Azure DevOps and Speech configuration. Leave `VoiceLive:Endpoint` empty to derive

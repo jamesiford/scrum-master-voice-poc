@@ -189,7 +189,7 @@ External dependencies:
 | State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
 | Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
-| Telemetry | **As built:** OpenTelemetry to Application Insights via `Azure.Monitor.OpenTelemetry.AspNetCore` (basic: requests, outgoing HTTP, a span per use case, Agent Framework model calls); on only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set |
+| Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export requires `APPLICATIONINSIGHTS_CONNECTION_STRING`; live evidence is in G7. Foundry quality evaluation stays unrun because required messages conflict with content capture OFF (ADR 0028). |
 | Tests | xUnit for Domain rules, state machine, handlers (hand-written fakes) and the mediator; NetArchTest.Rules architecture tests (**VERIFY** version; ArchUnitNET fallback); one Playwright end-to-end test of a scripted standup |
 
 ---
@@ -1044,6 +1044,19 @@ Locally the same documents are JSON files under `Store:DataPath` (default `data/
 
 **M11 6a/6b status (Teams-native media alternative).** The Windows Graph media host, selectable bridge, identity-tagged ephemeral gateway, focused tests and opt-in hosting are built; the D4s_v5 Windows VM, trusted Azure DNS-label TLS and SYSTEM startup task are deployed in zavaw3. Application stays unchanged and ACS remains the default. Native G1/G2/G6 and real-human barge-in remain n=0 pending catalogue/calendar/roster/RSC prerequisites. Synthetic tagged-frame and stop probes do not establish native acceptance, and unconditional opening-state barge-in fails. The native path saves no audio-derived transcript or follow-up; limits and exact actions are in ADR 0023 and DEPLOY.md.
 
+**M11 9 status (observability/evaluation).** Session W3C propagation and fixed
+team metadata cover actual API/bridge/model/approval paths and the separate
+non-recording native/hosted transport. A shared Insights workbook and existing
+environment update hooks are in the greenfield templates. Gate timings include
+trace/span ids. The72 authored synthetic goldens run through the real decision
+adapter and unchanged Domain grounding/rules; daily CI reports non-blockingly,
+while `--release-check` is G7 release-blocking. Real n72 model intent/items98.6%,
+kinds95.8%,dates75% eligible n8; release fails dates. Rules emit no probabilities
+or comment kinds. Foundry live quality requires prohibited message content and
+remains not_run with an explicit rubric; knowledge/Work IQ remain unbuilt.
+No new use case or API route is introduced; existing AnalyseUtterance and
+approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
+
 ---
 
 ## 17. Configuration
@@ -1069,6 +1082,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Bot:AppId`, `Bot:TenantId`, `Bot:TunnelHostSuffix` | Teams bot (an empty `Bot:AppId` turns the bot off); dev-tunnel guard | `.devtunnels.ms` locally, empty in Azure |
 | `Connections:ServiceConnection:Settings:ClientId`, `:ClientSecret` (**secret**), `:TenantId`, `:AuthorityEndpoint`, `:AuthType`, `:Scopes`; `ConnectionsMap` | Microsoft 365 Agents SDK connection | `AuthType` `ClientSecret` |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` (environment variable) | Turns on OpenTelemetry export to Application Insights; empty means no telemetry | Set by Bicep in Azure; empty locally |
+| `Telemetry:CaptureContent` (all four hosts) | Must remain false; true fails startup rather than exporting employee prompts, completions or utterances | Explicit false in deployed templates/hooks; no development content switch shipped |
 | `Identity:TenantId` (falls back to `Azure:TenantId`, `Bot:TenantId`) | The tenant every approver must belong to; blank means nothing can be approved | Empty |
 | `Identity:AdminObjectIds` | Entra object ids that count as administrators in Teams (decide any follow-up, plan or calendar; run "prepare sprint planning"); replaces `Team:ScrumMasters` | Empty |
 | `Portal:ClientId` | The portal app registration the API validates tokens for; empty is allowed only in the Development environment | Empty |
