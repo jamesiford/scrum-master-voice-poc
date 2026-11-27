@@ -96,10 +96,20 @@ foreach ($status in @(403, 409)) {
   if ($calls.Count -ne 2) { throw 'Refused deletion must not retry.' }
 }
 Reset-Case
+Add-Response 404 '{"error":{"code":"NotFound","message":"Project not found"}}'
+Assert-Refused 'cannot prove agent absence'
+if ($calls.Count -ne 1) { throw 'Missing data-plane project must not be treated as a missing agent or retried.' }
+Reset-Case
+Add-Response 200 $owned
+Add-Response 202
+Add-Response 404 '{"error":{"code":"NotFound","message":"Project not found"}}'
+Assert-Refused 'cannot prove agent absence'
+if ($calls.Count -ne 3) { throw 'Lost project visibility must not count as successful deletion readback.' }
+Reset-Case
 Add-Response 200 $owned
 Add-Response 202
 for ($i = 0; $i -lt 60; $i++) { Add-Response 200 $owned }
 Assert-Refused 'still visible'
 if ($calls.Count -ne 62) { throw 'Deletion visibility polling exceeded its bound.' }
-Write-Host 'PASS 11 focused Foundry cleanup checks'
+Write-Host 'PASS 13 focused Foundry cleanup checks'
 Remove-Variable -Name foundryCleanupFixture -Scope Global

@@ -44,6 +44,9 @@ function Invoke-FoundryLifecycleRequest([string]$Method, [string]$Uri) {
   if ($response.StatusCode -notin @(200, 202, 204, 404)) {
     throw "Foundry cleanup $Method failed HTTP $($response.StatusCode): $($response.Content)"
   }
+  if ($response.StatusCode -eq 404 -and $response.Content -match '"message"\s*:\s*"Project not found"') {
+    throw "Foundry cleanup cannot prove agent absence: the ARM project exists but its data plane returned HTTP 404: $($response.Content)"
+  }
   return $response
 }
 
