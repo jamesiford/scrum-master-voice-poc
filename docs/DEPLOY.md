@@ -77,6 +77,65 @@ The registry is created with `roleAssignmentMode: LegacyRegistryPermissions`, se
 
 The platform forces these. Each is named in the script output as `GATE`.
 
+### WORK-SIGNALS-CONSENT, WORK-SIGNALS-BILLING and WORK-SIGNALS-FIXTURE (8B)
+
+ADR 0027 records contracts only, not an enabled runtime. The authorised
+administrator window ended at 14:27 PT on 26 November 2026.
+Read-only metadata proves the Work IQ service principal already exists,
+but the actual zavaw3 portal has no Work IQ permission declaration or grant.
+No OBO spike was attempted, and no refusal/leakage result is invented.
+Do not alter the mcm applications, grant application permissions, change
+tenant policy or create an unapproved billing plan.
+
+**WORK-SIGNALS-CONSENT, Entra Global Administrator / Privileged Role
+Administrator:** review the broad permission and approve the plan-specific
+delegated **WorkIQAgent.Ask** on **Zava Scrum Portal (zavaw3)**, app
+`265790b8-88a7-4975-bb8f-3fe381bb19ea`. In **Entra admin centre > App
+registrations > this app > API permissions > Add a permission > APIs my
+organisation uses > Work IQ > Delegated permissions**, select
+`WorkIQAgent.Ask` (`0b1715fd-f4bf-4c63-b16d-5be31f9847c2`) and
+**Grant admin consent**. Resource app is
+`fdcc1f02-fc51-4226-8753-f668596af7f7`, URI
+`api://workiq.svc.cloud.microsoft`; actual resource service principal is
+`ca4a440d-9d38-41a8-a140-f5ff230ac975`. Verify the actual grant for portal
+service principal `2b69cbf8-a7e7-432c-8441-726b72a9fffc`, not just the
+declaration. This scope includes write access, although the integration
+must use only read-only retrieval. Do not add `WorkIQ.Act`, settings,
+Graph retrieval permissions or agent/application grants for this spike.
+The resumed runtime PR must encode optional declarations/idempotent
+consent handling in the greenfield Entra hooks before enabling the feature.
+
+**WORK-SIGNALS-BILLING, Microsoft 365/Copilot billing administrator and
+the spending-policy owner:** confirm an existing approved Copilot Credits
+usage-based plan and a spending policy that includes Work IQ API; assign
+the named calling team lead and verify limits/tenant availability. Record
+the plan/assignment evidence without exporting credentials. A Copilot
+licence alone and an existing Work IQ service principal prove neither.
+If no approved plan exists, the responsible billing owner must approve and
+perform setup; this unattended run must not create one or change policies.
+
+**WORK-SIGNALS-FIXTURE, team lead, Teams/channel owner and meeting
+organiser:** name a real consenting licensed TeamLead with a verified Entra
+object id and current app-team membership. Approve one exact team group/
+channel and one stored team meeting with existing notes accessible to the
+team's intended evidence audience. Provide a real board item and topic,
+an absent/silent member's channel update, roster helper evidence and a
+review excerpt with expected backlog feedback. Provide a consenting
+negative member from another app team and private/unrelated source
+boundaries for permission/scoping checks. Each person must sign in as
+themselves; an administrator cannot supply their delegated assertion.
+No arbitrary tenant-root search or private mail/chat read is authorised.
+Discover live `tools/list` and prove pre-retrieval channel/meeting scope;
+post-filtering broad personal results is not proof of no private reads.
+Measure three spike uses/latency and G11 positives/negatives before shipping
+only supported integrations. Unsupported exact source scoping stays unbuilt.
+
+No Work IQ runtime, resources, roles, permission grants or settings were
+deployed in this step. The unregistered contracts have no manual enable
+switch. All real adapters, scope configuration, storage/retention, owner
+connection/revoke UI, optional permissions and hooks belong in the resumed
+greenfield PR, followed by zavaw3 deployment and `infra\hooks\verify.ps1`.
+
 ### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (prompt 8A, ADR 0026)
 
 Prompt 8A is blocked before its mandatory permission spike, not deployed.

@@ -2,6 +2,18 @@
 
 **Date:** November 23, 2026 (includes M9 and M10).
 
+**M11 8B status (26 November 2026):** Work IQ consent and advisory evidence
+contracts are built, but the live spike and integration are blocked.
+The portal has no Work IQ grant; a licensed, consenting team lead with an
+approved spending-policy assignment and scoped channel/meeting fixture is
+still required. Domain consent/revoke rules, typed Application ports and
+the unregistered read boundary have focused tests through the real mediator
+with port fakes. No live adapter, store, cache, portal connection page,
+card enrichment, chase suppression, helper UI or review-to-backlog conversion
+is shipped. M9c remains open; G11 live queries/latency/leakage have n=0.
+Default-off signals and all deployed paths remain unchanged. See ADR 0027,
+WORK-SIGNALS-PRIVACY.md and DEPLOY.md for the exact resume boundary.
+
 This document describes what the proof of concept actually does today. It is the companion to the build spec (`SPEC.md`, what was planned) and the ADRs (`adr/`, where the build deviated and why). Where they differ, this document and the ADRs are right.
 
 **M11 8A status (26 November 2026):** Foundry IQ is blocked before its
