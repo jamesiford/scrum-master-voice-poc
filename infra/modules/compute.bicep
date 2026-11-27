@@ -17,6 +17,16 @@ param tenantId string
 
 param adoOrgUrl string
 
+@description('Explicit reset tenant; empty disables the feature.')
+param demoResetTenantId string = ''
+
+@description('Comma-separated exact demo reset ids; no matching by names or failed connection status.')
+param demoResetTeamIds string = ''
+
+@allowed([ 'false', 'true' ])
+@description('Demo opt-in for the unsaved configured default team. Does not upgrade legacy registry records.')
+param demoDefaultTeamIsDemo string = 'false'
+
 @description('UPN of the administrator. DEMO: the roster member "Admin" is this person, so the API can resolve their Entra object id (ADR 0017).')
 param adminUpn string = ''
 
@@ -78,6 +88,11 @@ param bridgeApiKey string = newGuid()
 
 @description('Image both apps start with until azd deploy replaces it.')
 param placeholderImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+
+var demoResetTeamEnvironment = [for (id, index) in (demoResetTeamIds == '' ? [] : split(demoResetTeamIds, ',')): {
+  name: 'Demo__ResetTeamIds__${index}'
+  value: trim(id)
+}]
 
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: logAnalyticsName
@@ -148,6 +163,9 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Connections__ServiceConnection__Settings__TenantId', value: tenantId }
             { name: 'Foundry__ProjectEndpoint', value: 'https://${foundryName}.services.ai.azure.com/api/projects/${foundryProjectName}' }
             { name: 'Ado__Org', value: adoOrgUrl }
+            { name: 'Demo__ResetTenantId', value: demoResetTenantId == '' ? '00000000-0000-0000-0000-000000000000' : demoResetTenantId }
+            { name: 'Team__IsDemo', value: demoDefaultTeamIsDemo }
+            { name: 'Team__DemoTenantId', value: demoResetTenantId }
             { name: 'Store__Mode', value: 'Cosmos' }
             { name: 'Cosmos__SessionsContainer', value: 'Sessions' }
             { name: 'Cosmos__Endpoint', value: cosmosEndpoint }
@@ -160,7 +178,8 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bridge__GraphMediaBaseUrl', value: graphMediaBaseUrl }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
             { name: 'Telemetry__CaptureContent', value: 'false' }
-          ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ])
+          ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ],
+          demoResetTeamEnvironment)
         }
       ]
       // One replica: the voice gateway and the scheduler keep session state in the process. PROD: shared state and scale out.

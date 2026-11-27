@@ -18,6 +18,16 @@ param tenantId string = tenant().tenantId
 @description('Azure DevOps organisation URL, for example https://dev.azure.com/your-organisation.')
 param adoOrgUrl string
 
+@description('Explicit demo reset tenant. Empty disables re-seeding; does not opt in existing team records.')
+param demoResetTenantId string = ''
+
+@description('Comma-separated exact demo team ids reviewed for reset/debris cleanup. Empty means none. Existing records also require persisted demo flags.')
+param demoResetTeamIds string = ''
+
+@allowed([ 'false', 'true' ])
+@description('Explicit demo opt-in for a newly configured default team only. Existing persisted teams remain unchanged.')
+param demoDefaultTeamIsDemo string = 'false'
+
 @description('UPN of the demo tenant administrator. Owns the sprint calendar mailbox and is the first portal user.')
 param adminUpn string
 
@@ -151,6 +161,9 @@ module compute 'modules/compute.bicep' = {
     adminObjectId: adminObjectId
     adminUpn: adminUpn
     adoOrgUrl: adoOrgUrl
+    demoResetTenantId: demoResetTenantId
+    demoResetTeamIds: demoResetTeamIds
+    demoDefaultTeamIsDemo: demoDefaultTeamIsDemo
     logAnalyticsName: observability.outputs.logAnalyticsName
     appInsightsConnectionString: observability.outputs.appInsightsConnectionString
     identityId: identity.outputs.id
