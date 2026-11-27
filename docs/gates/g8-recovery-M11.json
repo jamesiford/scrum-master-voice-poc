@@ -1,0 +1,48 @@
+{
+  "environment": "zavagf",
+  "location": "eastus2",
+  "subscription": "4b0dd31f-5379-4acc-8dcd-60f2929d2513",
+  "resourceGroup": "rg-zava-scrum-zavagf",
+  "status": "running",
+  "source": "a2e34e1ca6118fe666bd846b9f1fb013bca35c26",
+  "authority": {
+    "globalAdministratorReadback": true,
+    "unchangedApplicationPatchAndReadback": {"passed": 1, "total": 1},
+    "unchangedAllPrincipalsConsentPatchAndReadback": {"passed": 1, "total": 1},
+    "zavagfPortalReconciliation": "pass",
+    "dedicatedMediaConsent": "Calls.AccessMedia.All",
+    "extraTenantJoinPermission": false
+  },
+  "sku": {
+    "name": "Standard_D4als_v7",
+    "family": "StandardDalsv7Family",
+    "vcpus": 4,
+    "availableVcpus": 4,
+    "memoryGB": 8,
+    "architecture": "x64",
+    "hyperVGenerations": ["V2"],
+    "restrictions": [],
+    "familyQuota": {"used": 0, "limit": 100},
+    "regionalQuota": {"used": 0, "limit": 100},
+    "selection": "Cheapest unrestricted compatible Windows consumption SKU with at least four available vCPUs and existing family capacity",
+    "windowsHourlyUSD": 0.345,
+    "priceMeterId": "b5fd5498-c487-5fc5-9bc6-49b530f04250",
+    "image": "MicrosoftWindowsServer:WindowsServer:2022-datacenter-g2:latest",
+    "disposableMediaVaultPurgeProtection": false,
+    "defaultMediaVaultPurgeProtection": true
+  },
+  "preflight": {"start": "2026-11-27T04:07:14.5614890Z", "end": "2026-11-27T04:10:37.4000104Z", "seconds": 202.8385214, "exit": 0, "samples": 1},
+  "validation": {"threeBuilds": "pass", "dotnetWarnings": 0, "dotnetErrors": 0, "focusedHookChecks": {"passed": 16, "total": 16}, "schema": "pass", "bicep": "pass", "gen2Image": "pass", "previewSeconds": 27, "package": "pass", "format": "pass", "fullSuitesRerun": false},
+  "operations": [
+    {"operation": "initialDown", "start": "2026-11-27T04:13:08.8429494Z", "end": "2026-11-27T04:40:11.4755627Z", "seconds": 1622.6326133, "exit": 0, "status": "pass"},
+    {"operation": "firstUpVerify", "status": "not_run", "completedCycles": 0},
+    {"operation": "interveningDown", "status": "not_run"},
+    {"operation": "secondUpVerify", "status": "not_run", "completedCycles": 0}
+  ],
+  "completedCycles": 0,
+  "requiredCycles": 2,
+  "newAzureResourcesCreated": 0,
+  "failures": [],
+  "boundaries": ["No zavaw3 or mcm mutation", "No quota request, subscription/region change, tenant policy change or unrelated role", "Acs/Share/Direct and stable hosted4 retained in zavaw3", "Operator-completed zavaw3 Graph/WorkIQ consents and catalogue uploads do not prove real user, source, billing, Exchange, CI or per-meeting RSC acceptance"],
+  "historicalFailuresRetained": ["G1 fallback point estimates", "G4 exact board identity", "G7 spoken date release check", "Earlier D4s_v5 NotAvailableForSubscription"]
+}

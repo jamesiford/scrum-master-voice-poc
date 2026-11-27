@@ -15,6 +15,19 @@ Focused hook regressions16/16 and all three builds pass, .NET0warnings/errors.
 No full suites rerun. Both full empty up/verify cycles remain pending,
 not passed at this checkpoint. Exact durations/failures will be appended.
 
+Corrected preflight04:07:14Z to04:10:37Z: **202.8385s,exit0,n1**.
+Preview27s, package<1s, official schema/Gen2 image/full C# format pass.
+Initial old-group `down --purge` started04:13:08.8429494Z and is running;
+20:22PT read found only deleting Cosmos/Container Apps environment.
+Completed final up/verify cycles **0/2**. No new Azure resource yet.
+Initial purge subsequently passed at04:40:11.4755627Z, **1622.6326s**
+(27m02.63s), including the exact old resource group and Foundry purge.
+The first up starts only after empty-group readback.
+Public checkpoint is [g8-recovery-M11.json](g8-recovery-M11.json).
+Known selected VM+E10disk+staticIPv4 estimateUSD0.363150685/hour,
+before usage-based storage/vault/operations/egress; actual disk is still
+unverified. Basic ACRUSD0.1666/day. Do not present these as an all-in bill.
+
 The operator completed zavaw3 Graph retrieval and WorkIQAgent.Ask delegated
 consents and both catalogue uploads. Those administrator gates are closed;
 real fixture/billing/Exchange/CI/user/organiserRSC gates remain.

@@ -269,7 +269,8 @@ Built after M9b (ADR 0013); `SPEC.md` section 10.8 has the rules.
 The Bicep/hooks describe empty-environment deployment (ADR 0015a,
 `docs/DEPLOY.md`); final-solution two-cycle G8 acceptance is not established.
 Native hosting is opt-in, so a default deployment alone is not the full G8
-proof. Tenant package upload and real user/organiser consent remain gates.
+proof. zavaw3 tenant package uploads are completed; real user/organiser
+installation and consent remain gates. Another environment needs its own package.
 
 - **Bicep:** resource group, telemetry/workbook, managed identity, Foundry
   account/project with three default model deployments, ACR/AcrPull,
@@ -365,7 +366,7 @@ Opt-in Bicep/azd adds a public four-vCPU Windows Server 2022 D4s_v5 host (D3_v2 
 
 Real SDK/HTTPS readiness reports no recording and cap 1, including after an idle VM reboot without manual task start; the task runs as SYSTEM with an at-startup trigger. The aligned direct native-package reference and explicit Graph v1.0 service URL fix startup defects that managed unit tests did not exercise. This does not establish native call capacity or a Teams media handshake.
 
-Native G1/G2/G6 and real-human barge-in remain n=0: the catalogue POST lacked delegated OAuth scopes, no real meeting link is stored, Daniel/Maya lack roster Entra ids, and organiser RSC/voices are outstanding. Synthetic probes passed 90/90 tagged frames and dispatched stop 29.6 ms after threshold (n=1), not SDK attribution or live audio. Opening-state 600 ms speech does not cancel, so unconditional barge-in fails synthetically. See DEPLOY.md for exact human actions and the gate table for fallback measurements.
+Native G1/G2/G6 and real-human barge-in remain n=0: catalogue upload is now completed by the operator, but no real meeting link is stored, Daniel/Maya lack roster Entra ids, and organiser installation/RSC/voices are outstanding. Synthetic probes passed 90/90 tagged frames and dispatched stop 29.6 ms after threshold (n=1), not SDK attribution or live audio. Opening-state 600 ms speech does not cancel, so unconditional barge-in fails synthetically. See DEPLOY.md for exact human actions and the gate table for fallback measurements.
 
 ## 23. M11: content-free observability and evaluation
 

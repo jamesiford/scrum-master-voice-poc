@@ -85,7 +85,9 @@ administrator. The explicitly authorised Global Administrator window ended
 at 14:27 PT on 26 November; cached OAuth scopes do not prove current role
 authority. No role activation, consent mutation or authentication loop was run.
 
-**G8-DEPLOYER-AUTHORITY:** an authorised Entra Application Administrator
+**G8-DEPLOYER-AUTHORITY, completed for this recovery window:** actual
+Global Administrator and privileged operation readback passed as recorded
+above. For any later recovery, an authorised Entra Application Administrator
 (application changes) and Privileged Role Administrator/Global Administrator
 (required tenant consents) must run the existing hooks for **zavagf**, using
 their own approved active role. A Subscription Owner or equivalent scoped
@@ -93,7 +95,10 @@ resource/RBAC permissions and Azure DevOps Project Collection Administrator
 are also required. Do not grant unrelated roles or change tenant policy.
 Revalidate actual role authority, not just the token's `scp` field.
 
-**G8-MEDIA-CAPACITY:** the deployment owner must review
+**G8-MEDIA-CAPACITY, catalogue/quota prerequisite resolved:** the operator
+authorised SKU selection and Standard_D4als_v7 was selected as recorded
+above. Actual allocation still requires the deployment. For a future run,
+the deployment owner must review
 `az vm list-skus -l eastus2 --size Standard_D4s_v5 --all` and its
 `NotAvailableForSubscription` restrictions. Approve an actually available
 minimum-four-vCPU alternative through the existing `MEDIA_VM_SIZE` parameter

@@ -46,7 +46,7 @@ gates are closed. Real users/corpus/billing/Exchange/CI/meetingRSC are not.
 
 ## Validation and consequences
 
-Nine focused pure hook checks and all three builds pass; .NET0warnings/errors.
+Sixteen focused pure hook checks and all three builds pass; .NET0warnings/errors.
 Full suites are not rerun. No Domain/approval/model/default changes.
 Both up/verify cycles, timing, iteration failures and actual added resource
 costs will be recorded in M11-gates.md; no greenfield success is claimed yet.
@@ -60,3 +60,17 @@ Current Learn:
 Live catalogue and platform behaviour take precedence over the unavailable
 default. Compute tariff excludes disk/publicIP/storage/Insights/build/model
 usage; do not present it as an all-in environment bill.
+
+## Recovery checkpoint, approximately20:32PT
+
+Corrected preflight passes202.8385s,04:07:14Z to04:10:37Z; preview27s
+and package<1s pass. Official deployment schema, Gen2 image readback,
+Bicep compilation and full C# format pass. Initial old-group purge started
+04:13:08.8429494Z and is still deleting the exact group; both up/verify
+cycles remain n0. A20:22PT read found only the deleting Cosmos account and
+Container Apps environment. No timeout/failure or resource creation is
+claimed. [Recovery evidence](../gates/g8-recovery-M11.json) is checkpointed.
+
+Initial purge completed04:40:11.4755627Z,exit0,1622.6326s (27m02.63s).
+The exact old group and soft-deleted Foundry account were removed/purged.
+First up/verify remains pending; this successful teardown is not G8 closure.

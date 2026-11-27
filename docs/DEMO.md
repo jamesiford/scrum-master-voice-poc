@@ -132,9 +132,10 @@ existing authorised ACS/Simulated history if demonstrating that skill.
 An unavailable/ungrounded model produces an explicitly labelled code answer.
 Other Teams reporting, planning, follow-ups and approvals are unchanged.
 
-Live G5 remains unrun until catalogue upload and consenting users are available.
-The actual Graph catalogue read was refused for missing AppCatalog scopes after
-the administrator window expired; DEPLOY.md names the exact gate. Current
+Live G5 remains unrun until actual consenting users and fixtures are available.
+The operator has completed the zavaw3 catalogue upload. The earlier Graph
+catalogue read was refused for missing AppCatalog scopes after the first
+administrator window expired; DEPLOY.md records the completed action. Current
 references: [enable Copilot](https://learn.microsoft.com/microsoftteams/platform/m365-apps/enable-agent-app-copilot),
 [custom app updates](https://learn.microsoft.com/microsoftteams/teams-custom-app-policies-and-settings#update-a-custom-app-using-teams-admin-center),
 [user update consent](https://learn.microsoft.com/microsoftteams/apps-update-experience).
