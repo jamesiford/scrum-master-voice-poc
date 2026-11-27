@@ -1,0 +1,93 @@
+{
+  "version": "Notebook/1.0",
+  "isLocked": false,
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Zava content-free observability\nSelect one owning team. Only metadata is queried. Accepted joins are not established calls; native live acceptance, knowledge and Work IQ remain separate gates. Missing data is not a pass."
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "team",
+            "name": "Team",
+            "type": 2,
+            "isRequired": true,
+            "query": "union requests, dependencies | where timestamp > ago(7d) | extend team=tostring(customDimensions['team.id']) | where isnotempty(team) | distinct team | order by team asc",
+            "queryType": 0,
+            "resourceType": "microsoft.insights/components",
+            "crossComponentResources": ["{{insightsResourceId}}"]
+          },
+          {
+            "id": "time",
+            "name": "TimeRange",
+            "type": 4,
+            "value": { "durationMs": 86400000 },
+            "typeSettings": {
+              "selectableValues": [
+                { "durationMs": 3600000 },
+                { "durationMs": 86400000 },
+                { "durationMs": 604800000 }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "title": "Measured hop spans (milliseconds)",
+        "query": "union requests, dependencies | where timestamp {TimeRange} | where tostring(customDimensions['team.id']) == '{Team}' | extend hop=tostring(customDimensions.hop) | where isnotempty(hop) | summarize samples=count(), p50Ms=percentile(duration,50), p95Ms=percentile(duration,95) by hop, cloud_RoleName | order by hop asc",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "crossComponentResources": ["{{insightsResourceId}}"],
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "title": "Join accepted/refused versus connection success; turns, interruptions and approval/refusal counts",
+        "query": "customMetrics | where timestamp {TimeRange} | where tostring(customDimensions['team.id']) == '{Team}' | where name startswith 'zava.scrum.events' | extend event=tostring(customDimensions.event), outcome=tostring(customDimensions.outcome) | summarize count=sum(valueSum) by event, outcome | order by event asc, outcome asc",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "crossComponentResources": ["{{insightsResourceId}}"],
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "title": "Approval chain: a write requires a preceding approved decision in the same session trace",
+        "query": "let hops=dependencies | where timestamp {TimeRange} | where tostring(customDimensions['team.id']) == '{Team}'; let approved=hops | where name == 'approval.decision' and tostring(customDimensions['approval.outcome']) == 'approved' | summarize approvedAt=min(timestamp) by operation_Id; hops | where name == 'ado.write' | join kind=leftouter approved on operation_Id | project timestamp, operation_Id, success, outcome=tostring(customDimensions['write.outcome']), approvedAt, approvalPrecedesWrite=isnotnull(approvedAt) and approvedAt <= timestamp | order by timestamp desc",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "crossComponentResources": ["{{insightsResourceId}}"],
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "title": "Session trace across actual roles and hops",
+        "query": "union requests, dependencies | where timestamp {TimeRange} | where tostring(customDimensions['team.id']) == '{Team}' | where isnotempty(tostring(customDimensions.hop)) | summarize roles=make_set(cloud_RoleName), hops=make_set(name), samples=count() by operation_Id | order by samples desc",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "crossComponentResources": ["{{insightsResourceId}}"],
+        "visualization": "table"
+      }
+    }
+  ],
+  "fallbackResourceIds": ["{{insightsResourceId}}"],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

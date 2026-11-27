@@ -73,6 +73,8 @@ $settings = @{
     ServiceFqdn = $Fqdn; PublicIp = $PublicIp; MediaPort = 8445
     ApiBase = $ApiBase; ApiKey = Get-MediaSecret 'media-control-key'; MaxConcurrentMeetings = 1
   }
+  APPLICATIONINSIGHTS_CONNECTION_STRING = Get-MediaSecret 'media-insights'
+  Telemetry = @{ CaptureContent = $false }
   Logging = @{ LogLevel = @{ Default = 'Information'; 'Microsoft.AspNetCore' = 'Warning'; 'System.Net.Http.HttpClient' = 'Warning' } }
 }
 $settings | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $application 'appsettings.json') -Encoding UTF8

@@ -159,6 +159,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Board__Mode', value: boardMode }
             { name: 'Bridge__GraphMediaBaseUrl', value: graphMediaBaseUrl }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
+            { name: 'Telemetry__CaptureContent', value: 'false' }
           ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ])
         }
       ]
@@ -202,6 +203,8 @@ resource bridge 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'API_URL', value: 'https://${apiFqdn}' }
             { name: 'SPEECH_ENDPOINT', value: foundryEndpoint }
             { name: 'PORT', value: '8080' }
+            { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
+            { name: 'Telemetry__CaptureContent', value: 'false' }
             { name: 'Bridge__ApiKey', secretRef: 'bridge-key' }
             // Entra sign-in to Communication Services; the identity holds the Communication and Email Service Owner role.
             { name: 'Acs__Endpoint', value: acsEndpoint }

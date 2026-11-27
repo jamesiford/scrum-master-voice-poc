@@ -176,6 +176,9 @@ module mediaHost 'modules/media-host.bicep' = if (mediaHostEnabled == 'true') {
 
 // azd reads these outputs into the environment; the hooks and the verify script use them.
 output AZURE_RESOURCE_GROUP string = rg.name
+output APPINSIGHTS_NAME string = observability.outputs.appInsightsName
+output LOG_ANALYTICS_NAME string = observability.outputs.logAnalyticsName
+output OBSERVABILITY_WORKBOOK_ID string = observability.outputs.workbookId
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = data.outputs.registryLoginServer
 output API_URI string = compute.outputs.apiUri
 output BRIDGE_URI string = compute.outputs.bridgeUri

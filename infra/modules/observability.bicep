@@ -35,6 +35,17 @@ resource insights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+module workbook 'workbook.bicep' = {
+  name: 'observability-workbook'
+  params: {
+    location: location
+    appInsightsName: insights.name
+    tags: tags
+  }
+  dependsOn: [ insights ]
+}
+
 output logAnalyticsName string = logs.name
 output appInsightsName string = insights.name
 output appInsightsConnectionString string = insights.properties.ConnectionString
+output workbookId string = workbook.outputs.workbookId
