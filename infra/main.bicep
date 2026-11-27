@@ -81,10 +81,14 @@ param chatCapacity int = 100
 @description('Capacity of each realtime model deployment in realtimeModels.')
 param realtimeCapacity int = 10
 
-@description('Realtime models deployed for Voice Live. Keep it in step with requiredModels in infra/hooks/regions.json (the preflight quota check). VoiceLive__Model must name one of these deployments. gpt-live-1 and gpt-realtime-2.1-mini are not listed: the first is a separate API surface that nothing here uses, the second was measured and rejected (ADR 0019). To test another model, add it here and to requiredModels in regions.json.')
+@description('Optional standalone Azure OpenAI realtime deployments. Managed Voice Live uses service-owned model IDs, not these deployments. Keep optional deployment quota checks aligned with regions.json; rejected model alternatives remain excluded (ADR 0019).')
 param realtimeModels array = [
   { name: 'gpt-realtime-2.1', model: 'gpt-realtime-2.1', version: '2026-07-07' }
 ]
+
+@allowed([ 'false', 'true' ])
+@description('Provision standalone Azure OpenAI realtime deployments. Managed Voice Live models do not require them; true preserves existing deployment inputs.')
+param provisionRealtimeModels string = 'true'
 
 @description('Capacity of the Microsoft-Decision-1.1 deployment. A live standup needs more than 10 (rate limits are per minute); 100 was measured sufficient.')
 param decisionCapacity int = 100
@@ -130,7 +134,7 @@ module foundry 'modules/foundry.bicep' = {
     realtimeSku: realtimeSku
     chatCapacity: chatCapacity
     realtimeCapacity: realtimeCapacity
-    realtimeModels: realtimeModels
+    realtimeModels: provisionRealtimeModels == 'true' ? realtimeModels : []
     decisionCapacity: decisionCapacity
   }
 }

@@ -15,6 +15,7 @@
     "realtimeSku": { "value": "${REALTIME_SKU=DataZoneStandard}" },
     "chatCapacity": { "value": "${CHAT_CAPACITY=100}" },
     "realtimeCapacity": { "value": "${REALTIME_CAPACITY=10}" },
+    "provisionRealtimeModels": { "value": "${PROVISION_REALTIME_MODELS=true}" },
     "decisionCapacity": { "value": "${DECISION_CAPACITY=100}" },
     "voiceRoute": { "value": "${VOICE_ROUTE=Direct}" },
     "mediaHostEnabled": { "value": "${MEDIA_HOST_ENABLED=false}" },

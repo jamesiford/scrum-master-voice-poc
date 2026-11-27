@@ -84,6 +84,11 @@ foreach ($acct in (az resource list --tag "azd-env-name=$($env:AZURE_ENV_NAME)" 
   $ownDeployments += az cognitiveservices account deployment list -g $acct.resourceGroup -n $acct.name -o json 2>$null | ConvertFrom-Json
 }
 foreach ($m in $regions.requiredModels) {
+  if ($env:PROVISION_REALTIME_MODELS -eq 'false' -and $m.sku -eq '{realtimeSku}') {
+    # https://learn.microsoft.com/azure/ai-services/speech-service/voice-live#supported-models-and-regions
+    Write-Check PASS "managed Voice Live: $($m.name)" 'Service-managed model; no standalone Azure OpenAI deployment or its quota is required.'
+    continue
+  }
   $deploySku = $m.sku.Replace('{realtimeSku}', $sku)
   $found = $catalogue | Where-Object { $_.model.name -eq $m.name -and ($_.model.skus.name -contains $deploySku) } | Select-Object -First 1
   if (-not $found) { Write-Check FAIL "model: $($m.name)" "Not offered as $deploySku in $loc for this subscription (check with: az cognitiveservices model list -l $loc)"; continue }

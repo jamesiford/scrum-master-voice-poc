@@ -60,6 +60,32 @@ try { Assert-MediaDeploymentEnvironment } catch { $refused = $true }
 if (-not $refused) { throw 'Environment_WrongSubscription_Refused failed' }
 $preflight = [System.Management.Automation.Language.Parser]::ParseFile(
   "$PSScriptRoot\..\infra\hooks\preflight.ps1", [ref]$null, [ref]$null)
+$modelLoop = $preflight.Find({
+  param($node)
+  $node -is [System.Management.Automation.Language.ForEachStatementAst] -and
+    $node.Condition.Extent.Text -eq '$regions.requiredModels'
+}, $true)
+if (-not $modelLoop) { throw 'Cannot locate the real model quota preflight loop.' }
+$modelBlock = [scriptblock]::Create($modelLoop.Extent.Text)
+$regions = @{ requiredModels = @(
+  @{ name = 'voice'; sku = '{realtimeSku}' }
+  @{ name = 'chat'; sku = 'GlobalStandard' }
+  @{ name = 'decision'; sku = 'GlobalStandard' }
+) }
+$catalogue = @()
+$sku = 'GlobalStandard'
+$loc = 'westus3'
+foreach ($case in @(
+  @{ value = 'false'; failures = 2 }
+  @{ value = 'true'; failures = 3 }
+  @{ value = ''; failures = 3 }
+)) {
+  $env:PROVISION_REALTIME_MODELS = $case.value
+  $script:Failures = 0
+  & $modelBlock | Out-Null
+  if ($script:Failures -ne $case.failures) { throw "ManagedVoice_OnlyOptionalRealtimeQuotaSkipped failed: $($case.value)" }
+}
+$env:PROVISION_REALTIME_MODELS = $null
 $capacity = $preflight.Find({
   param($node)
   $node -is [System.Management.Automation.Language.IfStatementAst] -and
@@ -108,4 +134,4 @@ foreach ($case in @(
   & $capacityBlock | Out-Null
   if (($script:Failures -eq 0) -ne $case.pass) { throw "Capacity_$($case.name)_ExpectedVerdict failed" }
 }
-Write-Host 'PASS 17 focused greenfield hook checks'
+Write-Host 'PASS 20 focused greenfield hook checks'
