@@ -29,8 +29,9 @@ exact absence/all13 inputs preserved. Second full empty up fails1192.4071s
 at hosted creation with project404 despite ARM Succeeded/new identity.
 The first cycle did not reproduce404; the repeated lifecycle does.
 Seven bounded backoff reads and one supported hosted-hook retry remain404;
-the final supported retry reconciles the existing footprint, without
-empty-cycle credit. Independent mandatoryverify8/8/418.8114s/native5/5
+the final supported no-state provision/deploy917.7072s also fails404,
+despite successful actual RP upsert and real builds, without cycle credit.
+Independent mandatoryverify8/8/418.8114s/native5/5
 pass, Direct3338/3977ms,n12, approverrevision73/completeaudit.
 No support prerequisite or teardown bypass; G8 remains failed at1/2.
 

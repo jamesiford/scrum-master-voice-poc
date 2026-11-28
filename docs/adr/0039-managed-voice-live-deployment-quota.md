@@ -60,6 +60,8 @@ not a managed Voice Live quota regression; G8 is failed at1/2.
 Independent verification after that failed up also passes8/8/418.8114s:
 real Direct3338/3977ms,n12, approved revision73/completeaudit and native5/5.
 It verifies the real managed-model correction, not another full-up cycle.
+Both supported lifecycle retries also fail404 after the successful model
+correction; no quota or model change is justified by that distinct failure.
 
 Both full empty up/verify cycles must prove actual managed Voice Live
 audio, approved writes and the entire footprint before G8 passes.

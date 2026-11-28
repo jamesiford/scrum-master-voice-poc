@@ -16,11 +16,13 @@ absence and all13 inputs preserved. The second full empty up failed1192.4071s
 at hosted creation with `Project not found`404 despite new ARM identity/
 internal id and Succeeded state. Same-credential working-project read is200;
 Seven bounded backoff reads through00:19:45Z remain404; connections read200,
-and supported hosted-hook retry386.4755s also fails404. The second and final
-supported retry reconciles the same validated templates on the existing
-footprint, not an empty-cycle proof. Independent mandatoryverify8/8/418.8114s
+and supported hosted-hook retry386.4755s also fails404. The final supported
+no-state provision/deploy retry fails917.7072s: actual RP upsert589.6757s
+and three real builds succeed, but hosted creation still returns404.
+No safe source correction is established; these retries earn no cycle credit.
+Independent mandatoryverify8/8/418.8114s
 and native5/5 pass: Direct3338/3977ms,n12, approverrevision73/completeaudit.
-G8 remains failed at1/2; final VM-only deallocation remains required.
+G8 remains failed at1/2; final runtime/readiness and VM-only deallocation continue.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the

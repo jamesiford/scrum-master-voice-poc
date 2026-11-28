@@ -145,6 +145,7 @@
     "latestArmState": "Succeeded",
     "freshAndWorkingCapabilityHosts": 0,
     "callerOwnerAndFoundryUser": true,
+    "callerFoundryUserCondition": null,
     "sourceCorrectionEstablished": false,
     "destructiveGuardBypassed": false,
     "supportedHostedHookRetry": {
@@ -155,7 +156,37 @@
       "error": "HTTP 404 NotFound: Project not found",
       "cycleCredit": false
     },
-    "finalSupportedExistingFootprintReconciliation": "running_without_empty_cycle_credit"
+    "finalSupportedExistingFootprintReconciliation": {
+      "operation": "provision_no_state_then_deploy_all",
+      "source": "f4bf328d1906ecdfe0f742ba784f7194a09548d2",
+      "start": "2026-11-28T00:34:20.2089027+00:00",
+      "provisionEnd": "2026-11-28T00:44:09.8845696+00:00",
+      "provisionSeconds": 589.6756669,
+      "provisionExitCode": 0,
+      "end": "2026-11-28T00:49:37.9160540+00:00",
+      "totalSeconds": 917.7071513,
+      "deployExitCode": 1,
+      "realRemoteBuilds": ["ds5", "ds6", "ds7"],
+      "phase": "hosted_agent_version_creation",
+      "error": "HTTP 404 NotFound: Project not found",
+      "projectIdentityAndInternalIdUnchanged": true,
+      "cycleCredit": false
+    },
+    "afterActualProjectUpsertRead": {
+      "time": "2026-11-28T00:44:46.4661954+00:00",
+      "status": 404,
+      "requestId": "9149aa03-40d8-4151-93bb-554afd707fc4",
+      "error": "NotFound: Project not found"
+    },
+    "resourceHealth": {
+      "accountAvailabilityState": "Available",
+      "accountReportedTime": "2026-11-28T00:36:15.3713571Z",
+      "projectStatus": 422,
+      "projectError": "UnsupportedResourceType: Resource type not supported.",
+      "projectAvailabilityEstablished": false,
+      "appLensSupportsFoundry": false
+    },
+    "unchangedStateUpCancelledBeforeHostedPost": true
   },
   "independentCompletionAfterFailedUp": {
     "cycleCredit": false,
@@ -219,7 +250,7 @@
   "notes": [
     "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
     "Previous failures remain historical and do not establish a support prerequisite.",
-    "First full cycle and intervening purge/preserved13inputs pass. Second full empty up fails1192.4071s at hosted creation; seven bounded reads and a supported hosted-hook retry also fail404. Final supported same-template reconciliation is running on the existing footprint, without empty-cycle credit or teardown bypass.",
+    "First full cycle and intervening purge/preserved13inputs pass. Second full empty up1192.4071s, seven bounded reads, hosted retry386.4755s and final no-state provision/deploy917.7072s reproduce404. Actual RP upsert and real builds succeed; no safe source-only fix is established. G8failed1/2, without cycle credit, support prerequisite or teardown bypass.",
     "Independent mandatory8/8/native5/5 and actual managed Direct audio/approved revision73/completeaudit pass; these do not repair the failed full-up lifecycle.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]

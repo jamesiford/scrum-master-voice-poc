@@ -11,8 +11,9 @@ not a live Teams rehearsal or a passing final G8. The guarded intervening
 purge passed1700.1703s with exact absence/all13 inputs preserved; the second
 full empty up failed1192.4071s at hosted creation with project404.
 Seven bounded backoff reads and the supported hosted-hook retry remain404;
-the final supported retry reconciles the existing footprint, not an empty
-cycle. Independent mandatoryverify8/8/native5/5 pass with real Direct
+the final supported no-state provision/deploy917.7072s also fails404 after
+successful actual RP upsert/builds, not an empty cycle.
+Independent mandatoryverify8/8/native5/5 pass with real Direct
 3338/3977ms,n12 and approved revision73; no Teams acceptance is inferred.
 This lifecycle failure is not a region or support prerequisite.
 G8 remains failed at1/2. After the proof, its

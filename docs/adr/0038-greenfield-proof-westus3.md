@@ -61,12 +61,23 @@ Current ARM API retains the same Succeeded identity/id; working and fresh
 capability hosts are empty. Current Learn makes these optional in the
 default managed setup, so adding BYO storage/Search or unrelated roles
 would not be an evidence-backed correction.
-One supported hosted-hook retry fails404 in386.4755s; the second and final
-supported retry reconciles the existing validated templates, not an empty
-cycle. Independent native5/5 and mandatoryverify8/8/418.8114s pass,
+One supported hosted-hook retry fails404 in386.4755s. The second and final
+supported no-state provision/deploy fails917.7072s: actual RP upsert589.6757s
+and real builds succeed, with unchanged project identity/id, but hosted
+creation still returns404. Ordinary existing-footprint up skipped unchanged
+ARM state and was cancelled before hosted POST; `provision --no-state` is
+the documented diagnostic replay, not a shipped workaround or empty cycle.
+Account Resource Health is Available; project health returns unsupported,
+and AppLens has no Foundry support. Neither proves Agent Service health.
+Independent native5/5 and mandatoryverify8/8/418.8114s pass,
 Direct3338/3977ms,n12, approverrevision73/completeaudit.
 No source-only cause or safe correction is established; no speculative
 delay, identity toggle or teardown bypass is shipped. G8 remains failed1/2.
 The fresh catalogue
 POST403 is a separate OAuth-scope human gate, not a support prerequisite.
 No runtime feature, Domain invariant, default adapter or public API changes.
+
+Current supporting references:
+[agent identity](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-identity),
+[hosted permissions](https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agent-permissions),
+[basic environment](https://learn.microsoft.com/azure/foundry/agents/environment-setup).

@@ -168,12 +168,18 @@ empty up fails1192.4071s during hosted version creation with exact
 project identity/internal id. Same-credential working-project GET is200.
 Seven bounded backoff reads through00:19:45Z remain404; connections read200.
 One supported hosted-hook retry fails404 in386.4755s. The second and final
-supported retry reconciles the same validated templates on the existing
-footprint, without empty-cycle credit. Independent native setup382.8562s,
+supported retry explicitly runs `azd provision --no-state` and `azd deploy
+--all` on the existing footprint:917.7072s total, actual RP upsert589.6757s
+and three real builds succeed, but hosted creation still fails404.
+An initial existing-footprint up was cancelled before hosted POST because
+azd skipped unchanged ARM state; it is not a retry success or cycle credit.
+Account Resource Health is Available, but project health is unsupported and
+AppLens does not support Foundry. No source correction or support prerequisite
+is established. Independent native setup382.8562s,
 nativeRequireReady5/5 and mandatoryverify8/8/418.8114s pass, with actual
 Direct3338/3977ms,n12 and approverrevision73/completeaudit.
 No auth loop, support prerequisite or teardown bypass. G8 is failed at1/2;
-final VM-only deallocation remains required.
+final runtime/readiness and VM-only deallocation continue.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not
