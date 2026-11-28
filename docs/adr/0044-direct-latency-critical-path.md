@@ -50,12 +50,14 @@ only to zavaw3. Revision 96 became ready with HTTP 200 and verified
 configuration, identity, unrelated settings, bridge image and AcrPull
 preservation. The flag is enabled for measurement, not default promotion.
 
-At 03:10 PT, seven of twelve planned after sessions are complete:
-Model 3021/4401 ms, n36, questions 3136/4401 ms, n27; Rules 3175/4023 ms,
-n47, questions 3311/4096 ms, n35; zero talk-overs. Rules complete windows
-are 3337/4096 ms, n23, and 3120/3814 ms, n24: p50 spread 6.96%.
-Model window 2 still has only one session. Finish the remaining five
-sessions; no final acceptance is claimed from this favourable prefix.
+At 03:32 PT, ten of twelve planned after sessions are complete:
+Model 2959/4458 ms, n71, questions 2973/4609 ms, n54; Rules 3175/4023 ms,
+n47, questions 3311/4096 ms, n35; zero talk-overs. Model complete windows
+are 3024/4126 ms, n24, 2714/4401 ms, n24, and 2885/4785 ms, n23:
+p50 spread 11.42%. The final two Rules sessions still run. Model all-turn
+aggregates meet the historical guide, but question p95 remains +12.94%
+against its M10 4081 ms reference. Do not hide that tail behind all turns.
+No final acceptance is claimed until the entire planned cohort completes.
 
 ## Consequences and platform evidence
 
