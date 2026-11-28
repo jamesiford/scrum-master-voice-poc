@@ -14,6 +14,13 @@ first audio. This reproduces an orchestration tail without restoring
 whole-document storage. Hop intervals overlap; their sum is not a
 critical-path proof.
 
+The next retained prefix has six complete sessions: Model3680/5328ms,
+n24/questions3684/7968ms,n18; Rules3381/4491ms,n47/questions3502/
+4491ms,n35. Rules windows1/2 are3319/4657ms,n23 and3381/3927ms,n24:
+p50 spread1.87%, with a materially different tail. All talkovers remain0.
+The third window and remaining Model sessions are still unrun, so this
+prefix does not establish a final comparison or accepted optimisation.
+
 Actual recent use-case spans show ReconcileUpdateQuery1505/1924ms,n25,
 GetTurnInstructionQuery121/199ms,n25 and event writes110/130ms,n106.
 These are an initial diagnostic window, not the final controlled cohort.
