@@ -45,6 +45,70 @@ tombstone: the supported owned-group inventory is empty.
 
 ## Decision and outstanding proof
 
+Further isolated reads distinguish a missing resource from a stale route,
+but do not yet establish the provider's internal cause. Recreated account A
+has new account/project internal IDs; a changed project name under A and
+the original project name under new account B return200, while the exact
+recreated account/project tuple returns404. API-version changes do not fix
+it. The account-advertised `cognitiveservices.azure.com` frontend initially
+returns200 for A and the old zavag8 project when `services.ai.azure.com`
+returns404. Actual hosted creation on A succeeds20.35seconds through that
+frontend, but its version fails image authentication without the project
+identity's AcrPull role: metadata creation is not an active deployment.
+
+An independently primed account C disproves changing frontends as a
+lifecycle fix. Its actual SDK version1 becomes Active in32943ms,
+first minimal create-to-readback60.791seconds, with only project AcrPull
+on the owned existing registry. Supported child/account deletion and purge
+take84.251seconds. Immediate same-name recreation then returns404 through
+both frontends. The experimental endpoint setting and template changes
+are removed before publication; no alternate hostname, fallback or name
+rotation is shipped. This is not two successful minimal or full cycles.
+
+The ten-minute post-purge quiet variant also initially returns404.
+The deleted-name experiment encounters actual DNS NXDOMAIN, then a
+subsequent DNS read resolves again without account recreation. A single
+DNS failure is not a verified global name-release predicate. Stable release
+and the current registered/documented ARM API2026-11-01 are separate
+bounded experiments, not accepted repairs. The original two-minute
+project polls and ten-minute privilege reads continue to their bounds.
+
+Two stable NXDOMAIN samples for both old R domains, two minutes apart,
+plus active/deleted account ARM404, still produce404 after exact-name
+recreation. DNS release is therefore not the repair. Current ARM lifecycle
+E produces first Active31820ms/create57.991seconds/purge80.409seconds,
+then52/52 second reads404. An account-only documented Agents capability host
+on C provisions Succeeded in1.50/0.58seconds but leaves project404.
+No project BYO host or added storage is used or shipped. The deployer
+already inherits Foundry User and Owner. ARM advertises no backing
+`amlWorkspace` link, so there is no discovered customer-owned workspace
+to purge. Fixed non-default F is first Active32839ms/create68.753seconds;
+parent DELETE504 is resolved by absence readback before purge/recreation,
+not a blind retry. Its second target fails52/52 reads. Independently active
+G waits for exact Project-not-found after child deletion before parent
+deletion: create65.179seconds/purge90.892seconds, then52/52 second failures.
+Previously unprimed F default-project Agents lookup returns200, while its
+used target404; Connections/deployments on recreated C return200 while
+Agents404. Request revalidation/hosted preview headers do not repair C.
+This narrows the service/lifetime failure without proving a hidden cache
+or workspace mechanism. Current scoped AppLens does not support Foundry.
+The documented older purge API is a separate bounded control, not a fix.
+
+The [sanitised machine evidence](../gates/g8-proof-4-evidence.json)
+retains each request, outcome, duration and observed identity change.
+Current unauthenticated Azure Retail Prices API westus3 meters are
+USD0.0994/vCPU-hour and0.0118/GiB-hour, or0.1230 for the test's
+1CPU/2GiB per aggregate active-session-hour. Actual billing is not
+established; no hosted invocation or new model deployment is run.
+
+The only additional published correction is fail-closed teardown:
+an exact requested-agent `not_found` response can prove absence;
+project, workspace, subdomain and unrelated-agent404s cannot. Eighteen
+focused checks pass. All three current source builds pass, solution
+zero warnings/errors. The isolated hosted SDK retains its existing
+NU1603 dependency-resolution warning; Bicep retains its existing
+observability dependsOn warning. Neither is hidden as a lifecycle success.
+
 Do not ship speculative waits, name rotation, capability hosts, broad roles
 or a success-shaped teardown bypass. Compare immediate same-name recreation,
 an automated ten-minute quiet period and confirmed data-plane project

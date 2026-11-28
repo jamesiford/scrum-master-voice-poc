@@ -28,8 +28,34 @@ azd exec -e zavag9 -- pwsh -NoProfile -File infra\hooks\media-host.ps1 -ConsentO
 ```
 
 Both full empty up/verify cycles remain unrun while the minimal lifecycle
-investigation is in progress. No manual quiet-period instruction or
-unverified source correction is accepted as G8. Preserve native=true,
+investigation and bounded privilege reads continue. Immediate recreation
+and a ten-minute quiet period initially return404. An account-advertised
+alternate frontend initially works, but its own repeated same-name cycle
+also fails: **do not change hostname or add an endpoint fallback**.
+That experimental setting is not in the templates or fresh inputs.
+The actual minimal SDK first cycle is Active in32943ms, create-to-readback
+60.791seconds; its purge84.251seconds does not repair the second cycle.
+A transient DNS NXDOMAIN is not proof the names are globally released.
+ADR0047 and the gate table retain the controlled alternatives.
+Even two stable NXDOMAIN samples/two minutes apart plus active/deleted
+ARM404 fail after recreation. Current ARM2026-11-01 fails52/52 second
+reads; an explicit account-only Agents capability host also fails. Neither is
+shipped as a fix. The deployer already has inherited Foundry User/Owner,
+so adding another role is not the demonstrated repair.
+The [request ledger](gates/g8-proof-4-evidence.json) preserves every
+collected iteration; it is still in progress, not a full-cycle receipt.
+Confirmed project-route absence before parent deletion also fails52/52.
+A fixed non-default target fails52/52 after parent DELETE504 is resolved
+by absence readback, not a blind deletion retry. Its previously unprimed
+default project returns200; Connections/deployments on recreated C also
+return200 while Agents404. These narrow the failed service/lifetime boundary,
+but do not prove the internal cache or workspace mechanism. AppLens does not
+support Foundry; the documented older purge API control is still running.
+
+The cleanup hook now requires the exact requested-agent absence response;
+workspace/project/subdomain404s refuse teardown. Eighteen targeted checks
+and all three builds pass; no full suites. No manual quiet-period
+instruction or unverified source correction is accepted as G8. Preserve native=true,
 `Standard_D4als_v7`, Gen2, disposable-vault protection=false and managed
 Voice Live (`PROVISION_REALTIME_MODELS=false`); other required resources
 and actual audio/approved-write verification remain mandatory.

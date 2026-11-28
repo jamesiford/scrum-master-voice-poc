@@ -1,5 +1,68 @@
 # M11 gates
 
+## G8 fourth investigation: zavag9/westus3 (ADR0047)
+
+**G8 remains failed; fresh full cycles0/2.** This is an investigation
+checkpoint, not a greenfield success or a source-only repair claim.
+Protected deployments are untouched; Direct/Acs/Share, Simulated Room,
+native non-recording and false optimisation remain unchanged.
+
+| Minimal control | Measured boundary / current outcome |
+| --- | --- |
+| Initial Services frontend accounts A/Q | Hosted metadata POST200 in17.25/17.56s; not Active/invocation proof |
+| Raw parent delete |409 until explicit project deletion; supported child-before-parent order adopted |
+| Fresh initial project propagation | Initial404 recovers200 without mutation; not every404 is the persistent defect |
+| Exact recreated A/account/project | New ARM internal IDs; v1/2025-05-01 lookup404; two-minute polling continues |
+| Changed project only under recreated A | Original account, changed project lookup200 |
+| New account B, original project name | Lookup200; rules out a globally unique project-name explanation |
+| Ten-minute quiet period after Q purge | Recreated same names initially404; two-minute polling continues |
+| Wait for deleted project mapping |60five-second reads still404; candidate deletion predicate not satisfied |
+| Alternate advertised Account frontend A | Lookup200 while Services404; hosted POST200/20.35s, later ImageError without project AcrPull, not a working version |
+| Primed Account frontend C, real SDK | First Active32943ms; create-to-readback60.791s, purge84.251s; second exact-name recreation404 on both frontends. Alias workaround disproven and removed |
+| Old name release R | DNS NXDOMAIN followed by a resolving read without recreation; one DNS failure is not stable release |
+| Stable DNS release R | Both hostnames NXDOMAIN twice/two minutes apart, active/deleted ARM404; exact recreated project still404. Release predicate disproven |
+| Current ARM API2026-11-01 E | First Active31820ms/create57.991s, purge80.409s; second lookup fails52/52 five-second reads |
+| Account-only explicit Agents host C | Documented PUT201/readSucceeded200 in1.50/0.58s; project lookup still404. No BYO/storage or shipped capability host |
+| Default versus non-default F | First target Active32839ms/create68.753s; parent DELETE504, absence read back before purge/recreation; second target fails52/52 reads |
+| Confirmed project routing removal G | First create-to-Active-readback65.179s, purge90.892s; observed exact Project-not-found before parent deletion; second lookup fails52/52 |
+| Unprimed default project under recreated F | Canonical default-project Agents lookup200 while previously used target404; documented _project alias404, not an accepted fallback |
+| Other project services under recreated C | Connections/deployments200 while Agents404; failure is not all project services |
+| Request revalidation C | HostedAgents=V1Preview and no-cache/Pragma reads both404; no header workaround |
+
+Actual portal consent403 `Authorization_RequestDenied` at13:48:13UTC and
+dedicated media app write403 at13:52:23UTC are separate authority failures,
+not the provider defect. Privileged reads run every ten minutes for three
+hours. Exact action/requests are in DEPLOY.md. Eighteen focused cleanup
+checks and21greenfield checks pass; all three builds pass, solution
+zero warnings/errors. No full suites or new latency probes are run.
+The isolated hosted tool's existing NU1603 warning, Bicep's existing
+dependsOn warning and portal's existing bundle advisory remain visible.
+[Credential-free request/event evidence](g8-proof-4-evidence.json)
+records every collected iteration and actual internal IDs, with explicit
+in-progress collection. The deployer already inherits Foundry User and
+Owner; no extra deployer role was assigned. Current first-party westus3
+retail meters confirmUSD0.0994/vCPU-hour and0.0118/GiB-hour:
+1CPU/2GiB is0.1230 per aggregate active-session-hour, not an estimate of
+billed idle/deployment time. S0 account/project/group/role objects add
+USD0/hour fixed; no new model deployments or hosted invocations.
+Current scoped AppLens reports Foundry unsupported, not a diagnosis.
+The documented2021-04-30 purge endpoint is a further isolated control;
+its bounded second readback is still running. No lifecycle repair is shipped.
+
+| Gate | Current fourth-attempt verdict; other measurements retained |
+| --- | --- |
+| G1 | Failed; inherited Direct3472/5194ms,n12/questions3537/5194ms,n9, not rerun on protected environment |
+| G2 | Native attribution/guest acoustic acceptance not_run,n0 |
+| G3 | Prior measured approved revision83/audit,n1; fresh zavag9 writes not_run,n0 |
+| G4 | Failed strict native OCR52/53; real guest/SDK delivery not_run,n0 |
+| G5 | Actual Copilot acceptance not_run,n0 |
+| G6 | Actual native joins not_run,0/10; readiness is not join acceptance |
+| G7 | Prior synthetic112/date48/calendar40 measured;48/48 and40/40, not rerun |
+| G8 | Failed; current zavag9 full cycles0/2; earlier successful1/2 remains historical |
+| G9 | Prior3sessions/36turns/3audit chains retained; new live multi-team matrix not_run |
+| G10 | Grounded permission/citation/latency fixture not_run,n0 |
+| G11 | Work IQ content/scoping/billing/owner fixture not_run,n0 |
+
 ## Round 2 knowledge (ADR0046)
 
 G10 remains **not_run,n0** for real retrieval, correct citations, uncited

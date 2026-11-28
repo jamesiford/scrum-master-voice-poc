@@ -1,5 +1,21 @@
 # Zava Scrum Master voice PoC: as built
 
+## G8 fourth investigation (ADR0047)
+
+Current lifecycle/native guards target only fresh zavag9/westus3 and its
+exact group/subscription. Protected deployments are untouched. Hosted
+cleanup accepts only absence of the requested agent, not a project,
+workspace, subdomain or unrelated-agent404. Eighteen focused checks and
+all three source builds pass; no Application/Domain/API or default change.
+
+The exact account/project recreation fails while changed-name controls
+work. An alternate service hostname is disproven by its own repeated
+cycle and is not shipped. Actual minimal first SDK32943ms/Active and
+purge84.251seconds are not full G8 credit. Full zavag9 cycles remain0/2
+pending measured repair and fresh portal/media privileged consent.
+Keep Direct/Acs/Share, Simulated Room, native non-recording and all
+historical failed/not_run gates; see `gates/M11-gates.md`.
+
 ## Round 2 knowledge (ADR0046)
 
 `tools/KnowledgeProbe` supplies device-code persona sign-in for the portal
