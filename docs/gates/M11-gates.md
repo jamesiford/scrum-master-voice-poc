@@ -28,6 +28,11 @@ native non-recording and false optimisation remain unchanged.
 | Unprimed default project under recreated F | Canonical default-project Agents lookup200 while previously used target404; documented _project alias404, not an accepted fallback |
 | Other project services under recreated C | Connections/deployments200 while Agents404; failure is not all project services |
 | Request revalidation C | HostedAgents=V1Preview and no-cache/Pragma reads both404; no header workaround |
+| Current ContainerAgents=V1Preview A/C | Documented opt-in also404 on both; not a feature-header repair |
+| Documented purge API2021-04-30 H | First actual Active; second52/52 lookup failures |
+| Project-only recreation I | Parent internalId unchanged, new projectId; two actual Active cycles51.173s/101.322s, child teardown12.840s; not full empty proof |
+| Reset failed recreated project G | Same current parent, same project name, new projectId; bounded readback still fails, not a recovery |
+| Explicit container stop T | First Active37540ms; documented container GET/POST404 before any purge, so no completed-stop lifecycle result |
 
 Actual portal consent403 `Authorization_RequestDenied` at13:48:13UTC and
 dedicated media app write403 at13:52:23UTC are separate authority failures,
@@ -46,8 +51,12 @@ retail meters confirmUSD0.0994/vCPU-hour and0.0118/GiB-hour:
 billed idle/deployment time. S0 account/project/group/role objects add
 USD0/hour fixed; no new model deployments or hosted invocations.
 Current scoped AppLens reports Foundry unsupported, not a diagnosis.
-The documented2021-04-30 purge endpoint is a further isolated control;
-its bounded second readback is still running. No lifecycle repair is shipped.
+Audit-only collection uses an existing retired owned workspace; no request
+content capture or new workspace. DefinitionUSD0/hour fixed, ingestion variable.
+The original A/Q polls encounter401 near credential expiry. One standard
+renewal restores authorised404 reads; proactive UTC-expiry renewal continues
+the original deadlines. The interruption remains evidence, not91/91 invented
+samples. No lifecycle repair is shipped.
 
 | Gate | Current fourth-attempt verdict; other measurements retained |
 | --- | --- |

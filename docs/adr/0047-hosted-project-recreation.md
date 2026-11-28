@@ -92,7 +92,16 @@ used target404; Connections/deployments on recreated C return200 while
 Agents404. Request revalidation/hosted preview headers do not repair C.
 This narrows the service/lifetime failure without proving a hidden cache
 or workspace mechanism. Current scoped AppLens does not support Foundry.
-The documented older purge API is a separate bounded control, not a fix.
+The documented older purge API fails52/52 second reads. Project-only I
+preserves parent internalId and reaches two actual Active cycles in
+51.173/101.322seconds, child teardown12.840seconds. This is not full empty
+credit. Resetting failed G's child under its current parent still fails.
+The used Agents namespace's parent-incarnation boundary is now measured;
+the internal implementation cause is not. Documented container GET/stop
+on first Active T return404, so no completed-stop lifecycle result exists.
+Original A/Q polling encounters401 near token expiry; standard renewal
+restores authorised404. UTC-expiry checks resume their original deadlines
+without an authentication loop, role change or invented missing samples.
 
 The [sanitised machine evidence](../gates/g8-proof-4-evidence.json)
 retains each request, outcome, duration and observed identity change.

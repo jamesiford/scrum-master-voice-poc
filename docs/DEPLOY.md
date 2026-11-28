@@ -50,7 +50,14 @@ by absence readback, not a blind deletion retry. Its previously unprimed
 default project returns200; Connections/deployments on recreated C also
 return200 while Agents404. These narrow the failed service/lifetime boundary,
 but do not prove the internal cache or workspace mechanism. AppLens does not
-support Foundry; the documented older purge API control is still running.
+support Foundry; the documented older purge API also fails52/52.
+Project-only recreation succeeds twice while retaining the parent account
+identity, but cannot count as empty G8. Resetting the failed recreated child
+under its current parent does not repair it. The used Agents namespace fails
+specifically across parent-account incarnation, not every project deletion.
+Original A/Q polling encounters401 near token expiry; normal CLI renewal
+restores404 and proactive UTC-expiry renewal resumes the original deadlines,
+with the interruption explicitly retained rather than invented samples.
 
 The cleanup hook now requires the exact requested-agent absence response;
 workspace/project/subdomain404s refuse teardown. Eighteen targeted checks
