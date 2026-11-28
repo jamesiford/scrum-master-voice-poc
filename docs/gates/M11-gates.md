@@ -1,5 +1,45 @@
 # M11 gates
 
+## Round 2 knowledge (ADR0046)
+
+G10 remains **not_run,n0** for real retrieval, correct citations, uncited
+answers, permission-negative queries, golden evaluation and added pre-brief
+time. Required operator `8a-fixtures.md` is absent. No `IKnowledge`, live
+OBO retrieval route, source-management page or four knowledge integrations
+is implemented. Do not label absent calls as a measured flag-off pass.
+The independent Node persona/evaluator tooling has16focused passing cases;
+seven pure consent cases/two real hook parsers pass. Those synthetic
+tool-only inputs are not live goldens. All three builds pass, .NET0warnings/
+errors, no full suites. Graph consent/declarations are read back as complete;
+no grants, new resources or public-client settings were changed.
+
+The probe authenticates actual users for the portal scope and checks
+application team access. It cannot yet exercise the missing knowledge
+boundary. A reserved route/404 or an admin OBO metadata result is not
+permission trimming. DEPLOY.md names the exact fixture/persona handoff
+and conditional executable commands. Marker checks need source-owner
+negative-output review; no guessed sources/questions or stand-in adapter.
+Added fixed costUSD0/hour, knowledge usage n0, no runtime deployment.
+Keep Acs/Share/Direct/Simulated Room, native non-recording, false
+optimisation and historical G1/G4/G8 failures.
+The [machine-readable result](r2-8a-M11.json) keeps null rates and explicit
+n0 denominators, not success-shaped zeros.
+
+Mandatory existing-zavaw3 verification is **7/8**, exit1: the known
+deallocated native VM fails exactly "The Windows media VM is not running."
+No new allocation was authorised or attempted. The default standup,
+real approved write/audit revision83,n1 and API/bridge health pass.
+Direct current all-turn3472/5194ms,n12 and questions3537/5194ms,n9,
+model10/12, talk-overs0. Previous r2-board after was3407/6497ms,n12,
+questions3590/4663ms,n9: +1.91%/-20.06% all-turn and -1.48%/+11.39%
+question deltas. **G1 remains failed**: question tail worsens, absolute
+one-second target unmet. No favourable retry, promotion or knowledge
+causal claim; both points use the unchanged runtime/default path.
+Current hops p50/p95,n12 each: transcript0/199, analyser50/53,
+decision223/282, orchestration1735/2156, VoiceLive1247/3065ms.
+The harness label7da9e18 is not a deployment: actual API remains
+abdd4ff/revision102, bridge339bb67/revision10, Running/ready.
+
 ## Round 2 native board (ADR0045)
 
 **G4 failed; native not promoted.** The operator's current board gate is

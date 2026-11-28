@@ -2,6 +2,7 @@
 # app by its tag, so a second run changes nothing and never makes a duplicate. Runs in `preprovision`, before any Azure resource exists.
 # Output (azd environment): PORTAL_CLIENT_ID, PORTAL_APP_OBJECT_ID, PORTAL_SP_OBJECT_ID.
 . "$PSScriptRoot/lib.ps1"
+. "$PSScriptRoot/knowledge-consent.ps1"
 Import-AzdEnvironment
 
 $envName = $env:AZURE_ENV_NAME
@@ -47,7 +48,7 @@ if (-not $adoScope) { throw 'Azure DevOps exposes no user_impersonation scope in
 # Scope first, then the pre-authorised client (Graph rejects a pre-authorisation for a scope that does not exist yet).
 $existingAccess = (Invoke-Graph GET "/applications/$($app.id)?`$select=requiredResourceAccess").requiredResourceAccess
 $requiredAccess = @(
-  @{ resourceAppId = $graphAppId; resourceAccess = @(@{ id = $graphUserRead; type = 'Scope' }) }
+  @{ resourceAppId = $graphAppId; resourceAccess = @(@{ id = $graphUserRead; type = 'Scope' }) + @(Get-KnowledgeGraphPermissions) }
   @{ resourceAppId = $adoAppId; resourceAccess = @(@{ id = $adoScope.id; type = 'Scope' }) })
 Invoke-Graph PATCH "/applications/$($app.id)" @{
   displayName    = $displayName
@@ -79,10 +80,18 @@ Write-Check PASS 'portal service principal' $sp.id
 # Admin consent for User.Read (the sign-in permission), so nobody sees a consent prompt: this is the grant a tenant administrator would
 # otherwise click in the portal.
 $graphSp = (Invoke-Graph GET "/servicePrincipals?`$filter=appId eq '$graphAppId'&`$select=id").value[0]
-$grants = (Invoke-Graph GET "/oauth2PermissionGrants?`$filter=clientId eq '$($sp.id)' and resourceId eq '$($graphSp.id)'").value
+$grants = (Invoke-Graph GET "/oauth2PermissionGrants?`$filter=clientId eq '$($sp.id)' and resourceId eq '$($graphSp.id)'").value |
+  Where-Object consentType -eq 'AllPrincipals'
+if (@($grants).Count -gt 1) { throw 'Multiple organisation-wide Graph consent grants exist for the portal app.' }
+$knowledgeApproved = $env:KNOWLEDGE_DELEGATED_READS_ENABLED -eq 'true'
+$grantScopes = Merge-KnowledgeGraphConsent $grants.scope $knowledgeApproved
 if (-not $grants) {
-  Invoke-Graph POST '/oauth2PermissionGrants' @{ clientId = $sp.id; consentType = 'AllPrincipals'; resourceId = $graphSp.id; scope = 'User.Read openid profile' } | Out-Null
-  Write-Check PASS 'portal admin consent' 'User.Read granted for the organisation'
+  Invoke-Graph POST '/oauth2PermissionGrants' @{ clientId = $sp.id; consentType = 'AllPrincipals'; resourceId = $graphSp.id; scope = $grantScopes } | Out-Null
+  Write-Check PASS 'portal admin consent' 'approved delegated scopes granted for the organisation'
+}
+elseif ($grants.scope -ne $grantScopes) {
+  Invoke-Graph PATCH "/oauth2PermissionGrants/$($grants.id)" @{ scope = $grantScopes } | Out-Null
+  Write-Check PASS 'portal admin consent' 'approved delegated scopes reconciled without revocation'
 }
 else { Write-Check PASS 'portal admin consent' 'already granted' }
 

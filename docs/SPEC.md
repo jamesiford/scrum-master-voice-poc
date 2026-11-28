@@ -844,6 +844,16 @@ G10 retrieval, citation, leakage and latency samples remain n=0.
 An admin portal-to-Graph OBO token exchange and matching `/me` metadata
 succeed n1 each; they do not prove retrieval, deployed federation or trimming.
 
+**Round2 r2-8a (ADR0046):** operator `8a-fixtures.md` is absent.
+Independent `tools/KnowledgeProbe` validates forty-question private goldens
+per base, signs actual personas in for the portal scope, checks real team
+authorisation and evaluates cited responses. The reserved probe path is
+not an implemented use case/API; the runner cannot yet exercise OBO
+retrieval. Sections6.1.4/14 therefore gain no runtime catalogue entry.
+Source management, `IKnowledge`, four integrations and per-team flag remain
+unbuilt before the mandatory real spike. All G10 content samples are n0;
+greenfield declaration/optional consent reconciliation does not enable IQ.
+
 **Work IQ (M11 8B-r, ADRs 0027/0034): unregistered metadata adapters.**
 Administrator OBO n2 and tools/list n1 succeed; discovered channel URL and
 meeting UID constraints remain untested against real source fixtures.

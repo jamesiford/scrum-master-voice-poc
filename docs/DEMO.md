@@ -1,5 +1,23 @@
 # Demo runbook
 
+## Round 2 knowledge fixture handoff
+
+Do not demonstrate a standards answer or claim permission trimming yet.
+`C:\Projects\m11-conductor\fixtures\8a-fixtures.md` is absent, and the
+application's knowledge API/OBO retrieval boundary is unimplemented.
+The independent `tools\KnowledgeProbe` runner has no fabricated personas
+or questions and treats missing/uncited/failed responses as failures.
+G10 content and added pre-brief time remain not_run,n0.
+
+The standards/site owner supplies approved sources, actual restricted
+document, real positive/negative members and forty expected-source
+questions per base. After the real spike/boundary is implemented, each
+person runs DEPLOY.md's device-code command themselves; the operator
+returns private reports for evaluation. Do not ask them to run it now
+against a missing route. Existing Graph consent is complete; no new
+administrator sign-in, licence/billing manufacture or public-client
+change is required by this tooling. Keep the working default demo.
+
 ## Round 2 board review
 
 The default demo remains Acs/Share/Direct. Native may look different and

@@ -1139,6 +1139,95 @@ greenfield PR, followed by zavaw3 deployment and `infra\hooks\verify.ps1`.
 
 ### KNOWLEDGE-CONSENT and KNOWLEDGE-FIXTURE (8A/8A-r, ADRs 0026/0033)
 
+#### Knowledge persona probe (round 2, ADR0046)
+
+**Missing exact fixture:** as of28November2026,
+`C:\Projects\m11-conductor\fixtures\8a-fixtures.md` does not exist.
+Scout, the standards/team lead and SharePoint site owner must supply this
+file with approved shared/team source locations, real positive/negative
+user object ids, the restricted document and expected source, ten real
+spike questions and at least forty expected-source questions per knowledge
+base. Include a separate readable control document/question for the
+negative user and exact private leakage markers. Supply the approved Blob
+corpus and explicit team-wide access decision. Establish actual memberships
+and existing user entitlement; do not create people or enable billing
+to manufacture a test. Source approval cannot be replaced by admin rights.
+
+**Current probe readiness:** `tools\KnowledgeProbe` is independent tooling,
+not an OBO service. The real application knowledge route is unimplemented;
+do not sign the users in now or promise that one run will prove retrieval.
+The resumed implementation owns the mandatory real remote SharePoint/Blob/
+MCP spike, managed-identity-federated OBO and supported application
+boundary before consumers. It must add all infrastructure/roles/connections
+through Bicep/hooks in that same PR. No stub or direct-Graph client in the
+probe bypasses this prerequisite. The future application path reserved
+by the probe contract is `/api/teams/{teamId}/knowledge/ask`; no current
+API/use-case catalogue entry is added.
+
+After the real boundary exists, Scout translates the approved Markdown
+fixture into private `C:\Projects\m11-conductor\fixtures\8a-goldens.json`
+using the field table in `tools\KnowledgeProbe\README.md`. Set `api` to
+`https://ca-api-3fsyvjqqjw5go.greenground-8ab06fdd.westus3.azurecontainerapps.io/`,
+`tenantId` to `fb049398-a8b8-4ade-8543-1ae7a82f4869` and
+`portalClientId` to `265790b8-88a7-4975-bb8f-3fe381bb19ea`; use the actual
+approved team and persona ids, never demo cast identifiers. The directory
+already belongs to the conductor; do not write OneDrive Presenter Pack.
+
+Each actual persona runs their own command from this repository root only
+when ready to sign in, choosing their own account at device login:
+
+```powershell
+node tools\KnowledgeProbe\probe.mjs validate C:\Projects\m11-conductor\fixtures\8a-goldens.json
+# The positive user runs this, and signs in as themselves:
+node tools\KnowledgeProbe\probe.mjs probe C:\Projects\m11-conductor\fixtures\8a-goldens.json positive C:\Projects\m11-conductor\fixtures\8a-positive.json
+# The negative user runs this independently, and signs in as themselves:
+node tools\KnowledgeProbe\probe.mjs probe C:\Projects\m11-conductor\fixtures\8a-goldens.json negative C:\Projects\m11-conductor\fixtures\8a-negative.json
+# Scout evaluates the two complete, unchanged reports:
+node tools\KnowledgeProbe\probe.mjs evaluate C:\Projects\m11-conductor\fixtures\8a-goldens.json C:\Projects\m11-conductor\fixtures\8a-positive.json C:\Projects\m11-conductor\fixtures\8a-negative.json C:\Projects\m11-conductor\fixtures\8a-evaluation.json
+```
+
+The tool uses the already-pre-authorised Azure CLI public client for this
+portal registration's `access_as_user` scope. It does not make the
+confidential portal app public or alter consent. The API must validate
+signature/issuer/audience and membership, then use the caller's own OBO
+token for remote source authorisation. No secret/token is written by the
+probe, no refresh-token persistence and no redirects to other origins.
+Output files are create-only: retain failed runs, use a new explicitly
+named output for an authorised new run. A wrong persona/team, missing
+route or failed request is not permission proof. Do not repeatedly retry
+consent/MFA/policy errors; the person/tenant administrator addresses the
+exact failure. Do not share privileged fixture markers as API input.
+
+**Human handoff:** both real users return their private JSON outputs to
+Scout, who returns them with the original fixture and fixture hash to the
+conductor. Standards/site owner reviews every negative answer/snippet for
+paraphrased leakage as well as automated exact marker checks. No empty or
+failed negative query proves trimming; positive restricted access and
+successful readable negative control are required. HTTP query latency is
+not the added pre-brief time; measure the actual pre-brief before/after
+(<=2seconds added), flag-off zero calls and live G1 subset separately.
+Current retrieval/citation/leakage/evaluation/pre-brief n0/not_run.
+
+**Greenfield consent:** both delegated Graph declarations are now
+reconciled idempotently even on an empty registration. After the approved
+administrator consents to these plan-owned reads for a new environment,
+persist `KNOWLEDGE_DELEGATED_READS_ENABLED=true` in that environment's
+azd inputs before the preprovision portal hook. It adds only
+Files.Read.All/Sites.Read.All to the existing Graph AllPrincipals grant,
+preserving all approved scopes. With the option absent/false no new
+knowledge consent is granted; existing approved scopes remain. This is
+not a per-team content flag. zavaw3 consent is already complete and was
+read back in this attempt: **do not reopen it or change mcm**. No live
+grant/public-client update was needed or performed.
+
+Existing-zavaw3 `infra\hooks\verify.ps1` on this attempt completes7/8:
+native is intentionally deallocated and fails exactly "The Windows media
+VM is not running." No current-step authority to start it was inferred
+from the prior board step. Default standup, portal authentication, approved
+write/audit revision83,n1 and API/bridge health pass; Direct3472/5194ms,
+n12/questions3537/5194ms,n9 does not close failed G1. No runtime was
+added/deployed; leave the unchanged default API/ACS bridge running.
+
 Prompt 8A remains unbuilt before its mandatory permission spike, not deployed.
 Only zavaw3 and its existing portal application are in scope for that spike.
 The27November2026 actual grant/declaration readbacks confirm both retrieval

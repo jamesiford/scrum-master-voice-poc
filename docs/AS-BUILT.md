@@ -1,5 +1,29 @@
 # Zava Scrum Master voice PoC: as built
 
+## Round 2 knowledge (ADR0046)
+
+`tools/KnowledgeProbe` supplies device-code persona sign-in for the portal
+scope, real API team-authorisation checks and fail-closed cited-response
+evaluation with forty owner-supplied questions per base. It never performs
+OBO or direct Graph retrieval itself. The reserved knowledge API path is
+unimplemented, not a shipped stub: the probe cannot yet exercise the real
+OBO retrieval boundary. Required operator `8a-fixtures.md` is absent, so
+G10 retrieval/permission/pre-brief/evaluation remain not_run,n0.
+
+Graph consent is read back as complete. Greenfield hooks now declare both
+delegated retrieval scopes on an empty app and optionally reconcile their
+already-approved consent without revocation; no live grant was changed.
+No knowledge adapter, `IKnowledge`, source-management page, four consumers
+or per-team runtime switch is registered. No content calls, new resources
+or runtime deployment; added fixed cost USD0/hour. Keep Acs/Share/Direct
+and Simulated Room. DEPLOY.md names the exact fixture/persona handoff.
+Existing-zavaw3 verify7/8 fails only the known deallocated native VM;
+default standup/approved write/audit revision83,n1 pass. Current Direct
+3472/5194ms,n12/questions3537/5194ms,n9 still fails G1; questionp95
+is11.39% above the preceding point. No runtime/default change or favourable
+retry. Actual APIabdd4ff/revision102 and bridge339bb67/revision10 stay
+Running/ready. See `gates/r2-8a-M11.json` for all measured boundaries.
+
 ## Round 2 native board (ADR0045)
 
 The optional native standup board separates the sprint goal, enlarges item
