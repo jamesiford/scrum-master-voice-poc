@@ -1,5 +1,67 @@
 # Deploying the current solution
 
+## Additive record-storage rollout (ADR 0040)
+
+`infra\modules\team-records.bicep` is called by `data.bicep` for empty
+environments and can also add only `TeamRecords` plus the existing app
+identity's container-scoped contributor role. It does not redeploy Foundry,
+change hosted versions, mutate the bridge or touch another environment.
+`Cosmos:TeamRecordsContainer` defaults to `TeamRecords` and is explicitly
+set by the greenfield compute template.
+
+For existing zavaw3, import that environment into the current process
+(do not change another session's selected environment), then run:
+
+```powershell
+foreach ($line in (azd env get-values -e zavaw3)) {
+  if ($line -match '^([A-Za-z_][A-Za-z0-9_]*)="?(.*?)"?$') {
+    [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2])
+  }
+}
+pwsh -File infra\hooks\storage-records.ps1 -Mode Export -Output .m11-plan\run-log\storage-export
+pwsh -File infra\hooks\storage-records.ps1 -Mode Provision
+pwsh -File infra\hooks\storage-deploy.ps1 -QuiesceLegacy
+dotnet run --project tools\StorageProbe -- verify "https://$($env:COSMOS_ACCOUNT_NAME).documents.azure.com:443/" zavascrum .m11-plan\run-log\storage-export
+pwsh -File infra\hooks\storage-records.ps1 -Mode Load -Output .m11-plan\run-log\storage-load
+pwsh -File infra\hooks\verify.ps1 -GateOutput .m11-plan\run-log\storage-verify
+pwsh -File infra\hooks\storage-records.ps1 -Mode Complete
+```
+
+The signed-in resource owner temporarily grants **Cosmos Built-in Data
+Reader** on this account for the read-only export, and Data Contributor
+**only on TeamRecords** for the synthetic load. No tenant administrator,
+account key or wider write permission is needed. Exact task-owned role
+assignment ids are in the hook; Complete removes both. The initial
+export's missing readMetadata permission was corrected with this scoped
+grant, not authentication retries or a new human consent gate.
+Exports contain private application data: keep them untracked, with their
+SHA-256/count manifests. Do not commit or upload them.
+
+Startup performs the create-only migration before serving requests.
+The first rollout verifies every stored team has no live session and
+quiesces the exact legacy API revision immediately before its replacement;
+the brief maintenance interval prevents an old whole-document writer racing
+the additive copy. The image build archives committed HEAD into a unique
+temporary source directory: it does not traverse or upload local dependencies,
+exports or uncommitted files. Commit runtime changes before invoking it.
+Subsequent already-migrated deployments need no legacy
+quiescence. Migration refuses to clear sources if their control snapshot
+changed during copying. New empty environments have no legacy writer.
+It respects authoritative empty reset overrides, retains the raw legacy
+documents and copies any visible publication sessions back to their item
+store. A crash before the schema marker safely resumes without replacing
+newer items. Do not roll back blindly to a pre-migration binary: legacy
+documents intentionally do not receive new item writes. Recovery uses the
+retained export and item data. Unattributed historic bot activities remain
+logged in the legacy source; do not guess their team or replay delivery.
+
+Load creates 300 standups/5,400 actual-shape synthetic records in one unique
+test team and removes only those generated ids. It checks bounded queries
+and actual composed-read RU costs, not full-list constant cost. The new
+serverless container and roles add USD0 fixed hourly compute; RUs, stored
+bytes and retained export/legacy storage are variable charges. Actual
+measurements/deployment/verification are in `gates/r2-storage-M11.json`.
+
 The checked-in Bicep/hooks describe a new-resource-group deployment: Foundry
 with chat, realtime and decision deployments (three by default), ACS, Cosmos,
 ACR, API/bridge Container Apps, Bot/portal Entra configuration, Azure DevOps

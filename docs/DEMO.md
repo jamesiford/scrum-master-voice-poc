@@ -1,5 +1,20 @@
 # Demo runbook
 
+## Round 2 storage reliability
+
+Normal standups no longer append cards, follow-ups or bot deliveries to
+whole-document histories. Do not reset to work around HTTP 413.
+The existing Admin re-seed remains the intentional fresh-take control;
+it switches only the selected teams' record generations/session cutoffs,
+retaining historical items and approval evidence. All public routes,
+card actions and Acs/Share/Direct/Simulated Room choices are unchanged.
+Read-only export and the 300-standup storage probe are deployment checks,
+not real Teams delivery/guest acceptance. See ADR 0040 and
+`gates/r2-storage-M11.json` for measured costs and before/after timings.
+The live storage proof writes 5,400 records for 300 standups without HTTP
+413; bounded reads have unchanged RUs at 1/100/300 histories. This is not
+a claim of 300 real meetings or successful Teams delivery.
+
 ## Current G8 rehearsal boundary
 
 The greenfield proof runs only in fresh **zavag8/westus3** (ADR0038);

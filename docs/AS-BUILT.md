@@ -1,5 +1,23 @@
 # Zava Scrum Master voice PoC: as built
 
+## Round 2 storage (ADR 0040)
+
+Cards, follow-ups and bot delivery ids use one item per record in
+`TeamRecords`, partitioned by team, with deterministic ids and indexed
+session/status/key queries. File mode uses per-record JSON files.
+Startup migrates authoritative overrides create-only before requests,
+retains raw legacy data and removes growing publication arrays.
+The guarded demo reset switches team generations/session cutoffs; sessions
+remain in `Sessions`, including after reset. The approval guard, public
+payloads, API routes and Acs/Share/Direct defaults are unchanged.
+Read-only exports, focused checks, live 300-standup storage load and before/
+after deployment measurements are recorded in `gates/r2-storage-M11.json`.
+The deployed additive migration preserves 21 sessions, 37 approval records
+and all 4 raw legacy sources. The live 5,400-record load has zero HTTP 413
+and a maximum 8,672-byte item. Point and bounded composed-read RUs are flat
+at 1/100/300 standups, n=10 per collection/checkpoint; full lists are not.
+Full suites belong to r2-reconcile, not this step.
+
 ## Current G8 proof scope (27 November 2026)
 
 G8 moved by operator decision to fresh **zavag8/westus3** (ADR0038).
