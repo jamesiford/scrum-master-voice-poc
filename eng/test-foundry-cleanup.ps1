@@ -28,7 +28,12 @@ function Invoke-WebRequest {
   param($Method, $Uri, $Headers, [switch]$SkipHttpErrorCheck, $TimeoutSec)
   $calls.Add("$Method $Uri")
   if ($global:foundryCleanupFixture.responses.Count -eq 0) { throw 'Unexpected lifecycle request.' }
-  $global:foundryCleanupFixture.responses.Dequeue()
+  $response = $global:foundryCleanupFixture.responses.Dequeue()
+  if ($response.StatusCode -eq 404 -and -not $response.Content) {
+    $name = ([uri]$Uri).Segments[-1]
+    $response.Content = @{ error = @{ code = 'not_found'; message = "Agent $name doesn't exist [Request ID: fixture]" } } | ConvertTo-Json -Compress
+  }
+  $response
 }
 function Start-Sleep { param($Seconds) }
 function Reset-Case {
@@ -99,6 +104,16 @@ Reset-Case
 Add-Response 404 '{"error":{"code":"NotFound","message":"Project not found"}}'
 Assert-Refused 'cannot prove agent absence'
 if ($calls.Count -ne 1) { throw 'Missing data-plane project must not be treated as a missing agent or retried.' }
+foreach ($body in @(
+  '{"error":{"code":"ResourceNotFound","message":"Subdomain does not map to a resource"}}',
+  '{"error":{"code":"UserError","message":"The project does not exist","details":[{"code":"WorkspaceNotFound"}]}}',
+  '{"error":{"code":"not_found","message":"Agent unrelated does not exist"}}'
+)) {
+  Reset-Case
+  Add-Response 404 $body
+  Assert-Refused 'cannot prove agent absence'
+  if ($calls.Count -ne 1) { throw 'A routing, workspace or unrelated-agent 404 must not be absence or trigger a retry.' }
+}
 Reset-Case
 Add-Response 200 $owned
 Add-Response 202
@@ -111,5 +126,5 @@ Add-Response 202
 for ($i = 0; $i -lt 60; $i++) { Add-Response 200 $owned }
 Assert-Refused 'still visible'
 if ($calls.Count -ne 62) { throw 'Deletion visibility polling exceeded its bound.' }
-Write-Host 'PASS 15 focused Foundry cleanup checks'
+Write-Host 'PASS 18 focused Foundry cleanup checks'
 Remove-Variable -Name foundryCleanupFixture -Scope Global

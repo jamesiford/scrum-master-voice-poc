@@ -38,21 +38,26 @@ if ($project.tags.'azd-env-name' -ne 'zavag9' -or $project.location -ne 'westus3
 $token = az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv
 if ($LASTEXITCODE -ne 0 -or -not $token) { throw 'Cannot authenticate the Foundry cleanup; no authentication retry.' }
 
-function Invoke-FoundryLifecycleRequest([string]$Method, [string]$Uri) {
+function Invoke-FoundryLifecycleRequest([string]$Method, [string]$Uri, [string]$AgentName) {
   $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers @{ Authorization = "Bearer $token" } `
     -SkipHttpErrorCheck -TimeoutSec 60
   if ($response.StatusCode -notin @(200, 202, 204, 404)) {
     throw "Foundry cleanup $Method failed HTTP $($response.StatusCode): $($response.Content)"
   }
-  if ($response.StatusCode -eq 404 -and $response.Content -match '"message"\s*:\s*"Project not found"') {
-    throw "Foundry cleanup cannot prove agent absence: the ARM project exists but its data plane returned HTTP 404: $($response.Content)"
+  if ($response.StatusCode -eq 404) {
+    $errorBody = $response.Content | ConvertFrom-Json
+    $missingAgent = $errorBody.error.code -in @('not_found', 'NotFound', 'AgentNotFound') -and
+      $errorBody.error.message -match "^Agent $([regex]::Escape($AgentName)) (doesn't exist|was not found|not found)"
+    if (-not $missingAgent) {
+      throw "Foundry cleanup cannot prove agent absence: the ARM project exists but its data plane returned HTTP 404: $($response.Content)"
+    }
   }
   return $response
 }
 
 foreach ($name in @('zava-voice-relay', 'zava-voice-relay-canary')) {
   $uri = "$expectedEndpoint/agents/$($name)?api-version=v1"
-  $response = Invoke-FoundryLifecycleRequest GET $uri
+  $response = Invoke-FoundryLifecycleRequest GET $uri $name
   if ($response.StatusCode -eq 404) {
     Write-Check SKIP 'Foundry agent cleanup' "$name is already absent."
     continue
@@ -65,10 +70,10 @@ foreach ($name in @('zava-voice-relay', 'zava-voice-relay-canary')) {
     throw "Foundry cleanup refuses agent $name without the intended hosted image ownership."
   }
   # https://learn.microsoft.com/azure/foundry/agents/how-to/manage-hosted-agent#delete-an-agent
-  Invoke-FoundryLifecycleRequest DELETE $uri | Out-Null
+  Invoke-FoundryLifecycleRequest DELETE $uri $name | Out-Null
   $absent = $false
   for ($poll = 0; $poll -lt 60; $poll++) {
-    if ((Invoke-FoundryLifecycleRequest GET $uri).StatusCode -eq 404) { $absent = $true; break }
+    if ((Invoke-FoundryLifecycleRequest GET $uri $name).StatusCode -eq 404) { $absent = $true; break }
     Start-Sleep -Seconds 5
   }
   if (-not $absent) { throw "Foundry agent $name is still visible after five minutes; refusing project teardown." }
