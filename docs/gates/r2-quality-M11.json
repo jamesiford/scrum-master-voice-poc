@@ -42,7 +42,7 @@
     "remaining": 0,
     "failedRuns": [15],
     "retryCount": 0,
-    "guardedCohort": { "status": "running", "runtimeSource": "3ddd40b", "required": 30, "samples": 5, "passed": 5, "spokenReturns": 5, "answeredReturns": 5, "remaining": 25, "sessionRetries": 0 }
+    "guardedCohort": { "status": "running", "runtimeSource": "3ddd40b", "required": 30, "samples": 10, "passed": 10, "spokenReturns": 10, "answeredReturns": 10, "remaining": 20, "sessionRetries": 0 }
   },
   "before": {
     "mandatoryPassed": 8, "mandatoryTotal": 8, "nativeReadinessPassed": 5, "nativeReadinessTotal": 5,
