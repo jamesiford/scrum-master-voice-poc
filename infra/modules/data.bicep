@@ -101,6 +101,17 @@ resource sessionsRole 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@
     principalId: identityPrincipalId
     scope: '${cosmos.id}/dbs/${cosmosDb.name}/colls/${sessionsContainer.name}'
   }
+
+}
+
+// Cards, follow-ups and delivery ids share a team partition; the payload is not indexed (ADR 0040).
+module teamRecords 'team-records.bicep' = {
+  name: 'team-records'
+  params: {
+    cosmosAccountName: cosmos.name
+    databaseName: cosmosDb.name
+    identityPrincipalId: identityPrincipalId
+  }
 }
 
 // The approval trail (ADR 0017): its own container, partitioned by correlation id, written only with create so a record is never replaced.

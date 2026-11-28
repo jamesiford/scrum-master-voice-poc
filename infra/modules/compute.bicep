@@ -168,6 +168,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Team__DemoTenantId', value: demoResetTenantId }
             { name: 'Store__Mode', value: 'Cosmos' }
             { name: 'Cosmos__SessionsContainer', value: 'Sessions' }
+            { name: 'Cosmos__TeamRecordsContainer', value: 'TeamRecords' }
             { name: 'Cosmos__Endpoint', value: cosmosEndpoint }
             { name: 'Cosmos__Database', value: cosmosDatabase }
             { name: 'Bridge__RoomBaseUrl', value: 'https://${bridgeFqdn}' }
