@@ -21,6 +21,13 @@ p50 spread1.87%, with a materially different tail. All talkovers remain0.
 The third window and remaining Model sessions are still unrun, so this
 prefix does not establish a final comparison or accepted optimisation.
 
+The nine-session checkpoint retains Model windows1/2 at3680/5328ms,n24
+and3481/4082ms,n22, a5.72% p50 spread on the same build. The first third-
+window Model session is3588/4598ms,n12. Model prefix3623/5302ms,n58
+(questions3693/4598ms,n44), Rules prefix unchanged3381/4491ms,n47
+(questions3502/4491ms,n35); all talkovers0. Finish the planned remaining
+three sessions rather than selecting the favourable window as a verdict.
+
 Actual recent use-case spans show ReconcileUpdateQuery1505/1924ms,n25,
 GetTurnInstructionQuery121/199ms,n25 and event writes110/130ms,n106.
 These are an initial diagnostic window, not the final controlled cohort.
