@@ -16,8 +16,10 @@ Whole-team opening/recap/announcement replay and roster-first audio have
 targeted Domain44/44 and Api10/10 proof. The old louderguest1000/member500
 fixture suppressed member audio; now it forwards member500 and zero guest
 PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
-required circle-back survives style overrides; its30real runs and runtime
-after measurement remain explicitly unrun until final evidence. API-only
+required circle-back survives style overrides; the current prefix has
+5/5 complete real-model retros, spoken/answered returns5/5, no retries.
+Remaining25 and runtime after measurement are unrun, not passing evidence.
+API-only
 e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89, HTTP200;
 identity/configuration/environment parity pass and defaults are unchanged.
 

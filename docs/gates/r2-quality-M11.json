@@ -27,7 +27,16 @@
     }
   },
   "floor": { "domainPassed": 44, "apiPassed": 10, "realNativeAcceptanceSamples": 0 },
-  "retro": { "status": "not_run", "required": 30, "samples": 0, "passed": 0, "retryCount": 0 },
+  "retro": {
+    "status": "running",
+    "required": 30,
+    "samples": 5,
+    "passed": 5,
+    "spokenReturns": 5,
+    "answeredReturns": 5,
+    "remaining": 25,
+    "retryCount": 0
+  },
   "before": {
     "mandatoryPassed": 8, "mandatoryTotal": 8, "nativeReadinessPassed": 5, "nativeReadinessTotal": 5,
     "directP50Ms": 3418, "directP95Ms": 4559, "samples": 10,
