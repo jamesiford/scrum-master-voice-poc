@@ -194,31 +194,34 @@ public sealed class GraphMediaVoiceGateway(
             case "audio":
                 var frames = json.GetProperty("items").EnumerateArray().ToArray();
                 if (frames.Length == 0) { return; }
-                var frame = frames.MaxBy(f => f.GetProperty("amplitude").GetInt32());
-                var objectId = frame.GetProperty("participantObjectId");
-                var member = ParticipantAttribution.Resolve(_context.Session.TeamId,
-                    objectId.ValueKind == JsonValueKind.String && Guid.TryParse(objectId.GetString(), out var id) ? id : null, _context.Roster);
-                var pcm = Convert.FromBase64String(frame.GetProperty("pcm").GetString()!);
-                if (pcm.Length != 960) { throw new WebSocketException("GraphMedia requires 20 ms PCM24K."); }
-                if (member is not null)
+                var sources = frames.Select(f =>
                 {
-                    _speaker = member.Id;
+                    var objectId = f.GetProperty("participantObjectId");
+                    var member = ParticipantAttribution.Resolve(_context.Session.TeamId,
+                        objectId.ValueKind == JsonValueKind.String && Guid.TryParse(objectId.GetString(), out var id) ? id : null, _context.Roster);
+                    return new FloorAudioSource(f.GetProperty("participantId").GetString()!, member?.Id, f.GetProperty("amplitude").GetInt32());
+                }).ToArray();
+                var selected = _floor.SelectAudioSource(sources);
+                var guest = sources.Where(s => s.MemberId is null && s.Amplitude >= 300).MaxBy(s => s.Amplitude);
+                await SetGuestSpeechAsync(guest is null ? null : "guest:" + guest.SourceId);
+                if (guest is not null)
+                {
+                    _lastGuestInput = clock.UtcNow;
+                    _guestSpeechAt ??= clock.UtcNow;
+                }
+
+                if (selected is not null)
+                {
+                    var frame = frames.First(f => f.GetProperty("participantId").GetString() == selected.SourceId);
+                    var pcm = Convert.FromBase64String(frame.GetProperty("pcm").GetString()!);
+                    if (pcm.Length != 960) { throw new WebSocketException("GraphMedia requires 20 ms PCM24K."); }
+                    _speaker = selected.MemberId!;
                     _lastInput = clock.UtcNow;
-                    await SetGuestSpeechAsync(null);
                     using var forwarding = Activity.Current?.OperationName == "media.frame.receive"
                         ? ScrumTelemetry.StartHop("media.voice.send", _context.Session.TeamId, _context.Session.Id, _context.Session.CorrelationId)
                         : null;
                     await _voice.SendAudioAsync(pcm, _ct);
                 }
-                else if (frame.GetProperty("amplitude").GetInt32() >= 300)
-                {
-                    var guest = "guest:" + frame.GetProperty("participantId").GetString();
-                    await SetGuestSpeechAsync(guest);
-                    _lastGuestInput = clock.UtcNow;
-                    _guestSpeechAt ??= clock.UtcNow;
-                }
-                else { await SetGuestSpeechAsync(null); }
-
                 break;
             case "participants":
                 var guests = json.GetProperty("items").EnumerateArray().Select(p =>

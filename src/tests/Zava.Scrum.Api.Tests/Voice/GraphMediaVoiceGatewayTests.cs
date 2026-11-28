@@ -104,7 +104,7 @@ public sealed class GraphMediaVoiceGatewayTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task RunAsync_OverlappingGuestIsLouder_DoesNotForwardQuieterMemberAudio()
+    public async Task RunAsync_OverlappingGuestIsLouder_ForwardsQuieterMemberButNeverGuestAudio()
     {
         await using var fixture = new Fixture();
         await fixture.ReadyAsync();
@@ -120,8 +120,9 @@ public sealed class GraphMediaVoiceGatewayTests(ITestOutputHelper output)
         fixture.Audio(Fixture.ObjectId, marker: 3);
         await WaitAsync(() => fixture.Voice.Audio.Any(b => b[0] == 3));
 
-        Assert.DoesNotContain(fixture.Voice.Audio, b => b[0] is 1 or 2);
-        output.WriteLine("Overlap probe: strongest guest suppresses the simultaneous quieter member frame; only subsequent member PCM is forwarded.");
+        Assert.Contains(fixture.Voice.Audio, b => b[0] == 1);
+        Assert.DoesNotContain(fixture.Voice.Audio, b => b[0] == 2);
+        output.WriteLine("Overlap probe: simultaneous quieter roster PCM is forwarded; guest PCM is never forwarded.");
     }
 
     [Fact]
