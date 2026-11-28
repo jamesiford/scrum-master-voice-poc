@@ -23,18 +23,21 @@
       "totalCases": 112, "intentCorrect": 111, "itemsCorrect": 111, "kindsCorrect": 111,
       "modelFailures": 0, "ruleFallbacks": 6, "missingBinary": 0, "missingIntent": 0,
       "escapedIds": 0, "binaryAccepted": 142, "binaryAcceptedCorrect": 138,
-      "intentAccepted": 106, "intentAcceptedCorrect": 106, "release": "pass"
+      "intentAccepted": 106, "intentAcceptedCorrect": 106,
+      "binaryCalibrationSamples": 1008, "binaryBrier": 0.03047060788473959, "binaryEce": 0.08289778260789055,
+      "intentCalibrationSamples": 112, "intentBrier": 0.025959752680976937, "intentEce": 0.09693312088604658,
+      "release": "pass"
     }
   },
   "floor": { "domainPassed": 44, "apiPassed": 10, "realNativeAcceptanceSamples": 0 },
   "retro": {
     "status": "running",
     "required": 30,
-    "samples": 5,
-    "passed": 5,
-    "spokenReturns": 5,
-    "answeredReturns": 5,
-    "remaining": 25,
+    "samples": 10,
+    "passed": 10,
+    "spokenReturns": 10,
+    "answeredReturns": 10,
+    "remaining": 20,
     "retryCount": 0
   },
   "before": {

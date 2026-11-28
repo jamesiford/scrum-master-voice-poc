@@ -31,9 +31,9 @@ Real-mediator tests prove the required clause survives the older optional
 style template. `eng/test-retro-fidelity.ps1` drives30 complete existing
 Simulated Room retrospectives against zavaw3, using the real model and
 refreshing API credentials between runs. Each result is saved independently;
-no failed run is silently retried. The current prefix passes5/5 complete
-real-model retrospectives with spoken/answered returns5/5 and zero retries.
-Remaining25 are explicitly unrun until the final count appears in
+no failed run is silently retried. The current prefix passes10/10 complete
+real-model retrospectives with spoken/answered returns10/10 and zero retries.
+Remaining20 are explicitly unrun until the final count appears in
 `gates/r2-quality-M11.json`.
 
 No new resource, permission, recording exception, default adapter or fixed
