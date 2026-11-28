@@ -1,5 +1,39 @@
 # Deploying the current solution
 
+## G8 fourth attempt: zavag9 only (ADR0047)
+
+The current proof target is fresh `zavag9`/westus3, exact resource group
+`rg-zava-scrum-zavag9` in subscription
+`4b0dd31f-5379-4acc-8dcd-60f2929d2513`. Older zavag8/eastus2 commands below
+are historical evidence, not current lifecycle instructions. Never tear
+down zavaw3/mcm or rotate resource names between the two proof cycles.
+Only the authorised retired zavag8 group may be deleted after copying its
+evidence. The isolated owned westus3 scratch group is deleted after tests.
+
+**G8-DEPLOYER-AUTHORITY, Global Administrator or Privileged Role Administrator:**
+activate the signed-in deployment account's authorised directory role for
+the fresh portal's delegated consent and dedicated media permission.
+Actual portal consent returned403 `Authorization_RequestDenied` at
+13:48:13UTC on28November, request
+`bedbc1ba-13c5-4c61-ad2a-b2f54914761e`, `Insufficient privileges to complete
+the operation.` The app registration itself exists; rerun the idempotent
+hook, do not create a replacement app or broaden the Azure CLI scopes.
+The unattended run polls the privileged read every ten minutes for three
+hours before recording an unresolved human gate. Completed zavaw3
+consents/catalogue/admin-sign-in gates are not reopened.
+
+```powershell
+azd exec -e zavag9 -- pwsh -NoProfile -File infra\hooks\entra-portal-app.ps1
+azd exec -e zavag9 -- pwsh -NoProfile -File infra\hooks\media-host.ps1 -ConsentOnly
+```
+
+Both full empty up/verify cycles remain unrun while the minimal lifecycle
+investigation is in progress. No manual quiet-period instruction or
+unverified source correction is accepted as G8. Preserve native=true,
+`Standard_D4als_v7`, Gen2, disposable-vault protection=false and managed
+Voice Live (`PROVISION_REALTIME_MODELS=false`); other required resources
+and actual audio/approved-write verification remain mandatory.
+
 ## Round 2 native board (ADR0045)
 
 Keep Acs/Share/Direct and Simulated Room. Native runtime changes are

@@ -52,3 +52,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0043](0043-required-retrospective-circle-back.md) | Mandatory circle-back instruction and real-model fidelity measurement |
 | [0045](0045-native-board-content-and-delivery.md) | Native content/legibility and real delivery, not Chromium raster identity |
 | [0046](0046-knowledge-persona-probe-and-missing-fixtures.md) | Fail-closed persona/evaluation tooling; missing approved fixtures keep real knowledge spike and consumers blocked |
+| [0047](0047-hosted-project-recreation.md) | Evidence-first westus3 hosted-project lifecycle diagnosis and exact zavag9 proof scope |
