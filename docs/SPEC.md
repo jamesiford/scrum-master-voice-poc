@@ -21,6 +21,12 @@ glyph12/18/8px and localTCP153.51/113.80/147.02ms,n10 each pass their
 own thresholds, not Teams acceptance. Real meeting reception/encoder/
 reconnect remain n0/not_run; Acs/Share/Direct is not promoted away.
 No use case (6.1.4), endpoint (14), Domain rule or data store is added.
+Native13a842d was deployed with exact-byte proof; mandatory after8/8
+while allocated does not close G4 or G1. Direct3407/6497ms,n12 versus
+3448/4262ms,n12 worsens p95+52.44%; no native causal attribution.
+The existing VM is intentionally Deallocated as of12:58:26UTC; API/
+bridge remain running. `gates/r2-board-runtime.json` records source,
+preservation, per-hop counts and the approximate allocation cost.
 
 **Round 2 correctness (ADRs0041-0043):** frozen112synthetic cases preserve
 the original72 and add40date cases. Final revised expressions48/48 and

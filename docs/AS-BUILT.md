@@ -23,6 +23,16 @@ No new endpoint/use case/store/permission/resource is introduced.
 The compact>5member layout retains the tenth row/bar; extra focus text
 does not overlay it. G4 remains failed, not accepted as a regression.
 
+Native13a842d exact DLL/version/font and trusted hosting were verified
+12:49:15UTC; API102/bridge10 and their identities/configuration/secrets
+remain unchanged. Mandatory after8/8 includes real approved write/audit
+revision82,n1, not Teams acceptance. Direct3407/6497ms,n12 versus
+3448/4262ms,n12 has a worse p95(+52.44%); G1 stays failed.
+The one authorised existing-VM allocation ended Deallocated12:58:26UTC,
+approximately0.921hours and estimated computeUSD0.3224-0.3500, no new
+fixed resources. API/bridge remain running; native is intentionally
+offline. See `gates/r2-board-runtime.json` and DEPLOY.md before rehearsal.
+
 ## Round 2 Direct latency (ADR 0044)
 
 Three interleaved windows, six serial same-cast sessions per mode, before

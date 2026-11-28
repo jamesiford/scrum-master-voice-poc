@@ -62,7 +62,10 @@ automatic presentation on every Teams desktop, guest and mobile UI.
 
 Actual loopback TCP receipt verifies copied RGB24 frame hashes and timing
 for ten starts, changes and reconnects each. It is not the SDK H264 encoder
-or a Teams receiver. CPU and all-observer delivery stay **not_run,n0**.
+or a Teams receiver. The reconnect cohort invokes the real worker's
+`Reconnect()` re-share on a persistent TCP carrier; it does not force a TCP
+or API WebSocket disconnect, or measure Graph/SDK renegotiation.
+CPU and all-observer delivery stay **not_run,n0**.
 The recap is now submitted before call deletion, with an explicitly
 reported2second timeout and a2second submission-to-deletion dwell; actual
 guest recap visibility remains unproven.

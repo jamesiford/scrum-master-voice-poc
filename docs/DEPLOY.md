@@ -16,6 +16,36 @@ to start for this step; read12:04:26Z confirmsRunning afterDeallocated.
 Compute adds aboutUSD0.35-0.38/hour while allocated; deallocate it again
 after testing. API/bridge stay running. Do not touch mcm or other environments.
 
+**Final state:** deployed native13a842d exact DLL/version/font and
+trusted1280x720/cap1/non-recording hosting verified12:49:15UTC.
+Mandatory after8/8 while allocated includes approved revision82/audit,n1;
+G1 remains failed, Direct3407/6497ms,n12 versus3448/4262ms,n12,
+p95+52.44%. API102/bridge10 images, configuration, identities, secrets
+and native roles stayed unchanged. The existing VM is intentionally
+Deallocated, confirmed12:58:26UTC; approximately0.921hours at
+USD0.35-0.38/hour means estimated computeUSD0.3224-0.3500, not billed
+cost, new fixed resourcesUSD0/hour. See `gates/r2-board-runtime.json`.
+Do not repeat the deployment or assume native HTTPS is available now.
+
+**Future allocation, environment owner/deployment operator:** obtain
+separate authorisation for the same existing VM before the live rehearsal.
+The completed step's single-start authorisation is not an ongoing right
+to restart it. Check its state, start only if authorised and Deallocated,
+then verify readiness before selecting the global native adapters:
+
+```powershell
+az vm get-instance-view -g RG-ZAVA-SCRUM-ZAVAW3 -n vm-media-3fsyvjqqjw5go --query "instanceView.statuses[?starts_with(code, 'PowerState/')].code" -o tsv
+# Only under the new scoped allocation authorisation:
+az vm start -g RG-ZAVA-SCRUM-ZAVAW3 -n vm-media-3fsyvjqqjw5go -o none
+azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\verify-media.ps1
+# After restoring Acs/Share and finishing the authorised rehearsal:
+az vm deallocate -g RG-ZAVA-SCRUM-ZAVAW3 -n vm-media-3fsyvjqqjw5go -o none
+```
+
+Record state/timestamps and actual allocation window again. Readiness
+is a prerequisite, not a guest-delivery or encoder pass; do not fight
+external governance, change policy/SKU or allocate another resource.
+
 **Human gate BOARD-ROSTER-GUEST, real meeting organiser and observers:**
 use an actual stored Teams meeting with verified distinct roster object ids.
 The organiser installs the already-published dedicated zavaw3 media app in
@@ -32,6 +62,14 @@ ten item/speaker/status changes, then one reconnect, with event/display
 timestamps: every delay<=2000ms. A required viewer action FAILS requirement(a)
 and must be reported prominently, not replaced by a personal-tab workaround.
 Capture the recap and non-recording wording before call departure.
+For the guest/client reconnect, briefly disconnect that observer's network,
+restore it, and retain network-restored, actual Teams-reconnected and first
+current-frame timestamps plus the outage duration. Do not measure from a
+convenient later screenshot. This proves only that observer's recovery;
+it does not prove native API WebSocket or SDK sender renegotiation.
+Those sender-recovery checks remain n0 until a separately authorised real
+transport-disconnect fixture records actual disconnect/reconnect events.
+The local worker re-share on persistent TCP is not such a fixture.
 
 ```powershell
 azd env set BRIDGE_MODE GraphMedia -e zavaw3

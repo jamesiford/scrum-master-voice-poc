@@ -34,6 +34,10 @@ the tests. ADR0045 supersedes pixel identity with content, legibility and
 delivery requirements. Larger standup text and coverage retain the same
 facts; received recap submission precedes call deletion. Actual Teams
 reception/encoder evidence remains unrun, so keep ACS.
+Native13a842d exact DLL/version/font and hosting were verified12:49:15UTC
+on28November2026; intentional Deallocated confirmed12:58:26UTC.
+API/ACS stay running. Follow DEPLOY.md's new scoped allocation/readiness
+prerequisite before a real rehearsal; historical readiness is not uptime.
 
 Four-state OCR/contact sheets use the commands below after the focused tests.
 Final strict OCR52/53 at1080p/480p fails zero-days recognition; glyph12/18/8px

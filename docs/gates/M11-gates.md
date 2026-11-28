@@ -29,6 +29,9 @@ first/second/third OCR JSONs remain alongside it. The TCP receiver copies
 the full1280x720RGB24 frame and independently hashes it; it is not Graph
 H264 encoding. Actual call cap1 encoder host CPU requires60one-second
 samples, average<=70%,p95<=85%; this is **not_run,n0**, not idle/startup CPU.
+Local reconnect is the real worker's `Reconnect()` re-share event on a
+persistent TCP carrier, not a forced TCP/API WebSocket disconnect or
+Graph/SDK negotiation. Those actual network recovery timings remain n0.
 
 The worker's stop-before-recap-send defect is fixed. The owner waits up
 to2seconds for a received completion-frame submission, explicitly reports
@@ -43,16 +46,41 @@ Native meeting-derived data still is not saved.
 G1 before mandatory verification: Direct3448/4262ms,n12, questions
 3448/4253ms,n9, model10/12, talk-overs0. Native TLS check fails, **7/8**;
 working-path actual approval/audit passes, revision81,n1 write.
-After deployed-runtime verification is recorded below when complete.
+After deployed-runtime verification **8/8** while allocated: Direct
+3407/6497ms,n12, questions3590/4663ms,n9, model10/12, talk-overs0;
+actual approved write/audit revision82,n1. All-turn p50/p95 changes
+-1.19%/+52.44%; questions +4.12%/+9.64%. **G1 remains failed; the
+worse tail is not accepted or retried to turn green.**
 These separate single-window observations are not the prior interleaved
 latency cohort and cannot establish a native-board causal effect.
 G1 and inherited failed/not_run gates are not promoted by local board tests.
+
+All-turn hops, p50/p95 milliseconds, n12 in each column for every hop:
+
+| Hop | Before | After |
+| --- | --- | --- |
+| Total | 3448/4262 | 3407/6497 |
+| Speech end to transcript | 0/197 | 0/193 |
+| Analyser | 51/57 | 51/106 |
+| Decision model | 200/264 | 254/288 |
+| Orchestration | 1699/2835 | 1801/2273 |
+| Voice Live first audio | 1185/3004 | 1330/5323 |
+
+[Runtime/lifecycle evidence](r2-board-runtime.json) records the exact
+deployed native13a842d DLL; API102/bridge10 images, identities,
+configuration, secrets and native roles remain unchanged. Native HTTPS/
+renderer1280x720/cap1/non-recording passed at12:49:15UTC, not Teams
+acceptance. The single authorised allocation ended with confirmed
+Deallocated at12:58:26UTC: approximately0.921hours, estimated existing
+computeUSD0.3224-0.3500, not actual billing; new fixed resourcesUSD0/hour.
+API/bridge stay running; native readiness is historical, not current.
+Future real-meeting checks require separately authorised VM allocation.
 
 | Gate | Current scope / inherited boundary |
 | --- | --- |
 | G1 | Failed M10 experience/one-second target; native acoustic n0; separate before/after verification is not paired causal evidence |
 | G2 | Native identity/guest acoustic acceptance not_run,n0; routing tests are not real participants |
-| G3 | Measured working-path approval/write/audit, before revision81,n1; Teams/Copilot live matrix n0 |
+| G3 | Measured working-path approval/write/audit, before revision81 and after82,n1 each; Teams/Copilot live matrix n0 |
 | G4 | Failed strict zero-day OCR; requirements(a)-(d) above replace raster identity; historical retro29/30 and guarded30/30 retained, real rehearsal n0 |
 | G5 | Real Copilot positive/negative/streaming not_run,n0; completed consent/catalogue not reopened |
 | G6 | Actual stored-link native joins not_run,0/10; HTTPS/renderer readiness is not join acceptance |

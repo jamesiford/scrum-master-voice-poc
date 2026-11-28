@@ -55,6 +55,8 @@ the published floors. Initial51/53, second52/53, and third53/53 at1080/
 earlier best-looking cohort. Chromium unchanged52/52 and46/52.
 ActualRGB24TCP receiver maxima153.51/113.80/147.02ms,n10first/change/
 reconnect each meets2000ms locally. No SDK CPU/guest delivery inference.
+The local reconnect event is worker re-sharing over the same TCP carrier;
+forced TCP/API WebSocket disconnect and Graph/SDK negotiation remain n0.
 RawOCR/source hashes and side-by-side contact sheets are in `../gates/r2-board`.
 Compact>5rosters keep the original tenth row/bar and do not overlay a focus
 label; their20px font and dense retro17/18px text remain outside the
@@ -63,8 +65,27 @@ published24px standup font floor; preservation of existing large-roster
 content does not make that an accepted exception or a passed gate.
 No threshold is relaxed to pass. No new route, use case, data store,
 permission, role, resource or fixed cost is introduced.
-The existing VM was explicitly started from deallocated for this step;
-allocated compute is aboutUSD0.35-0.38/hour, then it is deallocated again.
+The existing VM had one authorised start12:03:09UTC; running confirmed
+12:04:26UTC, final Deallocated confirmed12:58:26UTC. Approximate
+allocation window0.921hours atUSD0.35-0.38/hour gives estimated
+computeUSD0.3224-0.3500, not actual billing. API/bridge remain running.
+
+Native13a842d is deployed and exact DLL SHA256 is recorded in
+[runtime evidence](../gates/r2-board-runtime.json). Trusted HTTPS,
+renderer1280x720/cap1/non-recording and protected app/role preservation
+passed at12:49:15UTC. The first inline readback script failed because
+Azure CLI stripped quotes; a read-only file-input receipt matched exact
+bytes/version/font without another deployment or start.
+Mandatory before7/8 became after8/8 while allocated, with genuine approved
+write/audit revisions81/82,n1 each. These are not Teams acceptance.
+Direct all-turn3448/4262ms,n12 became3407/6497ms,n12
+(-1.19%/+52.44%); questions3448/4253ms,n9 became3590/4663ms,n9
+(+4.12%/+9.64%). G1 still fails, including the substantially worse tail.
+Same unchanged API/defaults do not make separate chronological windows
+causal evidence for native-board changes; no favourable rerun was made.
+Native readiness is time-bounded: the host is intentionally offline after
+deallocation. A future real-meeting rehearsal needs new scoped allocation
+authority, readiness verification and eventual restoration/deallocation.
 
 Real Teams all-roster/guest reception, encoder CPU at cap1, reconnect and
 live delivery remain not_run,n0 until the organiser/observer protocol in

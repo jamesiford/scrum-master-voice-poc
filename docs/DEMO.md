@@ -22,6 +22,12 @@ Final native OCR is52/53 atbothsizes: zero days fails strict recognition,
 even though glyph12/18/8px passes. G4 remains failed. Local first/change/
 reconnect maxima153.51/113.80/147.02ms,n10 each are not live delivery.
 Retain initial failed reports; do not choose the best earlier OCR cohort.
+Deployed native13a842d was hosting-verified before intentional VM
+deallocation12:58:26UTC. The default API/ACS bridge remain running;
+actual native rehearsal first needs separately authorised allocation and
+DEPLOY.md readiness checks, not an assumption of continuing availability.
+Mandatory after8/8 is not G1 acceptance: Direct3407/6497ms,n12
+versus3448/4262ms,n12 worsens p95+52.44%. Do not repeat to turn green.
 
 ## Round 2 latency measurement
 
