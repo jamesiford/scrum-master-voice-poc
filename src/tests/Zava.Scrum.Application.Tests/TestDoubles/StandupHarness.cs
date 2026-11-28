@@ -17,7 +17,13 @@ internal sealed class FakeUtteranceAnalyser(UtteranceReading? reading) : IUttera
 
 internal sealed class FakeReconcileAgent(ReconcileSuggestion? suggestion) : IReconcileAgent
 {
-    public Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct, IReadOnlyList<RecordedStatement>? recorded = null) => Task.FromResult(suggestion);
+    public int Calls { get; private set; }
+
+    public Task<ReconcileSuggestion?> ReconcileAsync(MemberBrief brief, string utterance, CancellationToken ct, IReadOnlyList<RecordedStatement>? recorded = null)
+    {
+        Calls++;
+        return Task.FromResult(suggestion);
+    }
 }
 
 internal sealed class FakePrompts(Dictionary<string, string> prompts) : IPromptStore
@@ -88,7 +94,8 @@ internal sealed class StandupHarness : IAsyncDisposable
         services.AddSingleton<IMeetingBridge>(new FakeMeetingBridge());
         services.AddSingleton<IMemberRepository>(new InMemoryMemberRepository());
         services.AddSingleton<IFollowUpRepository>(new InMemoryFollowUpRepository());
-        services.AddSingleton<IReconcileAgent>(new FakeReconcileAgent(suggestion));
+        services.AddSingleton(new FakeReconcileAgent(suggestion));
+        services.AddSingleton<IReconcileAgent>(s => s.GetRequiredService<FakeReconcileAgent>());
         services.AddSingleton<IUtteranceAnalyser>(new FakeUtteranceAnalyser(reading));
         services.AddSingleton<IPromptStore>(new FakePrompts(prompts ?? []));
         services.AddSingleton<IEmailSender>(new FakeEmailSender());

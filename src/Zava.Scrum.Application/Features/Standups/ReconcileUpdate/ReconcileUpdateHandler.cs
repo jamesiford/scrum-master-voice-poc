@@ -45,7 +45,10 @@ internal sealed partial class ReconcileUpdateHandler(ISessionRepository sessions
 
         var utterance = request.FocusItemId is null || string.IsNullOrWhiteSpace(request.Asked) ? request.Utterance : $"(The member is answering this question: \"{request.Asked}\") {request.Utterance}";
         var recorded = request.Correction ? RecordedFor(session, request.MemberId) : null;
-        var suggestion = await agent.ReconcileAsync(brief, utterance, ct, recorded?.Select(r => r.Statement).ToList());
+        var needsAssessment = request.IncludeModelAssessment || request.Comments is null || request.Correction;
+        var suggestion = needsAssessment
+            ? await agent.ReconcileAsync(brief, utterance, ct, recorded?.Select(r => r.Statement).ToList())
+            : null;
         var events = request.Comments is { } comments ? FromComments(comments) : suggestion is null ? [] : GroundEvents(suggestion, brief, known, knownIds, mentioned);
         var risks = suggestion?.Risks.Where(r => WorkItemIdGuard.IsGrounded(r, known)).ToList() ?? [];
         return Result<ReconcileResult>.Success(new ReconcileResult(suggestion?.Consistent ?? true, mentioned, risks, question, events, next?.Id.Value, Retractions(recorded, suggestion)));

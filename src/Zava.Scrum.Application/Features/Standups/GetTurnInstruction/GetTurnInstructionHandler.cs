@@ -20,7 +20,13 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
         }
 
         var name = session.Kind == CeremonyKind.Retrospective ? RetroTemplateName(session, request.Reason) : TemplateName(request.Reason);
-        var template = (await prompts.ResolveAsync(session.TeamId, name, ct))?.Text;
+        var templateTask = prompts.ResolveAsync(session.TeamId, name, ct);
+        var teamTask = request.ParallelContextReads ? teams.GetAsync(session.TeamId, ct) : null;
+        if (teamTask is not null)
+        {
+            await Task.WhenAll(templateTask, teamTask);
+        }
+        var template = (await templateTask)?.Text;
         if (template is null)
         {
             return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));
@@ -37,7 +43,7 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             template = $"{template}\n\n{required}";
         }
 
-        var team = await teams.GetAsync(session.TeamId, ct);
+        var team = teamTask is null ? await teams.GetAsync(session.TeamId, ct) : await teamTask;
         return Result<string>.Success(PromptTemplate.Render(template, Values(session, team?.Name ?? "the team", request)));
     }
 

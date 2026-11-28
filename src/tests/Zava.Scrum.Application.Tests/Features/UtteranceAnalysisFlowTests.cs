@@ -1,5 +1,6 @@
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
+using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 using Zava.Scrum.Application.Features.Voice.AnalyseUtterance;
 using Zava.Scrum.Application.Tests.TestDoubles;
 using Zava.Scrum.Domain.Standups;
@@ -124,5 +125,71 @@ public sealed class UtteranceAnalysisFlowTests
         var r = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "the backoff one is done", AnalysedItemIds: [1, 9999]))).Value;
 
         Assert.Equal([1], r.MentionedWorkItemIds);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Reconcile_AuthoritativeCommentsWithoutAssessment_PreservesEventsAndSkipsSecondModel(bool empty)
+    {
+        await using var h = await StandupHarness.CreateAsync();
+        IReadOnlyList<ItemComment> comments = empty ? [] :
+            [new(CommentKind.DateChange, [1], "Story 1 moves to Friday", "Friday"), new(CommentKind.Blocker, [1], "Waiting for the vendor")];
+
+        var result = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "story 1 moves to Friday", AnalysedItemIds: [1, 9999], Comments: comments)
+        {
+            IncludeModelAssessment = false,
+        })).Value;
+
+        Assert.Equal(0, h.Get<FakeReconcileAgent>().Calls);
+        Assert.Equal([1], result.MentionedWorkItemIds);
+        Assert.Equal(empty ? [] : new[] { StandupEventType.DateChange, StandupEventType.Blocker }, result.Events.Select(e => e.Type));
+        Assert.Null(result.SuggestedQuestion);
+    }
+
+    [Fact]
+    public async Task Reconcile_NoAuthoritativeComments_StillCallsModelWhenAssessmentDisabled()
+    {
+        var suggestion = new ReconcileSuggestion(false, [1], ["Story 1 is blocked"], null, [new(StandupEventType.Blocker, "Story 1 is blocked", [1])]);
+        await using var h = await StandupHarness.CreateAsync(suggestion);
+
+        var result = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "story 1 is blocked")
+        {
+            IncludeModelAssessment = false,
+        })).Value;
+
+        Assert.Equal(1, h.Get<FakeReconcileAgent>().Calls);
+        Assert.False(result.Consistent);
+        Assert.Single(result.Events);
+        Assert.Single(result.Risks);
+    }
+
+    [Fact]
+    public async Task Reconcile_CorrectionWithAuthoritativeComments_StillCallsModelAndRetractsRecordedStatement()
+    {
+        var suggestion = new ReconcileSuggestion(true, [1], [], null, [], [1]);
+        await using var h = await StandupHarness.CreateAsync(suggestion);
+        await h.Sender.Send(new RecordStandupEventCommand(h.SessionId, StandupEventType.Blocker, "m-priya", "Story 1 is blocked", [1]));
+        var recorded = Assert.Single((await h.LoadAsync()).Events);
+
+        var result = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "scratch that, story 1 is not blocked", Correction: true, Comments: [])
+        {
+            IncludeModelAssessment = false,
+        })).Value;
+
+        Assert.Equal(1, h.Get<FakeReconcileAgent>().Calls);
+        Assert.Equal(recorded.Id, Assert.Single(result.RetractedEventIds!));
+    }
+
+    [Fact]
+    public async Task Reconcile_DefaultDiagnosticQueryWithComments_PreservesModelAssessment()
+    {
+        await using var h = await StandupHarness.CreateAsync(new(false, [1], ["Story 1 contradicts the brief"], null, []));
+
+        var result = (await h.Sender.Send(new ReconcileUpdateQuery(h.SessionId, "m-priya", "story 1 is done", Comments: []))).Value;
+
+        Assert.Equal(1, h.Get<FakeReconcileAgent>().Calls);
+        Assert.False(result.Consistent);
+        Assert.Single(result.Risks);
     }
 }

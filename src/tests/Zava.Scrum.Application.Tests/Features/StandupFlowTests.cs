@@ -14,6 +14,8 @@ using Zava.Scrum.Application.Tools;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Standups;
 using Zava.Scrum.Domain.Voice;
+using Zava.Scrum.Domain.Teams;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Zava.Scrum.Application.Tests.Features;
 
@@ -167,6 +169,28 @@ public sealed class StandupFlowTests
     }
 
     [Fact]
+    public async Task TurnInstruction_IndependentPromptAndTeamReads_OverlapAndRemainTeamScoped()
+    {
+        var ports = new ConcurrentInstructionPorts();
+        await using var h = await StandupHarness.CreateAsync(configure: services =>
+        {
+            services.AddSingleton<IPromptStore>(ports);
+            services.AddSingleton<ITeamRepository>(ports);
+        });
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+        var result = await h.Sender.Send(new GetTurnInstructionQuery(h.SessionId, SpeakReason.CallOn, "m-priya")
+        {
+            ParallelContextReads = true,
+        }, timeout.Token);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Invite Priya to Payments", result.Value);
+        Assert.Equal("t1", ports.PromptTeam);
+        Assert.Equal("t1", ports.TeamId);
+    }
+
+    [Fact]
     public async Task TurnInstruction_RetroCircleBack_AddsMandatoryStepEvenWithOldOverride()
     {
         await using var h = await StandupHarness.CreateAsync(prompts: new()
@@ -255,5 +279,41 @@ public sealed class StandupFlowTests
     public void PromptTemplate_UnknownPlaceholder_IsLeftVisible()
     {
         Assert.Equal("Hi Ann {typo}", PromptTemplate.Render("Hi {name} {typo}", new Dictionary<string, string> { ["name"] = "Ann" }));
+    }
+
+    private sealed class ConcurrentInstructionPorts : IPromptStore, ITeamRepository
+    {
+        private readonly TaskCompletionSource _promptStarted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource _teamStarted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public string? PromptTeam { get; private set; }
+
+        public string? TeamId { get; private set; }
+
+        public async Task<PromptResolution?> ResolveAsync(string teamId, string name, CancellationToken ct)
+        {
+            PromptTeam = teamId;
+            _promptStarted.SetResult();
+            await _teamStarted.Task.WaitAsync(ct);
+            return new PromptResolution("Invite {firstName} to {teamName}", PromptSource.TeamOverride);
+        }
+
+        public async Task<Team?> GetAsync(string id, CancellationToken ct)
+        {
+            TeamId = id;
+            _teamStarted.SetResult();
+            await _promptStarted.Task.WaitAsync(ct);
+            return new Team(id, "Payments", "UTC", 15, new AdoSettings("o", "p", "t", "a"), new TeamBehaviours(), "Ship retries");
+        }
+
+        Task<string?> IPromptStore.GetAsync(string name, CancellationToken ct) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<string>> ListAsync(CancellationToken ct) => throw new NotSupportedException();
+
+        public Task<bool> SaveAsync(string name, string text, CancellationToken ct) => throw new NotSupportedException();
+
+        Task<IReadOnlyList<Team>> ITeamRepository.ListAsync(CancellationToken ct) => throw new NotSupportedException();
+
+        public Task SaveAsync(Team team, CancellationToken ct) => throw new NotSupportedException();
     }
 }
