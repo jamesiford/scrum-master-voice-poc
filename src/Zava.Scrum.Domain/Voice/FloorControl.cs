@@ -23,6 +23,9 @@ public sealed class FloorControl(FloorOptions options)
     private bool _timeUp;
     private int _version;
     private FloorState _resumeState = FloorState.Idle;
+    private SpeakReason _announcementReason;
+    private bool _circleBackRequired;
+    private int _speechRetryAttempt;
 
     /// <summary>Gets the current state.</summary>
     public FloorState State { get; private set; } = FloorState.Idle;
@@ -32,6 +35,16 @@ public sealed class FloorControl(FloorOptions options)
 
     /// <summary>Gets a value indicating whether the agent is meant to be speaking right now.</summary>
     public bool AgentHasFloor => State is FloorState.Opening or FloorState.CallingOn or FloorState.Clarifying or FloorState.Interjecting or FloorState.Recap or FloorState.Deferring or FloorState.Announcing;
+
+    /// <summary>Selects an attributed member stream without allowing a louder guest to suppress it.</summary>
+    /// <param name="sources">Identity-verified sources for one simultaneous audio frame.</param>
+    /// <returns>The audible floor holder, otherwise the strongest roster source, or null for guest-only audio.</returns>
+    public FloorAudioSource? SelectAudioSource(IReadOnlyList<FloorAudioSource> sources)
+    {
+        ArgumentNullException.ThrowIfNull(sources);
+        return sources.FirstOrDefault(s => s.MemberId is not null && s.MemberId == CurrentMemberId && s.Amplitude >= 300)
+            ?? sources.Where(s => s.MemberId is not null).MaxBy(s => s.Amplitude);
+    }
 
     /// <summary>Applies an input and returns what the gateway must do.</summary>
     /// <param name="input">The input.</param>
@@ -76,6 +89,24 @@ public sealed class FloorControl(FloorOptions options)
         if (!AgentHasFloor)
         {
             return None;
+        }
+
+        if (State == FloorState.CallingOn && _circleBackRequired && CurrentMemberId is { } member)
+        {
+            if (!e.HadAudio)
+            {
+                if (_speechRetryAttempt < 2)
+                {
+                    return [new AgentSpeak(SpeakReason.CircleBack, member, ++_speechRetryAttempt)];
+                }
+
+                _resumeState = State;
+                State = FloorState.Paused;
+                return [new RequiredSpeechFailed(member)];
+            }
+
+            _circleBackRequired = false;
+            _speechRetryAttempt = 0;
         }
 
         if (_timeUp && State != FloorState.Recap)
@@ -124,6 +155,8 @@ public sealed class FloorControl(FloorOptions options)
         }
 
         CurrentMemberId = s.MemberId;
+        _circleBackRequired = s.CircleBack && !s.Absent;
+        _speechRetryAttempt = 0;
         _absentCurrent = s.Absent;
         _canClarify = s.CanClarify;
         _offHolderMs = 0;
@@ -334,6 +367,21 @@ public sealed class FloorControl(FloorOptions options)
             return None;
         }
 
+        if (_resumeState == FloorState.CallingOn && _circleBackRequired)
+        {
+            State = FloorState.CallingOn;
+            _speechRetryAttempt = 0;
+            return [new AgentSpeak(SpeakReason.CircleBack, CurrentMemberId)];
+        }
+
+        // Whole-team steps must be replayed after an explicit pause/takeover, not skipped or turned into a member's listening turn.
+        if (_resumeState is FloorState.Opening or FloorState.Recap or FloorState.Announcing)
+        {
+            State = _resumeState;
+            var reason = State == FloorState.Opening ? SpeakReason.Open : State == FloorState.Recap ? SpeakReason.Recap : _announcementReason;
+            return [new AgentSpeak(reason, null)];
+        }
+
         if (_resumeState == FloorState.Advancing || CurrentMemberId is null)
         {
             State = FloorState.Advancing;
@@ -371,6 +419,7 @@ public sealed class FloorControl(FloorOptions options)
         CurrentMemberId = null;
         _absentCurrent = false;
         State = FloorState.Announcing;
+        _announcementReason = reason;
         return [new AgentSpeak(reason, null)];
     }
 
@@ -392,9 +441,14 @@ public sealed class FloorControl(FloorOptions options)
     private FloorAction[] OnBargeIn(BargeIn b)
     {
         var mayInterrupt = b.IsHuman || b.Sustained || b.MemberId == CurrentMemberId;
-        if (!mayInterrupt || !AgentHasFloor || State is FloorState.Opening or FloorState.Recap || _absentCurrent)
+        if (!mayInterrupt || !AgentHasFloor || _absentCurrent)
         {
             return None;
+        }
+
+        if (State is FloorState.Opening or FloorState.Recap or FloorState.Announcing)
+        {
+            return b.IsHuman ? OnSuspend(true, FloorState.HumanOverride) : None;
         }
 
         State = FloorState.Listening;
@@ -411,6 +465,7 @@ public sealed class FloorControl(FloorOptions options)
 
     private FloorAction[] StartRecap()
     {
+        _circleBackRequired = false;
         State = FloorState.Recap;
         _version++;
         return [new AgentSpeak(SpeakReason.Recap, null)];

@@ -10,3 +10,9 @@ Run the timing harness as documented in `docs/DEMO.md`; decision evaluation and
 its blocking release command are in `demo/evaluation/README.md`. Reports belong
 outside committed source. Adapter tests are in Infrastructure.Tests; real
 approval traces are checked through the Application mediator tests.
+
+`--retro` runs the complete existing retrospective cast and records
+content-free deferral/return/spoken-return/answer/action counts. A missing
+spoken return or answer before Themes fails the run. For30 real-model runs
+with credentials refreshed between sessions, use
+`pwsh -File eng\test-retro-fidelity.ps1 -Runs 30`; no failed run is retried.

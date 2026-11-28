@@ -1,5 +1,63 @@
 # M11 gates
 
+## Round 2 correctness (ADRs0041-0043)
+
+Frozen112synthetic goldens preserve all original72 and add40date cases,
+eligible spoken dates48, calendar resolution/abstention40. Historical
+G7 dates6/8 (75%), timeout1, missing binary/intent9/1 remain evidence.
+First extended run39/48 (81.25%), calendar33/40 fails unchanged release
+thresholds. General team-scoped revised-target/sprint instructions then
+give48/48dates and40/40calendar results; intent/items/kinds111/112 each,
+accepted binary138/142 (97.18%), intent106/106, errors0/missing0/0/
+escapedids0. The latest synthetic release passes unchanged0.7/0.6
+thresholds; real employee/CI/knowledge/Work IQ content remain unrun.
+
+Whole-team opening/recap/announcement replay and roster-first audio have
+targeted Domain49/49 and Api10/10 proof. The old louderguest1000/member500
+fixture suppressed member audio; now it forwards member500 and zero guest
+PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
+required circle-back survives style overrides; the complete pre-guard
+cohort has29/30 real-model retros, spoken29/30/answered30/30.
+Run15 had no agent transcript/first-audio timing between return and answer,
+no talk-over; it remains failed with no session retry. Completion without
+audio could silently hand off against a stale cast caption. A new pure
+Domain guard retries the real response at most twice, then fails explicitly;
+original latency baseline is retained. Separate guarded retros pass30/30
+complete real-model sessions, spoken/answered30/30, no session retries.
+Final compiled3ddd40b model evaluation repeats48/48 dates,40/40 calendar,
+111/112 intent/items/kinds, errors/missing/escaped ids0, releasePASS.
+It ran after both cohorts; mandatory after verification passed8/8 and
+native readiness5/5 without overlapping model load.
+API-only3ddd40b/ACRds18 is digest-pinned on zavaw3 revision90, HTTP200;
+identity/configuration/environment/bridge-image parity pass and defaults
+are unchanged. The first cohort stayed on e7c31fa/revision89 throughout.
+
+Before zavaw3 mandatory8/8/native readiness5/5 pass; Direct3418/4559ms,
+n10, questions3469/4559ms,n8, model8/10, zero talkovers,18transcriptpieces,
+genuine approverrevision78/completeaudit. After: Direct3615/4453ms,n12,
+questions3628/4453ms,n9, model10/12, talkovers0/transcriptpieces19,
+real approverrevision79/completeaudit. P50 worsens+5.76% beyond5%;
+p95 improves2.33%. These are different windows/populations, not paired
+or causal evidence. G1 remains failed: the worse point is a defect, not
+an accepted experience trade-off or promotion. G2-G6
+and G8-G11 inherit their measured/failed/not_run boundaries below, not
+fresh acceptance from this correction. Content-free current details:
+`r2-quality-M11.json`. Full suites belong to r2-reconcile.
+
+| Gate | Current verdict and boundary |
+| --- | --- |
+| G1 | Failed historical experience and current p50 point:3418/4559ms,n10 to3615/4453ms,n12,+5.76%/-2.33%; native n0; no causal/accepted-regression claim |
+| G2 | Native attribution/guest acoustic acceptance not_run,n0; focused routing is not human proof |
+| G3 | Measured portal subset: real approver revisions78/79, complete audit,n1 each window; mandatory8/8; live Teams/Copilot n0 |
+| G4 | Failed historical exact board parity11/11; pre-guard retrospective29/30, separate guarded30/30; real rehearsal n0 |
+| G5 | Copilot real positive/negative/streaming not_run,n0; completed consent/catalogue not reopened |
+| G6 | Native stored-link joins not_run,0/10; readiness5/5 is not join acceptance |
+| G7 | Measured final compiled synthetic112/date48/calendar40;48/48 and40/40 pass unchanged thresholds; live quality/CI n0 |
+| G8 | Failed full empty proof1/2; no lifecycle operation or new provider claim here |
+| G9 | New multi-team/human matrix not_run,n0; prior3sessions/36turns/3audit chains retained |
+| G10 | Source-grounded questions/citations/negative-user/latency not_run,n0; consent complete, real corpus/fixtures missing |
+| G11 | Work IQ content/privacy/latency not_run,n0; consent complete, approved billing/owner/channel/meeting fixtures missing |
+
 ## Round 2 per-item storage
 
 ADR 0040 adds team-partitioned card/follow-up/activity items and removes

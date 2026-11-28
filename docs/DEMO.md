@@ -1,5 +1,46 @@
 # Demo runbook
 
+## Round 2 correctness checks
+
+Keep Acs/Share/Direct and Simulated Room. Re-prepare a session to capture
+actual team time zone and sprint dates. Date notes preserve the spoken
+revised expression; code resolves only safe relative expressions, never an
+automatic Azure DevOps date write. Ambiguous periods/numeric dates remain
+explicitly unresolved. Approval remains required for every write.
+Pause/takeover during opening, recap or themes should stop speech; releasing
+repeats that whole-team step rather than skipping it.
+
+The retrospective cast must hear an explicit return to its deferred member
+and its three-point invitation before themes. Run the complete real-model
+fidelity measurement, with no retry or substituted completion:
+
+```powershell
+dotnet build -c Release
+pwsh -File eng\test-retro-fidelity.ps1 -Runs 30
+```
+
+These are no **session** retries. The delivery guard may retry an empty
+real-model response twice; it never supplies fake speech or hides retry
+latency. Exhaustion visibly pauses the room rather than skipping the return.
+The harness pins the actual deployed image source, not the changing local
+documentation head. The pre-guard run15 remains a recorded failure.
+
+The frozen112-case decision set has48eligible spoken dates, unchanged
+original72 cases and unchanged0.7/0.6 thresholds. Its latest synthetic
+release passes48/48 dates and40/40 calendar resolutions/abstentions;
+historical/first-extended failures remain. Commands are in
+`demo\evaluation\README.md`; measured runtime/retrospective acceptance,
+including any remaining failures, is in `gates/r2-quality-M11.json`.
+No real Teams/native/guest/Copilot acceptance follows from scripted tests.
+
+Final compiled3ddd40b repeats48/48 dates and40/40 calendar outcomes on
+the frozen112 cases. Separate guarded retros pass30/30; the initial
+29/30 and historical failures remain in the evidence, not rerun as green.
+
+Final mandatory verification passes8/8/native readiness5/5. After Direct
+3615/4453ms,n12 versus3418/4559ms,n10 before keeps G1 failed on p50+5.76%;
+the point is not accepted parity or a paired/causal comparison.
+
 ## Round 2 storage reliability
 
 Normal standups no longer append cards, follow-ups or bot deliveries to

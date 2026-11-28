@@ -44,13 +44,18 @@ for (var i = 1; i <= runs; i++)
     var results = await Task.WhenAll(teamList.Select(async t =>
     {
         using var room = new RoomRun(api, t, token);
-        return (Team: t, Result: await room.RunAsync(label, build, timeout, CancellationToken.None));
+        return (Team: t, Result: await room.RunAsync(label, build, timeout, CancellationToken.None, Has("--retro")));
     }));
     foreach (var (t, result) in results)
     {
         var file = Path.Combine(outDir, $"{label}-{t}-{result.StartedAt:yyyyMMdd-HHmmss}-{result.RunId}.json");
         await File.WriteAllTextAsync(file, JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine($"  {t}: {result.Turns.Count} timed turns, API p50 {result.ReportedP50Ms} ms, saved {file}");
+        if (result.Retrospective is { } proof)
+        {
+            Console.WriteLine($"  Retrospective: passed={proof.Passed}, deferred={proof.Deferred}, circles={proof.CircledBack}, spoken={proof.Spoken}, answered={proof.Answered}, actions={proof.Actions}");
+            failed |= !proof.Passed;
+        }
         if (Has("--check-audit") && !await AuditCheck.RunAsync(api, token, t, result.SessionId))
         {
             failed = true;

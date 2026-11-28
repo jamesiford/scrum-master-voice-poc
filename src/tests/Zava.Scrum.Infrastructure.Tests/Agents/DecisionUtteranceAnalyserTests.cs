@@ -9,6 +9,7 @@ using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Infrastructure.Agents;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Zava.Scrum.Infrastructure.Persistence;
 
 namespace Zava.Scrum.Infrastructure.Tests.Agents;
 
@@ -41,13 +42,14 @@ public sealed class DecisionUtteranceAnalyserTests
         new(new WorkItemId(14), "Retry load test", "Task", "Active", 1, []),
     ];
 
-    private static UtteranceContext Said(string text, string speaker = "m1") => new(text, speaker, "m1", Roster, Items, null, null);
+    private static UtteranceContext Said(string text, string speaker = "m1") => new(text, speaker, "m1", Roster, Items, null, null) { TeamId = "team-test" };
 
     private static DecisionUtteranceAnalyser Analyser(Stub stub, string engine = "Decision", string deployment = "zava-decision", int timeoutMs = 2000) =>
         new(
             new HttpClient(stub) { BaseAddress = new Uri("https://example.test/") },
             Options.Create(new FoundryOptions { ProjectEndpoint = "https://example.test/api/projects/p", ReasoningDeployment = "d" }),
             Options.Create(new UtteranceAnalysisOptions { Engine = engine, DecisionDeployment = deployment, TimeoutMs = timeoutMs }),
+            new FilePromptStore(new FileCollectionStore(Options.Create(new StoreOptions { DataPath = Path.Combine(Path.GetTempPath(), "decision-tests-" + Guid.NewGuid().ToString("N")) }))),
             NullLogger<DecisionUtteranceAnalyser>.Instance);
 
     private static string Reply(string intent, double confidence, string named = "none", params (string Question, double P)[] yes)
@@ -116,6 +118,61 @@ public sealed class DecisionUtteranceAnalyserTests
 
         Assert.Equal(UtteranceIntent.AskItemInfo, r!.Intent);
         Assert.Empty(r.Comments);
+    }
+
+    [Theory]
+    [InlineData("date_1", "Monday")]
+    [InlineData("none", null)]
+    [InlineData("2026-11-30", null)]
+    public async Task Read_MultipleDates_UsesOnlyBoundedVerbatimRevisedChoice(string selected, string? expected)
+    {
+        var reply = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(Reply("update", 0.9, yes: [("item_1", 0.95), ("kind_DateChange", 0.95)]))!;
+        var answers = JsonSerializer.Deserialize<Dictionary<string, object>>(reply["answers"])!;
+        answers["revised_date"] = new { choice = selected, confidence = 0.95 };
+        var stub = new Stub(HttpStatusCode.OK, JsonSerializer.Serialize(new { answers }));
+        var context = Said("Payment retry slips from Friday to Monday") with
+        {
+            DateContext = new SpokenDateContext(new DateOnly(2026, 11, 26)),
+        };
+
+        var reading = await Analyser(stub).ReadAsync(context, CancellationToken.None);
+        var comment = Assert.Single(reading!.Comments);
+
+        Assert.Equal(expected, comment.NewDate);
+        Assert.Equal(expected is null ? null : new DateOnly(2026, 11, 30), comment.DateResolution!.Date);
+        Assert.Contains("\"revised_date\"", stub.LastRequest);
+        Assert.Contains("\"date_0\"", stub.LastRequest);
+        Assert.Contains("\"date_1\"", stub.LastRequest);
+    }
+
+    [Fact]
+    public async Task Read_DateChoiceWithMissingConfidence_DoesNotAssumeCertainDate()
+    {
+        const string body = """{"answers":{"intent":{"choice":"update","confidence":0.9},"kind_DateChange":{"noul":0.9},"revised_date":{"choice":"date_1"}}}""";
+        var reading = await Analyser(new Stub(HttpStatusCode.OK, body)).ReadAsync(Said("It moves from Friday to Monday"), CancellationToken.None);
+
+        Assert.Null(Assert.Single(reading!.Comments).NewDate);
+    }
+
+    [Fact]
+    public async Task Read_MissingTeam_ReportsMissingInstructionsAndDoesNotCallService()
+    {
+        var stub = new Stub(HttpStatusCode.OK, Reply("update", 0.9));
+        var evidence = await Analyser(stub).ReadWithEvidenceAsync(Said("hi") with { TeamId = "" }, CancellationToken.None);
+
+        Assert.Equal("instructions_unavailable", evidence.Failure);
+        Assert.Null(evidence.Reading);
+        Assert.Equal(0, stub.Calls);
+    }
+
+    [Fact]
+    public async Task Read_MultipleDatesWithoutChoice_DoesNotSilentlyUseOldDate()
+    {
+        var stub = new Stub(HttpStatusCode.OK, Reply("update", 0.9, yes: [("kind_DateChange", 0.95)]));
+
+        var reading = await Analyser(stub).ReadAsync(Said("It moves from Friday to Monday"), CancellationToken.None);
+
+        Assert.Null(Assert.Single(reading!.Comments).NewDate);
     }
 
     [Fact]

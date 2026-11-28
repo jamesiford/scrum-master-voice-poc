@@ -3,13 +3,15 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Identity;
+using Azure.Core;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Zava.Scrum.Domain.Standups;
 using Zava.Scrum.Domain.Voice;
 using Zava.Scrum.Domain.Work;
 using Zava.Scrum.Infrastructure.Agents;
-using Zava.Scrum.Infrastructure.Http;
+using Zava.Scrum.Infrastructure.Persistence;
 
 namespace Zava.Scrum.Tools.GateRunner;
 
@@ -38,17 +40,28 @@ internal static class DecisionEvaluation
 
         var items = set.Items.Select(item => new BriefItem(new WorkItemId(item.Id), item.Title, "Task", "Active", 1, [])).ToArray();
         var known = items.Select(item => item.Id.Value).ToHashSet();
-        using var http = new HttpClient(new BearerTokenHandler(new DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+        var credential = new DefaultAzureCredential();
+        using var http = new HttpClient();
+        if (useModel)
         {
-            InnerHandler = new HttpClientHandler(),
-        });
+            // The model's latency budget must not measure a cold Azure CLI sign-in process.
+            using var authentication = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            authentication.CancelAfter(TimeSpan.FromSeconds(30));
+            var token = await credential.GetTokenAsync(new TokenRequestContext(["https://cognitiveservices.azure.com/.default"]), authentication.Token);
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+        }
         if (useModel) { http.BaseAddress = new Uri(new Uri(endpoint!).GetLeftPart(UriPartial.Authority) + "/"); }
         var model = new DecisionUtteranceAnalyser(http, Options.Create(new FoundryOptions { ProjectEndpoint = endpoint ?? string.Empty }),
             Options.Create(new UtteranceAnalysisOptions { DecisionDeployment = deployment }),
+            new FilePromptStore(new FileCollectionStore(Options.Create(new StoreOptions { DataPath = Path.Combine(output, "prompt-readonly") }))),
             NullLogger<DecisionUtteranceAnalyser>.Instance);
         var rulesRows = new List<CaseResult>();
         var modelRows = new List<CaseResult>();
         var probabilities = new List<ProbabilityResult>();
+        var dateContext = set.ReferenceTime is { } reference && set.TimeZone is { } zone
+            ? new SpokenDateContext(DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(reference, TimeZoneInfo.FindSystemTimeZoneById(zone)).DateTime),
+                set.CurrentIteration, set.NextIteration)
+            : null;
         string? stopReason = null;
         foreach (var example in set.Cases)
         {
@@ -57,7 +70,11 @@ internal static class DecisionEvaluation
             rulesRows.Add(Score(example, rules, null, 0, known));
             if (!useModel || stopReason is not null) { continue; }
             var context = new Zava.Scrum.Application.Abstractions.Ports.UtteranceContext(
-                example.Text, example.SpeakerId, example.HolderId, set.Roster, items, example.Asked, example.FocusItemId);
+                example.Text, example.SpeakerId, example.HolderId, set.Roster, items, example.Asked, example.FocusItemId)
+            {
+                TeamId = set.TeamId,
+                DateContext = dateContext,
+            };
             var started = Stopwatch.GetTimestamp();
             var evidence = await model.ReadWithEvidenceAsync(context, ct);
             var analysis = UtteranceAnalyser.Analyse(example.Text, example.SpeakerId, example.HolderId, set.Roster, own, known, evidence.Reading);
@@ -65,7 +82,7 @@ internal static class DecisionEvaluation
             AddProbabilities(example, evidence, items, probabilities);
             Console.WriteLine($"{example.Id}: source={analysis.Source}, intent={analysis.Interpretation.Intent}, failure={evidence.Failure ?? "none"}");
             // An authentication/rate-limit failure is reported once, not hammered for all 72 cases.
-            if (evidence.Failure is "http_401" or "http_403" or "http_429") { stopReason = evidence.Failure; }
+            if (evidence.Failure is "http_401" or "http_403" or "http_429" or "AuthenticationFailedException" or "CredentialUnavailableException") { stopReason = evidence.Failure; }
             await Task.Delay(250, ct);
         }
 
@@ -89,6 +106,15 @@ internal static class DecisionEvaluation
             model = "Microsoft-Decision-1.1",
             deployment,
             thresholds = new { binary = 0.7, intent = 0.6 },
+            dateCalendar = new
+            {
+                set.ReferenceTime,
+                set.TimeZone,
+                expectedSamples = set.Cases.Count(c => c.ResolutionStatus is not null),
+                samples = modelRows.Count(c => c.ResolutionCorrect is not null),
+                correct = modelRows.Count(c => c.ResolutionCorrect == true),
+                accuracy = Rate(modelRows.Count(c => c.ResolutionCorrect == true), modelRows.Count(c => c.ResolutionCorrect is not null)),
+            },
             releasePassed,
             rules = new { status = "measured", summary = rulesReport, categories = rulesRows.GroupBy(row => row.Category).Select(group => new { category = group.Key, summary = Summarise(group.ToList()) }), cases = rulesRows, calibration = "not_applicable: rules emit no probabilities or comment kinds" },
             decision = new { status = useModel ? "measured" : "not_run", stopReason, expectedSamples = set.Cases.Count, unrunSamples = set.Cases.Count - modelRows.Count, summary = modelReport, categories = modelRows.GroupBy(row => row.Category).Select(group => new { category = group.Key, summary = Summarise(group.ToList()) }), cases = modelRows },
@@ -156,7 +182,12 @@ internal static class DecisionEvaluation
             actual.Comments.Select(c => c.Kind).ToHashSet().SetEquals(expected.CommentKinds),
             expected.NewDate is null ? null : actual.Comments.Any(c => c.Kind == CommentKind.DateChange && c.NewDate == expected.NewDate),
             actual.Interpretation, actual.WorkItemIds, actual.Comments.Select(c => c.Kind).ToArray(), actual.Source,
-            latencyMs, evidence?.Failure, candidateIds.Count, candidateIds.Count(id => !known.Contains(id)), expected.RejectedIds.Count, escaped);
+            latencyMs, evidence?.Failure, candidateIds.Count, candidateIds.Count(id => !known.Contains(id)), expected.RejectedIds.Count, escaped)
+        {
+            ActualDates = actual.Comments.Where(c => c.Kind == CommentKind.DateChange).Select(c => c.NewDate).ToArray(),
+            ResolutionCorrect = expected.ResolutionStatus is null ? null : actual.Comments.Any(c => c.Kind == CommentKind.DateChange
+                && c.DateResolution?.Status == expected.ResolutionStatus && c.DateResolution.Date?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) == expected.ResolvedDate),
+        };
     }
 
     private static void AddProbabilities(GoldenCase expected, DecisionReadingEvidence evidence, IReadOnlyList<BriefItem> items, List<ProbabilityResult> output)
@@ -197,17 +228,29 @@ internal static class DecisionEvaluation
 
     private static double Rate(int numerator, int denominator) => denominator == 0 ? 0 : (double)numerator / denominator;
 
-    private sealed record GoldenSet(int Version, string Provenance, string TeamId, IReadOnlyList<NameRef> Roster, IReadOnlyList<GoldenItem> Items, IReadOnlyList<GoldenCase> Cases);
+    private sealed record GoldenSet(int Version, string Provenance, string TeamId, IReadOnlyList<NameRef> Roster, IReadOnlyList<GoldenItem> Items, IReadOnlyList<GoldenCase> Cases)
+    {
+        public DateTimeOffset? ReferenceTime { get; init; }
+        public string? TimeZone { get; init; }
+        public Zava.Scrum.Domain.Work.IterationInfo? CurrentIteration { get; init; }
+        public Zava.Scrum.Domain.Work.IterationInfo? NextIteration { get; init; }
+    }
     private sealed record GoldenItem(int Id, string Title, string OwnerId);
     private sealed record GoldenCase(string Id, string Category, string Text, UtteranceIntent Intent, IReadOnlyList<int> ItemIds, IReadOnlyList<CommentKind> CommentKinds,
         string SpeakerId = "daniel", string HolderId = "daniel", string? TargetMemberId = null, string? ByMemberId = null, string? NewDate = null,
         string? Asked = null, int? FocusItemId = null)
     {
         public IReadOnlyList<int> RejectedIds { get; init; } = [];
+        public string? ResolvedDate { get; init; }
+        public string? ResolutionStatus { get; init; }
     }
     private sealed record CaseResult(string Id, string Category, bool IntentCorrect, bool ItemsCorrect, bool CommentsCorrect, bool? DateCorrect,
         Interpretation ActualIntent, IReadOnlyList<int> ActualIds, IReadOnlyList<CommentKind> ActualKinds, AnalysisSource Source,
-        int LatencyMs, string? Failure, int CandidateIds, int RejectedIds, int OutsideIdChallenges, int EscapedIds);
+        int LatencyMs, string? Failure, int CandidateIds, int RejectedIds, int OutsideIdChallenges, int EscapedIds)
+    {
+        public IReadOnlyList<string?> ActualDates { get; init; } = [];
+        public bool? ResolutionCorrect { get; init; }
+    }
     private sealed record ProbabilityResult(string Id, string Question, double? Probability, bool Truth);
     private sealed record EvaluationSummary(int Samples, double IntentAccuracy, double ItemAccuracy, double CommentAccuracy, double DateAccuracy, int DateSamples, int Failures, int RuleFallbacks,
         int CandidateIds, int RejectedIds, int OutsideIdChallenges, int EscapedIds);

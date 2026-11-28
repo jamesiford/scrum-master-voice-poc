@@ -6,7 +6,8 @@ public abstract record FloorAction;
 /// <summary>Make the agent speak.</summary>
 /// <param name="Reason">Why.</param>
 /// <param name="MemberId">The member it concerns, if any.</param>
-public sealed record AgentSpeak(SpeakReason Reason, string? MemberId) : FloorAction;
+/// <param name="RetryAttempt">One or two when retrying an empty required invitation; zero for the original attempt.</param>
+public sealed record AgentSpeak(SpeakReason Reason, string? MemberId, int RetryAttempt = 0) : FloorAction;
 
 /// <summary>Cancel the agent's current response and truncate its audio.</summary>
 public sealed record CancelResponse : FloorAction;

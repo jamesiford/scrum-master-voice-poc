@@ -1,5 +1,59 @@
 # Deploying the current solution
 
+## Round 2 correctness rollout
+
+This runtime-only change adds no Azure resource, role, Entra object or
+configuration secret. Existing greenfield templates already deploy the
+API/prompt files; additive prebrief calendar fields need no data rewrite.
+Added fixed hourly cost is USD0; model/Voice Live/Cosmos usage is variable.
+No new human gate belongs to this correction. Existing real meeting/user/
+source/consent fixtures elsewhere remain separate acceptance prerequisites.
+Initial API-only e7c31fa/ACRds16 was digest-pinned on zavaw3 revision89,
+HTTP200, with identical configuration/environment/identity and actual
+registry UAMI AcrPull verified. The bridge/native images were not changed.
+Read-only full-template validation5/5 does not authorise its unrelated
+11creates/157modifies/68deletes. Only the validated API image was updated.
+
+Import only zavaw3 into the current process; do not change azd's selected
+environment, which may belong to another step:
+
+```powershell
+foreach ($line in (azd env get-values --environment zavaw3)) {
+  if ($line -match '^([A-Za-z_][A-Za-z0-9_]*)="?(.*?)"?$') {
+    [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2])
+  }
+}
+pwsh -File infra\hooks\deploy-service.ps1 -Service api
+pwsh -File infra\hooks\verify.ps1 -GateOutput .m11-plan\run-log\r2-quality-after-gates
+pwsh -File eng\test-retro-fidelity.ps1 -Runs 30
+```
+
+Commit runtime inputs first. The existing hook archives committed source
+and preserves app settings/secrets. Do not run `azd up`, hosted/native hooks,
+storage migration/load, reset, quota or tenant-policy changes for this fix.
+Leave zavaw3 running. Re-prepare legacy sessions to obtain calendar context;
+missing context abstains explicitly rather than inventing sprint dates.
+
+The first real retrospective cohort exposed an empty circle-back response
+being treated as completed speech. The delivery guard is deployed as
+API-only3ddd40b/ACRds18/revision90,
+ready/healthz200 with exact identity/configuration/environment/bridge-image
+parity. The first cohort passed29/30, retaining run15; the separate
+30-run guarded cohort passes30/30, spoken/answered30/30 without session retries.
+It uses at most two real-response retries,
+retaining original
+latency. If all fail, the Simulated Room pauses with `VOICE_NO_AUDIO`:
+the presenter can unmute to retry or take over. Native follows its existing
+explicit voice-transport failure handling, without persisting transcripts.
+No extra resource, permission, secret, recording exception or human gate.
+
+Final afterverify passes8/8 and native readiness5/5, real approverrevision79
+with complete audit. Direct3615/4453ms,n12 versus3418/4559ms,n10 before
+has p50+5.76%/p95-2.33%; G1 remains failed, not an accepted regression.
+Model/cohort load was finished first. No adapter promotion or new privileged
+action is justified; preserve the existing default paths and all real-user
+acceptance gates. Added fixed hourly cost remains USD0.
+
 ## Additive record-storage rollout (ADR 0040)
 
 `infra\modules\team-records.bicep` is called by `data.bicep` for empty

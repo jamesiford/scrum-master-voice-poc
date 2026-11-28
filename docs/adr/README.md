@@ -47,3 +47,6 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0037](0037-guarded-demo-reseed-publication.md) | Explicit demo opt-in, approved recoverable ADO baseline and atomic application publication |
 | [0038](0038-greenfield-proof-westus3.md) | Fresh westus3 greenfield proof with protected-environment lifecycle guards |
 | [0039](0039-managed-voice-live-deployment-quota.md) | Managed Voice Live does not require unused standalone Azure OpenAI deployment quota |
+| [0041](0041-verbatim-revised-date-resolution.md) | Verbatim revised-date selection and deterministic team-local calendar resolution |
+| [0042](0042-whole-team-floor-and-roster-audio.md) | Replay whole-team phases and preserve quieter verified roster audio |
+| [0043](0043-required-retrospective-circle-back.md) | Mandatory circle-back instruction and real-model fidelity measurement |

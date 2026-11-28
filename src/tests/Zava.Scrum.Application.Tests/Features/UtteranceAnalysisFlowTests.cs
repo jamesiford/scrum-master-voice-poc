@@ -12,6 +12,37 @@ public sealed class UtteranceAnalysisFlowTests
     private static readonly NameRef[] Roster = [new("m-priya", "Priya"), new("m-marcus", "Marcus")];
 
     [Fact]
+    public async Task Analyse_RelativeDate_UsesTeamLocalDayAndReplacesModelAbsoluteDate()
+    {
+        var modelDate = new ItemComment(CommentKind.DateChange, [1], "Story 1 slips to tomorrow", "tomorrow")
+        {
+            DateResolution = new(new DateOnly(2099, 1, 1), "model_invented"),
+        };
+        await using var h = await StandupHarness.CreateAsync(reading: new(UtteranceIntent.Update, null, null, [1], [modelDate], 0.9));
+        var session = await h.LoadAsync();
+        var brief = session.PreBrief! with { TimeZone = "Pacific/Pago_Pago" };
+        var snapshot = session.ToSnapshot() with { PreBrief = brief };
+        await h.Sessions.SaveAsync(StandupSession.Restore(snapshot), CancellationToken.None);
+
+        var result = (await h.Sender.Send(new AnalyseUtteranceQuery(h.SessionId, "m-priya", "m-priya", "Story 1 slips to tomorrow", Roster))).Value;
+
+        Assert.Equal(new DateOnly(2026, 1, 8), Assert.Single(result.Comments).DateResolution!.Date);
+        Assert.Equal("tomorrow", result.Comments[0].NewDate);
+    }
+
+    [Fact]
+    public async Task Analyse_ModelInventsDateNotInTranscript_DropsItWithoutCreatingAWrite()
+    {
+        await using var h = await StandupHarness.CreateAsync(reading: new(UtteranceIntent.Update, null, null, [1],
+            [new(CommentKind.DateChange, [1], "Story 1 slips", "2099-01-01")], 0.9));
+
+        var result = (await h.Sender.Send(new AnalyseUtteranceQuery(h.SessionId, "m-priya", "m-priya", "Story 1 slips", Roster))).Value;
+
+        Assert.Null(Assert.Single(result.Comments).NewDate);
+        Assert.Equal("no_revised_date", result.Comments[0].DateResolution!.Status);
+    }
+
+    [Fact]
     public async Task Analyse_ModelReading_IsGroundedAndUsed()
     {
         var reading = new UtteranceReading(UtteranceIntent.Update, null, null, [1, 9999], [new ItemComment(CommentKind.Blocker, [1], "Waiting on the vendor for story 1")], 0.9);

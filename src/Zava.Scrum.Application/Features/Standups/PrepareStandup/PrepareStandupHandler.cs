@@ -17,6 +17,7 @@ internal sealed class PrepareStandupHandler(
     IMemberRepository members,
     RosterIdentityResolver identities,
     IWorkItemReader reader,
+    IIterationReader iterations,
     IBacklogRiskAgent agent,
     ISessionRepository sessions,
     IAgentHostWarmer warmer,
@@ -56,6 +57,8 @@ internal sealed class PrepareStandupHandler(
         var open = sprint.Value.Items.Where(i => !i.IsDone).Select(i => i.Id.Value).ToHashSet();
         var previous = (await sessions.ListAsync(ct)).Where(s => s.TeamId == team.Id).ToList();
         var brief = _builder.Build(team, roster, sprint.Value, now, CommitmentCarryOver.Collect(previous, open));
+        var next = await iterations.FindIterationAsync(team, null, ct);
+        brief = brief with { NextIteration = next is not null && next.Start > brief.CurrentIteration!.End ? next : null };
         brief = await ApplySuggestionsAsync(brief, sprint.Value, ct);
 
         var session = StandupSession.Prepare(Guid.NewGuid(), team.Id, now, brief);

@@ -323,7 +323,7 @@ public sealed class VoiceGateway(
                         }
 
                         await _bridge.SendAudioAsync(audio.Pcm, _run);
-                        if (Interlocked.Exchange(ref _firstAudioPending, 0) == 1)
+                        if (audio.Pcm.Length > 0 && Interlocked.Exchange(ref _firstAudioPending, 0) == 1)
                         {
                             _inbox.Writer.TryWrite(new FirstAudio());
                         }
@@ -750,13 +750,15 @@ public sealed class VoiceGateway(
 
     private async Task MaybeFinishSpeechAsync()
     {
-        if (!_responseDone || !_floor.AgentHasFloor || (_audioStarted && !_audioIdle))
+        // The audio hot path observes a frame before its FirstAudio callback reaches this actor.
+        var hadAudio = _audioStarted || Volatile.Read(ref _firstAudioPending) == 0;
+        if (!_responseDone || !_floor.AgentHasFloor || (hadAudio && !_audioIdle))
         {
             return;
         }
 
         _responseDone = false;
-        await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow)));
+        await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow, hadAudio)));
     }
 
     private async Task OnUtteranceAsync(string memberId, string text, int durationMs, bool fromCast)
@@ -1076,6 +1078,11 @@ public sealed class VoiceGateway(
                 case EndSession:
                     await EndAsync();
                     break;
+                case RequiredSpeechFailed failed:
+                    logger.LogError("Circle-back audio unavailable for {TeamId}/{SessionId}/{MemberId}; floor paused",
+                        _session.TeamId, _sessionId, failed.MemberId);
+                    await _bridge.SendAsync(new { type = "error", teamId = _session.TeamId, code = "VOICE_NO_AUDIO", message = "Voice Live did not speak the circle-back invitation after two retries. Voice is paused; unmute to retry or take over." }, _run);
+                    break;
             }
         }
 
@@ -1084,6 +1091,13 @@ public sealed class VoiceGateway(
 
     private async Task SpeakAsync(AgentSpeak speak)
     {
+        if (speak.RetryAttempt > 0)
+        {
+            logger.LogWarning("Empty circle-back response for {TeamId}/{SessionId}/{MemberId}; retry {Attempt}/2",
+                _session.TeamId, _sessionId, speak.MemberId, speak.RetryAttempt);
+            await _bridge.SendAsync(new { type = "error", teamId = _session.TeamId, code = "VOICE_RETRY", message = $"Voice Live returned no circle-back audio; retrying ({speak.RetryAttempt}/2)." }, _run);
+        }
+
         var reason = speak.Reason;
         var question = reason == SpeakReason.Clarify && speak.MemberId is not null ? _pendingQuestion.GetValueOrDefault(speak.MemberId) : null;
         if (reason == SpeakReason.Clarify && speak.MemberId is not null && _askUnblocker.Remove(speak.MemberId))
@@ -1099,7 +1113,7 @@ public sealed class VoiceGateway(
         if (!instruction.IsSuccess)
         {
             await _bridge.SendAsync(new { type = "error", code = "TURN_INSTRUCTION", message = instruction.Error!.Message }, _run);
-            await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow)));
+            await ExecuteAsync(_floor.Handle(new PauseFloor(true)));
             return;
         }
 
@@ -1111,7 +1125,8 @@ public sealed class VoiceGateway(
         _lastSpeak = (speak, question);
 
         // Only a turn that reacts to someone finishing speaking has a latency; timebox and time-warning turns do not.
-        _latencyBaseline = _lastHumanEnd is { } end && clock.UtcNow - end < TimeSpan.FromSeconds(10) ? end : null;
+        _latencyBaseline = speak.RetryAttempt > 0 && _latencyBaseline is { } original ? original
+            : _lastHumanEnd is { } end && clock.UtcNow - end < TimeSpan.FromSeconds(10) ? end : null;
         _lastHumanEnd = null;
         Interlocked.Exchange(ref _firstAudioPending, 1);
         if (question is not null)

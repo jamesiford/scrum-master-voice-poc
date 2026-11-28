@@ -40,6 +40,7 @@ public sealed class GraphMediaVoiceGateway(
     private DateTimeOffset? _vadStartedAt;
     private DateTimeOffset _lastInput;
     private bool _discard;
+    private bool _turnHadAudio;
     private bool _finished;
     private long _playedMs;
     private long _turnStarted;
@@ -194,31 +195,34 @@ public sealed class GraphMediaVoiceGateway(
             case "audio":
                 var frames = json.GetProperty("items").EnumerateArray().ToArray();
                 if (frames.Length == 0) { return; }
-                var frame = frames.MaxBy(f => f.GetProperty("amplitude").GetInt32());
-                var objectId = frame.GetProperty("participantObjectId");
-                var member = ParticipantAttribution.Resolve(_context.Session.TeamId,
-                    objectId.ValueKind == JsonValueKind.String && Guid.TryParse(objectId.GetString(), out var id) ? id : null, _context.Roster);
-                var pcm = Convert.FromBase64String(frame.GetProperty("pcm").GetString()!);
-                if (pcm.Length != 960) { throw new WebSocketException("GraphMedia requires 20 ms PCM24K."); }
-                if (member is not null)
+                var sources = frames.Select(f =>
                 {
-                    _speaker = member.Id;
+                    var objectId = f.GetProperty("participantObjectId");
+                    var member = ParticipantAttribution.Resolve(_context.Session.TeamId,
+                        objectId.ValueKind == JsonValueKind.String && Guid.TryParse(objectId.GetString(), out var id) ? id : null, _context.Roster);
+                    return new FloorAudioSource(f.GetProperty("participantId").GetString()!, member?.Id, f.GetProperty("amplitude").GetInt32());
+                }).ToArray();
+                var selected = _floor.SelectAudioSource(sources);
+                var guest = sources.Where(s => s.MemberId is null && s.Amplitude >= 300).MaxBy(s => s.Amplitude);
+                await SetGuestSpeechAsync(guest is null ? null : "guest:" + guest.SourceId);
+                if (guest is not null)
+                {
+                    _lastGuestInput = clock.UtcNow;
+                    _guestSpeechAt ??= clock.UtcNow;
+                }
+
+                if (selected is not null)
+                {
+                    var frame = frames.First(f => f.GetProperty("participantId").GetString() == selected.SourceId);
+                    var pcm = Convert.FromBase64String(frame.GetProperty("pcm").GetString()!);
+                    if (pcm.Length != 960) { throw new WebSocketException("GraphMedia requires 20 ms PCM24K."); }
+                    _speaker = selected.MemberId!;
                     _lastInput = clock.UtcNow;
-                    await SetGuestSpeechAsync(null);
                     using var forwarding = Activity.Current?.OperationName == "media.frame.receive"
                         ? ScrumTelemetry.StartHop("media.voice.send", _context.Session.TeamId, _context.Session.Id, _context.Session.CorrelationId)
                         : null;
                     await _voice.SendAudioAsync(pcm, _ct);
                 }
-                else if (frame.GetProperty("amplitude").GetInt32() >= 300)
-                {
-                    var guest = "guest:" + frame.GetProperty("participantId").GetString();
-                    await SetGuestSpeechAsync(guest);
-                    _lastGuestInput = clock.UtcNow;
-                    _guestSpeechAt ??= clock.UtcNow;
-                }
-                else { await SetGuestSpeechAsync(null); }
-
                 break;
             case "participants":
                 var guests = json.GetProperty("items").EnumerateArray().Select(p =>
@@ -257,7 +261,7 @@ public sealed class GraphMediaVoiceGateway(
                 }
                 else
                 {
-                    await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow)));
+                    await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow, _turnHadAudio)));
                 }
 
                 break;
@@ -279,6 +283,7 @@ public sealed class GraphMediaVoiceGateway(
                 break;
             case AgentItemStarted item: _itemId = item.ItemId; break;
             case AgentAudio audio when !_discard:
+                _turnHadAudio |= audio.Pcm.Length > 0;
                 await _bridge.SendAudioAsync(audio.Pcm, _ct);
                 if (_turnStarted != 0)
                 {
@@ -377,6 +382,13 @@ public sealed class GraphMediaVoiceGateway(
             switch (action)
             {
                 case AgentSpeak speak:
+                    if (speak.RetryAttempt > 0)
+                    {
+                        logger.LogWarning("Empty circle-back response for {TeamId}/{SessionId}/{MemberId}; retry {Attempt}/2",
+                            _context.Session.TeamId, _context.Session.Id, speak.MemberId, speak.RetryAttempt);
+                    }
+
+                    _turnHadAudio = false;
                     var brief = _context.Session.PreBrief!.Members.FirstOrDefault(m => m.MemberId == speak.MemberId);
                     var turn = JsonSerializer.Serialize(new
                     {
@@ -387,7 +399,7 @@ public sealed class GraphMediaVoiceGateway(
                         retro = _context.Session.Kind == CeremonyKind.Retrospective ? _board.Project(_floor.CurrentMemberId, true, false) : null,
                     });
                     _itemId = null;
-                    _turnStarted = Stopwatch.GetTimestamp();
+                    if (speak.RetryAttempt == 0 || _turnStarted == 0) { _turnStarted = Stopwatch.GetTimestamp(); }
                     await _voice.CreateResponseAsync(turn, _ct);
                     break;
                 case AdvanceSpeaker:
@@ -429,6 +441,10 @@ public sealed class GraphMediaVoiceGateway(
                     await _voice.CancelResponseAsync(_ct);
                     break;
                 case EndSession: _finished = true; break;
+                case RequiredSpeechFailed failed:
+                    logger.LogError("Circle-back audio unavailable for {TeamId}/{SessionId}/{MemberId}",
+                        _context.Session.TeamId, _context.Session.Id, failed.MemberId);
+                    throw new WebSocketException("Voice Live did not produce circle-back audio after two retries.");
             }
         }
     }
