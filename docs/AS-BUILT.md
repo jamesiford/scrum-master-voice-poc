@@ -20,7 +20,8 @@ appended after optional team style. Empty responses cannot silently complete cir
 two bounded real-response retries, then explicit pause/transport failure;
 successful retry includes its original latency. Complete pre-guard30-run
 cohort has29spoken returns/30answers and29passes, one retained failed run;
-separate guarded real30-run measurement is recorded
+separate guarded real30-run cohort passes30/30 with30spoken returns/answers,
+recorded
 separately in `gates/r2-quality-M11.json`. Existing Acs/Share/Direct,
 Simulated Room, native non-recording and approval guards stay unchanged.
 No new use case or API route; full suites belong to r2-reconcile.

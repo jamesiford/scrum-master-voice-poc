@@ -51,8 +51,8 @@ refreshing API credentials between runs. Each result is saved independently;
 no failed session is silently retried. The complete pre-guard cohort passes
 29/30 real-model retrospectives: spoken returns29/30, answers30/30.
 Run15 remains failed, not retried or removed. The separate30-run guarded
-cohort currently passes25/25 complete real-model sessions, spoken/answered25/25;
-5remaining are explicitly unrun. Final counts appear in
+cohort passes30/30 complete real-model sessions, spoken/answered30/30,
+with no session retries. Final counts appear in
 `gates/r2-quality-M11.json`.
 
 The original cohort stays on deployed source e7c31fa/revision89; its old

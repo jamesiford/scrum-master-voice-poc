@@ -22,9 +22,9 @@ Run15 had no agent transcript/first-audio timing between return and answer,
 no talk-over; it remains failed with no session retry. Completion without
 audio could silently hand off against a stale cast caption. A new pure
 Domain guard retries the real response at most twice, then fails explicitly;
-original latency baseline is retained. Separate guarded retros have a
-25/25 complete real-model prefix, spoken/answered25/25;5remaining unrun.
-Final shipped-model and runtime after measurements are unrun.
+original latency baseline is retained. Separate guarded retros pass30/30
+complete real-model sessions, spoken/answered30/30, no session retries.
+Final shipped-model evaluation is running; runtime after measurement is unrun.
 API-only3ddd40b/ACRds18 is digest-pinned on zavaw3 revision90, HTTP200;
 identity/configuration/environment/bridge-image parity pass and defaults
 are unchanged. The first cohort stayed on e7c31fa/revision89 throughout.
@@ -42,7 +42,7 @@ fresh acceptance from this correction. Content-free current details:
 | G1 | Failed historical experience/point estimates; before3418/4559ms,n10, after pending; native n0 |
 | G2 | Native attribution/guest acoustic acceptance not_run,n0; focused routing is not human proof |
 | G3 | Measured portal subset: real approver revision78/complete audit,n1 before; fresh after pending |
-| G4 | Failed historical exact board parity11/11; pre-guard retrospective29/30, separate guarded30 running; real rehearsal n0 |
+| G4 | Failed historical exact board parity11/11; pre-guard retrospective29/30, separate guarded30/30; real rehearsal n0 |
 | G5 | Copilot real positive/negative/streaming not_run,n0; completed consent/catalogue not reopened |
 | G6 | Native stored-link joins not_run,0/10; readiness5/5 is not join acceptance |
 | G7 | Measured synthetic112/date48/calendar40; latest48/48 and40/40 pass unchanged thresholds; shipped recheck/live quality/CI unrun |

@@ -39,7 +39,8 @@ being treated as completed speech. The delivery guard is deployed as
 API-only3ddd40b/ACRds18/revision90,
 ready/healthz200 with exact identity/configuration/environment/bridge-image
 parity. The first cohort passed29/30, retaining run15; the separate
-30-run guarded cohort is running. It uses at most two real-response retries,
+30-run guarded cohort passes30/30, spoken/answered30/30 without session retries.
+It uses at most two real-response retries,
 retaining original
 latency. If all fail, the Simulated Room pauses with `VOICE_NO_AUDIO`:
 the presenter can unmute to retry or take over. Native follows its existing
