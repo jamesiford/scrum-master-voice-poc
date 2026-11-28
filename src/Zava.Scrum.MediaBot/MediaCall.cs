@@ -63,6 +63,12 @@ public sealed class MediaCall : IAsyncDisposable
     /// <summary>Gets whether the media worker has ended.</summary>
     public bool Ended => _run?.IsCompleted == true;
 
+    /// <summary>Lets the board submit its received recap before the owning call is deleted.</summary>
+    /// <param name="ct">The call owner's cancellation token.</param>
+    /// <returns>A task; audio processing remains independent while the board drains.</returns>
+    public Task PresentCompletionAsync(CancellationToken ct) =>
+        _boardShare?.PresentCompletionAsync(ct) ?? Task.CompletedTask;
+
     /// <summary>Attaches the negotiated call and starts the gateway connection.</summary>
     /// <param name="call">The call created by Graph.</param>
     public void Start(ICall call)
