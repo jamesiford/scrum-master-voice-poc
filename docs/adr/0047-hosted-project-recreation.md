@@ -103,6 +103,24 @@ Original A/Q polling encounters401 near token expiry; standard renewal
 restores authorised404. UTC-expiry checks resume their original deadlines
 without an authentication loop, role change or invented missing samples.
 
+An equivalent scoped Foundry User refresh on E fails53/53 Agents reads,
+including its prerequisite, and is removed with ARM404 readback at15:04:07UTC.
+It adds no entitlement beyond the inherited role and is not shipped.
+Owned C Audit collection returns zero rows after six failed Agents reads:
+neither the internal cause nor Agents Audit emission is established.
+Authoritative H subdomain availability succeeds twice/two minutes apart
+after active/deleted absence,121.715seconds; its third incarnation fails
+52/52 lookup reads. This disproves domain-reservation release as the repair,
+not a possible undocumented Agent Service propagation mechanism.
+Supported endpoint disable204/state-disabled200 and explicit last-version
+delete200 on T leave a live empty project. Subsequent generic Agent-not-found
+DELETE404 is rejected, not relaxed in the shipped hook. The separate
+same-name recreation still fails52/52 after live-project200/empty readback.
+Documented account recovery201 without purge preserves failed E's current
+parent internalId149a6e3c69374c92a7c347df422857b8; its same-name recreated child
+also fails52/52. Neither operation repairs the namespace or earns full
+empty credit. No failed diagnostic is added to the templates or hooks.
+
 The [sanitised machine evidence](../gates/g8-proof-4-evidence.json)
 retains each request, outcome, duration and observed identity change.
 Current unauthenticated Azure Retail Prices API westus3 meters are

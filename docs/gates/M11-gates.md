@@ -33,6 +33,10 @@ native non-recording and false optimisation remain unchanged.
 | Project-only recreation I | Parent internalId unchanged, new projectId; two actual Active cycles51.173s/101.322s, child teardown12.840s; not full empty proof |
 | Reset failed recreated project G | Same current parent, same project name, new projectId; bounded readback still fails, not a recovery |
 | Explicit container stop T | First Active37540ms; documented container GET/POST404 before any purge, so no completed-stop lifecycle result |
+| Equivalent scoped Foundry User refresh E |53/53 lookup404 including prerequisite; temporary redundant entitlement removed/read404 at15:04:07UTC, not a repair |
+| Authoritative subdomain release H | Current2024-10-01 predicate true twice/two minutes apart after active/deleted absence,121.715s; third incarnation fails52/52 lookup reads. Domain reservation release is not Agents namespace recovery |
+| Endpoint disable and explicit last-version deletion T | Documented disable204/state-disabled200, version-delete200 and live empty-project200; generic agent-delete404 rejected. Same-name recreation still fails52/52 reads |
+| Recover failed current account E without purge | Documented restore201 preserves parent internalId149a6e3c69374c92a7c347df422857b8; same-name recreated child fails52/52 reads, not recovery or full-empty credit |
 
 Actual portal consent403 `Authorization_RequestDenied` at13:48:13UTC and
 dedicated media app write403 at13:52:23UTC are separate authority failures,
@@ -45,18 +49,26 @@ dependsOn warning and portal's existing bundle advisory remain visible.
 [Credential-free request/event evidence](g8-proof-4-evidence.json)
 records every collected iteration and actual internal IDs, with explicit
 in-progress collection. The deployer already inherits Foundry User and
-Owner; no extra deployer role was assigned. Current first-party westus3
+Owner; a temporary equivalent scoped role failed and was removed, and no
+role workaround is shipped. Current first-party westus3
 retail meters confirmUSD0.0994/vCPU-hour and0.0118/GiB-hour:
 1CPU/2GiB is0.1230 per aggregate active-session-hour, not an estimate of
 billed idle/deployment time. S0 account/project/group/role objects add
 USD0/hour fixed; no new model deployments or hosted invocations.
 Current scoped AppLens reports Foundry unsupported, not a diagnosis.
-Audit-only collection uses an existing retired owned workspace; no request
-content capture or new workspace. DefinitionUSD0/hour fixed, ingestion variable.
+Audit-only collection uses an existing retired owned workspace; six failed
+Agents reads and the final query's zero rows provide no cause or confirmed
+Agents Audit emission. No request content capture or new workspace.
+DefinitionUSD0/hour fixed, ingestion variable.
 The original A/Q polls encounter401 near credential expiry. One standard
 renewal restores authorised404 reads; proactive UTC-expiry renewal continues
 the original deadlines. The interruption remains evidence, not91/91 invented
 samples. No lifecycle repair is shipped.
+Current retired zavag8 inventory is copied before disposal:26 ARM resources
+at15:12:21UTC, including a storage Event Grid system topic, and media VM
+PowerState/deallocated. The earlier25-resource snapshot stays historical;
+no new topic was provisioned by this investigation. Its registry/workspace
+remain until dependent experiments finish.
 
 | Gate | Current fourth-attempt verdict; other measurements retained |
 | --- | --- |

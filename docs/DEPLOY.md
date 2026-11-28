@@ -58,6 +58,19 @@ specifically across parent-account incarnation, not every project deletion.
 Original A/Q polling encounters401 near token expiry; normal CLI renewal
 restores404 and proactive UTC-expiry renewal resumes the original deadlines,
 with the interruption explicitly retained rather than invented samples.
+An equivalent temporary scoped Foundry User refresh fails53/53 reads and
+is removed/read404; do not add it to deployment. Audit-only collection returns
+zero rows after six failed Agents reads, not a diagnosis. Authoritative
+subdomain availability succeeds twice/two minutes apart after purge,
+121.715seconds, yet the third-incarnation lookup fails52/52 reads.
+Endpoint disable/last-version deletion and recovery-without-purge each
+still fail52/52 subsequent reads. They are isolated diagnostics, not
+accepted full-empty teardown repairs.
+The current retired zavag8 inventory is copied to the credential-free ledger:
+26 resources at15:12:21UTC, including a storage Event Grid system topic,
+with its media VM deallocated. The older25-resource inventory below remains
+historical; the current registry/workspace are retained only until their
+dependent experiments complete.
 
 The cleanup hook now requires the exact requested-agent absence response;
 workspace/project/subdomain404s refuse teardown. Eighteen targeted checks
