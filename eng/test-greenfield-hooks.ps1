@@ -38,10 +38,11 @@ $empty = @(Merge-RequiredResourceAccess $null $required)
 if ($empty.Count -ne 2) { throw 'Merge_EmptyApplication_AddsBaseline failed' }
 
 foreach ($case in @(
-  @{ name = 'zavag8'; location = 'westus3'; group = 'rg-zava-scrum-zavag8'; allowed = $true }
+  @{ name = 'zavag9'; location = 'westus3'; group = 'rg-zava-scrum-zavag9'; allowed = $true }
   @{ name = 'zavaw3'; location = 'westus3'; group = 'rg-zava-scrum-zavaw3'; allowed = $true }
+  @{ name = 'zavag8'; location = 'westus3'; group = 'rg-zava-scrum-zavag8'; allowed = $false }
   @{ name = 'mcm'; location = 'westus3'; group = 'rg-mcm-scrum-demo-wus3'; allowed = $false }
-  @{ name = 'zavag8'; location = 'eastus2'; group = 'rg-zava-scrum-zavag8'; allowed = $false }
+  @{ name = 'zavag9'; location = 'eastus2'; group = 'rg-zava-scrum-zavag9'; allowed = $false }
   @{ name = 'zavagf'; location = 'eastus2'; group = 'rg-zava-scrum-zavaw3'; allowed = $false })) {
   $env:AZURE_ENV_NAME = $case.name
   $env:AZURE_LOCATION = $case.location
@@ -51,9 +52,9 @@ foreach ($case in @(
   try { Assert-MediaDeploymentEnvironment } catch { $accepted = $false }
   if ($accepted -ne $case.allowed) { throw "Environment_ExactScope_Enforced failed: $($case | ConvertTo-Json -Compress)" }
 }
-$env:AZURE_ENV_NAME = 'zavag8'
+$env:AZURE_ENV_NAME = 'zavag9'
 $env:AZURE_LOCATION = 'westus3'
-$env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavag8'
+$env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavag9'
 $env:AZURE_SUBSCRIPTION_ID = 'another-subscription'
 $refused = $false
 try { Assert-MediaDeploymentEnvironment } catch { $refused = $true }
@@ -134,4 +135,4 @@ foreach ($case in @(
   & $capacityBlock | Out-Null
   if (($script:Failures -eq 0) -ne $case.pass) { throw "Capacity_$($case.name)_ExpectedVerdict failed" }
 }
-Write-Host 'PASS 20 focused greenfield hook checks'
+Write-Host 'PASS 21 focused greenfield hook checks'

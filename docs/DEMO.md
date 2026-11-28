@@ -1,5 +1,15 @@
 # Demo runbook
 
+## G8 fourth investigation
+
+Fresh zavag9 is not yet a proven demo deployment: full empty cycles0/2.
+Do not substitute alternate Foundry hostnames, rotate names, bypass
+project404 cleanup or ask the presenter to wait manually. The alternate
+frontend's first Active version does not survive its repeated lifecycle.
+DEPLOY.md/ADR0047 record bounded diagnosis and the exact fresh consent
+authority. Existing Direct/Acs/Share and Simulated Room remain unchanged;
+no protected deployment or presenter pack is modified.
+
 ## Round 2 knowledge fixture handoff
 
 Do not demonstrate a standards answer or claim permission trimming yet.

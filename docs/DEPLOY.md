@@ -1,5 +1,85 @@
 # Deploying the current solution
 
+## G8 fourth attempt: zavag9 only (ADR0047)
+
+The current proof target is fresh `zavag9`/westus3, exact resource group
+`rg-zava-scrum-zavag9` in subscription
+`4b0dd31f-5379-4acc-8dcd-60f2929d2513`. Older zavag8/eastus2 commands below
+are historical evidence, not current lifecycle instructions. Never tear
+down zavaw3/mcm or rotate resource names between the two proof cycles.
+Only the authorised retired zavag8 group may be deleted after copying its
+evidence. The isolated owned westus3 scratch group is deleted after tests.
+
+**G8-DEPLOYER-AUTHORITY, Global Administrator or Privileged Role Administrator:**
+activate the signed-in deployment account's authorised directory role for
+the fresh portal's delegated consent and dedicated media permission.
+Actual portal consent returned403 `Authorization_RequestDenied` at
+13:48:13UTC on28November, request
+`bedbc1ba-13c5-4c61-ad2a-b2f54914761e`, `Insufficient privileges to complete
+the operation.` The app registration itself exists; rerun the idempotent
+hook, do not create a replacement app or broaden the Azure CLI scopes.
+The unattended run polls the privileged read every ten minutes for three
+hours before recording an unresolved human gate. Completed zavaw3
+consents/catalogue/admin-sign-in gates are not reopened.
+
+```powershell
+azd exec -e zavag9 -- pwsh -NoProfile -File infra\hooks\entra-portal-app.ps1
+azd exec -e zavag9 -- pwsh -NoProfile -File infra\hooks\media-host.ps1 -ConsentOnly
+```
+
+Both full empty up/verify cycles remain unrun while the minimal lifecycle
+investigation and bounded privilege reads continue. Immediate recreation
+and a ten-minute quiet period initially return404. An account-advertised
+alternate frontend initially works, but its own repeated same-name cycle
+also fails: **do not change hostname or add an endpoint fallback**.
+That experimental setting is not in the templates or fresh inputs.
+The actual minimal SDK first cycle is Active in32943ms, create-to-readback
+60.791seconds; its purge84.251seconds does not repair the second cycle.
+A transient DNS NXDOMAIN is not proof the names are globally released.
+ADR0047 and the gate table retain the controlled alternatives.
+Even two stable NXDOMAIN samples/two minutes apart plus active/deleted
+ARM404 fail after recreation. Current ARM2026-11-01 fails52/52 second
+reads; an explicit account-only Agents capability host also fails. Neither is
+shipped as a fix. The deployer already has inherited Foundry User/Owner,
+so adding another role is not the demonstrated repair.
+The [request ledger](gates/g8-proof-4-evidence.json) preserves every
+collected iteration; it is still in progress, not a full-cycle receipt.
+Confirmed project-route absence before parent deletion also fails52/52.
+A fixed non-default target fails52/52 after parent DELETE504 is resolved
+by absence readback, not a blind deletion retry. Its previously unprimed
+default project returns200; Connections/deployments on recreated C also
+return200 while Agents404. These narrow the failed service/lifetime boundary,
+but do not prove the internal cache or workspace mechanism. AppLens does not
+support Foundry; the documented older purge API also fails52/52.
+Project-only recreation succeeds twice while retaining the parent account
+identity, but cannot count as empty G8. Resetting the failed recreated child
+under its current parent does not repair it. The used Agents namespace fails
+specifically across parent-account incarnation, not every project deletion.
+Original A/Q polling encounters401 near token expiry; normal CLI renewal
+restores404 and proactive UTC-expiry renewal resumes the original deadlines,
+with the interruption explicitly retained rather than invented samples.
+An equivalent temporary scoped Foundry User refresh fails53/53 reads and
+is removed/read404; do not add it to deployment. Audit-only collection returns
+zero rows after six failed Agents reads, not a diagnosis. Authoritative
+subdomain availability succeeds twice/two minutes apart after purge,
+121.715seconds, yet the third-incarnation lookup fails52/52 reads.
+Endpoint disable/last-version deletion and recovery-without-purge each
+still fail52/52 subsequent reads. They are isolated diagnostics, not
+accepted full-empty teardown repairs.
+The current retired zavag8 inventory is copied to the credential-free ledger:
+26 resources at15:12:21UTC, including a storage Event Grid system topic,
+with its media VM deallocated. The older25-resource inventory below remains
+historical; the current registry/workspace are retained only until their
+dependent experiments complete.
+
+The cleanup hook now requires the exact requested-agent absence response;
+workspace/project/subdomain404s refuse teardown. Eighteen targeted checks
+and all three builds pass; no full suites. No manual quiet-period
+instruction or unverified source correction is accepted as G8. Preserve native=true,
+`Standard_D4als_v7`, Gen2, disposable-vault protection=false and managed
+Voice Live (`PROVISION_REALTIME_MODELS=false`); other required resources
+and actual audio/approved-write verification remain mandatory.
+
 ## Round 2 native board (ADR0045)
 
 Keep Acs/Share/Direct and Simulated Room. Native runtime changes are

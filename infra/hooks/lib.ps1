@@ -60,10 +60,10 @@ function Merge-RequiredResourceAccess($Existing, $Required) {
 # Keep the existing deployment protected while permitting the fresh westus3 G8 proof.
 function Assert-MediaDeploymentEnvironment {
   $allowed = ($env:AZURE_ENV_NAME -eq 'zavaw3' -and $env:AZURE_LOCATION -eq 'westus3') -or
-    ($env:AZURE_ENV_NAME -eq 'zavag8' -and $env:AZURE_LOCATION -eq 'westus3')
+    ($env:AZURE_ENV_NAME -eq 'zavag9' -and $env:AZURE_LOCATION -eq 'westus3')
   if (-not $allowed -or $env:AZURE_SUBSCRIPTION_ID -ne '4b0dd31f-5379-4acc-8dcd-60f2929d2513' -or
     $env:AZURE_RESOURCE_GROUP -ne "rg-zava-scrum-$($env:AZURE_ENV_NAME)") {
-    throw 'Media deployment requires zavaw3/westus3 or zavag8/westus3 and its exact resource group in the designated subscription.'
+    throw 'Media deployment requires zavaw3/westus3 or zavag9/westus3 and its exact resource group in the designated subscription.'
   }
 }
 

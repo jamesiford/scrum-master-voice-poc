@@ -8,6 +8,18 @@
 
 ### M11 acceptance boundary
 
+**Current fourth G8 investigation (ADR0047):** fresh zavag9/westus3 only,
+never protected zavaw3/mcm or eastus2. Two successful FULL empty up/verify
+cycles with intervening purge remain required; current newcycles0/2.
+Same-name project404 persists despite new ARM internal IDs and working
+changed-name controls. An alternate hostname is disproven by its own
+repeated cycle and is not shipped. Only exact-agent absence can satisfy
+the cleanup hook; project/workspace/subdomain404s fail closed.
+No catalogue use case (6.1.4), API (14), Domain rule or adapter default
+changes. Earlier zavag8/eastus2 scopes below are historical evidence.
+The minimal first SDK Active32943ms and purge84.251seconds are not
+full-cycle credit. Bounded privilege and project polls remain in progress.
+
 **Round 2 native board (ADR0045):** G4 is automatic screen-share reception
 for all participants/guests, intuitive legibility, the same browser content,
 and first/change delivery<=2seconds, not raster identity. Native standup
