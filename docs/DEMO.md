@@ -3,10 +3,13 @@
 ## Round 2 latency measurement
 
 Keep Acs/Share/Direct, the same cast and session shape, and no concurrent
-evaluation load. ADR0044 baseline has Model3595/5176ms,n70 and Rules3316/
-4161ms,n71,53questions each,zero talkovers; G1 remainsfailed. Do not choose
-a favourable window or change goldens/thresholds. The candidate
-`Voice:OptimiseTurnPreparation` isfalse until accepted by measured experience.
+evaluation load. ADR0044's twelve-session after cohort measured Model
+2959/4458 ms, n71, questions 2973/4609 ms, n54; Rules 3211/4357 ms, n71,
+questions 3347/4537 ms, n53; zero talk-overs. Model question p95 is still
+12.94% above M10 and Rules guides fail, so G1 remains failed.
+`Voice:OptimiseTurnPreparation=false` remains the deployed/default selection.
+The candidate helps Model median but is not accepted as a default.
+Do not rerun favourable windows or change goldens/thresholds.
 
 For an explicitly authorised new controlled cohort on zavaw3 only:
 
@@ -22,6 +25,8 @@ setting in finally. It pins the actual deployed digest, never resets demo
 storage or retries a failed session. Candidate selection is a separate
 scoped deployment setting, not a label. Simulated transcript0ms does not
 prove real speech-to-text or Teams/native acoustic acceptance.
+The completed before/after evidence is in `docs\gates\r2-latency-*-M11.json`;
+do not overwrite it or add the separate mandatory verification to that cohort.
 
 ## Round 2 correctness checks
 

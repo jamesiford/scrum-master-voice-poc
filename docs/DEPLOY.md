@@ -6,7 +6,7 @@ ADR0044 adds no Azure resource, identity, permission or secret, fixed
 costUSD0/hour. `VOICE_OPTIMISE_TURN_PREPARATION=false` maps through
 main/compute templates to `Voice__OptimiseTurnPreparation`; true selects
 real authoritative-comment reconciliation and concurrent context reads.
-The default isfalse until measured acceptance. Corrections, rules and
+The default remains false after measured non-acceptance. Corrections, rules and
 diagnostic queries still use the model; all floor and approval guards stay.
 No new human gate belongs to this performance work.
 
@@ -16,8 +16,28 @@ full template, change selected azd defaults, touch native/hosted deployments
 or run another environment lifecycle. Snapshot and compare configuration,
 identity, unrelated env, bridge image and readiness before/after. Select
 the candidate only for controlled measurement; restorefalse unless accepted.
-The before cohort iscomplete12/12 with53questions per mode andzero
-talkovers. Deployment/after measurements are still unrun at this checkpoint.
+Both cohorts are complete, twelve sessions each across three interleaved
+windows: before Model/Rules questions n53/53, after n54/53; talk-overs zero.
+Model after 2959/4458 ms, n71, meets all-turn M10 guides, but question
+2973/4609 ms, n54, fails p95 (+12.94%). Rules after 3211/4357 ms, n71,
+fails both guides. G1 and the absolute one-second target remain failed;
+the candidate is retained but not promoted.
+Existing ACR run ds19 built committed API `abdd4ff`, digest
+`sha256:638e5bc39c7f4d8b7aa533098bef134150079977a9e1f84fdf5caccb2fc0e6ad`.
+After exact cohort restoration, a guarded flag-only update set false on
+zavaw3 ready revision 102, HTTP 200. The image, configuration, identity
+and unrelated state remain preserved. No full provision was performed.
+Mandatory `infra\hooks\verify.ps1` completed **7/8**: API/bridge health,
+Entra authentication, bot 401, scripted standup, real approver-authored
+Azure DevOps comment and complete audit chain pass (revision 80, n1 write).
+The optional Windows check fails exactly:
+`The Windows media VM is not running.` Read-only instance view confirms
+`vm-media-3fsyvjqqjw5go` is `PowerState/deallocated`; this step did not
+change the shared native host or infer who deallocated it.
+The native environment owner should deliberately start that existing VM
+and run `infra\hooks\verify-media.ps1` before a native rehearsal, when its
+allocation/use is authorised. Direct/ACS does not depend on it; do not
+silently start a shared optional host to turn this verification green.
 Keep all existing user/organiser/source/billing/CI gates elsewhere intact.
 
 ## Round 2 correctness rollout

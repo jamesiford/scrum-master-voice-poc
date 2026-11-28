@@ -857,11 +857,15 @@ Scripted G1 regression verification is not Work IQ latency or privacy proof.
 ### 11.2 Latency
 The gateway logs inside a scope carrying the session's `CorrelationId` and `SessionId` (M11, ADR 0017), so every structured line for a turn can be tied to the audit chain. It measures end of speech (`input_audio_buffer.speech_stopped`) to the first agent audio byte for every agent turn. It stores p50 and p95 per session and shows them live in the portal. Target p50 is about 1,000 ms for US participants. Pre-computing `reconcile_update` (section 10.2) is the main lever.
 
-Round2 complete unchanged3ddd40b baseline: Model3595/5176ms,n70 and
-Rules3316/4161ms,n71,53questions each,zero talkovers across three interleaved
-windows. Window p50 spread5.72%/3.58%; G1 remainsfailed against westus3
-and the one-second target. ADR0044's optional real turn-preparation
-candidate preserves all floor timings; deployment/after remainunrun.
+Round 2 before/after three-window cohorts: Model 3595/5176 ms, n70,
+to 2959/4458 ms, n71; questions 3742/5176 ms, n53, to 2973/4609 ms, n54.
+Rules 3316/4161 ms, n71, to 3211/4357 ms, n71; questions
+3462/4161 ms, n53, to 3347/4537 ms, n53. Talk-overs remain zero.
+Window p50 spread is 5.72%/3.58% before, 11.42%/11.60% after.
+Model all-turn guides pass, but its question p95 (+12.94%) and Rules
+guides fail against westus3; the one-second target is unmet.
+ADR0044's real candidate preserves all floor timings and remains optional,
+flag=false, on deployed `abdd4ff`/ready revision 102. G1 remains failed.
 Total timing is unchanged; diagnostic first-audio endpoints are captured
 before subsequent latency persistence. HTTP routes/payloads are unchanged.
 
@@ -1298,7 +1302,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `VoiceLive:Endpoint`, `VoiceLive:ApiVersion`, `VoiceLive:Model`, `VoiceLive:Voice`, `VoiceLive:Language` | Voice Live socket (empty endpoint derives it from the Foundry host) | `2026-04-10`, `gpt-realtime-2.1`, `en-US-Ava:DragonHDLatestNeural`, `en-US` |
 | `VoiceLive:AgentName`, `VoiceLive:AgentProjectName` | Optional Foundry voice-agent mode (query parameters unverified) | Empty (model-direct) |
 | `Voice:ParkAfterSeconds`, `Voice:SilenceMs`, `Voice:PauseMs`, `Voice:NoResponseSeconds` | Floor-control timing | Code defaults 60, 1200, 800, 25; `appsettings.json` sets 12, 800, 500, 25. `SilenceMs` 800 was kept after 500, 650 and 800 could not be told apart (ADR 0019) |
-| `Voice:OptimiseTurnPreparation` | Reuse authoritative comments and overlap independent prompt/team reads; corrections and rules retain model assessment (ADR0044) | `false`; greenfield `VOICE_OPTIMISE_TURN_PREPARATION=false`, pending measured acceptance |
+| `Voice:OptimiseTurnPreparation` | Reuse authoritative comments and overlap independent prompt/team reads; corrections and rules retain model assessment (ADR0044) | `false`; greenfield `VOICE_OPTIMISE_TURN_PREPARATION=false`; candidate not accepted because question-tail/Rules G1 still fails |
 | `Ado:Org`, `Ado:AuthMode` (`Entra` or `Pat`), `Ado:Pat` (**secret**) | Azure DevOps organisation URL and auth | `Entra` |
 | `Team:Id`, `Team:Name`, `Team:TimeZone`, `Team:Project`, `Team:AdoTeam`, `Team:AreaPath`, `Team:SprintGoal` | Default team seeded into the store | `team-payments`, `America/Los_Angeles` |
 | `Demo:HonorAgeTags`, `Demo:HonorOwnerTags`, `Demo:SeedFile`, `Demo:KpiFixture` | Demo behaviour and fixtures | `true`, `true`, `demo/seed-ado.json`, `demo/kpi-history.json` |

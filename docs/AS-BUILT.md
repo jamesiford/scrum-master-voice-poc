@@ -2,20 +2,33 @@
 
 ## Round 2 Direct latency (ADR 0044)
 
-Unchanged3ddd40b baseline: three interleaved windows, six same-cast
-sessions per mode; Model3595/5176ms p50/p95,n70/questions53, Rules3316/
-4161ms,n71/questions53,zero talkovers. Window p50 spread5.72%/3.58%.
-G1 fails the westus3 experience comparison and absolute one-second target.
-See `gates/r2-latency-before-M11.json` for all five hops and every window.
+Three interleaved windows, six serial same-cast sessions per mode, before
+`3ddd40b` and after `abdd4ff`: Model all-turn p50/p95 3595/5176 ms, n70,
+to 2959/4458 ms, n71; questions 3742/5176 ms, n53, to 2973/4609 ms, n54.
+Rules all turns 3316/4161 ms, n71, to 3211/4357 ms, n71; questions
+3462/4161 ms, n53, to 3347/4537 ms, n53. Talk-overs remain zero.
+Window p50 spread is 5.72%/3.58% before and 11.42%/11.60% after.
+Model all-turn M10 guides pass, but its question tail (+12.94%) and Rules
+guides fail; the one-second target also fails. G1 remains failed.
+See `gates/r2-latency-before-M11.json`, `gates/r2-latency-after-M11.json`
+and `gates/M11-gates.md` for all five hops, denominators and windows.
 
-The implemented candidate `Voice:OptimiseTurnPreparation` defaultsfalse:
+The implemented candidate `Voice:OptimiseTurnPreparation` defaults false:
 it reuses authoritative decision comments and overlaps independent prompt/
 team reads. Corrections, rules/model-failure paths and diagnostic queries
 retain model assessment. Floor silence, barge-in, required circle-back,
 approval guards and Acs/Share/Direct/Simulated Room stay unchanged.
 First-audio hop timestamps no longer include a subsequent persistence
 write; total timing semantics are unchanged. No new route/use case/resource
-or fixed hourly cost. Deployment/after measurements are not yet claimed.
+or fixed hourly cost. The measured image is deployed only to zavaw3;
+after exact cohort restoration, flag=false is ready on revision 102,
+HTTP 200, with unrelated configuration and identity unchanged.
+The useful optimisation is not promoted: question-tail experience remains
+worse than M10 despite aggregate Model median improvement.
+Mandatory verification is 7/8: the working path, approved write and audit
+pass; the optional native Windows VM is currently deallocated and fails
+hosting verification. It was not altered by this step. Native Teams
+acceptance remains unrun, not inferred from the scripted standups.
 
 ## Round 2 correctness (ADRs 0041 to 0043)
 
