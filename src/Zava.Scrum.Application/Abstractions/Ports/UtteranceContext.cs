@@ -18,4 +18,8 @@ public sealed record UtteranceContext(
     IReadOnlyList<NameRef> Roster,
     IReadOnlyList<BriefItem> Items,
     string? Asked,
-    int? FocusItemId);
+    int? FocusItemId)
+{
+    /// <summary>Gets team-local calendar facts built in code, not model-produced dates.</summary>
+    public SpokenDateContext? DateContext { get; init; }
+}

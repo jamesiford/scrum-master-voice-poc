@@ -26,6 +26,17 @@ internal sealed class GetTurnInstructionHandler(ISessionRepository sessions, ITe
             return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{name}' is missing from agents/instructions."));
         }
 
+        if (session.Kind == CeremonyKind.Retrospective && request.Reason == SpeakReason.CircleBack)
+        {
+            const string requiredName = "turn-retro-circle-back-required";
+            var required = await prompts.GetAsync(requiredName, ct);
+            if (required is null)
+            {
+                return Result<string>.Failure(Error.NotFound("prompt.not_found", $"Prompt '{requiredName}' is missing from agents/instructions."));
+            }
+            template = $"{template}\n\n{required}";
+        }
+
         var team = await teams.GetAsync(session.TeamId, ct);
         return Result<string>.Success(PromptTemplate.Render(template, Values(session, team?.Name ?? "the team", request)));
     }

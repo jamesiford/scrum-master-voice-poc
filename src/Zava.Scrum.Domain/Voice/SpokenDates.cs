@@ -8,6 +8,12 @@ namespace Zava.Scrum.Domain.Voice;
 /// </summary>
 public static partial class SpokenDates
 {
+    /// <summary>Enumerates bounded candidate phrases in transcript order, including old dates a model must not mistake for revised targets.</summary>
+    /// <param name="text">The unmodified transcript.</param>
+    /// <returns>At most sixteen verbatim phrases; no model-produced dates.</returns>
+    public static IReadOnlyList<string> FindAll(string? text) =>
+        string.IsNullOrWhiteSpace(text) ? [] : Phrase().Matches(text).Take(16).Select(m => m.Value.Trim()).ToArray();
+
     /// <summary>Finds the first date phrase in a statement.</summary>
     /// <param name="text">What was said.</param>
     /// <returns>The phrase as spoken, or <see langword="null"/> when none is found.</returns>
@@ -23,7 +29,7 @@ public static partial class SpokenDates
     }
 
     [GeneratedRegex(
-        @"\b(?:(?:next|this|end of(?: the)?)\s+(?:week|sprint|month|day|monday|tuesday|wednesday|thursday|friday)|(?:on\s+|by\s+|until\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)|tomorrow|tonight|today|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?|\d{1,2}/\d{1,2}(?:/\d{2,4})?)\b",
+        @"\b(?:(?:end of(?: the)?\s+(?:(?:next|this)\s+)?(?:week|sprint|month|day))|(?:next|this)\s+(?:week|sprint|month|day|monday|tuesday|wednesday|thursday|friday|saturday|sunday)|(?:on\s+|by\s+|until\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)|tomorrow|tonight|today|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?|\d{1,2}/\d{1,2}(?:/\d{2,4})?)\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex Phrase();
 }

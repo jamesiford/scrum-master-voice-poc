@@ -31,7 +31,8 @@ public sealed class PrepareStandupHandlerTests
         IReadOnlyList<Member> roster,
         Result<SprintSnapshot> sprint,
         BacklogRiskSuggestion? suggestion,
-        IReadOnlyList<StandupSession>? previous = null)
+        IReadOnlyList<StandupSession>? previous = null,
+        IterationInfo? next = null)
     {
         var sessions = new InMemorySessionRepository();
         foreach (var p in previous ?? [])
@@ -51,6 +52,7 @@ public sealed class PrepareStandupHandlerTests
         services.AddSingleton<IMemberRepository>(members);
         services.AddSingleton<ISessionRepository>(sessions);
         services.AddSingleton<IWorkItemReader>(new FakeWorkItemReader(sprint));
+        services.AddSingleton<IIterationReader>(new FakeIterationReader(null, next));
         services.AddSingleton<IBacklogRiskAgent>(new FakeBacklogRiskAgent(suggestion));
         services.AddSingleton<IAgentHostWarmer>(Warmer);
         services.AddSingleton<IClock>(new FixedClock(Now));
@@ -58,6 +60,18 @@ public sealed class PrepareStandupHandlerTests
         await using var sp = services.BuildServiceProvider();
         var result = await sp.GetRequiredService<ISender>().Send(new PrepareStandupCommand("t1"));
         return (result, sessions);
+    }
+
+    [Fact]
+    public async Task Send_NextIterationCalendar_CapturesActualDatesBeforeLiveVoice()
+    {
+        var next = new IterationInfo("p\\next", new(2026, 1, 19), new(2026, 1, 30));
+        var (result, sessions) = await RunAsync(Roster, Result<SprintSnapshot>.Success(Sprint()), null, next: next);
+        var brief = (await sessions.GetAsync(result.Value, CancellationToken.None))!.PreBrief!;
+
+        Assert.Equal("UTC", brief.TimeZone);
+        Assert.Equal(new DateOnly(2026, 1, 14), brief.CurrentIteration!.End);
+        Assert.Equal(next, brief.NextIteration);
     }
 
     [Fact]

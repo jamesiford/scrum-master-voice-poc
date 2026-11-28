@@ -47,7 +47,11 @@ public sealed class PreBriefBuilder(FlagEvaluator evaluator)
             memberBriefs,
             unassigned,
             risks,
-            BuildSummary(burndown, risks));
+            BuildSummary(burndown, risks))
+        {
+            TimeZone = team.TimeZone,
+            CurrentIteration = new IterationInfo(sprint.IterationPath, DateOnly.FromDateTime(sprint.StartsAt.UtcDateTime), DateOnly.FromDateTime(sprint.EndsAt.UtcDateTime)),
+        };
     }
 
     private BriefItem ToBriefItem(WorkItem item, FlagContext context, DateTimeOffset now, HashSet<int> missed) =>

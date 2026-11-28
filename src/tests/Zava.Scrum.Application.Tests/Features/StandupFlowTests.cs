@@ -167,6 +167,24 @@ public sealed class StandupFlowTests
     }
 
     [Fact]
+    public async Task TurnInstruction_RetroCircleBack_AddsMandatoryStepEvenWithOldOverride()
+    {
+        await using var h = await StandupHarness.CreateAsync(prompts: new()
+        {
+            ["turn-retro-circle-back"] = "Welcome {firstName} back.",
+            ["turn-retro-circle-back-required"] = "Say exactly: {firstName}, I'm circling back. Please share {retroPrompt}.",
+        });
+        var session = await h.LoadAsync();
+        await h.Sessions.SaveAsync(StandupSession.Restore(session.ToSnapshot() with { Kind = CeremonyKind.Retrospective }), CancellationToken.None);
+
+        var text = (await h.Sender.Send(new GetTurnInstructionQuery(h.SessionId, SpeakReason.CircleBack, "m-priya"))).Value;
+
+        Assert.Contains("Welcome Priya back.", text, StringComparison.Ordinal);
+        Assert.Contains("Priya, I'm circling back.", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("{retroPrompt}", text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task TurnInstruction_MissingPrompt_IsNotFoundNotAnException()
     {
         await using var h = await StandupHarness.CreateAsync();

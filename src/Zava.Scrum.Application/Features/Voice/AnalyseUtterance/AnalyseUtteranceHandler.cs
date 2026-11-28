@@ -12,7 +12,7 @@ namespace Zava.Scrum.Application.Features.Voice.AnalyseUtterance;
 /// Asks the decision model to read the utterance and hands the answer to <see cref="UtteranceAnalyser"/>, which checks every name and
 /// work item id. When the model is off, slow or wrong, the same rules that ran before the model existed decide.
 /// </summary>
-internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtteranceAnalyser model)
+internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtteranceAnalyser model, IClock clock)
     : IRequestHandler<AnalyseUtteranceQuery, Result<UtteranceAnalysis>>
 {
     public async Task<Result<UtteranceAnalysis>> Handle(AnalyseUtteranceQuery request, CancellationToken ct)
@@ -30,6 +30,10 @@ internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtte
         var roster = request.Roster ?? brief?.Members.Select(m => new NameRef(m.MemberId, m.DisplayName)).ToList() ?? [];
         var own = brief?.Members.FirstOrDefault(m => m.MemberId == (request.HolderId ?? request.SpeakerId))?.Items ?? [];
         items = [.. own, .. items.Where(i => !own.Contains(i))];
+        var dates = brief?.TimeZone is { } zone
+            ? new SpokenDateContext(DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(clock.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(zone)).DateTime),
+                brief.CurrentIteration, brief.NextIteration)
+            : null;
 
         // A retrospective sorts its notes by rules in code (RetroInterpreter), so only a standup asks the model.
         var modelStarted = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -38,9 +42,30 @@ internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtte
         {
             reading = session.Kind == CeremonyKind.Retrospective
                 ? null
-                : await model.ReadAsync(new UtteranceContext(request.Text, request.SpeakerId, request.HolderId, roster, items, request.Asked, request.FocusItemId), ct);
+                : await model.ReadAsync(new UtteranceContext(request.Text, request.SpeakerId, request.HolderId, roster, items, request.Asked, request.FocusItemId)
+                {
+                    DateContext = dates,
+                }, ct);
         }
         var modelMs = session.Kind == CeremonyKind.Retrospective ? 0 : (int)System.Diagnostics.Stopwatch.GetElapsedTime(modelStarted).TotalMilliseconds;
+        if (reading is not null)
+        {
+            var candidates = SpokenDates.FindAll(request.Text);
+            reading = reading with
+            {
+                Comments = reading.Comments.Select(comment =>
+                {
+                    var phrase = comment.Kind == CommentKind.DateChange
+                        ? candidates.FirstOrDefault(candidate => string.Equals(candidate, comment.NewDate, StringComparison.OrdinalIgnoreCase))
+                        : null;
+                    return comment with
+                    {
+                        NewDate = phrase,
+                        DateResolution = comment.Kind == CommentKind.DateChange ? SpokenDateResolver.Resolve(phrase, dates) : null,
+                    };
+                }).ToArray(),
+            };
+        }
         var analysis = UtteranceAnalyser.Analyse(request.Text, request.SpeakerId, request.HolderId, roster, own, knownIds, reading) with { ModelMs = modelMs };
         hop?.SetTag("analysis.source", analysis.Source.ToString());
         hop?.SetTag("analysis.confidence", reading?.Confidence);

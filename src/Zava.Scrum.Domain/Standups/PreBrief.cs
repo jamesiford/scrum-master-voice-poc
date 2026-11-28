@@ -1,4 +1,5 @@
 using Zava.Scrum.Domain.Kpis;
+using Zava.Scrum.Domain.Work;
 
 namespace Zava.Scrum.Domain.Standups;
 
@@ -21,4 +22,14 @@ public sealed record PreBrief(
     IReadOnlyList<MemberBrief> Members,
     IReadOnlyList<BriefItem> UnassignedItems,
     IReadOnlyList<string> TeamRisks,
-    string Summary);
+    string Summary)
+{
+    /// <summary>Gets the team's time zone captured at preparation; null for legacy briefs with no calendar context.</summary>
+    public string? TimeZone { get; init; }
+
+    /// <summary>Gets the actual current iteration dates captured before the live voice path.</summary>
+    public IterationInfo? CurrentIteration { get; init; }
+
+    /// <summary>Gets the verified next iteration, when one exists; no sprint length is assumed.</summary>
+    public IterationInfo? NextIteration { get; init; }
+}
