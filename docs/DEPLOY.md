@@ -8,6 +8,11 @@ API/prompt files; additive prebrief calendar fields need no data rewrite.
 Added fixed hourly cost is USD0; model/Voice Live/Cosmos usage is variable.
 No new human gate belongs to this correction. Existing real meeting/user/
 source/consent fixtures elsewhere remain separate acceptance prerequisites.
+Actual API-only e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89,
+HTTP200, with identical configuration/environment/identity and actual
+registry UAMI AcrPull verified. The bridge/native images were not changed.
+Read-only full-template validation5/5 does not authorise its unrelated
+11creates/157modifies/68deletes. Only the validated API image was updated.
 
 Import only zavaw3 into the current process; do not change azd's selected
 environment, which may belong to another step:

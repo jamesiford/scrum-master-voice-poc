@@ -35,6 +35,12 @@ gateway overlap fixture now forwards quieter member500 and zero guest PCM,
 where the old fixture forwarded neither overlapping stream. The existing
 guest-only, cross-talk and cancel/truncate tests remain passing.
 
+Baseline actual Direct3418/4559ms p50/p95,n10; questions3469/4559ms,
+n8, model8/10 and zero talkovers. API-only digest rollout is ready on
+zavaw3 revision89 with unchanged settings/identity/defaults. After latency
+remains unrun until the30-run retrospective cohort completes, so concurrent
+test load cannot be mistaken for a paired comparison.
+
 These are synthetic routing/state tests, not new real Teams acoustic,
 speaker-recognition, guest-screen-share or audible interruption acceptance.
 Native acceptance remains n=0. No SDK/media protocol, permissions, recording

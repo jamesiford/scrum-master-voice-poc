@@ -35,7 +35,17 @@
     "modelSamples": 8, "talkovers": 0, "transcriptPieces": 18
   },
   "after": { "status": "not_run" },
-  "deployment": { "status": "not_run" },
+  "deployment": {
+    "status": "pass",
+    "source": "e7c31fa",
+    "acrRun": "ds16",
+    "digest": "sha256:9c1e41678e9a66df2480b7e5f730414676872b5cbf8b73dc4e72a634084d4652",
+    "revision": "ca-api-3fsyvjqqjw5go--0000089",
+    "httpStatus": 200,
+    "configurationPreserved": true,
+    "environmentPreserved": true,
+    "identityPreserved": true
+  },
   "boundaries": [
     "Historical and first extended failures retained; final synthetic pass is not live employee or model CI acceptance.",
     "No date resolution is a write or approval bypass.",

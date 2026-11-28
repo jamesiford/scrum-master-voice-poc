@@ -17,7 +17,9 @@ targeted Domain44/44 and Api10/10 proof. The old louderguest1000/member500
 fixture suppressed member audio; now it forwards member500 and zero guest
 PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
 required circle-back survives style overrides; its30real runs and runtime
-after measurement remain explicitly unrun until final evidence.
+after measurement remain explicitly unrun until final evidence. API-only
+e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89, HTTP200;
+identity/configuration/environment parity pass and defaults are unchanged.
 
 Before zavaw3 mandatory8/8/native readiness5/5 pass; Direct3418/4559ms,
 n10, questions3469/4559ms,n8, model8/10, zero talkovers,18transcriptpieces,
