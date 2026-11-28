@@ -9,6 +9,10 @@ param namePrefix string
 @description('Unique suffix for this environment.')
 param token string
 
+@allowed([ 'false', 'true' ])
+@description('Select authoritative-comment reconciliation and concurrent independent context reads (ADR 0044).')
+param optimiseTurnPreparation string = 'false'
+
 @description('Resource tags.')
 param tags object
 
@@ -179,6 +183,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Bridge__GraphMediaBaseUrl', value: graphMediaBaseUrl }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
             { name: 'Telemetry__CaptureContent', value: 'false' }
+            { name: 'Voice__OptimiseTurnPreparation', value: optimiseTurnPreparation }
           ], voiceRelayEndpoint == '' ? [] : [ { name: 'VoiceLive__RelayEndpoint', value: voiceRelayEndpoint } ],
           demoResetTeamEnvironment)
         }

@@ -31,4 +31,8 @@ public sealed class VoiceGatewayOptions
     /// <summary>Gets or sets seconds to wait for a member to start before moving on.</summary>
     [Range(5, 300)]
     public int NoResponseSeconds { get; set; } = 25;
+
+    /// <summary>Gets or sets whether voice preparation reuses authoritative comments and overlaps independent prompt/team reads (ADR 0044).</summary>
+    /// <remarks>Corrections, rules and model-failure paths retain the reconciliation model. Disabled until controlled latency evidence accepts the candidate.</remarks>
+    public bool OptimiseTurnPreparation { get; set; }
 }

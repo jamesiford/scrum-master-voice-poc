@@ -685,7 +685,10 @@ public sealed class VoiceGateway(
             return;
         }
 
-        var ms = (int)(clock.UtcNow - t).TotalMilliseconds;
+        var ended = clock.UtcNow;
+        var ms = (int)(ended - t).TotalMilliseconds;
+        var toCreateMs = (int)(_createSentAt - t).TotalMilliseconds;
+        var voiceMs = (int)(ended - _createSentAt).TotalMilliseconds;
         _latencyBaseline = null;
         _latencies.Add(ms);
         await sender.Send(new RecordAgentLatencyCommand(_sessionId, ms), _run);
@@ -695,17 +698,16 @@ public sealed class VoiceGateway(
             _floor.CurrentMemberId,
             _floor.State,
             ms,
-            (int)(_createSentAt - t).TotalMilliseconds,
-            (int)(clock.UtcNow - _createSentAt).TotalMilliseconds);
-        await RecordTimingAsync(ms, (int)(_createSentAt - t).TotalMilliseconds, (int)(clock.UtcNow - _createSentAt).TotalMilliseconds);
+            toCreateMs,
+            voiceMs);
+        await RecordTimingAsync(ms, toCreateMs, voiceMs, ended);
     }
 
     // One diagnostic event per reactive turn so the gate runner can split the delay by hop. The orchestration hop is what is left of the time to
     // CreateResponse after the transcript and the analysis: floor control, the wait for silence, and the reconcile.
-    private async Task RecordTimingAsync(int totalMs, int toCreateMs, int voiceMs)
+    private async Task RecordTimingAsync(int totalMs, int toCreateMs, int voiceMs, DateTimeOffset ended)
     {
         var orchestrationMs = Math.Max(0, toCreateMs - _turnTranscriptMs - _turnAnalysisMs);
-        var ended = clock.UtcNow;
         using var turnHop = ScrumTelemetry.StartHop("voice.turn", _session.TeamId, _sessionId, _session.CorrelationId, ended.AddMilliseconds(-totalMs));
         turnHop?.SetEndTime(ended.UtcDateTime);
         ScrumTelemetry.Count("turn", _session.TeamId, "first_audio");
@@ -1109,7 +1111,10 @@ public sealed class VoiceGateway(
         }
 
         var notes = WithInterruption(NotesFor(speak));
-        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, reason, speak.MemberId, question, notes), _run);
+        var instruction = await sender.Send(new GetTurnInstructionQuery(_sessionId, reason, speak.MemberId, question, notes)
+        {
+            ParallelContextReads = options.Value.OptimiseTurnPreparation,
+        }, _run);
         if (!instruction.IsSuccess)
         {
             await _bridge.SendAsync(new { type = "error", code = "TURN_INSTRUCTION", message = instruction.Error!.Message }, _run);
@@ -1170,7 +1175,10 @@ public sealed class VoiceGateway(
                 return sender.Send(new ReconcileRetroUpdateQuery(_sessionId, memberId, text, _asked.ContainsKey(memberId), _correcting.Contains(memberId)), _run);
             }
 
-            return sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId), analysed.Items, analysed.Comments), _run);
+            return sender.Send(new ReconcileUpdateQuery(_sessionId, memberId, text, _asked.GetValueOrDefault(memberId), [.. _covered], _focus.TryGetValue(memberId, out var f) ? f : null, _correcting.Contains(memberId), analysed.Items, analysed.Comments)
+            {
+                IncludeModelAssessment = !options.Value.OptimiseTurnPreparation,
+            }, _run);
         }
     }
 

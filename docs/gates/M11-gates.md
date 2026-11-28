@@ -1,5 +1,88 @@
 # M11 gates
 
+## Round 2 Direct latency (ADR 0044)
+
+**G1 failed; candidate not promoted.** Each phase completed twelve sessions:
+three interleaved windows, two serial same-cast sessions per mode/window,
+alternating order, no overlapping evaluation, resets or failed-cell retries.
+Before is unchanged `3ddd40b`, after is `abdd4ff` with
+`Voice:OptimiseTurnPreparation=true`. Final deployed selection is false.
+Talk-overs remain **0** in each configuration, both phases.
+
+All-turn hops, **p50/p95 ms** (the column denominator applies to every hop):
+
+| Hop | Model before, n70 | Model after, n71 | Rules before, n71 | Rules after, n71 |
+|---|---|---|---|---|
+| Total | 3595/5176 | 2959/4458 | 3316/4161 | 3211/4357 |
+| Speech end to transcript | 0/200 | 0/193 | 0/193 | 0/201 |
+| Analyser | 50/60 | 49/57 | 50/57 | 50/56 |
+| Decision model | 260/353 | 263/403 | 0/0 | 0/0 |
+| Orchestration | 1900/2496 | 860/2374 | 1899/2361 | 1837/2303 |
+| Voice Live first audio | 1473/2509 | 1424/2291 | 1469/2430 | 1334/2162 |
+
+Question-only hops, **p50/p95 ms**, Clarify/Unblocker:
+
+| Hop | Model before, n53 | Model after, n54 | Rules before, n53 | Rules after, n53 |
+|---|---|---|---|---|
+| Total | 3742/5176 | 2973/4609 | 3462/4161 | 3347/4537 |
+| Speech end to transcript | 0/204 | 0/198 | 0/205 | 0/201 |
+| Analyser | 51/60 | 49/57 | 50/57 | 50/59 |
+| Decision model | 262/353 | 263/445 | 0/0 | 0/0 |
+| Orchestration | 1960/2626 | 895/2434 | 1938/2391 | 1897/2479 |
+| Voice Live first audio | 1473/2388 | 1397/2291 | 1483/2430 | 1290/2162 |
+
+After versus unchanged westus3 M10 guides, **5% p50 / 10% p95**:
+
+| Subset | M10 p50/p95 ms, n | After delta p50/p95 | Verdict |
+|---|---|---|---|
+| Model, all turns | 2994/4081, 36 | -1.17%/+9.24% | Guides met |
+| Model, questions | 3050/4081, 27 | -2.52%/+12.94% | Tail failed |
+| Rules, all turns | 2828/3876, 36 | +13.54%/+12.41% | Both failed |
+| Rules, questions | 2944/3876, 27 | +13.69%/+17.05% | Both failed |
+
+Model before exceeded M10 all-turn guides by 20.07%/26.83%; Rules
+17.26%/7.35%. The after improvement is not full experience acceptance:
+Model questions improve 20.55%/10.95% relative to the immediate before,
+but still fail the M10 tail guide. Rules question tail worsens 9.04%
+relative to before. Absolute p50 <=1000 ms remains unmet in both modes.
+
+Every window's all-turn **p50/p95 ms, n**:
+
+| Window | Model before | Model after | Rules before | Rules after |
+|---|---|---|---|---|
+| 1 | 3680/5328, 24 | 3024/4126, 24 | 3319/4657, 23 | 3337/4096, 23 |
+| 2 | 3481/4082, 22 | 2714/4401, 24 | 3381/3927, 24 | 3120/3814, 24 |
+| 3 | 3558/4598, 24 | 2885/4785, 23 | 3264/3871, 24 | 3482/4555, 24 |
+
+P50 spread before 5.72%/3.58%, after 11.42%/11.60%. All raw cells were
+retained. Chronological cohorts cannot exclude ambient drift or isolate
+the two optimisations. Complete nearest-rank evidence, including each
+window's questions, is in `r2-latency-before-M11.json` and
+`r2-latency-after-M11.json`. Zero simulated transcription is not acoustic
+speech-to-text or native Teams acceptance.
+
+True avoids an unused assessment only with authoritative comments and no
+correction, and overlaps independent prompt/team reads. False retains the
+original preparation. Floor timers, item grounding and approvals stay.
+The measured immutable image remains ready on zavaw3 revision 102 with
+false/HTTP 200, exact cohort restoration and verified flag-only update.
+The first-audio timestamp repair remains enabled: it removes subsequent
+persistence from that diagnostic hop, not from perceived total latency.
+Per-turn accounting excess 111 ms p50 before becomes -1/0 ms p50/p95
+after, n71 each; do not sum hop percentiles or claim causal storage savings.
+No full suites, threshold/golden changes, new resource/cost/human gate,
+native acceptance or other environment lifecycle. G2-G11 retain their
+earlier verdicts below.
+Mandatory final verification is **7/8**, not a full pass: API/bridge
+health, authentication, bot 401, scripted standup, approver-authored write
+and audit pass; write n1, revision 80, correlation `zsa-ac533acd5046`.
+Optional Windows hosting fails `The Windows media VM is not running.`;
+actual zavaw3 VM instance view is `PowerState/deallocated`, with no native
+lifecycle change in this step. Native calls/roster/acoustic acceptance
+remain n0/not_run. This separate verification is not pooled into either
+latency cohort. Final three builds pass, .NET zero warnings/errors;
+119 focused checks, format and TypeScript lints pass, no full suites.
+
 ## Round 2 correctness (ADRs0041-0043)
 
 Frozen112synthetic goldens preserve all original72 and add40date cases,

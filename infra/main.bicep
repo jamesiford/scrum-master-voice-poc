@@ -41,6 +41,10 @@ param adminObjectId string = ''
 @description('How the voice gateway reaches Voice Live: directly, or through the Foundry hosted agent relay (ADR 0021). Both are real adapters of the same protocol.')
 param voiceRoute string = 'Direct'
 
+@allowed([ 'false', 'true' ])
+@description('Reuse authoritative voice comments and overlap independent prompt/team reads. Corrections and rules retain the model; candidate opt-in until measured acceptance (ADR 0044).')
+param optimiseTurnPreparation string = 'false'
+
 @description('The hosted agent that relays voice. Created by infra/hooks/agent-host.ps1 after deploy.')
 param agentHostName string = 'zava-voice-relay'
 
@@ -180,6 +184,7 @@ module compute 'modules/compute.bicep' = {
     foundryEndpoint: foundry.outputs.endpoint
     foundryProjectName: foundry.outputs.projectName
     voiceRelayEndpoint: voiceRoute == 'Hosted' ? 'wss://${foundry.outputs.accountName}.services.ai.azure.com/api/projects/${foundry.outputs.projectName}/agents/${agentHostName}/endpoint/protocols/invocations_ws' : ''
+    optimiseTurnPreparation: optimiseTurnPreparation
     bridgeMode: bridgeMode
     boardMode: boardMode
     graphMediaBaseUrl: mediaHostEnabled == 'true' ? 'https://${mediaHost!.outputs.fqdn}' : ''
