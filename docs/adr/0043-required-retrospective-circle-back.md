@@ -48,10 +48,10 @@ Real-mediator tests prove the required clause survives the older optional
 style template. `eng/test-retro-fidelity.ps1` drives30 complete existing
 Simulated Room retrospectives against zavaw3, using the real model and
 refreshing API credentials between runs. Each result is saved independently;
-no failed session is silently retried. The pre-guard prefix passes23/24
-complete real-model retrospectives: spoken returns23/24, answers24/24.
-Run15 remains failed, not retried or removed. Remaining6 and the separate
-30-run guarded cohort are explicitly unrun until the final counts appear in
+no failed session is silently retried. The complete pre-guard cohort passes
+29/30 real-model retrospectives: spoken returns29/30, answers30/30.
+Run15 remains failed, not retried or removed. The separate30-run guarded
+cohort is explicitly unrun until its final counts appear in
 `gates/r2-quality-M11.json`.
 
 The original cohort stays on deployed source e7c31fa/revision89; its old

@@ -1,7 +1,7 @@
 {
   "step": "r2-quality",
   "status": "partial",
-  "runtimeSource": "9ea293b",
+  "runtimeSource": "3ddd40b",
   "environment": "zavaw3",
   "region": "westus3",
   "defaultAdaptersChanged": false,
@@ -32,17 +32,17 @@
   },
   "floor": { "domainPassed": 49, "apiPassed": 10, "realNativeAcceptanceSamples": 0 },
   "retro": {
-    "status": "running",
+    "status": "pre_guard_complete",
     "required": 30,
     "runtimeSource": "e7c31fa",
-    "samples": 24,
-    "passed": 23,
-    "spokenReturns": 23,
-    "answeredReturns": 24,
-    "remaining": 6,
+    "samples": 30,
+    "passed": 29,
+    "spokenReturns": 29,
+    "answeredReturns": 30,
+    "remaining": 0,
     "failedRuns": [15],
     "retryCount": 0,
-    "guardedCohort": { "status": "not_run", "required": 30, "samples": 0, "passed": 0 }
+    "guardedCohort": { "status": "running", "runtimeSource": "3ddd40b", "required": 30, "samples": 0, "passed": 0 }
   },
   "before": {
     "mandatoryPassed": 8, "mandatoryTotal": 8, "nativeReadinessPassed": 5, "nativeReadinessTotal": 5,
@@ -53,14 +53,15 @@
   "after": { "status": "not_run" },
   "deployment": {
     "status": "pass",
-    "source": "e7c31fa",
-    "acrRun": "ds16",
-    "digest": "sha256:9c1e41678e9a66df2480b7e5f730414676872b5cbf8b73dc4e72a634084d4652",
-    "revision": "ca-api-3fsyvjqqjw5go--0000089",
+    "source": "3ddd40b",
+    "acrRun": "ds18",
+    "digest": "sha256:b6a0871d5dae0b27cc05f7f15b973d93045a974cb150028978d125cc474072a4",
+    "revision": "ca-api-3fsyvjqqjw5go--0000090",
     "httpStatus": 200,
     "configurationPreserved": true,
     "environmentPreserved": true,
-    "identityPreserved": true
+    "identityPreserved": true,
+    "bridgeImagePreserved": true
   },
   "boundaries": [
     "Historical and first extended failures retained; final synthetic pass is not live employee or model CI acceptance.",

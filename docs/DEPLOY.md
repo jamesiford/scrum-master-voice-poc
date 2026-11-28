@@ -8,7 +8,7 @@ API/prompt files; additive prebrief calendar fields need no data rewrite.
 Added fixed hourly cost is USD0; model/Voice Live/Cosmos usage is variable.
 No new human gate belongs to this correction. Existing real meeting/user/
 source/consent fixtures elsewhere remain separate acceptance prerequisites.
-Actual API-only e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89,
+Initial API-only e7c31fa/ACRds16 was digest-pinned on zavaw3 revision89,
 HTTP200, with identical configuration/environment/identity and actual
 registry UAMI AcrPull verified. The bridge/native images were not changed.
 Read-only full-template validation5/5 does not authorise its unrelated
@@ -35,9 +35,12 @@ Leave zavaw3 running. Re-prepare legacy sessions to obtain calendar context;
 missing context abstains explicitly rather than inventing sprint dates.
 
 The first real retrospective cohort exposed an empty circle-back response
-being treated as completed speech. The delivery guard is built/tested
-(floor49/49, native gateway10/10) but its rollout and separate30-run cohort
-are pending. It uses at most two real-response retries, retaining original
+being treated as completed speech. The delivery guard is deployed as
+API-only3ddd40b/ACRds18/revision90,
+ready/healthz200 with exact identity/configuration/environment/bridge-image
+parity. The first cohort passed29/30, retaining run15; the separate
+30-run guarded cohort is running. It uses at most two real-response retries,
+retaining original
 latency. If all fail, the Simulated Room pauses with `VOICE_NO_AUDIO`:
 the presenter can unmute to retry or take over. Native follows its existing
 explicit voice-transport failure handling, without persisting transcripts.
