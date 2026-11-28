@@ -1,0 +1,83 @@
+{
+  "step": "r2-8a",
+  "recordedAtUtc": "2026-11-28T13:25:58Z",
+  "status": "blocked",
+  "fixture": {
+    "path": "C:\\Projects\\m11-conductor\\fixtures\\8a-fixtures.md",
+    "exists": false,
+    "approvedSources": 0,
+    "realPersonaQueries": 0,
+    "realGoldenQuestions": 0,
+    "generatedCustomerQuestions": 0
+  },
+  "implementation": {
+    "independentPersonaTool": true,
+    "fixturePinnedEvaluator": true,
+    "realApplicationKnowledgeRoute": false,
+    "knowledgePortAndConsumers": false,
+    "probePerformsObo": false,
+    "surrogateGraphRetrieval": false,
+    "runtimeDeployment": false,
+    "liveGrantOrPublicClientChange": false,
+    "addedFixedHourlyCostUsd": 0,
+    "knowledgeContentRequests": 0
+  },
+  "consent": {
+    "status": "measured",
+    "grantReadbackN": 1,
+    "declarationReadbackN": 1,
+    "graphDelegatedScopes": [
+      "Files.Read.All",
+      "Sites.Read.All"
+    ],
+    "organisationWideGrantConfirmed": true,
+    "currentGraphScopeMetadataConfirmed": true,
+    "greenfieldDeclarationsOnEmptyApp": true,
+    "newGrantRequiresExplicitApprovedEnvironmentOption": true,
+    "existingApprovedScopesPreserved": true
+  },
+  "validation": {
+    "dotnetBuild": "pass",
+    "dotnetWarnings": 0,
+    "dotnetErrors": 0,
+    "portalBuild": "pass",
+    "bridgeBuild": "pass",
+    "toolCasesPassed": 16,
+    "pureConsentCasesPassed": 7,
+    "hookParsersPassed": 2,
+    "syntheticToolRecordsAreLiveEvidence": false,
+    "fullSuitesRun": false
+  },
+  "G10": {
+    "status": "not_run",
+    "retrievalN": 0,
+    "correctCitationRate": null,
+    "uncitedAnswerRate": null,
+    "permissionNegativeN": 0,
+    "leakageRate": null,
+    "goldenEvaluationN": 0,
+    "addedPreBriefTime": { "status": "not_run", "n": 0, "p50Ms": null },
+    "runtimeFlagOffCallsTest": { "status": "not_run", "n": 0 },
+    "reason": "Required operator fixture is absent; the mandatory real caller-OBO remote SharePoint/Blob/MCP spike and application boundary remain unimplemented. Missing calls are not measured flag-off or permission-trimming proof."
+  },
+  "gates": {
+    "G1": "failed",
+    "G2": "not_run",
+    "G3": "measured",
+    "G4": "failed",
+    "G5": "not_run",
+    "G6": "not_run",
+    "G7": "measured",
+    "G8": "failed",
+    "G9": "measured",
+    "G10": "not_run",
+    "G11": "not_run"
+  },
+  "handoff": {
+    "sourceApproval": "Scout, standards/team lead and SharePoint owner supply the exact missing Markdown file and private forty-question-per-base goldens with real source ids, distinct actual users, restricted source and readable negative control.",
+    "personaSignIn": "Only after the supported real application OBO retrieval boundary exists, each actual member runs their own device-code probe and returns the private report to Scout.",
+    "permissionReview": "The source owner reviews all negative answers/snippets for paraphrased leakage in addition to exact marker checks.",
+    "commands": "docs/DEPLOY.md#knowledge-persona-probe-round-2-adr0046",
+    "doNotReopen": "Completed Graph consent, administrator sign-in and zavaw3 catalogue prerequisites."
+  }
+}

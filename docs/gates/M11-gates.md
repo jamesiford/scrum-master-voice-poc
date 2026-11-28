@@ -1,5 +1,30 @@
 # M11 gates
 
+## Round 2 knowledge (ADR0046)
+
+G10 remains **not_run,n0** for real retrieval, correct citations, uncited
+answers, permission-negative queries, golden evaluation and added pre-brief
+time. Required operator `8a-fixtures.md` is absent. No `IKnowledge`, live
+OBO retrieval route, source-management page or four knowledge integrations
+is implemented. Do not label absent calls as a measured flag-off pass.
+The independent Node persona/evaluator tooling has16focused passing cases;
+seven pure consent cases/two real hook parsers pass. Those synthetic
+tool-only inputs are not live goldens. All three builds pass, .NET0warnings/
+errors, no full suites. Graph consent/declarations are read back as complete;
+no grants, new resources or public-client settings were changed.
+
+The probe authenticates actual users for the portal scope and checks
+application team access. It cannot yet exercise the missing knowledge
+boundary. A reserved route/404 or an admin OBO metadata result is not
+permission trimming. DEPLOY.md names the exact fixture/persona handoff
+and conditional executable commands. Marker checks need source-owner
+negative-output review; no guessed sources/questions or stand-in adapter.
+Added fixed costUSD0/hour, knowledge usage n0, no runtime deployment.
+Keep Acs/Share/Direct/Simulated Room, native non-recording, false
+optimisation and historical G1/G4/G8 failures.
+The [machine-readable result](r2-8a-M11.json) keeps null rates and explicit
+n0 denominators, not success-shaped zeros.
+
 ## Round 2 native board (ADR0045)
 
 **G4 failed; native not promoted.** The operator's current board gate is

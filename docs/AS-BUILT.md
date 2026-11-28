@@ -1,5 +1,23 @@
 # Zava Scrum Master voice PoC: as built
 
+## Round 2 knowledge (ADR0046)
+
+`tools/KnowledgeProbe` supplies device-code persona sign-in for the portal
+scope, real API team-authorisation checks and fail-closed cited-response
+evaluation with forty owner-supplied questions per base. It never performs
+OBO or direct Graph retrieval itself. The reserved knowledge API path is
+unimplemented, not a shipped stub: the probe cannot yet exercise the real
+OBO retrieval boundary. Required operator `8a-fixtures.md` is absent, so
+G10 retrieval/permission/pre-brief/evaluation remain not_run,n0.
+
+Graph consent is read back as complete. Greenfield hooks now declare both
+delegated retrieval scopes on an empty app and optionally reconcile their
+already-approved consent without revocation; no live grant was changed.
+No knowledge adapter, `IKnowledge`, source-management page, four consumers
+or per-team runtime switch is registered. No content calls, new resources
+or runtime deployment; added fixed cost USD0/hour. Keep Acs/Share/Direct
+and Simulated Room. DEPLOY.md names the exact fixture/persona handoff.
+
 ## Round 2 native board (ADR0045)
 
 The optional native standup board separates the sprint goal, enlarges item
