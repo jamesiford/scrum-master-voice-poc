@@ -30,11 +30,28 @@ No Application dependency, meeting data repository or personal tab is added.
 and `boardHeight`; this proves the installed native Skia payload runs, not that
 a Teams participant saw the share or that the encoder meets the cap. Genuine
 Chromium/native goldens and their measured pixel differences are retained in
-the tests; exact pixel identity fails (ADR 0024), so keep ACS.
+the tests. ADR0045 supersedes pixel identity with content, legibility and
+delivery requirements. Larger standup text and coverage retain the same
+facts; received recap submission precedes call deletion. Actual Teams
+reception/encoder evidence remains unrun, so keep ACS.
+Native13a842d exact DLL/version/font and hosting were verified12:49:15UTC
+on28November2026; intentional Deallocated confirmed12:58:26UTC.
+API/ACS stay running. Follow DEPLOY.md's new scoped allocation/readiness
+prerequisite before a real rehearsal; historical readiness is not uptime.
 
-Targeted board checks for conductor 7:
+Four-state OCR/contact sheets use the commands below after the focused tests.
+Final strict OCR52/53 at1080p/480p fails zero-days recognition; glyph12/18/8px
+passes. Preserve that failure, not an earlier better OCR cohort. `BoardReceiverTests`
+uses real loopback TCP/RGB24 and independently hashes received frames;
+it is not Graph encoding or Teams visibility proof.
+
+Targeted board checks:
 
 ```pwsh
-dotnet test src\tests\Zava.Scrum.MediaBot.Tests --filter "FullyQualifiedName~BoardRendererTests|FullyQualifiedName~BoardShareSessionTests"
+dotnet test src\tests\Zava.Scrum.MediaBot.Tests --filter "FullyQualifiedName~BoardRendererTests|FullyQualifiedName~BoardShareSessionTests|FullyQualifiedName~BoardReceiverTests"
 dotnet test src\tests\Zava.Scrum.Api.Tests --filter "FullyQualifiedName~GraphMediaVoiceGatewayTests|FullyQualifiedName~EphemeralMediaBoardTests"
+powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File eng\measure-board-ocr.ps1
 ```
+
+The OCR command explicitly exits1 when the frozen acceptance threshold fails;
+passing renderer/unit tests are not a substitute for that result.

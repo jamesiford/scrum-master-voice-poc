@@ -19,6 +19,7 @@ public sealed class BoardShareSession(
     private readonly object _gate = new();
     private readonly CancellationTokenSource _stop = new();
     private readonly BoardRenderer _renderer = new();
+    private readonly TaskCompletionSource _completionFrame = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private Task? _run;
     private JsonElement _pending;
     private bool _established;
@@ -40,7 +41,7 @@ public sealed class BoardShareSession(
         }
     }
 
-    /// <summary>Replaces the bounded latest snapshot and requests sharing only while the ceremony is open.</summary>
+    /// <summary>Replaces the bounded latest snapshot and retains an opened board until the call owner closes it.</summary>
     /// <param name="board">Authenticated team/session board, never persisted.</param>
     public void Update(JsonElement board)
     {
@@ -48,7 +49,8 @@ public sealed class BoardShareSession(
         {
             _pending = board.Clone();
             _dirty = true;
-            var wanted = board.GetProperty("opened").GetBoolean() && !board.GetProperty("ended").GetBoolean();
+            // The call owner closes sharing after the recap has actually been submitted, not before it renders.
+            var wanted = board.GetProperty("opened").GetBoolean();
             if (_wanted != wanted) { _reshare = true; }
             _wanted = wanted;
         }
@@ -58,6 +60,28 @@ public sealed class BoardShareSession(
     public void Reconnect()
     {
         lock (_gate) { _reshare = true; _dirty = true; }
+    }
+
+    /// <summary>Submits the received completion board before Graph deletes the call, then leaves it visible briefly.</summary>
+    /// <param name="ct">The call owner's cancellation token.</param>
+    /// <returns>A task; submission timeout is reported explicitly without preventing call cleanup.</returns>
+    public async Task PresentCompletionAsync(CancellationToken ct)
+    {
+        lock (_gate)
+        {
+            if (_pending.ValueKind != JsonValueKind.Object || !_pending.GetProperty("ended").GetBoolean()) { return; }
+        }
+
+        try
+        {
+            await _completionFrame.Task.WaitAsync(TimeSpan.FromSeconds(2), ct);
+            await Task.Delay(TimeSpan.FromSeconds(2), time, ct);
+        }
+        catch (TimeoutException ex)
+        {
+            logger.LogError(ex, "Native recap frame was not submitted for {TeamId}/{SessionId}", teamId, sessionId);
+            status("Failed", "Native recap sharing timed out. The call will still close.");
+        }
     }
 
     /// <inheritdoc />
@@ -76,6 +100,7 @@ public sealed class BoardShareSession(
         var blocked = false;
         string? lastStatus = null;
         byte[]? frame = null;
+        var completion = false;
         var nextFrame = DateTimeOffset.MinValue;
         void Report(string state, string? message = null)
         {
@@ -124,6 +149,7 @@ public sealed class BoardShareSession(
                     {
                         var began = Stopwatch.GetTimestamp();
                         frame = _renderer.RenderRgb24(board, time.GetUtcNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture));
+                        completion = board.GetProperty("ended").GetBoolean();
                         nextFrame = DateTimeOffset.MinValue;
                         logger.LogInformation("Board rendered for {TeamId}/{SessionId} in {LatencyMs} ms",
                             teamId, sessionId, Stopwatch.GetElapsedTime(began).TotalMilliseconds);
@@ -133,6 +159,7 @@ public sealed class BoardShareSession(
                     {
                         if (transport.TrySend(frame))
                         {
+                            if (completion) { _completionFrame.TrySetResult(); }
                             Report("Sharing");
                             nextFrame = time.GetUtcNow().AddSeconds(1);
                         }

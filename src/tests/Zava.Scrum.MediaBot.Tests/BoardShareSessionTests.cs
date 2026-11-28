@@ -1,11 +1,28 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Skype.Bots.Media;
 
 namespace Zava.Scrum.MediaBot.Tests;
 
 public sealed class BoardShareSessionTests
 {
+    [Fact]
+    public void SocketSettings_SharedBoard_UsesVbssRatherThanCameraVideo()
+    {
+        var settings = MediaBoardTransport.SocketSettings();
+
+        Assert.Equal(MediaType.Vbss, settings.MediaType);
+        Assert.Equal(StreamDirection.Sendonly, settings.StreamDirections);
+        Assert.Contains(VideoFormat.Rgb24_1280x720_1_875Fps, settings.SupportedSendVideoFormats);
+        Assert.All(settings.SupportedSendVideoFormats, format =>
+        {
+            Assert.Equal(1280, format.Width);
+            Assert.Equal(720, format.Height);
+            Assert.Equal(VideoColorFormat.Rgb24, format.VideoColorFormat);
+        });
+    }
+
     [Fact]
     public async Task Update_OpeningChangeReconnectAndEnd_NegotiatesIndependentShare()
     {
@@ -27,11 +44,12 @@ public sealed class BoardShareSessionTests
         await WaitAsync(() => transport.Frames.Any(frame => !frame.SequenceEqual(first)));
         share.Reconnect();
         await WaitAsync(() => transport.Starts == 2);
+        var beforeRecap = transport.Frames.Count;
         share.Update(Board(opened: true, ended: true));
-        await WaitAsync(() => transport.Stops == 2);
-        var frames = transport.Frames.Count;
-        await Task.Delay(200);
-        Assert.Equal(frames, transport.Frames.Count);
+        await WaitAsync(() => transport.Frames.Count > beforeRecap);
+        await share.PresentCompletionAsync(CancellationToken.None);
+        Assert.Equal(1, transport.Stops);
+        Assert.True(transport.Active);
         Assert.Contains("Stopped", status);
     }
 
@@ -75,7 +93,8 @@ public sealed class BoardShareSessionTests
         await WaitAsync(() => !transport.Frames.IsEmpty && status.Contains("Sharing"));
         Assert.Equal(failWhileSending ? 2 : 1, transport.Starts);
         share.Update(Board(opened: true, ended: true));
-        await WaitAsync(() => transport.Stops == 2);
+        await share.PresentCompletionAsync(CancellationToken.None);
+        Assert.Equal(1, transport.Stops);
     }
 
     [Fact]
@@ -108,6 +127,27 @@ public sealed class BoardShareSessionTests
 
         transport.AcceptFrames = true;
         await WaitAsync(() => !transport.Frames.IsEmpty && status.Contains("Sharing"));
+    }
+
+    [Fact]
+    public async Task PresentCompletion_InactiveSocket_ReportsTimeoutAndStillDisposes()
+    {
+        var transport = new FakeTransport { AcceptFrames = false };
+        var status = new ConcurrentQueue<string>();
+        await using (var share = new BoardShareSession(transport, TimeProvider.System, NullLogger.Instance,
+            "team-one", Guid.NewGuid(), (state, _) => status.Enqueue(state)))
+        {
+            share.Start();
+            share.SetEstablished(true);
+            share.Update(Board(opened: true, ended: true));
+
+            await share.PresentCompletionAsync(CancellationToken.None);
+
+            Assert.Contains("Failed", status);
+            Assert.Empty(transport.Frames);
+        }
+
+        Assert.Equal(1, transport.Stops);
     }
 
     private static JsonElement Board(bool opened, bool ended = false, string goal = "Ship") =>

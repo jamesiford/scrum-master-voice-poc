@@ -4,16 +4,19 @@ using SkiaSharp;
 
 namespace Zava.Scrum.MediaBot.Board;
 
-/// <summary>Browser-free port of meeting-bridge board.ts: pure presentation, with an explicit clock label.</summary>
+/// <summary>Browser-free shared board with larger standup text and the same product facts as board.ts.</summary>
 public sealed class BoardRenderer : IDisposable
 {
     /// <summary>The existing browser canvas width.</summary>
     public const int Width = 1280;
     /// <summary>The existing browser canvas height.</summary>
     public const int Height = 720;
+    /// <summary>The standup's minimum font size before receiver downscaling.</summary>
+    public const int BodyTextSize = 24;
 
     private readonly SKTypeface _regular = FindFont(SKFontStyle.Normal);
     private readonly SKTypeface _semibold = FindFont(new SKFontStyle(600, 5, SKFontStyleSlant.Upright));
+    private readonly SKTypeface _numbers = FindFont(SKFontStyle.Normal, "Consolas");
     private bool _disposed;
 
     /// <summary>Renders a gateway board message directly to packed, top-down RGB24.</summary>
@@ -32,7 +35,7 @@ public sealed class BoardRenderer : IDisposable
         using var bitmap = new SKBitmap(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque));
         using var canvas = new SKCanvas(bitmap);
         canvas.Clear(SKColor.Parse("#0f172a"));
-        Text(canvas, clockText, 1140, 36, 16, "#64748b");
+        Text(canvas, clockText, 1080, 36, BodyTextSize, "#94a3b8");
         if (state is RetroBoardState retro)
         {
             PaintRetro(canvas, retro);
@@ -47,7 +50,7 @@ public sealed class BoardRenderer : IDisposable
         return new BoardFrame(BoardPixels.ToRgb24(rgba, Width, Height, bitmap.RowBytes));
     }
 
-    /// <summary>Releases the two font handles; frames already returned remain valid.</summary>
+    /// <summary>Releases the font handles; frames already returned remain valid.</summary>
     public void Dispose()
     {
         if (_disposed)
@@ -58,31 +61,36 @@ public sealed class BoardRenderer : IDisposable
         _disposed = true;
         _regular.Dispose();
         _semibold.Dispose();
+        _numbers.Dispose();
     }
 
-    private static SKTypeface FindFont(SKFontStyle style)
+    private static SKTypeface FindFont(SKFontStyle style, string family = "Segoe UI")
     {
         // The native media host is Windows. Fail visibly rather than silently changing the board's typography.
-        return SKFontManager.Default.MatchFamily("Segoe UI", style)
-            ?? throw new InvalidOperationException("The shared board requires the Windows Segoe UI font.");
+        return SKFontManager.Default.MatchFamily(family, style)
+            ?? throw new InvalidOperationException($"The shared board requires the Windows {family} font.");
     }
 
     private void PaintStandup(SKCanvas canvas, StandupBoardState? state)
     {
-        Text(canvas, !string.IsNullOrEmpty(state?.Speaker) ? $"{state.Speaker}'s items" : "Standup agenda: flagged items", 48, 70, 34, "#e2e8f0", true);
+        Text(canvas, !string.IsNullOrEmpty(state?.Speaker) ? $"{state.Speaker}'s items" : "Standup agenda: flagged items", 48, 64, 34, "#f8fafc", true);
         if (state is null)
         {
-            Text(canvas, "Preparing the sprint board...", 48, 110, 20, "#94a3b8");
+            Text(canvas, "Preparing the sprint board...", 48, 112, BodyTextSize, "#cbd5e1");
             return;
         }
 
-        var goal = string.IsNullOrEmpty(state.Goal) ? string.Empty : $" · Goal: {Clip(state.Goal, 70)}";
-        Text(canvas, $"{state.Sprint} · {state.DaysLeft} days left{goal}", 48, 108, 20, "#94a3b8");
+        Text(canvas, $"{state.Sprint} · {state.DaysLeft} days left", 48, 104, 32, "#e2e8f0", numbers: true);
+        if (!string.IsNullOrEmpty(state.Goal))
+        {
+            Text(canvas, $"Goal: {Clip(state.Goal, 70)}", 48, 140, BodyTextSize, "#e2e8f0");
+        }
         if (state.Ended)
         {
+            Text(canvas, "Standup complete.", 48, 218, 32, "#4ade80", true);
             Text(canvas, state.Recording == false
-                ? "Standup complete. Meeting-derived data is not saved."
-                : "Standup complete. Follow-ups are in Teams for approval.", 48, 190, 28, "#4ade80", true);
+                ? "Meeting-derived data is not saved."
+                : "Follow-ups are in Teams for approval.", 48, 264, BodyTextSize, "#e2e8f0");
         }
         else
         {
@@ -96,37 +104,55 @@ public sealed class BoardRenderer : IDisposable
     {
         if (state.Items.Count == 0)
         {
-            Text(canvas, "No items assigned.", 48, 190, 24, "#94a3b8");
+            Text(canvas, "No items assigned.", 48, 218, BodyTextSize, "#cbd5e1");
             return;
         }
 
         foreach (var (item, i) in state.Items.Take(6).Select((item, index) => (item, index)))
         {
-            var y = 140 + (i * 84);
-            Rect(canvas, 48, y, 860, 72, item.Covered ? "#14532d" : "#1e293b");
+            var y = 164 + (i * 84);
+            Rect(canvas, 48, y, 840, 76, item.Covered ? "#14532d" : "#1e293b");
             if (item.Id == state.Focus)
             {
-                Rect(canvas, 48, y, 860, 72, "#38bdf8", stroke: true);
+                Rect(canvas, 48, y, 840, 76, "#38bdf8", stroke: true);
             }
 
-            Rect(canvas, 48, y, 8, 72, item.Covered ? "#4ade80" : item.Flags.Count > 0 ? "#fbbf24" : "#64748b");
-            Text(canvas, $"{(item.Covered ? "✓ " : string.Empty)}#{item.Id}  {Clip(item.Title, 52)}", 72, y + 30, 22, "#f8fafc", true);
+            Rect(canvas, 48, y, 8, 76, item.Covered ? "#4ade80" : item.Flags.Count > 0 ? "#fbbf24" : "#64748b");
+            Text(canvas, $"{(item.Covered ? "✓ " : string.Empty)}#{item.Id}  {Clip(item.Title, 52)}", 72, y + 30, 26, "#f8fafc", true);
             var flags = item.Flags.Count > 0 ? $" · {string.Join(", ", item.Flags)}" : string.Empty;
             var owner = !string.IsNullOrEmpty(item.Owner) && string.IsNullOrEmpty(state.Speaker) ? $" · {item.Owner}" : string.Empty;
-            Text(canvas, $"{item.Type} · {item.State}{flags}{owner}", 72, y + 56, 18, "#94a3b8");
+            Text(canvas, $"{item.Type} · {item.State}{flags}{owner}", 72, y + 62, BodyTextSize, "#cbd5e1");
         }
     }
 
     private void DrawTeam(SKCanvas canvas, StandupBoardState state)
     {
-        Text(canvas, "Coverage", 948, 160, 22, "#e2e8f0", true);
+        var compact = state.Team.Count > 5;
+        Text(canvas, "Coverage", 920, compact ? 160 : 190, compact ? 22 : 28, "#f8fafc", true);
+        var spacing = compact ? 56 : Math.Min(118, 420f / Math.Max(1, state.Team.Count));
         foreach (var (member, i) in state.Team.Select((member, index) => (member, index)))
         {
-            var y = 200 + (i * 56);
-            var status = string.IsNullOrEmpty(member.Status) ? string.Empty : $"  ({member.Status})";
-            Text(canvas, $"{member.Name}  {member.Covered}/{member.Total}{status}", 948, y, 20, member.Name == state.Speaker ? "#38bdf8" : "#cbd5e1");
-            Rect(canvas, 948, y + 10, 280, 10, "#1e293b");
-            Rect(canvas, 948, y + 10, member.Total != 0 ? 280f * member.Covered / member.Total : 0, 10, "#4ade80");
+            var y = (compact ? 200 : 238) + (i * spacing);
+            var status = string.IsNullOrEmpty(member.Status) ? string.Empty : $" · {member.Status}";
+            if (compact)
+            {
+                Text(canvas, $"{member.Name} {member.Covered}/{member.Total}{status}", 920, y, 20,
+                    member.Name == state.Speaker ? "#38bdf8" : "#e2e8f0");
+            }
+            else
+            {
+                Text(canvas, member.Name, 920, y, 26, member.Name == state.Speaker ? "#38bdf8" : "#e2e8f0", true);
+                Text(canvas, $"Items: {member.Covered}/{member.Total}{status}", 920, y + 34, BodyTextSize, "#cbd5e1");
+            }
+
+            var barY = y + (compact ? 10 : 48);
+            Rect(canvas, 920, barY, 308, 10, "#334155");
+            Rect(canvas, 920, barY, member.Total != 0 ? 308f * member.Covered / member.Total : 0, 10, "#4ade80");
+        }
+
+        if (!compact && !state.Ended && state.Focus is { } focus && state.Items.Take(6).Any(item => item.Id == focus))
+        {
+            Text(canvas, $"Current item #{focus}", 920, 678, BodyTextSize, "#38bdf8", true);
         }
     }
 
@@ -174,9 +200,9 @@ public sealed class BoardRenderer : IDisposable
         }
     }
 
-    private void Text(SKCanvas canvas, string text, float x, float y, float size, string color, bool bold = false)
+    private void Text(SKCanvas canvas, string text, float x, float y, float size, string color, bool bold = false, bool numbers = false)
     {
-        using var font = new SKFont(bold ? _semibold : _regular, size)
+        using var font = new SKFont(numbers ? _numbers : bold ? _semibold : _regular, size)
         {
             Edging = SKFontEdging.Antialias,
             Subpixel = true,

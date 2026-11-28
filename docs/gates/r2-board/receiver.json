@@ -1,0 +1,76 @@
+{
+  "measuredUtc": "2026-11-28T12:26:27.2877551+00:00",
+  "boundary": "Actual BoardShareSession -\u003E packed RGB24 over loopback TCP -\u003E independently allocated receiver frame and SHA256",
+  "thresholdMs": 2000,
+  "samples": [
+    {
+      "firstMs": 147.748,
+      "changeMs": 94.6852,
+      "reconnectMs": 83.7148,
+      "changedHash": "1da4f9488a901df60890027559cd60e6426479fabcb062d7a6ed02f7cfdd56d9"
+    },
+    {
+      "firstMs": 124.2513,
+      "changeMs": 113.7994,
+      "reconnectMs": 98.2835,
+      "changedHash": "818276b0348836b3116fec3595d6babdcfc11ff4f3d65873303e363eadfbf72c"
+    },
+    {
+      "firstMs": 130.2164,
+      "changeMs": 104.8849,
+      "reconnectMs": 124.8338,
+      "changedHash": "e1f4aba0f9cd64015ddb236a29230fb65d71339052d837f796550f541e64bdfd"
+    },
+    {
+      "firstMs": 152.4063,
+      "changeMs": 77.4875,
+      "reconnectMs": 109.9791,
+      "changedHash": "1a3c77651b01dd70c43356964a85cc245f4d68205c8413540b9c8671f02aae04"
+    },
+    {
+      "firstMs": 146.5429,
+      "changeMs": 108.3535,
+      "reconnectMs": 78.2409,
+      "changedHash": "6b509e6197e8387a23508d12616088b508d8be314d66617b43316c3400183aab"
+    },
+    {
+      "firstMs": 122.5683,
+      "changeMs": 93.6049,
+      "reconnectMs": 147.0196,
+      "changedHash": "821ff0f6150a7b6f6a8b4da4134364fc9439ec41da0bff38df75682fe72f3c61"
+    },
+    {
+      "firstMs": 135.0558,
+      "changeMs": 91.712,
+      "reconnectMs": 112.7407,
+      "changedHash": "6479ec9b67e9eebf8cbbefde14b223fdaf6c08761f4f56212bab4040fbc185ab"
+    },
+    {
+      "firstMs": 139.1685,
+      "changeMs": 95.5302,
+      "reconnectMs": 115.2876,
+      "changedHash": "db318635f1726c724ab94403b583115829e049d367ad914afed4ec437b9a9758"
+    },
+    {
+      "firstMs": 153.5054,
+      "changeMs": 91.1221,
+      "reconnectMs": 109.6913,
+      "changedHash": "8206eb3827627367ed1c01b96190df4c63a774498838209c2a6bb558ab9e5870"
+    },
+    {
+      "firstMs": 132.9356,
+      "changeMs": 102.3533,
+      "reconnectMs": 105.8314,
+      "changedHash": "7f67a202095d617f778f3321024408dbdcee1b5f5ab5b06fc72ec35773c4c85f"
+    }
+  ],
+  "sampleSizePerEvent": 10,
+  "teamsDelivery": {
+    "status": "not_run",
+    "n": 0
+  },
+  "sdkEncoderCpu": {
+    "status": "not_run",
+    "n": 0
+  }
+}

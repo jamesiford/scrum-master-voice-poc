@@ -156,6 +156,7 @@ public sealed class MediaBotService : BackgroundService
         {
             if (!_calls.TryGetValue(sessionId, out var entry)) { return; }
             if (entry.TeamId != teamId) { throw new UnauthorizedAccessException("The call belongs to another team."); }
+            await entry.Call.PresentCompletionAsync(ct);
             if (entry.Call.Call is { } call && call.Resource.State != Microsoft.Graph.Models.CallState.Terminated)
             {
                 await call.DeleteAsync(cancellationToken: ct);

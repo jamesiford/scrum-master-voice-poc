@@ -1,26 +1,21 @@
 {
   "clock": "1:23:45 PM",
-  "tolerance": {
-    "maxMeanAbsoluteChannelError": 2.5,
-    "maxChangedPixelPercent": 6,
-    "maxGeometryChannelError": 1
-  },
   "exactIdentityRequired": false,
-  "reason": "Identity fails: Chromium and native Skia differ in font rasterisation and GPOS text shaping/spacing. All pixels are measured. Geometry permits only one-channel-unit antialiased-edge blend rounding; no baseline is replaced.",
+  "reason": "The operator requires content, legibility and delivery, not the same raster. Historical Chromium baselines remain unchanged; native geometry is tested independently.",
   "fixtures": [
     {
       "name": "waiting",
       "exactPixelIdentity": false,
-      "nativePngSha256": "85759c14e6e35419722e0bfee232a3cf1a0a596cae53640603fc6af011feb63e",
+      "nativePngSha256": "7293ac0e7d2d7642deba5b0668542cb55be0f5845ab879a5782c16dfc7ad17b9",
       "chromiumPngSha256": "b525e1dbfaad4ebefdffc6f03ca8b689d266320624efc45488472150728a9f3f",
-      "nativeRgb24Sha256": "e900f7e14a430f478163a2f41cee10adb30b46032f19967cf27f7edbd3e52193",
+      "nativeRgb24Sha256": "1eddd9e20452ba5f297ffc47945ab56b816e266056e5093d40bf2f70eb17eba2",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 5917,
-          "ChangedPixelPercent": 3.555889423076923,
-          "MeanAbsoluteChannelError": 1.8881390224358974,
-          "MaximumChannelError": 205
+          "ChangedPixels": 11898,
+          "ChangedPixelPercent": 7.150240384615385,
+          "MeanAbsoluteChannelError": 9.082582131410257,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
@@ -36,314 +31,170 @@
           "MeanAbsoluteChannelError": 0,
           "MaximumChannelError": 0
         }
-      ],
-      "geometry": []
+      ]
     },
     {
       "name": "agenda",
       "exactPixelIdentity": false,
-      "nativePngSha256": "886a98dfa9a279beeefd2a70aff1e7f73d64416b0bbbc07a2b5c4794deeb47aa",
+      "nativePngSha256": "52aa1f929fa050b97fdc019c3767c2d621a716202c6694d9b17a27bc51aa4c67",
       "chromiumPngSha256": "55ed790848ed7764a22bef7e0e606b2af60b668bc3bc375cedc0a214d99ffb05",
-      "nativeRgb24Sha256": "3aaf99ef22f1025ab1b8fd4d12d7e503b3bc33433f41a73103db9634363202af",
+      "nativeRgb24Sha256": "4be676d312a2d0ee082a02f53319b82c3149c4a46beba705be308748fe53fc05",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 7102,
-          "ChangedPixelPercent": 4.268028846153846,
-          "MeanAbsoluteChannelError": 1.9599158653846154,
-          "MaximumChannelError": 205
+          "ChangedPixels": 14446,
+          "ChangedPixelPercent": 8.681490384615385,
+          "MeanAbsoluteChannelError": 11.312057291666667,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
-          "ChangedPixels": 6738,
-          "ChangedPixelPercent": 1.2279934390377256,
-          "MeanAbsoluteChannelError": 0.5415709859668307,
-          "MaximumChannelError": 184
+          "ChangedPixels": 75745,
+          "ChangedPixelPercent": 13.804446874430472,
+          "MeanAbsoluteChannelError": 6.841008444201446,
+          "MaximumChannelError": 236
         },
         {
           "Name": "coverage",
-          "ChangedPixels": 3254,
-          "ChangedPixelPercent": 1.5757869249394674,
-          "MeanAbsoluteChannelError": 0.42458918482647295,
-          "MaximumChannelError": 159
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "item 0 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "item 1 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 0",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 1",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 2",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
+          "ChangedPixels": 25951,
+          "ChangedPixelPercent": 12.567070217917676,
+          "MeanAbsoluteChannelError": 9.669028248587571,
+          "MaximumChannelError": 233
         }
       ]
     },
     {
       "name": "speaker-highlight",
       "exactPixelIdentity": false,
-      "nativePngSha256": "671fc799f2f44fcc4e5752aabf3a467bb3a2db91af1bb617f278d968e200e9de",
+      "nativePngSha256": "d3c7b264abc92979aec36a58457962b118e64f389dfc2414b85ba38849694a55",
       "chromiumPngSha256": "ee1657507d7802e71069e13ee497ce65b121a2383e82039168a18dfd286cecf9",
-      "nativeRgb24Sha256": "e9c746a79e7b8ef6a61aad0cea31ca818e4ec80d4a171f07242ee0c8931f9389",
+      "nativeRgb24Sha256": "d2e8c489e1d0d928528d38f8e994acd6c97899c09387ef1b56fbc0dc3ce75b03",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 5392,
-          "ChangedPixelPercent": 3.2403846153846154,
-          "MeanAbsoluteChannelError": 1.4849979967948719,
-          "MaximumChannelError": 211
+          "ChangedPixels": 10295,
+          "ChangedPixelPercent": 6.186899038461538,
+          "MeanAbsoluteChannelError": 7.915346554487179,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
-          "ChangedPixels": 5357,
-          "ChangedPixelPercent": 0.9763076362310916,
-          "MeanAbsoluteChannelError": 0.16101816414555617,
-          "MaximumChannelError": 182
+          "ChangedPixels": 58202,
+          "ChangedPixelPercent": 10.607253508292327,
+          "MeanAbsoluteChannelError": 6.018976975882389,
+          "MaximumChannelError": 236
         },
         {
           "Name": "coverage",
-          "ChangedPixels": 3000,
-          "ChangedPixelPercent": 1.4527845036319613,
-          "MeanAbsoluteChannelError": 0.4508765133171913,
-          "MaximumChannelError": 162
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "item 0 background/stripe/focus",
-          "ChangedPixels": 16,
-          "ChangedPixelPercent": 0.23148148148148148,
-          "MeanAbsoluteChannelError": 0.0007716049382716049,
-          "MaximumChannelError": 1
-        },
-        {
-          "Name": "coverage bar 0",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 1",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
+          "ChangedPixels": 20589,
+          "ChangedPixelPercent": 9.97046004842615,
+          "MeanAbsoluteChannelError": 8.445129943502824,
+          "MaximumChannelError": 233
         }
       ]
     },
     {
       "name": "covered-clipped-six",
       "exactPixelIdentity": false,
-      "nativePngSha256": "f9b7f6acc8aac66f579abe2b7698eefd771193eddeb368c4082295376d478840",
+      "nativePngSha256": "7095996ef246da8eb90ffabbba2ddf57f95961d2481bf6d074257e3156f0d830",
       "chromiumPngSha256": "53ceec6118fc0521f198c65c39a0aa7be56c9c91c15c01d613840e01c7e22064",
-      "nativeRgb24Sha256": "a5ad8f7c5a45db4d20914a01ccff82a6f975dfcfb76f2628e13bd6b0e567e68a",
+      "nativeRgb24Sha256": "c6cfb741206f22b299cb172dd70e02bf36a0ecdb1c0a0ed665c6192d87b1f927",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 7725,
-          "ChangedPixelPercent": 4.642427884615385,
-          "MeanAbsoluteChannelError": 1.6244411057692307,
-          "MaximumChannelError": 211
+          "ChangedPixels": 13467,
+          "ChangedPixelPercent": 8.093149038461538,
+          "MeanAbsoluteChannelError": 9.899951923076923,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
-          "ChangedPixels": 17182,
-          "ChangedPixelPercent": 3.131401494441407,
-          "MeanAbsoluteChannelError": 1.0730781848004374,
-          "MaximumChannelError": 196
+          "ChangedPixels": 185160,
+          "ChangedPixelPercent": 33.7452159650082,
+          "MeanAbsoluteChannelError": 18.150532774436545,
+          "MaximumChannelError": 236
         },
         {
           "Name": "coverage",
-          "ChangedPixels": 3213,
-          "ChangedPixelPercent": 1.5559322033898304,
-          "MeanAbsoluteChannelError": 0.2948329297820823,
-          "MaximumChannelError": 156
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "item 0 background/stripe/focus",
-          "ChangedPixels": 16,
-          "ChangedPixelPercent": 0.23148148148148148,
-          "MeanAbsoluteChannelError": 0.0007716049382716049,
-          "MaximumChannelError": 1
-        },
-        {
-          "Name": "item 1 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "item 2 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "item 3 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "item 4 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "item 5 background/stripe/focus",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 0",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 1",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "coverage bar 2",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
+          "ChangedPixels": 27350,
+          "ChangedPixelPercent": 13.24455205811138,
+          "MeanAbsoluteChannelError": 12.269128329297821,
+          "MaximumChannelError": 233
         }
       ]
     },
     {
       "name": "standup-complete",
       "exactPixelIdentity": false,
-      "nativePngSha256": "bc46fd16af8cb531113c5e6f73464c39611528f9a54a3c3424e3245e6e523173",
+      "nativePngSha256": "6b781b77d21554f5da5c80b4ace292ff7ad546dcc4dd7bc2cd0a528ba8c137b5",
       "chromiumPngSha256": "f1e399342cb4c3052dd4054feb2838eaeb67dc0cfb007c7e9d3c763fd1a24da7",
-      "nativeRgb24Sha256": "b22e2e7505ce79f940a76c31ae1357b5fcecb0dbead6c28ce7a21259cd37feba",
+      "nativeRgb24Sha256": "9462800d51db492a5c3938dfce3317c6f27acfda4798cc8a9f71ff13102d5cbb",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 5493,
-          "ChangedPixelPercent": 3.301081730769231,
-          "MeanAbsoluteChannelError": 1.8655889423076923,
-          "MaximumChannelError": 205
+          "ChangedPixels": 12476,
+          "ChangedPixelPercent": 7.497596153846154,
+          "MeanAbsoluteChannelError": 10.156798878205128,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
-          "ChangedPixels": 6410,
-          "ChangedPixelPercent": 1.1682157827592492,
-          "MeanAbsoluteChannelError": 0.6978603973027155,
-          "MaximumChannelError": 199
+          "ChangedPixels": 11785,
+          "ChangedPixelPercent": 2.1478039001275744,
+          "MeanAbsoluteChannelError": 2.2922787193973635,
+          "MaximumChannelError": 233
         },
         {
           "Name": "coverage",
-          "ChangedPixels": 1302,
-          "ChangedPixelPercent": 0.6305084745762712,
-          "MeanAbsoluteChannelError": 0.10534301856335755,
-          "MaximumChannelError": 109
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "coverage bar 0",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
+          "ChangedPixels": 9486,
+          "ChangedPixelPercent": 4.593704600484261,
+          "MeanAbsoluteChannelError": 6.096589184826473,
+          "MaximumChannelError": 233
         }
       ]
     },
     {
       "name": "empty",
       "exactPixelIdentity": false,
-      "nativePngSha256": "3b0b13acd71eb5720b2ad718312d46e3294f5a8cb5d01011cee927240bc1208f",
+      "nativePngSha256": "0086a6d20e6d25c9e8c21cd3b7c0dd2858530f1def23bf46283bd32302d988fe",
       "chromiumPngSha256": "d95efd196605e5de13bfb4ffc723160fa117beb959b603bfec635a54068f009f",
-      "nativeRgb24Sha256": "55cf645c7421aba17235399c70780ae02cd9c588d9fe54a20499c707640ddeae",
+      "nativeRgb24Sha256": "2e783c7ad99dc97fb692400264e128d0591af136563ca09092ffa7154311cc2d",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 3601,
-          "ChangedPixelPercent": 2.1640625,
-          "MeanAbsoluteChannelError": 1.3720973557692309,
-          "MaximumChannelError": 211
+          "ChangedPixels": 7905,
+          "ChangedPixelPercent": 4.750600961538462,
+          "MeanAbsoluteChannelError": 6.484074519230769,
+          "MaximumChannelError": 233
         },
         {
           "Name": "items",
-          "ChangedPixels": 1340,
-          "ChangedPixelPercent": 0.2442135957718243,
-          "MeanAbsoluteChannelError": 0.021048538970900917,
-          "MaximumChannelError": 55
+          "ChangedPixels": 3074,
+          "ChangedPixelPercent": 0.5602332786586477,
+          "MeanAbsoluteChannelError": 0.6584496689144037,
+          "MaximumChannelError": 233
         },
         {
           "Name": "coverage",
-          "ChangedPixels": 1199,
-          "ChangedPixelPercent": 0.5806295399515738,
-          "MeanAbsoluteChannelError": 0.08469410815173527,
-          "MaximumChannelError": 109
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "coverage bar 0",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
+          "ChangedPixels": 9243,
+          "ChangedPixelPercent": 4.476029055690073,
+          "MeanAbsoluteChannelError": 3.2328942695722356,
+          "MaximumChannelError": 233
         }
       ]
     },
     {
       "name": "retro-round-empty",
       "exactPixelIdentity": false,
-      "nativePngSha256": "49e173602feebc5bc8a013736af063717c86849726933ed499b6d7f4aba30120",
+      "nativePngSha256": "2b7b1933106ca73f1bf56b581a77392f7a83c72e4dbfef7c1fe9e49964de1d09",
       "chromiumPngSha256": "0185043811b3cc669ccbedf87cb627d103db371f7265f6eaaddf0a4ceea0dc9c",
-      "nativeRgb24Sha256": "c6865d82460979658c603f6ea578046304d8a90651eedc6aef6311fb7fc167e4",
+      "nativeRgb24Sha256": "af0be15d29c5daa6abccbe27f25e9a4165fa87e3ed0fe64abbe8de7aca280cbc",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 3810,
-          "ChangedPixelPercent": 1.8603515625,
-          "MeanAbsoluteChannelError": 0.47236979166666665,
+          "ChangedPixels": 4472,
+          "ChangedPixelPercent": 2.18359375,
+          "MeanAbsoluteChannelError": 0.886005859375,
           "MaximumChannelError": 181
         },
         {
@@ -360,64 +211,20 @@
           "MeanAbsoluteChannelError": 0.17059678819444443,
           "MaximumChannelError": 148
         }
-      ],
-      "geometry": [
-        {
-          "Name": "column 0 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 0 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        }
       ]
     },
     {
       "name": "retro-round-notes",
       "exactPixelIdentity": false,
-      "nativePngSha256": "b3c4b2b03370d7278df0a135f0060b9d74f04d34b8106ded8a6a386679c5fdf3",
+      "nativePngSha256": "84093cf0731309d5ae52c0cf725a536163dfd6c898450d5c39d246a3034f9dd4",
       "chromiumPngSha256": "4c6ee9175e7273fcb7878227b0fd873bb1fd94073095f579c71bb647f475038e",
-      "nativeRgb24Sha256": "68e4b165d0fbd624deea2906b2e6922c3d93b5463a0cf1ca0164ba904679227e",
+      "nativeRgb24Sha256": "1d44ac8b1b4fb7f6d7e86eb492d85c56f53e2747fb0393b06a57a170d64bf7e7",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 5099,
-          "ChangedPixelPercent": 2.48974609375,
-          "MeanAbsoluteChannelError": 0.6426904296875,
+          "ChangedPixels": 5761,
+          "ChangedPixelPercent": 2.81298828125,
+          "MeanAbsoluteChannelError": 1.0563264973958333,
           "MaximumChannelError": 181
         },
         {
@@ -434,64 +241,20 @@
           "MeanAbsoluteChannelError": 0.17059678819444443,
           "MaximumChannelError": 148
         }
-      ],
-      "geometry": [
-        {
-          "Name": "column 0 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 0 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        }
       ]
     },
     {
       "name": "retro-themes",
       "exactPixelIdentity": false,
-      "nativePngSha256": "accdecd8aa0202f97a48d8f55909abbc4df7c13b631391db38bd1e0a066cbcc5",
+      "nativePngSha256": "82c2735cf4c634558aa9f7537b5225270eeec5364e1d67bfba470c8b50078479",
       "chromiumPngSha256": "4bc4537e6a87f20ba0ff672b393f0aaf5c767a12eb5cdba19cc828144e6d9c5a",
-      "nativeRgb24Sha256": "3d5a35276a95019e9d523cf045412e5fd476e13eb1785031080f02ce74bdcbee",
+      "nativeRgb24Sha256": "f618b2547c9f8689b251616b4591b89efbd8b093fae7f801648723e8c1eb11df",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 3852,
-          "ChangedPixelPercent": 1.880859375,
-          "MeanAbsoluteChannelError": 0.46923828125,
+          "ChangedPixels": 4514,
+          "ChangedPixelPercent": 2.2041015625,
+          "MeanAbsoluteChannelError": 0.8828743489583334,
           "MaximumChannelError": 181
         },
         {
@@ -508,64 +271,20 @@
           "MeanAbsoluteChannelError": 0.10790256076388889,
           "MaximumChannelError": 107
         }
-      ],
-      "geometry": [
-        {
-          "Name": "column 0 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 0 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        }
       ]
     },
     {
       "name": "retro-actions",
       "exactPixelIdentity": false,
-      "nativePngSha256": "4352cff68fae3a9feddf5d6aec7bcdee3427c2001e94977232a5b754d0e26682",
+      "nativePngSha256": "231d1beaab8e82b2694054b03c0570c807cf7148224d64c2f2a97d670cb1187e",
       "chromiumPngSha256": "fad823851fe55dacf9edb7717f7767d9f537bb9e28d4aebd0e684111e616f0e2",
-      "nativeRgb24Sha256": "2398209051117a154055220ade38feee4fbda30d3eb405abe6b86ca33984c9d2",
+      "nativeRgb24Sha256": "663ee1af29ff54d1145c79ff66dc93a6b598891452b45fd6bbd5bbab945ffcd0",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 3852,
-          "ChangedPixelPercent": 1.880859375,
-          "MeanAbsoluteChannelError": 0.46923828125,
+          "ChangedPixels": 4514,
+          "ChangedPixelPercent": 2.2041015625,
+          "MeanAbsoluteChannelError": 0.8828743489583334,
           "MaximumChannelError": 181
         },
         {
@@ -582,64 +301,20 @@
           "MeanAbsoluteChannelError": 1.4698307291666666,
           "MaximumChannelError": 199
         }
-      ],
-      "geometry": [
-        {
-          "Name": "column 0 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 0 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        }
       ]
     },
     {
       "name": "retro-complete",
       "exactPixelIdentity": false,
-      "nativePngSha256": "ee47fb7f915854c71cc26ea54ff4d0aee20c13445d19dca26d852d538e236ad0",
+      "nativePngSha256": "34cdec6f39afae942c62d5a256cb31b2e6b46377dae515cf1c7e719ca4697017",
       "chromiumPngSha256": "8d015c72907bf88d2625ed19448b7f6b79cf48322d8a83e48a47172fce080edf",
-      "nativeRgb24Sha256": "f2a6afdd65ad4fd0a77eadc33d984390f38e89324fcb65fa86fc60f7fcb8f7c6",
+      "nativeRgb24Sha256": "600f5264c560ff0b7cc47931740a711c08c41fff33dd1c801aeba77197925cec",
       "regions": [
         {
           "Name": "header",
-          "ChangedPixels": 10216,
-          "ChangedPixelPercent": 4.98828125,
-          "MeanAbsoluteChannelError": 2.2728304036458336,
+          "ChangedPixels": 10878,
+          "ChangedPixelPercent": 5.3115234375,
+          "MeanAbsoluteChannelError": 2.6864664713541666,
           "MaximumChannelError": 199
         },
         {
@@ -655,50 +330,6 @@
           "ChangedPixelPercent": 2.0546875,
           "MeanAbsoluteChannelError": 0.2241796875,
           "MaximumChannelError": 107
-        }
-      ],
-      "geometry": [
-        {
-          "Name": "column 0 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 0 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 1 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 accent",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
-        },
-        {
-          "Name": "column 2 background",
-          "ChangedPixels": 0,
-          "ChangedPixelPercent": 0,
-          "MeanAbsoluteChannelError": 0,
-          "MaximumChannelError": 0
         }
       ]
     }

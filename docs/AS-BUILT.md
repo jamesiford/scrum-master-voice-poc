@@ -1,5 +1,38 @@
 # Zava Scrum Master voice PoC: as built
 
+## Round 2 native board (ADR0045)
+
+The optional native standup board separates the sprint goal, enlarges item
+metadata and coverage, and explicitly labels the current supplied item.
+It retains every browser information category and the original visible
+item/retro limits. Native completion truthfully says data is not saved.
+The ended-frame stop-before-send defect is fixed: the owner drains the
+received recap before deleting the call, with bounded explicit timeout.
+Shared-screen format remains real1280x720 RGB24 VBSS, no tab or camera.
+
+The operator's four requirements replace exact raster identity as G4.
+Frozen OCR/ink-height checks, the23-element audit, actual contact sheets
+and headless receiver measurements are in `gates/r2-board-checks.md`,
+`gates/r2-board-audit.md` and `gates/r2-board`. Final strict native OCR
+52/53 atbothsizes fails zero days; glyph12/18/8px passes. TCP maximum
+first/change/reconnect153.51/113.80/147.02ms,n10 each meets2seconds
+only at that boundary. Real Teams guest/default-visibility, encoder CPU/cap1
+and live update/reconnect remain not_run,n0. Keep Acs/Share/Direct and
+Simulated Room; do not promote a local rendering result as Teams acceptance.
+No new endpoint/use case/store/permission/resource is introduced.
+The compact>5member layout retains the tenth row/bar; extra focus text
+does not overlay it. G4 remains failed, not accepted as a regression.
+
+Native13a842d exact DLL/version/font and trusted hosting were verified
+12:49:15UTC; API102/bridge10 and their identities/configuration/secrets
+remain unchanged. Mandatory after8/8 includes real approved write/audit
+revision82,n1, not Teams acceptance. Direct3407/6497ms,n12 versus
+3448/4262ms,n12 has a worse p95(+52.44%); G1 stays failed.
+The one authorised existing-VM allocation ended Deallocated12:58:26UTC,
+approximately0.921hours and estimated computeUSD0.3224-0.3500, no new
+fixed resources. API/bridge remain running; native is intentionally
+offline. See `gates/r2-board-runtime.json` and DEPLOY.md before rehearsal.
+
 ## Round 2 Direct latency (ADR 0044)
 
 Three interleaved windows, six serial same-cast sessions per mode, before

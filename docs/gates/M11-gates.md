@@ -1,5 +1,100 @@
 # M11 gates
 
+## Round 2 native board (ADR0045)
+
+**G4 failed; native not promoted.** The operator's current board gate is
+the following four requirements, not historical raster identity.
+Acs/Share/Direct and Simulated Room remain the working defaults.
+
+| Requirement | Current measured boundary / verdict |
+| --- | --- |
+| (a) Every participant/guest receives screen share automatically, no viewer install/click/tab | Real VBSS send-only socket/Graph Sharer design and contract test; actual all-roster/guest/mobile UI **not_run,n0**. A required viewer action fails this requirement |
+| (b) At least as intuitive, legible at meeting/mobile sizes, obvious speaker/item | Four actual standup states at1080p/480p; final native **52/53 phrases at each size**, strict100% fails empty-state `0 days left`. Glyph ink12/18/8px at720/1080/480 meets unchanged floors; human contact-sheet/mobile review **not_run,n0** |
+| (c) Same browser information | [23-element source audit](r2-board-audit.md) maps standup/retro facts and visible limits; separate goal, larger body/coverage, actual-focus annotation, no dense-roster overlay. Non-recording native truthfully lacks saved follow-ups, so it is not equal to the saved-follow-up demo |
+| (d) First/change within2seconds for every participant | Real copied-RGB24 TCP receiver maximum first/change/reconnect **153.51/113.80/147.02ms,n10 each**, all<=2000ms. Actual SDK encoder/Teams delivery/reconnect **not_run,n0**; no proxy closes those checks |
+
+Thresholds were published at a90942d before measuring; fixed expected
+phrases at36d2e84 were never changed in response to OCR. Native initial
+51/53 atbothsizes, second52/53 atbothsizes, third53/53 at1080 and52/53
+at480 are retained. Final32px numeric header gives52/53 atbothsizes;
+do not select the earlier better result as final-source evidence.
+Chromium remains unchanged:52/52 at1080,46/52 at480. The native sample
+has one additional actual-current-item phrase; denominators are explicit.
+No O/e-to-zero substitution, threshold loosening or edited comparison image.
+
+Raw pixels/OCR/hashes/glyphs and unedited side-by-side
+[1080p](r2-board/contact-1080.png) /
+[480p](r2-board/contact-480.png) contact sheets are in `r2-board`;
+first/second/third OCR JSONs remain alongside it. The TCP receiver copies
+the full1280x720RGB24 frame and independently hashes it; it is not Graph
+H264 encoding. Actual call cap1 encoder host CPU requires60one-second
+samples, average<=70%,p95<=85%; this is **not_run,n0**, not idle/startup CPU.
+Local reconnect is the real worker's `Reconnect()` re-share event on a
+persistent TCP carrier, not a forced TCP/API WebSocket disconnect or
+Graph/SDK negotiation. Those actual network recovery timings remain n0.
+
+The worker's stop-before-recap-send defect is fixed. The owner waits up
+to2seconds for a received completion-frame submission, explicitly reports
+timeout, then retains the submitted share for2seconds before deletion.
+That is not proof a guest saw the recap. No new Domain rule, approval
+exception, route, store, resource, role or permission was added.
+Dense retro/large-roster mobile legibility remains outside the four-state
+standup sample. Compact>5member20px coverage is below the published24px
+standup font floor: not an accepted exception or global legibility pass.
+Native meeting-derived data still is not saved.
+
+G1 before mandatory verification: Direct3448/4262ms,n12, questions
+3448/4253ms,n9, model10/12, talk-overs0. Native TLS check fails, **7/8**;
+working-path actual approval/audit passes, revision81,n1 write.
+After deployed-runtime verification **8/8** while allocated: Direct
+3407/6497ms,n12, questions3590/4663ms,n9, model10/12, talk-overs0;
+actual approved write/audit revision82,n1. All-turn p50/p95 changes
+-1.19%/+52.44%; questions +4.12%/+9.64%. **G1 remains failed; the
+worse tail is not accepted or retried to turn green.**
+These separate single-window observations are not the prior interleaved
+latency cohort and cannot establish a native-board causal effect.
+G1 and inherited failed/not_run gates are not promoted by local board tests.
+
+All-turn hops, p50/p95 milliseconds, n12 in each column for every hop:
+
+| Hop | Before | After |
+| --- | --- | --- |
+| Total | 3448/4262 | 3407/6497 |
+| Speech end to transcript | 0/197 | 0/193 |
+| Analyser | 51/57 | 51/106 |
+| Decision model | 200/264 | 254/288 |
+| Orchestration | 1699/2835 | 1801/2273 |
+| Voice Live first audio | 1185/3004 | 1330/5323 |
+
+[Runtime/lifecycle evidence](r2-board-runtime.json) records the exact
+deployed native13a842d DLL; API102/bridge10 images, identities,
+configuration, secrets and native roles remain unchanged. Native HTTPS/
+renderer1280x720/cap1/non-recording passed at12:49:15UTC, not Teams
+acceptance. The single authorised allocation ended with confirmed
+Deallocated at12:58:26UTC: approximately0.921hours, estimated existing
+computeUSD0.3224-0.3500, not actual billing; new fixed resourcesUSD0/hour.
+API/bridge stay running; native readiness is historical, not current.
+Future real-meeting checks require separately authorised VM allocation.
+
+| Gate | Current scope / inherited boundary |
+| --- | --- |
+| G1 | Failed M10 experience/one-second target; native acoustic n0; separate before/after verification is not paired causal evidence |
+| G2 | Native identity/guest acoustic acceptance not_run,n0; routing tests are not real participants |
+| G3 | Measured working-path approval/write/audit, before revision81 and after82,n1 each; Teams/Copilot live matrix n0 |
+| G4 | Failed strict zero-day OCR; requirements(a)-(d) above replace raster identity; historical retro29/30 and guarded30/30 retained, real rehearsal n0 |
+| G5 | Real Copilot positive/negative/streaming not_run,n0; completed consent/catalogue not reopened |
+| G6 | Actual stored-link native joins not_run,0/10; HTTPS/renderer readiness is not join acceptance |
+| G7 | Prior measured synthetic112/date48/calendar40 pass48/48 and40/40; real employee/CI n0, not rerun here |
+| G8 | Failed full empty proof1/2; no full provision/teardown in this step |
+| G9 | Prior3sessions/36turns/3audit chains retained; new real multi-team matrix not_run,n0 |
+| G10 | Actual authorised corpus/two-user retrieval/citations/leakage not_run,n0; completed consent/adminOBO not reopened |
+| G11 | Actual approved lead/billing/channel/meeting-UID/source-enforcement fixture not_run,n0; metadata/OBO is not content proof |
+
+Allthreebuilds/format/lints and focused17native/13Api/16architecture checks
+pass; latestreport-generation1/1 also passes. No full suites:
+r2-reconcile owns them. Exact organiser/observer/CPU and temporary
+environment-wide adapter-selection/restoration steps are in DEPLOY.md.
+
 ## Round 2 Direct latency (ADR 0044)
 
 **G1 failed; candidate not promoted.** Each phase completed twelve sessions:

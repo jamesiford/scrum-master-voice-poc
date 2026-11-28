@@ -1,0 +1,3891 @@
+{
+  "resampling": "System.Drawing HighQualityBicubic",
+  "measuredUtc": "2026-11-28T12:18:33.8831363+00:00",
+  "minimumGlyph": [
+    {
+      "minimum": 18,
+      "pass": true,
+      "inkHeight": 18,
+      "resolution": 1080
+    },
+    {
+      "minimum": 8,
+      "pass": true,
+      "inkHeight": 8,
+      "resolution": 480
+    }
+  ],
+  "nativePass": false,
+  "frames": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "F4FEB46022C56790259EAFB9C629B01B6AD9A4EB998A2BE155E0773A16224834",
+      "sourceSha256": "D95EFD196605E5DE13BFB4FFC723160FA117BEB959B603BFEC635A54068F009F",
+      "expected": [
+        "Admin\u0027s items",
+        "Sprint 43",
+        "0 days left",
+        "No items assigned",
+        "Coverage",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 7,
+      "state": "empty",
+      "ocr": {
+        "text": "Admin\u0027s items Sprint 43 • 0 days left No items assigned. Coverage Admin 0/0",
+        "words": [
+          {
+            "y": 65,
+            "height": 40,
+            "width": 184,
+            "text": "Admin\u0027s",
+            "x": 71
+          },
+          {
+            "y": 65,
+            "height": 40,
+            "width": 123,
+            "text": "items",
+            "x": 271
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 77,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 31,
+            "text": "43",
+            "x": 158
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 200
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 15,
+            "text": "0",
+            "x": 214
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 59,
+            "text": "days",
+            "x": 239
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 41,
+            "text": "left",
+            "x": 308
+          },
+          {
+            "y": 259,
+            "height": 26,
+            "width": 45,
+            "text": "No",
+            "x": 74
+          },
+          {
+            "y": 259,
+            "height": 26,
+            "width": 84,
+            "text": "items",
+            "x": 131
+          },
+          {
+            "y": 257,
+            "height": 37,
+            "width": 146,
+            "text": "assigned.",
+            "x": 226
+          },
+          {
+            "y": 215,
+            "height": 33,
+            "width": 141,
+            "text": "Coverage",
+            "x": 1422
+          },
+          {
+            "y": 277,
+            "height": 23,
+            "width": 86,
+            "text": "Admin",
+            "x": 1422
+          },
+          {
+            "y": 278,
+            "height": 25,
+            "width": 43,
+            "text": "0/0",
+            "x": 1526
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 7,
+      "adapter": "chromium"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "F9983E76D7A2CBB3CA4B6A60CA0CC80D18A6B24A3AC1A0BE5AC3F119E79D2904",
+      "sourceSha256": "422608D0668CE26AD7B997ACEF27EABFFDBF4709EBEA25E936B6DBEE3B6AF623",
+      "expected": [
+        "Admin\u0027s items",
+        "Sprint 43",
+        "0 days left",
+        "No items assigned",
+        "Coverage",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 6,
+      "state": "empty",
+      "ocr": {
+        "text": "Admin\u0027s items Sprint 43 • O days left Coverage No items assigned. Admin Items: 0/0",
+        "words": [
+          {
+            "y": 56,
+            "height": 40,
+            "width": 188,
+            "text": "Admin\u0027s",
+            "x": 71
+          },
+          {
+            "y": 56,
+            "height": 40,
+            "width": 122,
+            "text": "items",
+            "x": 277
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 113,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 45,
+            "text": "43",
+            "x": 198
+          },
+          {
+            "y": 139,
+            "height": 7,
+            "width": 9,
+            "text": "•",
+            "x": 257
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 22,
+            "text": "O",
+            "x": 279
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 85,
+            "text": "days",
+            "x": 314
+          },
+          {
+            "y": 124,
+            "height": 32,
+            "width": 61,
+            "text": "left",
+            "x": 413
+          },
+          {
+            "y": 254,
+            "height": 40,
+            "width": 178,
+            "text": "Coverage",
+            "x": 1381
+          },
+          {
+            "y": 301,
+            "height": 26,
+            "width": 45,
+            "text": "No",
+            "x": 74
+          },
+          {
+            "y": 301,
+            "height": 26,
+            "width": 84,
+            "text": "items",
+            "x": 131
+          },
+          {
+            "y": 299,
+            "height": 37,
+            "width": 146,
+            "text": "assigned.",
+            "x": 226
+          },
+          {
+            "y": 327,
+            "height": 30,
+            "width": 115,
+            "text": "Admin",
+            "x": 1380
+          },
+          {
+            "y": 382,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 382,
+            "height": 31,
+            "width": 51,
+            "text": "0/0",
+            "x": 1485
+          }
+        ]
+      },
+      "pass": false,
+      "missing": ["0 days left"],
+      "total": 7,
+      "adapter": "native"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "B6704B336E59B1116A07C1AE7AFEC0A439FB94045E969E133DE721483ECECC4D",
+      "sourceSha256": "EE1657507D7802E71069E13EE497CE65B121A2383E82039168A18DFD286CECF9",
+      "expected": [
+        "Maya Lin\u0027s items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Coverage",
+        "Maya Lin",
+        "1/3",
+        "Daniel Park",
+        "0/2",
+        "no response"
+      ],
+      "recognised": 15,
+      "state": "active-speaker",
+      "ocr": {
+        "text": "Maya Lin\u0027s items Sprint 43 • 4 days left • Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue Coverage Maya Lin 1/3 Daniel Park 0/2 (no response)",
+        "words": [
+          {
+            "y": 68,
+            "height": 49,
+            "width": 121,
+            "text": "Maya",
+            "x": 75
+          },
+          {
+            "y": 65,
+            "height": 40,
+            "width": 95,
+            "text": "Lin\u0027s",
+            "x": 215
+          },
+          {
+            "y": 65,
+            "height": 40,
+            "width": 122,
+            "text": "items",
+            "x": 327
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 77,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 31,
+            "text": "43",
+            "x": 158
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 200
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 16,
+            "text": "4",
+            "x": 213
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 59,
+            "text": "days",
+            "x": 239
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 41,
+            "text": "left",
+            "x": 308
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 358
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 65,
+            "text": "Goal:",
+            "x": 373
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 57,
+            "text": "Ship",
+            "x": 448
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 102,
+            "text": "resilient",
+            "x": 515
+          },
+          {
+            "y": 142,
+            "height": 28,
+            "width": 126,
+            "text": "payments",
+            "x": 627
+          },
+          {
+            "y": 230,
+            "height": 25,
+            "width": 87,
+            "text": "#4521",
+            "x": 107
+          },
+          {
+            "y": 230,
+            "height": 33,
+            "width": 78,
+            "text": "Retry",
+            "x": 216
+          },
+          {
+            "y": 229,
+            "height": 26,
+            "width": 82,
+            "text": "failed",
+            "x": 303
+          },
+          {
+            "y": 233,
+            "height": 30,
+            "width": 145,
+            "text": "payments",
+            "x": 396
+          },
+          {
+            "y": 274,
+            "height": 20,
+            "width": 53,
+            "text": "User",
+            "x": 109
+          },
+          {
+            "y": 274,
+            "height": 26,
+            "width": 61,
+            "text": "Story",
+            "x": 169
+          },
+          {
+            "y": 284,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 238
+          },
+          {
+            "y": 274,
+            "height": 20,
+            "width": 73,
+            "text": "Active",
+            "x": 250
+          },
+          {
+            "y": 284,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 331
+          },
+          {
+            "y": 272,
+            "height": 22,
+            "width": 101,
+            "text": "Overdue",
+            "x": 344
+          },
+          {
+            "y": 215,
+            "height": 33,
+            "width": 141,
+            "text": "Coverage",
+            "x": 1422
+          },
+          {
+            "y": 278,
+            "height": 29,
+            "width": 68,
+            "text": "Maya",
+            "x": 1424
+          },
+          {
+            "y": 277,
+            "height": 23,
+            "width": 35,
+            "text": "Lin",
+            "x": 1504
+          },
+          {
+            "y": 278,
+            "height": 25,
+            "width": 40,
+            "text": "1/3",
+            "x": 1559
+          },
+          {
+            "y": 361,
+            "height": 23,
+            "width": 81,
+            "text": "Daniel",
+            "x": 1423
+          },
+          {
+            "y": 361,
+            "height": 23,
+            "width": 55,
+            "text": "Park",
+            "x": 1515
+          },
+          {
+            "y": 362,
+            "height": 25,
+            "width": 43,
+            "text": "0/2",
+            "x": 1587
+          },
+          {
+            "y": 362,
+            "height": 27,
+            "width": 42,
+            "text": "(no",
+            "x": 1648
+          },
+          {
+            "y": 362,
+            "height": 30,
+            "width": 126,
+            "text": "response)",
+            "x": 1700
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 15,
+      "adapter": "chromium"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "97835C9F5FA911D7E60F82A7A85ED9F191EA83E1902890C625AC92334222A73E",
+      "sourceSha256": "2697A4082D2B8448C306FA7A00B2FBE0D10DEABA131DDFF02C3F67ABF90E6FA0",
+      "expected": [
+        "Maya Lin\u0027s items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Coverage",
+        "Maya Lin",
+        "1/3",
+        "Daniel Park",
+        "0/2",
+        "no response",
+        "Current item"
+      ],
+      "recognised": 16,
+      "state": "active-speaker",
+      "ocr": {
+        "text": "Maya Lin\u0027s items Sprint 43 • 4 days left Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue Coverage Maya Lin Items: 1/3 Daniel Park Items: 0/2 • no response Current item #4521",
+        "words": [
+          {
+            "y": 59,
+            "height": 49,
+            "width": 120,
+            "text": "Maya",
+            "x": 76
+          },
+          {
+            "y": 56,
+            "height": 40,
+            "width": 100,
+            "text": "Lin\u0027s",
+            "x": 215
+          },
+          {
+            "y": 56,
+            "height": 40,
+            "width": 123,
+            "text": "items",
+            "x": 332
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 113,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 45,
+            "text": "43",
+            "x": 198
+          },
+          {
+            "y": 139,
+            "height": 7,
+            "width": 9,
+            "text": "•",
+            "x": 257
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 25,
+            "text": "4",
+            "x": 278
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 85,
+            "text": "days",
+            "x": 315
+          },
+          {
+            "y": 124,
+            "height": 32,
+            "width": 61,
+            "text": "left",
+            "x": 415
+          },
+          {
+            "y": 182,
+            "height": 28,
+            "width": 79,
+            "text": "Goal:",
+            "x": 73
+          },
+          {
+            "y": 182,
+            "height": 37,
+            "width": 68,
+            "text": "Ship",
+            "x": 163
+          },
+          {
+            "y": 182,
+            "height": 28,
+            "width": 122,
+            "text": "resilient",
+            "x": 244
+          },
+          {
+            "y": 185,
+            "height": 34,
+            "width": 153,
+            "text": "payments",
+            "x": 377
+          },
+          {
+            "y": 263,
+            "height": 28,
+            "width": 101,
+            "text": "#4521",
+            "x": 108
+          },
+          {
+            "y": 263,
+            "height": 37,
+            "width": 92,
+            "text": "Retry",
+            "x": 236
+          },
+          {
+            "y": 261,
+            "height": 30,
+            "width": 96,
+            "text": "failed",
+            "x": 338
+          },
+          {
+            "y": 265,
+            "height": 35,
+            "width": 170,
+            "text": "payments",
+            "x": 449
+          },
+          {
+            "y": 313,
+            "height": 26,
+            "width": 70,
+            "text": "User",
+            "x": 110
+          },
+          {
+            "y": 313,
+            "height": 35,
+            "width": 82,
+            "text": "Story",
+            "x": 190
+          },
+          {
+            "y": 325,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 282
+          },
+          {
+            "y": 313,
+            "height": 26,
+            "width": 96,
+            "text": "Active",
+            "x": 299
+          },
+          {
+            "y": 325,
+            "height": 5,
+            "width": 7,
+            "text": "•",
+            "x": 406
+          },
+          {
+            "y": 311,
+            "height": 28,
+            "width": 134,
+            "text": "Overdue",
+            "x": 424
+          },
+          {
+            "y": 254,
+            "height": 40,
+            "width": 178,
+            "text": "Coverage",
+            "x": 1381
+          },
+          {
+            "y": 329,
+            "height": 37,
+            "width": 92,
+            "text": "Maya",
+            "x": 1382
+          },
+          {
+            "y": 327,
+            "height": 30,
+            "width": 47,
+            "text": "Lin",
+            "x": 1490
+          },
+          {
+            "y": 382,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 382,
+            "height": 31,
+            "width": 48,
+            "text": "1/3",
+            "x": 1487
+          },
+          {
+            "y": 504,
+            "height": 30,
+            "width": 108,
+            "text": "Daniel",
+            "x": 1382
+          },
+          {
+            "y": 505,
+            "height": 29,
+            "width": 76,
+            "text": "Park",
+            "x": 1505
+          },
+          {
+            "y": 559,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 559,
+            "height": 31,
+            "width": 51,
+            "text": "0/2",
+            "x": 1485
+          },
+          {
+            "y": 571,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 1548
+          },
+          {
+            "y": 566,
+            "height": 19,
+            "width": 38,
+            "text": "no",
+            "x": 1567
+          },
+          {
+            "y": 566,
+            "height": 28,
+            "width": 140,
+            "text": "response",
+            "x": 1618
+          },
+          {
+            "y": 991,
+            "height": 26,
+            "width": 122,
+            "text": "Current",
+            "x": 1381
+          },
+          {
+            "y": 989,
+            "height": 28,
+            "width": 70,
+            "text": "item",
+            "x": 1515
+          },
+          {
+            "y": 991,
+            "height": 26,
+            "width": 93,
+            "text": "#4521",
+            "x": 1597
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 16,
+      "adapter": "native"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "7B6DC78D29D55AD0B2EBE72AF4C0BB1BDFEB1BEA3DB1F6C1A608887C095D5747",
+      "sourceSha256": "55ED790848ED7764A22BEF7E0E606B2AF60B668BC3BC375CEDC0A214D99FFB05",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Blocked",
+        "Maya Lin",
+        "4522",
+        "Payment telemetry",
+        "Task",
+        "New",
+        "Daniel Park",
+        "Coverage",
+        "1/3",
+        "0/2",
+        "away",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 22,
+      "state": "blocked-item",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left • Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue, Blocked • Maya Lin #4522 Payment telemetry Task • New • Daniel Park Coverage Maya Lin 1/3 Daniel Park 0/2 (away) Admin 0/0",
+        "words": [
+          {
+            "y": 65,
+            "height": 52,
+            "width": 190,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 65,
+            "height": 52,
+            "width": 182,
+            "text": "agenda:",
+            "x": 279
+          },
+          {
+            "y": 65,
+            "height": 52,
+            "width": 173,
+            "text": "flagged",
+            "x": 477
+          },
+          {
+            "y": 65,
+            "height": 40,
+            "width": 123,
+            "text": "items",
+            "x": 669
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 77,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 31,
+            "text": "43",
+            "x": 158
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 200
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 16,
+            "text": "4",
+            "x": 213
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 59,
+            "text": "days",
+            "x": 239
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 41,
+            "text": "left",
+            "x": 308
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 358
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 65,
+            "text": "Goal:",
+            "x": 373
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 57,
+            "text": "Ship",
+            "x": 448
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 102,
+            "text": "resilient",
+            "x": 515
+          },
+          {
+            "y": 142,
+            "height": 28,
+            "width": 126,
+            "text": "payments",
+            "x": 627
+          },
+          {
+            "y": 230,
+            "height": 25,
+            "width": 87,
+            "text": "#4521",
+            "x": 107
+          },
+          {
+            "y": 230,
+            "height": 33,
+            "width": 78,
+            "text": "Retry",
+            "x": 216
+          },
+          {
+            "y": 229,
+            "height": 26,
+            "width": 82,
+            "text": "failed",
+            "x": 303
+          },
+          {
+            "y": 233,
+            "height": 30,
+            "width": 145,
+            "text": "payments",
+            "x": 396
+          },
+          {
+            "y": 274,
+            "height": 20,
+            "width": 53,
+            "text": "User",
+            "x": 109
+          },
+          {
+            "y": 274,
+            "height": 26,
+            "width": 61,
+            "text": "Story",
+            "x": 169
+          },
+          {
+            "y": 284,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 238
+          },
+          {
+            "y": 274,
+            "height": 20,
+            "width": 73,
+            "text": "Active",
+            "x": 250
+          },
+          {
+            "y": 284,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 331
+          },
+          {
+            "y": 272,
+            "height": 25,
+            "width": 106,
+            "text": "Overdue,",
+            "x": 344
+          },
+          {
+            "y": 272,
+            "height": 22,
+            "width": 91,
+            "text": "Blocked",
+            "x": 460
+          },
+          {
+            "y": 284,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 561
+          },
+          {
+            "y": 274,
+            "height": 26,
+            "width": 62,
+            "text": "Maya",
+            "x": 575
+          },
+          {
+            "y": 274,
+            "height": 20,
+            "width": 32,
+            "text": "Lin",
+            "x": 647
+          },
+          {
+            "y": 356,
+            "height": 25,
+            "width": 93,
+            "text": "#4522",
+            "x": 107
+          },
+          {
+            "y": 356,
+            "height": 33,
+            "width": 129,
+            "text": "Payment",
+            "x": 221
+          },
+          {
+            "y": 355,
+            "height": 34,
+            "width": 146,
+            "text": "telemetry",
+            "x": 358
+          },
+          {
+            "y": 398,
+            "height": 22,
+            "width": 50,
+            "text": "Task",
+            "x": 108
+          },
+          {
+            "y": 410,
+            "height": 4,
+            "width": 4,
+            "text": "•",
+            "x": 166
+          },
+          {
+            "y": 400,
+            "height": 20,
+            "width": 52,
+            "text": "New",
+            "x": 180
+          },
+          {
+            "y": 410,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 240
+          },
+          {
+            "y": 398,
+            "height": 22,
+            "width": 73,
+            "text": "Daniel",
+            "x": 254
+          },
+          {
+            "y": 398,
+            "height": 22,
+            "width": 49,
+            "text": "Park",
+            "x": 337
+          },
+          {
+            "y": 215,
+            "height": 33,
+            "width": 141,
+            "text": "Coverage",
+            "x": 1422
+          },
+          {
+            "y": 278,
+            "height": 29,
+            "width": 70,
+            "text": "Maya",
+            "x": 1423
+          },
+          {
+            "y": 277,
+            "height": 23,
+            "width": 36,
+            "text": "Lin",
+            "x": 1504
+          },
+          {
+            "y": 278,
+            "height": 25,
+            "width": 40,
+            "text": "1/3",
+            "x": 1559
+          },
+          {
+            "y": 361,
+            "height": 23,
+            "width": 81,
+            "text": "Daniel",
+            "x": 1423
+          },
+          {
+            "y": 361,
+            "height": 23,
+            "width": 55,
+            "text": "Park",
+            "x": 1515
+          },
+          {
+            "y": 362,
+            "height": 25,
+            "width": 43,
+            "text": "0/2",
+            "x": 1587
+          },
+          {
+            "y": 362,
+            "height": 30,
+            "width": 83,
+            "text": "(away)",
+            "x": 1648
+          },
+          {
+            "y": 445,
+            "height": 23,
+            "width": 87,
+            "text": "Admin",
+            "x": 1421
+          },
+          {
+            "y": 446,
+            "height": 25,
+            "width": 44,
+            "text": "0/0",
+            "x": 1525
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 22,
+      "adapter": "chromium"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "10DCD7C014DD16EB81351276645D333C8F7FE9DA2D7E8E8EFC9F165D1F2BAD6D",
+      "sourceSha256": "67CD641206F30B8F6E9CD0CB4B5EA7E878866C18C1BE47B38FABEC31693EC8DF",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Blocked",
+        "Maya Lin",
+        "4522",
+        "Payment telemetry",
+        "Task",
+        "New",
+        "Daniel Park",
+        "Coverage",
+        "1/3",
+        "0/2",
+        "away",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 22,
+      "state": "blocked-item",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue, Blocked • Maya Lin #4522 Payment telemetry Task • New • Daniel Park Coverage Maya Lin Items: 1/3 Daniel Park Items: 0/2 • away Admin Items: 0/0",
+        "words": [
+          {
+            "y": 56,
+            "height": 52,
+            "width": 191,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 56,
+            "height": 52,
+            "width": 182,
+            "text": "agenda:",
+            "x": 280
+          },
+          {
+            "y": 56,
+            "height": 52,
+            "width": 173,
+            "text": "flagged",
+            "x": 478
+          },
+          {
+            "y": 56,
+            "height": 40,
+            "width": 122,
+            "text": "items",
+            "x": 671
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 113,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 45,
+            "text": "43",
+            "x": 198
+          },
+          {
+            "y": 139,
+            "height": 7,
+            "width": 9,
+            "text": "•",
+            "x": 257
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 25,
+            "text": "4",
+            "x": 278
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 85,
+            "text": "days",
+            "x": 315
+          },
+          {
+            "y": 124,
+            "height": 32,
+            "width": 61,
+            "text": "left",
+            "x": 415
+          },
+          {
+            "y": 182,
+            "height": 28,
+            "width": 79,
+            "text": "Goal:",
+            "x": 73
+          },
+          {
+            "y": 182,
+            "height": 37,
+            "width": 68,
+            "text": "Ship",
+            "x": 163
+          },
+          {
+            "y": 182,
+            "height": 28,
+            "width": 122,
+            "text": "resilient",
+            "x": 244
+          },
+          {
+            "y": 185,
+            "height": 34,
+            "width": 153,
+            "text": "payments",
+            "x": 377
+          },
+          {
+            "y": 263,
+            "height": 28,
+            "width": 101,
+            "text": "#4521",
+            "x": 108
+          },
+          {
+            "y": 263,
+            "height": 37,
+            "width": 92,
+            "text": "Retry",
+            "x": 236
+          },
+          {
+            "y": 261,
+            "height": 30,
+            "width": 96,
+            "text": "failed",
+            "x": 338
+          },
+          {
+            "y": 265,
+            "height": 35,
+            "width": 170,
+            "text": "payments",
+            "x": 449
+          },
+          {
+            "y": 313,
+            "height": 26,
+            "width": 70,
+            "text": "User",
+            "x": 110
+          },
+          {
+            "y": 313,
+            "height": 35,
+            "width": 82,
+            "text": "Story",
+            "x": 190
+          },
+          {
+            "y": 325,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 282
+          },
+          {
+            "y": 313,
+            "height": 26,
+            "width": 96,
+            "text": "Active",
+            "x": 299
+          },
+          {
+            "y": 325,
+            "height": 5,
+            "width": 7,
+            "text": "•",
+            "x": 406
+          },
+          {
+            "y": 311,
+            "height": 33,
+            "width": 141,
+            "text": "Overdue,",
+            "x": 424
+          },
+          {
+            "y": 311,
+            "height": 28,
+            "width": 120,
+            "text": "Blocked",
+            "x": 580
+          },
+          {
+            "y": 325,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 713
+          },
+          {
+            "y": 313,
+            "height": 35,
+            "width": 82,
+            "text": "Maya",
+            "x": 732
+          },
+          {
+            "y": 313,
+            "height": 26,
+            "width": 41,
+            "text": "Lin",
+            "x": 829
+          },
+          {
+            "y": 389,
+            "height": 28,
+            "width": 108,
+            "text": "#4522",
+            "x": 108
+          },
+          {
+            "y": 389,
+            "height": 37,
+            "width": 153,
+            "text": "Payment",
+            "x": 242
+          },
+          {
+            "y": 388,
+            "height": 38,
+            "width": 170,
+            "text": "telemetry",
+            "x": 406
+          },
+          {
+            "y": 437,
+            "height": 28,
+            "width": 71,
+            "text": "Task",
+            "x": 107
+          },
+          {
+            "y": 451,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 189
+          },
+          {
+            "y": 439,
+            "height": 26,
+            "width": 70,
+            "text": "New",
+            "x": 208
+          },
+          {
+            "y": 451,
+            "height": 5,
+            "width": 5,
+            "text": "•",
+            "x": 289
+          },
+          {
+            "y": 437,
+            "height": 28,
+            "width": 96,
+            "text": "Daniel",
+            "x": 307
+          },
+          {
+            "y": 437,
+            "height": 28,
+            "width": 66,
+            "text": "Park",
+            "x": 418
+          },
+          {
+            "y": 254,
+            "height": 40,
+            "width": 178,
+            "text": "Coverage",
+            "x": 1381
+          },
+          {
+            "y": 329,
+            "height": 37,
+            "width": 93,
+            "text": "Maya",
+            "x": 1382
+          },
+          {
+            "y": 327,
+            "height": 30,
+            "width": 48,
+            "text": "Lin",
+            "x": 1489
+          },
+          {
+            "y": 382,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 382,
+            "height": 31,
+            "width": 48,
+            "text": "1/3",
+            "x": 1487
+          },
+          {
+            "y": 504,
+            "height": 30,
+            "width": 108,
+            "text": "Daniel",
+            "x": 1382
+          },
+          {
+            "y": 505,
+            "height": 29,
+            "width": 76,
+            "text": "Park",
+            "x": 1505
+          },
+          {
+            "y": 559,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 559,
+            "height": 31,
+            "width": 51,
+            "text": "0/2",
+            "x": 1485
+          },
+          {
+            "y": 571,
+            "height": 5,
+            "width": 6,
+            "text": "•",
+            "x": 1548
+          },
+          {
+            "y": 566,
+            "height": 28,
+            "width": 80,
+            "text": "away",
+            "x": 1565
+          },
+          {
+            "y": 681,
+            "height": 30,
+            "width": 117,
+            "text": "Admin",
+            "x": 1379
+          },
+          {
+            "y": 736,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 736,
+            "height": 31,
+            "width": 51,
+            "text": "0/0",
+            "x": 1485
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 22,
+      "adapter": "native"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "28B464C44C05B21CB37F2008DC2554D7B659D19F013693AB0ECA8221D0573761",
+      "sourceSha256": "F1E399342CB4C3052DD4054FEB2838EAEB67DC0CFB007C7E9D3C763FD1A24DA7",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Standup complete",
+        "Follow-ups are in Teams for approval",
+        "Coverage",
+        "Maya Lin",
+        "3/3"
+      ],
+      "recognised": 8,
+      "state": "recap",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left Standup complete. Follow-ups are in Teams for approval. Coverage Maya Lin 3/3",
+        "words": [
+          {
+            "y": 65,
+            "height": 52,
+            "width": 190,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 65,
+            "height": 52,
+            "width": 182,
+            "text": "agenda:",
+            "x": 279
+          },
+          {
+            "y": 65,
+            "height": 52,
+            "width": 173,
+            "text": "flagged",
+            "x": 477
+          },
+          {
+            "y": 65,
+            "height": 40,
+            "width": 123,
+            "text": "items",
+            "x": 669
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 77,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 31,
+            "text": "43",
+            "x": 158
+          },
+          {
+            "y": 151,
+            "height": 4,
+            "width": 5,
+            "text": "•",
+            "x": 200
+          },
+          {
+            "y": 140,
+            "height": 22,
+            "width": 16,
+            "text": "4",
+            "x": 213
+          },
+          {
+            "y": 139,
+            "height": 31,
+            "width": 59,
+            "text": "days",
+            "x": 239
+          },
+          {
+            "y": 139,
+            "height": 23,
+            "width": 41,
+            "text": "left",
+            "x": 308
+          },
+          {
+            "y": 253,
+            "height": 41,
+            "width": 156,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 253,
+            "height": 41,
+            "width": 185,
+            "text": "complete.",
+            "x": 243
+          },
+          {
+            "y": 253,
+            "height": 41,
+            "width": 206,
+            "text": "Follow-ups",
+            "x": 444
+          },
+          {
+            "y": 263,
+            "height": 22,
+            "width": 58,
+            "text": "are",
+            "x": 663
+          },
+          {
+            "y": 253,
+            "height": 32,
+            "width": 31,
+            "text": "in",
+            "x": 736
+          },
+          {
+            "y": 254,
+            "height": 31,
+            "width": 119,
+            "text": "Teams",
+            "x": 780
+          },
+          {
+            "y": 253,
+            "height": 32,
+            "width": 56,
+            "text": "for",
+            "x": 911
+          },
+          {
+            "y": 253,
+            "height": 41,
+            "width": 174,
+            "text": "approval.",
+            "x": 978
+          },
+          {
+            "y": 215,
+            "height": 33,
+            "width": 141,
+            "text": "Coverage",
+            "x": 1422
+          },
+          {
+            "y": 278,
+            "height": 29,
+            "width": 70,
+            "text": "Maya",
+            "x": 1423
+          },
+          {
+            "y": 277,
+            "height": 23,
+            "width": 36,
+            "text": "Lin",
+            "x": 1504
+          },
+          {
+            "y": 278,
+            "height": 25,
+            "width": 43,
+            "text": "3/3",
+            "x": 1557
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 8,
+      "adapter": "chromium"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "imageSha256": "02756749B46EF55A2BD867DC08B63A19C58EF8AB2782361F2F71A4E0BF014B56",
+      "sourceSha256": "F05527422269E76B12E4CE7E5599EF5E06C7710ECA23498FE6666433EB6D1D87",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Standup complete",
+        "Meeting-derived data is not saved",
+        "Coverage",
+        "Maya Lin",
+        "3/3"
+      ],
+      "recognised": 8,
+      "state": "recap",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left Standup complete. Meeting-derived data is not saved. Coverage Maya Lin Items: 3/3",
+        "words": [
+          {
+            "y": 56,
+            "height": 52,
+            "width": 191,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 56,
+            "height": 52,
+            "width": 182,
+            "text": "agenda:",
+            "x": 280
+          },
+          {
+            "y": 56,
+            "height": 52,
+            "width": 173,
+            "text": "flagged",
+            "x": 478
+          },
+          {
+            "y": 56,
+            "height": 40,
+            "width": 122,
+            "text": "items",
+            "x": 671
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 113,
+            "text": "Sprint",
+            "x": 73
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 45,
+            "text": "43",
+            "x": 198
+          },
+          {
+            "y": 139,
+            "height": 7,
+            "width": 9,
+            "text": "•",
+            "x": 257
+          },
+          {
+            "y": 125,
+            "height": 31,
+            "width": 25,
+            "text": "4",
+            "x": 278
+          },
+          {
+            "y": 124,
+            "height": 41,
+            "width": 85,
+            "text": "days",
+            "x": 315
+          },
+          {
+            "y": 124,
+            "height": 32,
+            "width": 61,
+            "text": "left",
+            "x": 415
+          },
+          {
+            "y": 290,
+            "height": 48,
+            "width": 179,
+            "text": "Standup",
+            "x": 73
+          },
+          {
+            "y": 290,
+            "height": 48,
+            "width": 212,
+            "text": "complete.",
+            "x": 269
+          },
+          {
+            "y": 368,
+            "height": 37,
+            "width": 261,
+            "text": "Meeting-derived",
+            "x": 74
+          },
+          {
+            "y": 368,
+            "height": 28,
+            "width": 67,
+            "text": "data",
+            "x": 348
+          },
+          {
+            "y": 370,
+            "height": 26,
+            "width": 22,
+            "text": "is",
+            "x": 428
+          },
+          {
+            "y": 371,
+            "height": 25,
+            "width": 52,
+            "text": "not",
+            "x": 463
+          },
+          {
+            "y": 368,
+            "height": 28,
+            "width": 96,
+            "text": "saved.",
+            "x": 526
+          },
+          {
+            "y": 254,
+            "height": 40,
+            "width": 178,
+            "text": "Coverage",
+            "x": 1381
+          },
+          {
+            "y": 329,
+            "height": 37,
+            "width": 93,
+            "text": "Maya",
+            "x": 1382
+          },
+          {
+            "y": 327,
+            "height": 30,
+            "width": 48,
+            "text": "Lin",
+            "x": 1489
+          },
+          {
+            "y": 382,
+            "height": 26,
+            "width": 91,
+            "text": "Items:",
+            "x": 1382
+          },
+          {
+            "y": 382,
+            "height": 31,
+            "width": 49,
+            "text": "3/3",
+            "x": 1486
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 8,
+      "adapter": "native"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "5325FCBC4D2DABD0F04211C83EBF3925D5439B821B645A893747E69F21CF2E50",
+      "sourceSha256": "D95EFD196605E5DE13BFB4FFC723160FA117BEB959B603BFEC635A54068F009F",
+      "expected": [
+        "Admin\u0027s items",
+        "Sprint 43",
+        "0 days left",
+        "No items assigned",
+        "Coverage",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 1,
+      "state": "empty",
+      "ocr": {
+        "text": "Admir€s items \\eft Sprint 43 • O days No items assig",
+        "words": [
+          {
+            "y": 100,
+            "height": 30,
+            "width": 80,
+            "text": "Admir€s",
+            "x": 1
+          },
+          {
+            "y": 90,
+            "height": 22,
+            "width": 57,
+            "text": "items",
+            "x": 85
+          },
+          {
+            "y": 121,
+            "height": 12,
+            "width": 19,
+            "text": "\\eft",
+            "x": 108
+          },
+          {
+            "y": 139,
+            "height": 17,
+            "width": 36,
+            "text": "Sprint",
+            "x": 5
+          },
+          {
+            "y": 135,
+            "height": 11,
+            "width": 13,
+            "text": "43",
+            "x": 44
+          },
+          {
+            "y": 138,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 62
+          },
+          {
+            "y": 131,
+            "height": 10,
+            "width": 8,
+            "text": "O",
+            "x": 67
+          },
+          {
+            "y": 128,
+            "height": 12,
+            "width": 27,
+            "text": "days",
+            "x": 78
+          },
+          {
+            "y": 194,
+            "height": 14,
+            "width": 21,
+            "text": "No",
+            "x": 16
+          },
+          {
+            "y": 187,
+            "height": 16,
+            "width": 39,
+            "text": "items",
+            "x": 41
+          },
+          {
+            "y": 178,
+            "height": 16,
+            "width": 34,
+            "text": "assig",
+            "x": 84
+          }
+        ]
+      },
+      "pass": false,
+      "missing": [
+        "Admin\u0027s items",
+        "0 days left",
+        "No items assigned",
+        "Coverage",
+        "Admin",
+        "0/0"
+      ],
+      "total": 7,
+      "adapter": "chromium"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "D44D292D08C14A0DD6AC857ECBC502EE36966BDF532F881CF905555B40B456CE",
+      "sourceSha256": "422608D0668CE26AD7B997ACEF27EABFFDBF4709EBEA25E936B6DBEE3B6AF623",
+      "expected": [
+        "Admin\u0027s items",
+        "Sprint 43",
+        "0 days left",
+        "No items assigned",
+        "Coverage",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 6,
+      "state": "empty",
+      "ocr": {
+        "text": "Admin\u0027s items Sprint 43 • O days left Coverage NO items assigned. Admin Items: 0/0",
+        "words": [
+          {
+            "y": 25,
+            "height": 18,
+            "width": 84,
+            "text": "Admin\u0027s",
+            "x": 32
+          },
+          {
+            "y": 25,
+            "height": 18,
+            "width": 55,
+            "text": "items",
+            "x": 123
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 50,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 20,
+            "text": "43",
+            "x": 88
+          },
+          {
+            "y": 62,
+            "height": 3,
+            "width": 4,
+            "text": "•",
+            "x": 115
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 10,
+            "text": "O",
+            "x": 124
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 38,
+            "text": "days",
+            "x": 140
+          },
+          {
+            "y": 55,
+            "height": 15,
+            "width": 27,
+            "text": "left",
+            "x": 184
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 80,
+            "text": "Coverage",
+            "x": 614
+          },
+          {
+            "y": 134,
+            "height": 12,
+            "width": 20,
+            "text": "NO",
+            "x": 33
+          },
+          {
+            "y": 134,
+            "height": 12,
+            "width": 37,
+            "text": "items",
+            "x": 59
+          },
+          {
+            "y": 133,
+            "height": 17,
+            "width": 65,
+            "text": "assigned.",
+            "x": 101
+          },
+          {
+            "y": 146,
+            "height": 13,
+            "width": 51,
+            "text": "Admin",
+            "x": 614
+          },
+          {
+            "y": 170,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 170,
+            "height": 14,
+            "width": 23,
+            "text": "0/0",
+            "x": 661
+          }
+        ]
+      },
+      "pass": false,
+      "missing": ["0 days left"],
+      "total": 7,
+      "adapter": "native"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "30BAEC9B9D61BD33A4C1F2C9EFCB9AC87E24BB28F09B2A07204C3A1A2705B16C",
+      "sourceSha256": "EE1657507D7802E71069E13EE497CE65B121A2383E82039168A18DFD286CECF9",
+      "expected": [
+        "Maya Lin\u0027s items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Coverage",
+        "Maya Lin",
+        "1/3",
+        "Daniel Park",
+        "0/2",
+        "no response"
+      ],
+      "recognised": 15,
+      "state": "active-speaker",
+      "ocr": {
+        "text": "Maya Lin\u0027s items Sprint 43 4 days left • Goal: Ship resilient payments #4521 Retry failed payments user Story - Active Overdue Coverage Maya Lin 1/3 Daniel Park 0/2 (no response)",
+        "words": [
+          {
+            "y": 31,
+            "height": 21,
+            "width": 54,
+            "text": "Maya",
+            "x": 34
+          },
+          {
+            "y": 29,
+            "height": 18,
+            "width": 42,
+            "text": "Lin\u0027s",
+            "x": 96
+          },
+          {
+            "y": 29,
+            "height": 18,
+            "width": 55,
+            "text": "items",
+            "x": 145
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 34,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 14,
+            "text": "43",
+            "x": 71
+          },
+          {
+            "y": 63,
+            "height": 9,
+            "width": 7,
+            "text": "4",
+            "x": 95
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 27,
+            "text": "days",
+            "x": 106
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 19,
+            "text": "left",
+            "x": 137
+          },
+          {
+            "y": 67,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 160
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 29,
+            "text": "Goal:",
+            "x": 166
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 25,
+            "text": "Ship",
+            "x": 200
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 46,
+            "text": "resilient",
+            "x": 229
+          },
+          {
+            "y": 63,
+            "height": 13,
+            "width": 56,
+            "text": "payments",
+            "x": 279
+          },
+          {
+            "y": 102,
+            "height": 12,
+            "width": 39,
+            "text": "#4521",
+            "x": 48
+          },
+          {
+            "y": 102,
+            "height": 15,
+            "width": 35,
+            "text": "Retry",
+            "x": 96
+          },
+          {
+            "y": 102,
+            "height": 12,
+            "width": 37,
+            "text": "failed",
+            "x": 135
+          },
+          {
+            "y": 104,
+            "height": 13,
+            "width": 65,
+            "text": "payments",
+            "x": 176
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 23,
+            "text": "user",
+            "x": 49
+          },
+          {
+            "y": 122,
+            "height": 12,
+            "width": 27,
+            "text": "Story",
+            "x": 76
+          },
+          {
+            "y": 127,
+            "height": 1,
+            "width": 2,
+            "text": "-",
+            "x": 106
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 32,
+            "text": "Active",
+            "x": 112
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 45,
+            "text": "Overdue",
+            "x": 153
+          },
+          {
+            "y": 96,
+            "height": 14,
+            "width": 63,
+            "text": "Coverage",
+            "x": 633
+          },
+          {
+            "y": 124,
+            "height": 13,
+            "width": 31,
+            "text": "Maya",
+            "x": 633
+          },
+          {
+            "y": 123,
+            "height": 11,
+            "width": 16,
+            "text": "Lin",
+            "x": 669
+          },
+          {
+            "y": 124,
+            "height": 11,
+            "width": 18,
+            "text": "1/3",
+            "x": 694
+          },
+          {
+            "y": 161,
+            "height": 10,
+            "width": 36,
+            "text": "Daniel",
+            "x": 633
+          },
+          {
+            "y": 161,
+            "height": 10,
+            "width": 25,
+            "text": "Park",
+            "x": 674
+          },
+          {
+            "y": 161,
+            "height": 11,
+            "width": 19,
+            "text": "0/2",
+            "x": 706
+          },
+          {
+            "y": 161,
+            "height": 12,
+            "width": 19,
+            "text": "(no",
+            "x": 733
+          },
+          {
+            "y": 161,
+            "height": 13,
+            "width": 57,
+            "text": "response)",
+            "x": 756
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 15,
+      "adapter": "chromium"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "E5C6E5C66148AFFB067A530F79B208F304BB668A82AF688350F5EF8EB13A1E6A",
+      "sourceSha256": "2697A4082D2B8448C306FA7A00B2FBE0D10DEABA131DDFF02C3F67ABF90E6FA0",
+      "expected": [
+        "Maya Lin\u0027s items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Coverage",
+        "Maya Lin",
+        "1/3",
+        "Daniel Park",
+        "0/2",
+        "no response",
+        "Current item"
+      ],
+      "recognised": 16,
+      "state": "active-speaker",
+      "ocr": {
+        "text": "Maya Lin\u0027s items Sprint 43 • 4 days left Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue Coverage Maya Lin Items: 1/3 Daniel Park Items: 0/2 • no response Current item #4521",
+        "words": [
+          {
+            "y": 26,
+            "height": 22,
+            "width": 54,
+            "text": "Maya",
+            "x": 34
+          },
+          {
+            "y": 25,
+            "height": 18,
+            "width": 44,
+            "text": "Lin\u0027s",
+            "x": 96
+          },
+          {
+            "y": 25,
+            "height": 18,
+            "width": 55,
+            "text": "items",
+            "x": 148
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 50,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 20,
+            "text": "43",
+            "x": 88
+          },
+          {
+            "y": 62,
+            "height": 3,
+            "width": 4,
+            "text": "•",
+            "x": 115
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 11,
+            "text": "4",
+            "x": 124
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 39,
+            "text": "days",
+            "x": 140
+          },
+          {
+            "y": 55,
+            "height": 15,
+            "width": 27,
+            "text": "left",
+            "x": 185
+          },
+          {
+            "y": 81,
+            "height": 13,
+            "width": 35,
+            "text": "Goal:",
+            "x": 33
+          },
+          {
+            "y": 81,
+            "height": 17,
+            "width": 30,
+            "text": "Ship",
+            "x": 73
+          },
+          {
+            "y": 81,
+            "height": 13,
+            "width": 54,
+            "text": "resilient",
+            "x": 109
+          },
+          {
+            "y": 83,
+            "height": 15,
+            "width": 68,
+            "text": "payments",
+            "x": 168
+          },
+          {
+            "y": 117,
+            "height": 13,
+            "width": 45,
+            "text": "#4521",
+            "x": 48
+          },
+          {
+            "y": 117,
+            "height": 17,
+            "width": 41,
+            "text": "Retry",
+            "x": 105
+          },
+          {
+            "y": 116,
+            "height": 14,
+            "width": 42,
+            "text": "failed",
+            "x": 151
+          },
+          {
+            "y": 118,
+            "height": 16,
+            "width": 76,
+            "text": "payments",
+            "x": 200
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 31,
+            "text": "User",
+            "x": 49
+          },
+          {
+            "y": 139,
+            "height": 16,
+            "width": 36,
+            "text": "Story",
+            "x": 85
+          },
+          {
+            "y": 145,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 126
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 43,
+            "text": "Active",
+            "x": 133
+          },
+          {
+            "y": 145,
+            "height": 2,
+            "width": 3,
+            "text": "•",
+            "x": 181
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 60,
+            "text": "Overdue",
+            "x": 189
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 80,
+            "text": "Coverage",
+            "x": 614
+          },
+          {
+            "y": 147,
+            "height": 16,
+            "width": 41,
+            "text": "Maya",
+            "x": 615
+          },
+          {
+            "y": 146,
+            "height": 13,
+            "width": 21,
+            "text": "Lin",
+            "x": 663
+          },
+          {
+            "y": 170,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 170,
+            "height": 14,
+            "width": 21,
+            "text": "1/3",
+            "x": 662
+          },
+          {
+            "y": 224,
+            "height": 14,
+            "width": 48,
+            "text": "Daniel",
+            "x": 615
+          },
+          {
+            "y": 224,
+            "height": 14,
+            "width": 33,
+            "text": "Park",
+            "x": 670
+          },
+          {
+            "y": 249,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 248,
+            "height": 14,
+            "width": 23,
+            "text": "0/2",
+            "x": 661
+          },
+          {
+            "y": 254,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 689
+          },
+          {
+            "y": 252,
+            "height": 9,
+            "width": 17,
+            "text": "no",
+            "x": 697
+          },
+          {
+            "y": 252,
+            "height": 12,
+            "width": 62,
+            "text": "response",
+            "x": 720
+          },
+          {
+            "y": 440,
+            "height": 13,
+            "width": 55,
+            "text": "Current",
+            "x": 614
+          },
+          {
+            "y": 440,
+            "height": 12,
+            "width": 31,
+            "text": "item",
+            "x": 674
+          },
+          {
+            "y": 441,
+            "height": 12,
+            "width": 42,
+            "text": "#4521",
+            "x": 710
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 16,
+      "adapter": "native"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "544F6AC0FEDEB3E0CF26906B4FB75F880B8E7F70D5C40F1386445C041BFA478D",
+      "sourceSha256": "55ED790848ED7764A22BEF7E0E606B2AF60B668BC3BC375CEDC0A214D99FFB05",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Blocked",
+        "Maya Lin",
+        "4522",
+        "Payment telemetry",
+        "Task",
+        "New",
+        "Daniel Park",
+        "Coverage",
+        "1/3",
+        "0/2",
+        "away",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 22,
+      "state": "blocked-item",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 4 days left • Goal: Ship resilient payments #4521 Retry failed payments user Story - Active - Overdue. Blocked Maya Lin #4522 Payment telemetry Task - New - Daniel Park Coverage Maya Lin 1/3 Daniel Park 0/2 (away) Admin 0/0",
+        "words": [
+          {
+            "y": 29,
+            "height": 23,
+            "width": 84,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 29,
+            "height": 23,
+            "width": 81,
+            "text": "agenda:",
+            "x": 124
+          },
+          {
+            "y": 29,
+            "height": 23,
+            "width": 78,
+            "text": "flagged",
+            "x": 212
+          },
+          {
+            "y": 29,
+            "height": 18,
+            "width": 55,
+            "text": "items",
+            "x": 298
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 34,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 14,
+            "text": "43",
+            "x": 71
+          },
+          {
+            "y": 63,
+            "height": 9,
+            "width": 7,
+            "text": "4",
+            "x": 95
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 27,
+            "text": "days",
+            "x": 106
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 19,
+            "text": "left",
+            "x": 137
+          },
+          {
+            "y": 67,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 160
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 29,
+            "text": "Goal:",
+            "x": 166
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 25,
+            "text": "Ship",
+            "x": 200
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 46,
+            "text": "resilient",
+            "x": 229
+          },
+          {
+            "y": 63,
+            "height": 13,
+            "width": 56,
+            "text": "payments",
+            "x": 279
+          },
+          {
+            "y": 102,
+            "height": 12,
+            "width": 39,
+            "text": "#4521",
+            "x": 48
+          },
+          {
+            "y": 102,
+            "height": 15,
+            "width": 35,
+            "text": "Retry",
+            "x": 96
+          },
+          {
+            "y": 102,
+            "height": 12,
+            "width": 37,
+            "text": "failed",
+            "x": 135
+          },
+          {
+            "y": 104,
+            "height": 13,
+            "width": 65,
+            "text": "payments",
+            "x": 176
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 23,
+            "text": "user",
+            "x": 49
+          },
+          {
+            "y": 122,
+            "height": 12,
+            "width": 28,
+            "text": "Story",
+            "x": 75
+          },
+          {
+            "y": 127,
+            "height": 1,
+            "width": 2,
+            "text": "-",
+            "x": 106
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 33,
+            "text": "Active",
+            "x": 111
+          },
+          {
+            "y": 127,
+            "height": 1,
+            "width": 3,
+            "text": "-",
+            "x": 147
+          },
+          {
+            "y": 122,
+            "height": 10,
+            "width": 48,
+            "text": "Overdue.",
+            "x": 153
+          },
+          {
+            "y": 121,
+            "height": 10,
+            "width": 41,
+            "text": "Blocked",
+            "x": 205
+          },
+          {
+            "y": 122,
+            "height": 12,
+            "width": 28,
+            "text": "Maya",
+            "x": 256
+          },
+          {
+            "y": 122,
+            "height": 9,
+            "width": 15,
+            "text": "Lin",
+            "x": 288
+          },
+          {
+            "y": 158,
+            "height": 12,
+            "width": 41,
+            "text": "#4522",
+            "x": 48
+          },
+          {
+            "y": 158,
+            "height": 15,
+            "width": 57,
+            "text": "Payment",
+            "x": 99
+          },
+          {
+            "y": 158,
+            "height": 15,
+            "width": 65,
+            "text": "telemetry",
+            "x": 160
+          },
+          {
+            "y": 178,
+            "height": 9,
+            "width": 23,
+            "text": "Task",
+            "x": 48
+          },
+          {
+            "y": 183,
+            "height": 1,
+            "width": 2,
+            "text": "-",
+            "x": 74
+          },
+          {
+            "y": 178,
+            "height": 9,
+            "width": 24,
+            "text": "New",
+            "x": 80
+          },
+          {
+            "y": 183,
+            "height": 1,
+            "width": 2,
+            "text": "-",
+            "x": 107
+          },
+          {
+            "y": 177,
+            "height": 10,
+            "width": 33,
+            "text": "Daniel",
+            "x": 113
+          },
+          {
+            "y": 177,
+            "height": 10,
+            "width": 22,
+            "text": "Park",
+            "x": 150
+          },
+          {
+            "y": 96,
+            "height": 14,
+            "width": 63,
+            "text": "Coverage",
+            "x": 633
+          },
+          {
+            "y": 124,
+            "height": 13,
+            "width": 31,
+            "text": "Maya",
+            "x": 633
+          },
+          {
+            "y": 123,
+            "height": 11,
+            "width": 16,
+            "text": "Lin",
+            "x": 669
+          },
+          {
+            "y": 124,
+            "height": 11,
+            "width": 18,
+            "text": "1/3",
+            "x": 694
+          },
+          {
+            "y": 161,
+            "height": 10,
+            "width": 36,
+            "text": "Daniel",
+            "x": 633
+          },
+          {
+            "y": 161,
+            "height": 10,
+            "width": 25,
+            "text": "Park",
+            "x": 674
+          },
+          {
+            "y": 161,
+            "height": 11,
+            "width": 19,
+            "text": "0/2",
+            "x": 706
+          },
+          {
+            "y": 161,
+            "height": 14,
+            "width": 37,
+            "text": "(away)",
+            "x": 733
+          },
+          {
+            "y": 198,
+            "height": 11,
+            "width": 39,
+            "text": "Admin",
+            "x": 632
+          },
+          {
+            "y": 198,
+            "height": 12,
+            "width": 19,
+            "text": "0/0",
+            "x": 679
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 22,
+      "adapter": "chromium"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "FB926066E0B93CF2D2FA04C99597C49552A6B3044700F86554EF045AB587E2AC",
+      "sourceSha256": "67CD641206F30B8F6E9CD0CB4B5EA7E878866C18C1BE47B38FABEC31693EC8DF",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Goal: Ship resilient payments",
+        "4521",
+        "Retry failed payments",
+        "User Story",
+        "Active",
+        "Overdue",
+        "Blocked",
+        "Maya Lin",
+        "4522",
+        "Payment telemetry",
+        "Task",
+        "New",
+        "Daniel Park",
+        "Coverage",
+        "1/3",
+        "0/2",
+        "away",
+        "Admin",
+        "0/0"
+      ],
+      "recognised": 22,
+      "state": "blocked-item",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left Goal: Ship resilient payments #4521 Retry failed payments User Story • Active • Overdue, Blocked • Maya Lin #4522 Payment telemetry Task • New • Daniel Park Coverage Maya Lin Items: 1/3 Daniel Park Items: 0/2 • away Admin Items: 0/0",
+        "words": [
+          {
+            "y": 25,
+            "height": 23,
+            "width": 85,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 25,
+            "height": 23,
+            "width": 81,
+            "text": "agenda:",
+            "x": 125
+          },
+          {
+            "y": 25,
+            "height": 23,
+            "width": 77,
+            "text": "flagged",
+            "x": 213
+          },
+          {
+            "y": 25,
+            "height": 18,
+            "width": 54,
+            "text": "items",
+            "x": 299
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 50,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 20,
+            "text": "43",
+            "x": 88
+          },
+          {
+            "y": 62,
+            "height": 3,
+            "width": 4,
+            "text": "•",
+            "x": 115
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 11,
+            "text": "4",
+            "x": 124
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 39,
+            "text": "days",
+            "x": 140
+          },
+          {
+            "y": 55,
+            "height": 15,
+            "width": 27,
+            "text": "left",
+            "x": 185
+          },
+          {
+            "y": 81,
+            "height": 13,
+            "width": 35,
+            "text": "Goal:",
+            "x": 33
+          },
+          {
+            "y": 81,
+            "height": 17,
+            "width": 30,
+            "text": "Ship",
+            "x": 73
+          },
+          {
+            "y": 81,
+            "height": 13,
+            "width": 54,
+            "text": "resilient",
+            "x": 109
+          },
+          {
+            "y": 83,
+            "height": 15,
+            "width": 68,
+            "text": "payments",
+            "x": 168
+          },
+          {
+            "y": 117,
+            "height": 13,
+            "width": 45,
+            "text": "#4521",
+            "x": 48
+          },
+          {
+            "y": 117,
+            "height": 17,
+            "width": 41,
+            "text": "Retry",
+            "x": 105
+          },
+          {
+            "y": 116,
+            "height": 14,
+            "width": 42,
+            "text": "failed",
+            "x": 151
+          },
+          {
+            "y": 118,
+            "height": 16,
+            "width": 76,
+            "text": "payments",
+            "x": 200
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 31,
+            "text": "User",
+            "x": 49
+          },
+          {
+            "y": 139,
+            "height": 16,
+            "width": 36,
+            "text": "Story",
+            "x": 85
+          },
+          {
+            "y": 145,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 126
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 43,
+            "text": "Active",
+            "x": 133
+          },
+          {
+            "y": 145,
+            "height": 2,
+            "width": 3,
+            "text": "•",
+            "x": 181
+          },
+          {
+            "y": 139,
+            "height": 14,
+            "width": 63,
+            "text": "Overdue,",
+            "x": 189
+          },
+          {
+            "y": 138,
+            "height": 13,
+            "width": 54,
+            "text": "Blocked",
+            "x": 258
+          },
+          {
+            "y": 145,
+            "height": 2,
+            "width": 3,
+            "text": "•",
+            "x": 317
+          },
+          {
+            "y": 139,
+            "height": 16,
+            "width": 37,
+            "text": "Maya",
+            "x": 326
+          },
+          {
+            "y": 139,
+            "height": 12,
+            "width": 18,
+            "text": "Lin",
+            "x": 369
+          },
+          {
+            "y": 173,
+            "height": 13,
+            "width": 49,
+            "text": "#4522",
+            "x": 48
+          },
+          {
+            "y": 173,
+            "height": 17,
+            "width": 68,
+            "text": "Payment",
+            "x": 108
+          },
+          {
+            "y": 172,
+            "height": 18,
+            "width": 75,
+            "text": "telemetry",
+            "x": 181
+          },
+          {
+            "y": 195,
+            "height": 12,
+            "width": 32,
+            "text": "Task",
+            "x": 48
+          },
+          {
+            "y": 201,
+            "height": 2,
+            "width": 3,
+            "text": "•",
+            "x": 84
+          },
+          {
+            "y": 195,
+            "height": 12,
+            "width": 31,
+            "text": "New",
+            "x": 93
+          },
+          {
+            "y": 201,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 129
+          },
+          {
+            "y": 195,
+            "height": 12,
+            "width": 43,
+            "text": "Daniel",
+            "x": 137
+          },
+          {
+            "y": 195,
+            "height": 12,
+            "width": 30,
+            "text": "Park",
+            "x": 186
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 80,
+            "text": "Coverage",
+            "x": 614
+          },
+          {
+            "y": 146,
+            "height": 17,
+            "width": 41,
+            "text": "Maya",
+            "x": 615
+          },
+          {
+            "y": 145,
+            "height": 14,
+            "width": 21,
+            "text": "Lin",
+            "x": 663
+          },
+          {
+            "y": 170,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 170,
+            "height": 14,
+            "width": 21,
+            "text": "1/3",
+            "x": 662
+          },
+          {
+            "y": 224,
+            "height": 14,
+            "width": 48,
+            "text": "Daniel",
+            "x": 615
+          },
+          {
+            "y": 224,
+            "height": 14,
+            "width": 33,
+            "text": "Park",
+            "x": 670
+          },
+          {
+            "y": 249,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 248,
+            "height": 14,
+            "width": 23,
+            "text": "0/2",
+            "x": 661
+          },
+          {
+            "y": 254,
+            "height": 2,
+            "width": 2,
+            "text": "•",
+            "x": 689
+          },
+          {
+            "y": 252,
+            "height": 13,
+            "width": 36,
+            "text": "away",
+            "x": 696
+          },
+          {
+            "y": 303,
+            "height": 14,
+            "width": 52,
+            "text": "Admin",
+            "x": 614
+          },
+          {
+            "y": 327,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 327,
+            "height": 14,
+            "width": 23,
+            "text": "0/0",
+            "x": 661
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 22,
+      "adapter": "native"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "72DC8033483BCF7285E445DF62422B4079358B82AE9662E4B28F70D05E35BFBB",
+      "sourceSha256": "F1E399342CB4C3052DD4054FEB2838EAEB67DC0CFB007C7E9D3C763FD1A24DA7",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Standup complete",
+        "Follow-ups are in Teams for approval",
+        "Coverage",
+        "Maya Lin",
+        "3/3"
+      ],
+      "recognised": 8,
+      "state": "recap",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 4 days left Standup complete. Follow-ups are in Teams for approval. Coverage Maya Lin 3/3",
+        "words": [
+          {
+            "y": 29,
+            "height": 23,
+            "width": 84,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 29,
+            "height": 23,
+            "width": 81,
+            "text": "agenda:",
+            "x": 124
+          },
+          {
+            "y": 29,
+            "height": 23,
+            "width": 78,
+            "text": "flagged",
+            "x": 212
+          },
+          {
+            "y": 29,
+            "height": 18,
+            "width": 55,
+            "text": "items",
+            "x": 298
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 34,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 14,
+            "text": "43",
+            "x": 71
+          },
+          {
+            "y": 63,
+            "height": 9,
+            "width": 7,
+            "text": "4",
+            "x": 95
+          },
+          {
+            "y": 62,
+            "height": 14,
+            "width": 27,
+            "text": "days",
+            "x": 106
+          },
+          {
+            "y": 62,
+            "height": 11,
+            "width": 19,
+            "text": "left",
+            "x": 137
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 69,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 83,
+            "text": "complete.",
+            "x": 108
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 92,
+            "text": "Follow-ups",
+            "x": 198
+          },
+          {
+            "y": 117,
+            "height": 10,
+            "width": 26,
+            "text": "are",
+            "x": 295
+          },
+          {
+            "y": 113,
+            "height": 14,
+            "width": 15,
+            "text": "in",
+            "x": 327
+          },
+          {
+            "y": 113,
+            "height": 14,
+            "width": 53,
+            "text": "Teams",
+            "x": 347
+          },
+          {
+            "y": 113,
+            "height": 14,
+            "width": 25,
+            "text": "for",
+            "x": 405
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 78,
+            "text": "approval.",
+            "x": 435
+          },
+          {
+            "y": 96,
+            "height": 14,
+            "width": 63,
+            "text": "Coverage",
+            "x": 633
+          },
+          {
+            "y": 124,
+            "height": 13,
+            "width": 31,
+            "text": "Maya",
+            "x": 633
+          },
+          {
+            "y": 123,
+            "height": 11,
+            "width": 16,
+            "text": "Lin",
+            "x": 669
+          },
+          {
+            "y": 124,
+            "height": 11,
+            "width": 19,
+            "text": "3/3",
+            "x": 693
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 8,
+      "adapter": "chromium"
+    },
+    {
+      "width": 854,
+      "height": 480,
+      "imageSha256": "B920B2601E1A5DEB8C0A5D230B419434E69D40684D7F4BEEBEBEDB9802D6BA35",
+      "sourceSha256": "F05527422269E76B12E4CE7E5599EF5E06C7710ECA23498FE6666433EB6D1D87",
+      "expected": [
+        "Standup agenda: flagged items",
+        "Sprint 43",
+        "4 days left",
+        "Standup complete",
+        "Meeting-derived data is not saved",
+        "Coverage",
+        "Maya Lin",
+        "3/3"
+      ],
+      "recognised": 8,
+      "state": "recap",
+      "ocr": {
+        "text": "Standup agenda: flagged items Sprint 43 • 4 days left Standup complete. Meeting-derived data is not saved. Coverage Maya Lin Items: 3/3",
+        "words": [
+          {
+            "y": 25,
+            "height": 23,
+            "width": 85,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 25,
+            "height": 23,
+            "width": 81,
+            "text": "agenda:",
+            "x": 125
+          },
+          {
+            "y": 25,
+            "height": 23,
+            "width": 77,
+            "text": "flagged",
+            "x": 213
+          },
+          {
+            "y": 25,
+            "height": 18,
+            "width": 54,
+            "text": "items",
+            "x": 299
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 50,
+            "text": "Sprint",
+            "x": 33
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 20,
+            "text": "43",
+            "x": 88
+          },
+          {
+            "y": 62,
+            "height": 3,
+            "width": 4,
+            "text": "•",
+            "x": 115
+          },
+          {
+            "y": 56,
+            "height": 14,
+            "width": 11,
+            "text": "4",
+            "x": 124
+          },
+          {
+            "y": 55,
+            "height": 19,
+            "width": 39,
+            "text": "days",
+            "x": 140
+          },
+          {
+            "y": 55,
+            "height": 15,
+            "width": 27,
+            "text": "left",
+            "x": 185
+          },
+          {
+            "y": 129,
+            "height": 21,
+            "width": 80,
+            "text": "Standup",
+            "x": 33
+          },
+          {
+            "y": 129,
+            "height": 21,
+            "width": 94,
+            "text": "complete.",
+            "x": 120
+          },
+          {
+            "y": 164,
+            "height": 17,
+            "width": 116,
+            "text": "Meeting-derived",
+            "x": 33
+          },
+          {
+            "y": 164,
+            "height": 13,
+            "width": 30,
+            "text": "data",
+            "x": 155
+          },
+          {
+            "y": 164,
+            "height": 13,
+            "width": 10,
+            "text": "is",
+            "x": 191
+          },
+          {
+            "y": 165,
+            "height": 12,
+            "width": 23,
+            "text": "not",
+            "x": 206
+          },
+          {
+            "y": 164,
+            "height": 13,
+            "width": 43,
+            "text": "saved.",
+            "x": 234
+          },
+          {
+            "y": 113,
+            "height": 18,
+            "width": 80,
+            "text": "Coverage",
+            "x": 614
+          },
+          {
+            "y": 146,
+            "height": 17,
+            "width": 41,
+            "text": "Maya",
+            "x": 615
+          },
+          {
+            "y": 145,
+            "height": 14,
+            "width": 21,
+            "text": "Lin",
+            "x": 663
+          },
+          {
+            "y": 170,
+            "height": 12,
+            "width": 41,
+            "text": "Items:",
+            "x": 615
+          },
+          {
+            "y": 170,
+            "height": 14,
+            "width": 22,
+            "text": "3/3",
+            "x": 661
+          }
+        ]
+      },
+      "pass": true,
+      "missing": [],
+      "total": 8,
+      "adapter": "native"
+    }
+  ],
+  "recogniser": "Windows.Media.Ocr en-US",
+  "frozenFixturesSha256": "1721DAB2E4D96A88DE686FB3826CD1B9A8ED05148AA240627122D0E8BC2C0427",
+  "frozenChecksSha256": "38B4D91EC145C250983A7F1C7464A3ABDB84A9CCFA3F82430956B2C5CD36738A"
+}

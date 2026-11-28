@@ -1,0 +1,22 @@
+[
+  {
+    "name": "empty",
+    "sourceFixture": "empty",
+    "expected": ["Admin's items", "Sprint 43", "0 days left", "No items assigned", "Coverage", "Admin", "0/0"]
+  },
+  {
+    "name": "active-speaker",
+    "sourceFixture": "speaker-highlight",
+    "expected": ["Maya Lin's items", "Sprint 43", "4 days left", "Goal: Ship resilient payments", "4521", "Retry failed payments", "User Story", "Active", "Overdue", "Coverage", "Maya Lin", "1/3", "Daniel Park", "0/2", "no response", "Current item"]
+  },
+  {
+    "name": "blocked-item",
+    "sourceFixture": "agenda",
+    "expected": ["Standup agenda: flagged items", "Sprint 43", "4 days left", "Goal: Ship resilient payments", "4521", "Retry failed payments", "User Story", "Active", "Overdue", "Blocked", "Maya Lin", "4522", "Payment telemetry", "Task", "New", "Daniel Park", "Coverage", "1/3", "0/2", "away", "Admin", "0/0"]
+  },
+  {
+    "name": "recap",
+    "sourceFixture": "standup-complete",
+    "expected": ["Standup agenda: flagged items", "Sprint 43", "4 days left", "Standup complete", "Meeting-derived data is not saved", "Coverage", "Maya Lin", "3/3"]
+  }
+]
