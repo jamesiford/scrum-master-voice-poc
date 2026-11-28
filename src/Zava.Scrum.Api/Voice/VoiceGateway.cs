@@ -323,7 +323,7 @@ public sealed class VoiceGateway(
                         }
 
                         await _bridge.SendAudioAsync(audio.Pcm, _run);
-                        if (Interlocked.Exchange(ref _firstAudioPending, 0) == 1)
+                        if (audio.Pcm.Length > 0 && Interlocked.Exchange(ref _firstAudioPending, 0) == 1)
                         {
                             _inbox.Writer.TryWrite(new FirstAudio());
                         }

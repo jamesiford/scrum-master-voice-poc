@@ -36,7 +36,7 @@ empty response is unknown.
 The Domain now refuses to complete an empty circle-back: reissue the same
 real-model instruction at most twice, then pause and report failure instead
 of skipping. Explicit unmute/release replays the invitation. The gateway
-checks the atomic first-audio observation as well as its actor callback,
+checks the atomic first-nonempty-audio observation as well as its actor callback,
 waits for actual playout, and preserves the original latency baseline across
 retries. Missing prompts pause rather than fabricate successful speech.
 Native media uses audio-presence metadata only, preserving non-recording;
