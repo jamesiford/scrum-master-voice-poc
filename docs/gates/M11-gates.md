@@ -1,5 +1,37 @@
 # M11 gates
 
+## Round 2 per-item storage
+
+ADR 0040 adds team-partitioned card/follow-up/activity items and removes
+the film publication's session/history growth path. No Domain rule, public
+API, model, gate threshold or adapter default changes.
+The unchanged zavaw3 baseline passes mandatory8/8/native5/5, actual
+Direct3449/3987ms p50/p95,n8; questions3449/3987ms,n6, zero talkovers.
+Approver-authored revision76 has complete audit. Initial read-only export
+has Sessions20, ApprovalRecords35 and collections5, with private content
+kept untracked. Live 300-standup/5,400-record load, actual composed-query
+RUs and after-deployment proof are recorded in `r2-storage-M11.json`.
+The digest-pinned zavaw3 API passes read-only preservation: 21 sessions,
+37 approval records, 4 raw legacy sources and 13 authoritative/reset
+record copies; marker1 and zero growing arrays/unattributed activities.
+The load has zero HTTP413, max8,672bytes/total19,262,100bytes and49,830
+createRU in683.4913s, excluding cleanup. At1/100/300 standups, n10 each:
+cards point/session/composed1.33/3.64/13.60RU; followups1.14/3.23/13.18;
+activities1.00/3.29/13.26. Each is flat at all checkpoints, including
+real publication metadata in composed reads. Full lists scale with output.
+All5400 exact generated items are removed; independent exact-team count0,
+and both temporary probe grants are absent. Mandatory afterverify8/8 and
+native readiness5/5 pass: Direct3631/6166ms,n11; questions3712/6166ms,n8;
+model10/11/transcriptpieces19/talkovers0, approverrevision77/completeaudit.
+After total points worsen+5.28%/+54.65% versus3449/3987ms,n8, different
+windows/populations, not causal storage attribution. G1 remains failed:
+this is not accepted parity or a promotion trade-off. Worst turn6166ms
+has analyser51/model206/orchestration3211/firstaudio2814; do not add
+overlapping hops. Defaults stay unchanged; owning performance work must
+investigate without threshold changes or whole-document rollback.
+These scripted samples do not close historical G1/Teams acceptance failures.
+Full suites are reserved for r2-reconcile.
+
 ## Current G8 fresh westus3 proof
 
 Operator-selected fresh **zavag8/westus3** replaces the deleted former

@@ -13,6 +13,15 @@ internal sealed class DemoState
     /// <summary>Gets or sets the reset epoch used to refuse stale pre-reset collection writes.</summary>
     public long Epoch { get; set; }
 
+    /// <summary>Gets the item schema version; migration runs once before request handling.</summary>
+    public int RecordStorageVersion { get; set; }
+
+    /// <summary>Gets the visible per-team record generation, switched atomically on reset.</summary>
+    public Dictionary<string, long> RecordGenerations { get; init; } = [];
+
+    /// <summary>Gets reset cutoffs that refuse stale unsaved records.</summary>
+    public Dictionary<string, DateTimeOffset> RecordCutoffs { get; init; } = [];
+
     /// <summary>Gets the canonical collection overrides.</summary>
     public Dictionary<string, JsonElement> Collections { get; init; } = [];
 

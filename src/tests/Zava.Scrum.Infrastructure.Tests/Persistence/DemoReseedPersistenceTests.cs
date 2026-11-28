@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging.Abstractions;
 using Zava.Scrum.Application;
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
@@ -29,6 +30,35 @@ namespace Zava.Scrum.Infrastructure.Tests.Persistence;
 /// <summary>Real mediator and file publication tests with read-only fake ADO; no cloud or existing local data is touched.</summary>
 public sealed class DemoReseedPersistenceTests
 {
+    [Fact]
+    public async Task Reseed_ItemStorage_AtomicallyHidesDemoRecordsWithoutGrowingPublication()
+    {
+        await using var fixture = new Fixture(itemStorage: true);
+        await fixture.SeedAsync();
+        var id = (await fixture.Sender.Send(new ReseedDemoCommand("team-payments", fixture.Decision))).Value;
+        Assert.Equal(203, (await fixture.Collections.ReadAsync<List<FollowUpSnapshot>>("followups.json", () => [], default)).Count);
+        Assert.Equal("demo.awaiting_apply", (await fixture.Sender.Send(new ReseedDemoCommand("team-payments", fixture.Decision, id))).Error!.Code);
+        await fixture.MarkAppliedAsync(id);
+
+        Assert.True((await fixture.Sender.Send(new ReseedDemoCommand("team-payments", fixture.Decision, id))).IsSuccess);
+        Assert.True((await fixture.Sender.Send(new ReseedDemoCommand("team-payments", fixture.Decision, id))).IsSuccess);
+
+        var state = await fixture.Publication.ReadAsync(default);
+        Assert.False(state.Collections.ContainsKey("followups.json"));
+        Assert.False(state.Collections.ContainsKey("cards.json"));
+        Assert.False(state.Collections.ContainsKey("bot-activities.json"));
+        Assert.Empty(state.Sessions.Values.SelectMany(s => s));
+        Assert.Equal("real-team", Assert.Single(await fixture.Collections.ReadAsync<List<FollowUpSnapshot>>("followups.json", () => [], default)).TeamId);
+        Assert.Empty(await fixture.Sessions.ListAsync("team-payments", default));
+        Assert.Single(await fixture.Sessions.ListAsync("real-team", default));
+        Assert.Equal(203, (await new FileTeamRecordStore(fixture.StoreOptions).QueryAsync("followups.json", null, null, null, null, default)).Count);
+        fixture.AdvanceClock();
+        var fresh = Session("team-payments") with { CreatedAt = new DateTimeOffset(2026, 11, 27, 0, 1, 0, TimeSpan.Zero) };
+        await fixture.Sessions.UpsertAsync(fresh, default);
+        Assert.Equal(fresh.Id, Assert.Single(await fixture.Sessions.ListAsync("team-payments", default)).Id);
+        Assert.Empty((await fixture.Publication.ReadAsync(default)).Sessions.Values.SelectMany(s => s));
+    }
+
     [Fact]
     public async Task Reseed_ApprovedAndApplied_PublishesOnlyExplicitDemoScopeAndSurvivesRestart()
     {
@@ -389,7 +419,9 @@ public sealed class DemoReseedPersistenceTests
         public IOptions<StoreOptions> StoreOptions { get; }
         public IOptions<DemoOptions> DemoOptions { get; }
         public FaultStore Publication { get; }
-        public DemoPublicationCollectionStore Collections { get; }
+        public ICollectionStore Collections { get; }
+        private readonly DemoPublicationCollectionStore _legacyCollections;
+        private readonly TeamRecordMigration? _migration;
         public DemoPublicationSessionStore Sessions { get; }
         public JsonFileTeamRepository Teams { get; }
         public ISender Sender => _provider.GetRequiredService<ISender>();
@@ -401,7 +433,7 @@ public sealed class DemoReseedPersistenceTests
             Guid.Parse("11111111-1111-1111-1111-111111111111"), "Admin", "admin@example.invalid", ActorSource.Portal, "entra-bearer"),
             ApprovalChannel.Portal, AuthenticationContext.Of("entra-bearer"), [AppRoles.Admin]);
 
-        public Fixture()
+        public Fixture(bool itemStorage = false)
         {
             StoreOptions = Options.Create(new StoreOptions { DataPath = _path });
             DemoOptions = Options.Create(new DemoOptions
@@ -411,7 +443,11 @@ public sealed class DemoReseedPersistenceTests
                 SeedFile = Path.Combine(FindRoot(), "demo", "seed-ado.json")
             });
             Publication = new FaultStore(new FileDemoStateStore(StoreOptions));
-            Collections = new DemoPublicationCollectionStore(new FileCollectionStore(StoreOptions), Publication);
+            _legacyCollections = new DemoPublicationCollectionStore(new FileCollectionStore(StoreOptions), Publication);
+            var items = new FileTeamRecordStore(StoreOptions);
+            Collections = itemStorage ? new RecordCollectionStore(_legacyCollections, items, Publication) : _legacyCollections;
+            if (itemStorage)
+                _migration = new TeamRecordMigration(_legacyCollections, items, Publication, new FileSessionItemStore(StoreOptions), NullLogger<TeamRecordMigration>.Instance);
             Sessions = new DemoPublicationSessionStore(new FileSessionItemStore(StoreOptions), Publication, DemoOptions);
             var ado = Options.Create(new AdoOptions { Org = "https://dev.azure.com/demo" });
             Teams = new JsonFileTeamRepository(Collections, Options.Create(new TeamDefaultsOptions()), ado, Options.Create(new FlagsOptions()));
@@ -448,12 +484,13 @@ public sealed class DemoReseedPersistenceTests
                 Guid.NewGuid(), null, FollowUpKind.Followup, "debris", [], new DateOnly(2026, 11, 27), DateTimeOffset.UnixEpoch).ToSnapshot()).ToList();
             followups.Add(FollowUp.Create(Guid.NewGuid(), "real-team", Guid.NewGuid(), null, FollowUpKind.Followup, "preserve", [],
                 new DateOnly(2026, 11, 27), DateTimeOffset.UnixEpoch).ToSnapshot());
-            await Collections.WriteAsync("followups.json", followups, default);
+            await _legacyCollections.WriteAsync("followups.json", followups, default);
             await Collections.WriteAsync("members.json", new Dictionary<string, object> { ["real-team"] = PreservedRoster }, default);
             foreach (var team in new[] { "team-payments", "team-b", "real-team" })
             {
                 await Sessions.UpsertAsync(Session(team), default);
             }
+            if (_migration is not null) await _migration.RunAsync(default);
         }
 
         public void AdvanceClock() => _clock.UtcNow = _clock.UtcNow.AddMinutes(1);

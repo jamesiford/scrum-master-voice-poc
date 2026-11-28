@@ -23,5 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Zava.Scrum.Infrastructure.Tests" />
+    <InternalsVisibleTo Include="StorageProbe" />
   </ItemGroup>
 </Project>

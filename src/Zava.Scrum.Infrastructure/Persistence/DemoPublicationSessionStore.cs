@@ -12,6 +12,11 @@ internal sealed class DemoPublicationSessionStore(ISessionItemStore legacy, IDem
     public async Task<StandupSessionSnapshot?> GetAsync(Guid id, CancellationToken ct)
     {
         var state = await publication.ReadAsync(ct);
+        if (state.RecordStorageVersion >= 1)
+        {
+            var snapshot = await legacy.GetAsync(id, ct);
+            return snapshot is not null && Visible(state, snapshot) ? snapshot : null;
+        }
         var own = state.Sessions.Values.SelectMany(s => s).FirstOrDefault(s => s.Id == id);
         if (own is not null)
         {
@@ -27,6 +32,8 @@ internal sealed class DemoPublicationSessionStore(ISessionItemStore legacy, IDem
     {
         var state = await publication.ReadAsync(ct);
         var old = await legacy.ListAsync(teamId, ct);
+        if (state.RecordStorageVersion >= 1)
+            return old.Where(s => Visible(state, s)).OrderByDescending(s => s.CreatedAt).ToList();
         return old.Where(s => !state.Sessions.ContainsKey(s.TeamId))
             .Concat(state.Sessions.Where(p => teamId is null || p.Key == teamId).SelectMany(p => p.Value))
             .OrderByDescending(s => s.CreatedAt).ToList();
@@ -43,6 +50,15 @@ internal sealed class DemoPublicationSessionStore(ISessionItemStore legacy, IDem
         }
 
         CheckTombstone(before, snapshot);
+
+        if (before.RecordStorageVersion >= 1)
+        {
+            await legacy.UpsertAsync(snapshot, ct);
+            var after = await publication.ReadAsync(ct);
+            if (after.Epoch != before.Epoch)
+                throw new DemoResetConflictException("Reset changed during the session write. Re-read before retrying.", "demo.reset_changed");
+            return;
+        }
 
         if (!before.Sessions.ContainsKey(snapshot.TeamId) && !options.Value.ResetTeamIds.Contains(snapshot.TeamId, StringComparer.Ordinal))
         {
@@ -85,7 +101,9 @@ internal sealed class DemoPublicationSessionStore(ISessionItemStore legacy, IDem
 
             foreach (var team in all.Select(s => s.TeamId).Distinct())
             {
-                state.Sessions[team] = [];
+                if (state.RecordStorageVersion >= 1)
+                    state.SessionCutoffs[team] = all.Where(s => s.TeamId == team).Max(s => s.CreatedAt);
+                else state.Sessions[team] = [];
             }
 
             state.Epoch++;
@@ -100,5 +118,9 @@ internal sealed class DemoPublicationSessionStore(ISessionItemStore legacy, IDem
         {
             throw new DemoResetConflictException("This preparation/session belongs to a previous demo take. Prepare a new session after reset.", "demo.stale_session");
         }
+
     }
+
+    private static bool Visible(DemoState state, StandupSessionSnapshot snapshot) =>
+        !state.SessionCutoffs.TryGetValue(snapshot.TeamId, out var cutoff) || snapshot.CreatedAt > cutoff;
 }

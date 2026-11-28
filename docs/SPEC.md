@@ -298,7 +298,7 @@ External dependencies:
 | Meeting bridge | **Node.js 22 + strict TypeScript**, Playwright/ACS; selectable **Windows .NET Graph media host** with aligned Communications/Skype media SDK and SkiaSharp board renderer (ADRs 0023, 0024) |
 | Demo cast voices | Azure AI Speech text to speech (neural voices, varied accents) |
 | Admin portal | **React 19 + Vite + TypeScript + Tailwind CSS v4 + lucide-react**, MSAL.js and Container Apps Easy Auth (**As built**: Fluent UI was replaced for a modern layout) |
-| State | **Azure Cosmos DB for NoSQL** in Azure (**As built**: one JSON document per collection behind `ICollectionStore`, Entra-only auth); JSON files locally |
+| State | **Azure Cosmos DB for NoSQL**, Entra-only auth; sessions and growing card/follow-up/activity records are per-item and team-partitioned; small registry/configuration collections use `ICollectionStore`. Per-item JSON files locally |
 | Hosting | **Azure Container Apps** (two apps: `api`, `bridge`; **As built**: West US 3, one `api` replica because live state is in memory) |
 | Deploy | **azd** + Bicep (Azure Verified Modules where convenient) |
 | Telemetry | **As built (M11 9):** content-free OpenTelemetry to Application Insights, team/session hops, bridge/host propagation, counters/histograms and shared workbook. Export uses `APPLICATIONINSIGHTS_CONNECTION_STRING` or explicit `AzureMonitor:ConnectionString` SDK configuration. Live API/bridge/model/approved-write trace is checked (211hop samples); native/hosted acceptance is not established. G7 fails dates75%n8; live Foundry quality conflicts with content capture OFF and real-model CI needs its approved OIDC configuration (ADR 0028, DEPLOY.md). |
@@ -1087,7 +1087,17 @@ enable signals or provide an unverified Work IQ adapter.
 
 ## 15. Data model
 
-**As built:** one Cosmos database `zavascrum` with the container `collections` (partition key `/id`), where each named collection is one JSON document behind `ICollectionStore` (`FileCollectionStore` or `CosmosCollectionStore`; ADR 0006), and, since M11 prompt 4, the container `Sessions` (partition key `/teamId`) with **one item per standup session** behind `ISessionItemStore` (`FileSessionItemStore`: `sessions/<team>/<id>.json`; `CosmosSessionItemStore`). The single `sessions.json` document passed the 2 MB item limit after a few dozen standups; `SessionMigration` moves it into items at API start (idempotent). `// PROD: one item per record for the other collections too, partitioned by team.`
+**As built:** Cosmos database `zavascrum` has `collections` (partition `/id`)
+for small registry/configuration and guarded reset control state, `Sessions`
+(partition `/teamId`) for one item per session (ADR 0021), and `TeamRecords`
+(partition `/teamId`) for one item per card, follow-up and bot delivery
+(ADR 0040). Indexed collection/session/status/key fields avoid loading
+historical standups for bounded lookups; payloads are not indexed.
+File mode mirrors the per-item stores. Startup migrations are idempotent,
+create-only for the new records, and retain authoritative legacy data.
+Demo resets switch team record generations and session cutoffs instead of
+copying growing histories into one publication document. Public API/use-case
+shapes and the approved Azure DevOps write invariant are unchanged.
 
 | Collection document | Contents |
 |---|---|
@@ -1276,6 +1286,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Identity:AdminObjectIds` | Entra object ids that count as administrators in Teams (decide any follow-up, plan or calendar; run "prepare sprint planning"); replaces `Team:ScrumMasters` | Empty |
 | `Portal:ClientId` | The portal app registration the API validates tokens for; empty is allowed only in the Development environment | Empty |
 | `Cosmos:ApprovalRecordsContainer` | The append-only approval trail container | `ApprovalRecords` |
+| `Cosmos:TeamRecordsContainer` | Team-partitioned cards, follow-ups and delivered activities | `TeamRecords` |
 | `Features:EmailFollowUps` | Email copy of follow-ups (switch) | `false` |
 | `Email:Mode` (`Outbox` or `Graph`), `Email:Sender` | Delivery: outbox only, or Microsoft Graph `sendMail` from this mailbox (needs `Mail.Send` for the managed identity or developer identity, scoped by an application access policy) | `Outbox`; `Sender` empty |
 | `Flags:StaleDays`, `Flags:EscalateBlockerAfterDays`, `Flags:AtRiskDays`, `Flags:AtRiskRemainingPct` | Default flag and escalation thresholds for the seeded team (the portal can change the first two per team) | 2, 2, 2, 0.5 |

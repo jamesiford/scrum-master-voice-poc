@@ -87,7 +87,7 @@ internal sealed class PersistentDemoReseed(
         var registrySnapshot = (await teams.ListAsync(ct)).ToDictionary(t => t.Id, StringComparer.Ordinal);
         var active = await sessions.ListAsync(null, ct);
         var snapshots = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
-        foreach (var name in LegacyLists)
+        foreach (var name in LegacyLists.Where(name => collections is not IRecordCollectionStore || !RecordCollectionStore.Names.Contains(name)))
         {
             snapshots[name] = await collections.ReadAsync(name, () => JsonSerializer.SerializeToElement(Array.Empty<object>()), ct);
         }
@@ -119,7 +119,7 @@ internal sealed class PersistentDemoReseed(
                 state.Collections.TryAdd(pair.Key, pair.Value);
             }
 
-            foreach (var name in LegacyLists)
+            foreach (var name in LegacyLists.Where(name => collections is not IRecordCollectionStore || !RecordCollectionStore.Names.Contains(name)))
             {
                 var list = Read<List<JsonElement>>(state, name, []);
                 Put(state, name, name == "schedules.json"
@@ -130,6 +130,7 @@ internal sealed class PersistentDemoReseed(
             }
 
             HideSessions(state, ids, active.Where(s => ids.Contains(s.TeamId)).Select(s => s.Id), clock.UtcNow);
+            HideRecords(state, ids, clock.UtcNow);
 
             state.Epoch++;
             return Result.Success();
@@ -149,6 +150,8 @@ internal sealed class PersistentDemoReseed(
         var existing = state.Operations.Values.FirstOrDefault(o => !o.Completed);
         if (existing is not null)
         {
+            if (existing.Target.Id == teamId && existing.TenantId == actor.TenantId && collections is IRecordCollectionStore items)
+                await items.SaveRecordAsync("followups.json", existing.Approval, false, ct);
             return existing.Target.Id == teamId && existing.TenantId == actor.TenantId
                 ? Result<Guid>.Success(existing.Id)
                 : Result<Guid>.Failure(Error.Conflict("demo.reset_in_progress", "Another guarded reset must be completed first."));
@@ -176,7 +179,7 @@ internal sealed class PersistentDemoReseed(
 
         // Capture every touched collection before acquiring the guard. A concurrent reset epoch is refused below.
         var snapshots = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
-        foreach (var name in Lists)
+        foreach (var name in Lists.Where(name => collections is not IRecordCollectionStore || !RecordCollectionStore.Names.Contains(name)))
         {
             snapshots[name] = await collections.ReadAsync(name, () => JsonSerializer.SerializeToElement(Array.Empty<object>()), ct);
         }
@@ -189,7 +192,7 @@ internal sealed class PersistentDemoReseed(
         var followup = FollowUp.Create(Guid.NewGuid(), teamId, id, null, FollowUpKind.Followup,
             "Approve restoring all existing tagged seed items, then commit the guarded film reset.",
             changes.Value, DateOnly.FromDateTime(clock.UtcNow.UtcDateTime), clock.UtcNow, forScrumMaster: true);
-        return await gate.RunAsync(() => publication.UpdateAsync(current =>
+        var staged = await gate.RunAsync(() => publication.UpdateAsync(current =>
         {
             if (current.Epoch != state.Epoch || current.Operations.Values.Any(o => !o.Completed))
             {
@@ -212,8 +215,11 @@ internal sealed class PersistentDemoReseed(
                 return Result<Guid>.Failure(Error.Conflict("demo.reset_changed", "Demo scope or live sessions changed while staging; retry."));
             }
 
-            records.Add(followup.ToSnapshot());
-            Put(current, "followups.json", records);
+            if (collections is not IRecordCollectionStore)
+            {
+                records.Add(followup.ToSnapshot());
+                Put(current, "followups.json", records);
+            }
             foreach (var team in scope.Value)
             {
                 // The scheduler stops starting demo sessions while approval/ADO replay is pending.
@@ -228,6 +234,9 @@ internal sealed class PersistentDemoReseed(
             current.Epoch++;
             return Result<Guid>.Success(id);
         }, ct), ct);
+        if (staged.IsSuccess && collections is IRecordCollectionStore recordsStore)
+            await recordsStore.SaveRecordAsync("followups.json", followup.ToSnapshot(), false, ct);
+        return staged;
     }
 
     /// <inheritdoc />
@@ -282,7 +291,7 @@ internal sealed class PersistentDemoReseed(
             }
 
             var followups = Read<List<FollowUpSnapshot>>(state, "followups.json", []);
-            var approval = followups.SingleOrDefault(f => f.Id == operation.Approval.Id);
+            var approval = collections is IRecordCollectionStore ? operation.Approval : followups.SingleOrDefault(f => f.Id == operation.Approval.Id);
             if (approval is null || approval.Status != FollowUpStatus.Applied
                 || FollowUp.Restore(approval).ComputeProposalHash() != FollowUp.Restore(operation.Approval).ComputeProposalHash())
             {
@@ -290,7 +299,7 @@ internal sealed class PersistentDemoReseed(
             }
 
             var ids = operation.Scope.Select(t => t.Id).ToHashSet(StringComparer.Ordinal);
-            foreach (var name in Lists)
+            foreach (var name in Lists.Where(name => collections is not IRecordCollectionStore || !RecordCollectionStore.Names.Contains(name)))
             {
                 var list = Read<List<JsonElement>>(state, name, []);
                 Put(state, name, list.Where(row => !BelongsTo(row, ids, actor.TenantId)).ToList());
@@ -304,6 +313,7 @@ internal sealed class PersistentDemoReseed(
             }
 
             HideSessions(state, ids, operation.SessionIds ?? [], clock.UtcNow);
+            HideRecords(state, ids, clock.UtcNow);
 
             registry[teamId] = operation.Target with { Status = TeamStatus.Active, RecapChannelKey = null, TeamsBindings = [] };
             rosters[teamId] = JsonSerializer.SerializeToElement(operation.Roster, JsonFile.SerializerOptions);
@@ -351,7 +361,7 @@ internal sealed class PersistentDemoReseed(
             }
 
             var followups = Read<List<FollowUpSnapshot>>(state, "followups.json", []);
-            var followup = followups.SingleOrDefault(f => f.Id == operation.Approval.Id);
+            var followup = collections is IRecordCollectionStore ? operation.Approval : followups.SingleOrDefault(f => f.Id == operation.Approval.Id);
             if (operation.Completed || followup is null || followup.Status is FollowUpStatus.Approved or FollowUpStatus.Applied)
             {
                 return Result<Guid>.Failure(Error.Conflict("demo.reset_must_resume", "An approved reset may have written ADO changes. Resume apply/commit; it cannot be aborted."));
@@ -365,7 +375,8 @@ internal sealed class PersistentDemoReseed(
             }
 
             Put(state, "teams.json", registry);
-            Put(state, "followups.json", followups.Where(f => f.Id != operation.Approval.Id).ToList());
+            if (collections is not IRecordCollectionStore)
+                Put(state, "followups.json", followups.Where(f => f.Id != operation.Approval.Id).ToList());
             state.Operations[operationId] = operation with { Approval = followup, Completed = true, Aborted = true };
             state.Epoch++;
             return Result<Guid>.Success(operationId);
@@ -411,13 +422,23 @@ internal sealed class PersistentDemoReseed(
     private static bool Running(StandupSessionSnapshot session) =>
         session.Status == StandupStatus.Live || session.StartedAt is not null && session.EndedAt is null;
 
+    private static void HideRecords(DemoState state, HashSet<string> ids, DateTimeOffset cutoff)
+    {
+        if (state.RecordStorageVersion == 0) return;
+        foreach (var id in ids)
+        {
+            state.RecordGenerations[id] = state.RecordGenerations.GetValueOrDefault(id) + 1;
+            state.RecordCutoffs[id] = cutoff;
+        }
+    }
+
     private static void HideSessions(DemoState state, HashSet<string> ids, IEnumerable<Guid> oldIds, DateTimeOffset cutoff)
     {
         var allIds = oldIds.Concat(state.Sessions.Where(pair => ids.Contains(pair.Key)).SelectMany(pair => pair.Value).Select(s => s.Id)).ToHashSet();
         foreach (var id in ids)
         {
             var tombstones = state.SessionTombstones.GetValueOrDefault(id) ?? [];
-            tombstones.UnionWith(allIds);
+            if (state.RecordStorageVersion == 0) tombstones.UnionWith(allIds);
             state.SessionTombstones[id] = tombstones;
             state.SessionCutoffs[id] = state.SessionCutoffs.TryGetValue(id, out var old) && old > cutoff ? old : cutoff;
             state.Sessions[id] = [];

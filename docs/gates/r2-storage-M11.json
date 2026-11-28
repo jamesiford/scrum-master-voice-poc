@@ -1,0 +1,95 @@
+{
+  "step": "r2-storage",
+  "status": "done",
+  "environment": "zavaw3",
+  "adr": "0040",
+  "baseline": {
+    "mandatoryChecks": { "passed": 8, "n": 8 },
+    "nativeReadiness": { "passed": 5, "n": 5 },
+    "total": { "p50Ms": 3449, "p95Ms": 3987, "n": 8 },
+    "questions": { "p50Ms": 3449, "p95Ms": 3987, "n": 6 },
+    "talkovers": 0,
+    "approvedRevision": 76
+  },
+  "initialReadOnlyExport": {
+    "sessions": { "n": 20, "bytes": 1079343 },
+    "approvalRecords": { "n": 35, "bytes": 74280 },
+    "collections": { "n": 5, "bytes": 1388641 }
+  },
+  "predeployReadOnlyExport": {
+    "sessions": { "n": 20, "bytes": 1079343 },
+    "approvalRecords": { "n": 37, "bytes": 78280 },
+    "collections": { "n": 5, "bytes": 1445645 },
+    "teamRecords": { "n": 0, "bytes": 2 }
+  },
+  "deployment": {
+    "source": "be487f70d9844079a1a80e612ff73818e4ea22c3",
+    "digest": "sha256:1e5d59d4e9fb2487e133dc19cf104197c63ca53298c3d6b0bea402fb8ac675c6",
+    "revision": "ca-api-3fsyvjqqjw5go--0000088",
+    "healthStatus": 200,
+    "configurationParity": true,
+    "scope": "API only, zavaw3/westus3",
+    "committedSourceContextMiB": 2.435
+  },
+  "migration": {
+    "copiedFollowUps": 5,
+    "copiedCards": 6,
+    "copiedActivities": 0,
+    "retainedResetFollowUps": 2,
+    "retainedSessions": 21,
+    "unchangedLegacyDocuments": 4,
+    "unchangedApprovalRecords": 37,
+    "unattributedActivities": 0,
+    "schemaVersion": 1,
+    "growingPublicationArrays": 0,
+    "verifiedAt": "2026-11-28T01:57:12.4645014+00:00"
+  },
+  "load": {
+    "standups": 300,
+    "records": 5400,
+    "http413": 0,
+    "maximumItemBytes": 8672,
+    "totalItemBytes": 19262100,
+    "createRu": 49830,
+    "writeAndMeasurementSeconds": 683.4912634,
+    "checkpoints": [1, 100, 300],
+    "measurements": [
+      { "collection": "cards", "nPerCheckpoint": 10, "recordsPerSession": 5, "pointRu": 1.33, "sessionQueryRu": 3.64, "repositoryQueryRu": 13.60 },
+      { "collection": "followups", "nPerCheckpoint": 10, "recordsPerSession": 3, "pointRu": 1.14, "sessionQueryRu": 3.23, "repositoryQueryRu": 13.18 },
+      { "collection": "activities", "nPerCheckpoint": 10, "recordsPerSession": 10, "pointRu": 1.00, "sessionQueryRu": 3.29, "repositoryQueryRu": 13.26 }
+    ],
+    "flatAtAllCheckpoints": true,
+    "boundary": "Each rounded RU is unchanged at 1, 100 and 300 standups. Composed repository reads include publication metadata. Full-history lists scale with output. Create RU excludes reads, conflict checks and cleanup.",
+    "cleanupVerified": true,
+    "remainingOwnedItems": 0
+  },
+  "after": {
+    "harnessSourceLabel": "2dacbfc",
+    "deployedSource": "be487f70d9844079a1a80e612ff73818e4ea22c3",
+    "mandatoryChecks": { "passed": 8, "n": 8 },
+    "nativeReadiness": { "passed": 5, "n": 5 },
+    "total": { "p50Ms": 3631, "p95Ms": 6166, "n": 11 },
+    "questions": { "p50Ms": 3712, "p95Ms": 6166, "n": 8 },
+    "modelReads": { "n": 10, "timedTurns": 11 },
+    "transcriptPieces": 19,
+    "talkovers": 0,
+    "castElapsedSeconds": 390,
+    "approvedRevision": 77,
+    "auditComplete": true
+  },
+  "experienceComparison": {
+    "totalP50ChangePercent": 5.28,
+    "totalP95ChangePercent": 54.65,
+    "questionP50ChangePercent": 7.63,
+    "verdict": "Failed latency point, not an accepted trade-off or parity/promotion proof. G1 remains failed; defaults are unchanged.",
+    "boundary": "Independent windows and populations: before n8 total/n6 questions; after n11 total/n8 questions. No causal attribution to storage is established.",
+    "worstAfterTurn": { "totalMs": 6166, "analyserMs": 51, "decisionModelMs": 206, "orchestrationMs": 3211, "voiceFirstAudioMs": 2814 },
+    "hopBoundary": "Hop intervals overlap and must not be added."
+  },
+  "temporaryProbeGrantsRemoved": true,
+  "fixedHourlyCostAddedUsd": 0,
+  "costBoundary": "Serverless RUs and stored bytes are variable, not free. Scoped roles have no separate hourly charge.",
+  "experiencePromotion": false,
+  "historicalFailuresRetained": true,
+  "fullSuitesRun": false
+}

@@ -13,6 +13,7 @@ public sealed class SessionMigrationService(IServiceScopeFactory scopes) : IHost
     {
         await using var scope = scopes.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<Zava.Scrum.Infrastructure.Persistence.SessionMigration>().RunAsync(cancellationToken);
+        await scope.ServiceProvider.GetRequiredService<Zava.Scrum.Infrastructure.Persistence.ITeamRecordMigration>().RunAsync(cancellationToken);
     }
 
     /// <inheritdoc />

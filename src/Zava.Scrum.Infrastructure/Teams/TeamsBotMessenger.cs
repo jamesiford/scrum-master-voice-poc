@@ -76,7 +76,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         var targets = CardRouting.Select(message, [.. stored.Select(c => c.Key)], await _teams.GetAsync(message.TeamId, ct)).ToHashSet();
         foreach (var (key, json) in stored.Where(c => targets.Contains(c.Key)))
         {
-            if (await HasActivityAsync(message.DedupeKey, key, ct))
+            if (await HasActivityAsync(message, key, ct))
             {
                 continue;
             }
@@ -90,7 +90,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
                 }, ct);
                 if (id is not null)
                 {
-                    await RememberAsync(message.DedupeKey, key, id, ct);
+                    await RememberAsync(message, key, id, ct);
                 }
             });
         }
@@ -108,7 +108,7 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
 
         var card = await FindCardJsonAsync(message, ct);
         var stored = (await _conversations.ListAsync(ct)).ToDictionary(c => c.Key, c => c.Value);
-        foreach (var entry in (await ReadActivitiesAsync(ct)).Where(a => a.DedupeKey == message.DedupeKey))
+        foreach (var entry in (await ReadActivitiesAsync(message, ct)).Where(a => a.DedupeKey == message.DedupeKey))
         {
             if (!stored.TryGetValue(entry.ConversationKey, out var json))
             {
@@ -157,11 +157,18 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         }
     }
 
-    private async Task<bool> HasActivityAsync(string dedupeKey, string conversationKey, CancellationToken ct) =>
-        (await ReadActivitiesAsync(ct)).Any(a => a.DedupeKey == dedupeKey && a.ConversationKey == conversationKey);
-
-    private async Task<List<SentActivity>> ReadActivitiesAsync(CancellationToken ct)
+    private async Task<bool> HasActivityAsync(TeamsMessage message, string conversationKey, CancellationToken ct)
     {
+        if (_store is IRecordCollectionStore records)
+            return (await records.QueryAsync<SentActivity>(_activitiesPath, message.TeamId, message.SessionId, null,
+                JsonSerializer.Serialize(new[] { message.DedupeKey, conversationKey }), ct)).Count != 0;
+        return (await ReadActivitiesAsync(message, ct)).Any(a => a.DedupeKey == message.DedupeKey && a.ConversationKey == conversationKey);
+    }
+
+    private async Task<IReadOnlyList<SentActivity>> ReadActivitiesAsync(TeamsMessage message, CancellationToken ct)
+    {
+        if (_store is IRecordCollectionStore records)
+            return await records.QueryAsync<SentActivity>(_activitiesPath, message.TeamId, message.SessionId, null, null, ct);
         await _gate.WaitAsync(ct);
         try
         {
@@ -173,13 +180,20 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         }
     }
 
-    private async Task RememberAsync(string dedupeKey, string conversationKey, string activityId, CancellationToken ct)
+    private async Task RememberAsync(TeamsMessage message, string conversationKey, string activityId, CancellationToken ct)
     {
+        if (_store is IRecordCollectionStore records)
+        {
+            var card = (await _outbox.ListAsync(message.SessionId, ct)).First(c => c.Message.DedupeKey == message.DedupeKey && c.Message.TeamId == message.TeamId);
+            await records.SaveRecordAsync(_activitiesPath,
+                new SentActivity(message.DedupeKey, conversationKey, activityId, message.TeamId, message.SessionId, card.SentAt), true, ct);
+            return;
+        }
         await _gate.WaitAsync(ct);
         try
         {
             var all = await _store.ReadAsync<List<SentActivity>>(_activitiesPath, () => [], ct);
-            all.Add(new SentActivity(dedupeKey, conversationKey, activityId));
+            all.Add(new SentActivity(message.DedupeKey, conversationKey, activityId, message.TeamId, message.SessionId));
             await _store.WriteAsync(_activitiesPath, all, ct);
         }
         finally
@@ -188,5 +202,5 @@ public sealed class TeamsBotMessenger : ITeamsMessenger, IDisposable
         }
     }
 
-    private sealed record SentActivity(string DedupeKey, string ConversationKey, string ActivityId);
+    private sealed record SentActivity(string DedupeKey, string ConversationKey, string ActivityId, string? TeamId = null, Guid? SessionId = null, DateTimeOffset CreatedAt = default);
 }

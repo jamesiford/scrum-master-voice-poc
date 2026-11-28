@@ -23,20 +23,31 @@ public sealed class JsonFileFollowUpRepository : IFollowUpRepository, IDisposabl
 
     /// <inheritdoc />
     public async Task<FollowUp?> GetAsync(Guid id, CancellationToken ct) =>
-        (await ReadAllAsync(ct)).FirstOrDefault(f => f.Id == id);
+        _store is IRecordCollectionStore records
+            ? (await records.QueryAsync<FollowUpSnapshot>(_path, null, null, null, id.ToString(), ct)).Select(FollowUp.Restore).SingleOrDefault()
+            : (await ReadAllAsync(ct)).FirstOrDefault(f => f.Id == id);
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<FollowUp>> ListAsync(string teamId, FollowUpStatus? status, CancellationToken ct) =>
-        (await ReadAllAsync(ct)).Where(f => f.TeamId == teamId && (status is null || f.Status == status)).ToList();
+        _store is IRecordCollectionStore records
+            ? (await records.QueryAsync<FollowUpSnapshot>(_path, teamId, null, status?.ToString(), null, ct)).Select(FollowUp.Restore).OrderByDescending(f => f.CreatedAt).ToList()
+            : (await ReadAllAsync(ct)).Where(f => f.TeamId == teamId && (status is null || f.Status == status)).ToList();
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<FollowUp>> ListBySessionAsync(Guid sessionId, CancellationToken ct) =>
-        (await ReadAllAsync(ct)).Where(f => f.SessionId == sessionId).ToList();
+        _store is IRecordCollectionStore records
+            ? (await records.QueryAsync<FollowUpSnapshot>(_path, null, sessionId, null, null, ct)).Select(FollowUp.Restore).OrderByDescending(f => f.CreatedAt).ToList()
+            : (await ReadAllAsync(ct)).Where(f => f.SessionId == sessionId).ToList();
 
     /// <inheritdoc />
     public async Task SaveAsync(FollowUp followUp, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(followUp);
+        if (_store is IRecordCollectionStore items)
+        {
+            await items.SaveRecordAsync(_path, followUp.ToSnapshot(), false, ct);
+            return;
+        }
         await _gate.WaitAsync(ct);
         try
         {

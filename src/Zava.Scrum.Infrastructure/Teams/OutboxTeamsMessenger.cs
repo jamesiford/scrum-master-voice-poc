@@ -31,6 +31,12 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
     public async Task SendAsync(TeamsMessage message, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(message);
+        if (_store is IRecordCollectionStore records)
+        {
+            var id = new Guid(Convert.FromHexString(TeamRecord.IdFor(message.TeamId, message.DedupeKey))[..16]);
+            await records.SaveRecordAsync(_path, new StoredCard(id, _clock.UtcNow, message, CardRenderer.Render(message)), true, ct);
+            return;
+        }
         await _gate.WaitAsync(ct);
         try
         {
@@ -53,6 +59,13 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
     public async Task UpdateAsync(TeamsMessage message, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(message);
+        if (_store is IRecordCollectionStore records)
+        {
+            var card = (await records.QueryAsync<StoredCard>(_path, message.TeamId, message.SessionId, null, message.DedupeKey, ct)).SingleOrDefault();
+            if (card is not null)
+                await records.SaveRecordAsync(_path, card with { Message = message, AdaptiveCardJson = CardRenderer.Render(message) }, false, ct);
+            return;
+        }
         await _gate.WaitAsync(ct);
         try
         {
@@ -75,6 +88,9 @@ public sealed class OutboxTeamsMessenger : ITeamsMessenger, ICardOutbox, IDispos
     /// <inheritdoc />
     public async Task<IReadOnlyList<SentCard>> ListAsync(Guid? sessionId, CancellationToken ct)
     {
+        if (_store is IRecordCollectionStore records)
+            return (await records.QueryAsync<StoredCard>(_path, null, sessionId, null, null, ct))
+                .OrderByDescending(c => c.SentAt).Select(c => new SentCard(c.Id, c.SentAt, c.Message, c.AdaptiveCardJson)).ToList();
         await _gate.WaitAsync(ct);
         try
         {
