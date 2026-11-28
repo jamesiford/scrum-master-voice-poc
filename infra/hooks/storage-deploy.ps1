@@ -16,9 +16,23 @@ $image = $before.properties.template.containers[0].image
 $registry = $image.Split('/')[0].Split('.')[0]
 $repository = ($image.Split('/', 2)[1] -split '[:@]')[0]
 $sha = git -C "$PSScriptRoot\..\.." rev-parse --short HEAD
+if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the committed rollout source.' }
 $tag = "$repository`:storage-$sha"
-az acr build --registry $registry --image $tag --file "$PSScriptRoot\..\..\Dockerfile.api" "$PSScriptRoot\..\.." --no-logs --output none
-if ($LASTEXITCODE -ne 0) { throw 'API image build failed; the existing revision is untouched.' }
+$staging = Join-Path ([IO.Path]::GetTempPath()) "r2-storage-source-$([guid]::NewGuid().ToString('N'))"
+$source = Join-Path $staging 'source'
+$archive = Join-Path $staging 'source.zip'
+New-Item -ItemType Directory -Path $staging | Out-Null
+try {
+  # ACR CLI traverses ignored dependency directories; archive only the exact committed source.
+  git -C "$PSScriptRoot\..\.." archive --format=zip "--output=$archive" HEAD
+  if ($LASTEXITCODE -ne 0) { throw 'Cannot archive committed API source; the existing revision is untouched.' }
+  Expand-Archive -LiteralPath $archive -DestinationPath $source
+  Write-Host "Building committed storage source $sha."
+  az acr build --registry $registry --image $tag --file (Join-Path $source 'Dockerfile.api') $source --no-logs --output none
+  if ($LASTEXITCODE -ne 0) { throw 'API image build failed; the existing revision is untouched.' }
+} finally {
+  Remove-Item -LiteralPath $staging -Recurse -Force
+}
 $digest = az acr repository show -n $registry --image $tag --query digest -o tsv
 if ($LASTEXITCODE -ne 0 -or -not $digest) { throw 'Cannot resolve the validated API image digest.' }
 if ($QuiesceLegacy) {
