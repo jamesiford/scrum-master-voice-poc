@@ -239,6 +239,30 @@ test("Probe_UnbuiltBoundary_Records404AndStopsWithoutRetry", async () => {
   assert.match(result.stoppedReason, /not permission-trimming/);
   assert.ok(!JSON.stringify(result).includes(assertion(input, "positive")));
 });
+test("Probe_ServiceOrUncitedFailure_StopsWithoutRetry", async () => {
+  for (const response of [
+    { status: 429, body: null },
+    { status: 500, body: null },
+    { status: 200, body: { ...answer("allowed"), citations: [] } },
+  ]) {
+    const input = fixture();
+    let calls = 0;
+    const result = await probe(
+      input,
+      "positive",
+      async () => {
+        calls++;
+        return calls === 1
+          ? { status: 200, body: { id: input.teamId } }
+          : response;
+      },
+      async () => assertion(input, "positive"),
+    );
+    assert.equal(calls, 2);
+    assert.equal(result.samples.length, 1);
+    assert.ok(result.stoppedReason);
+  }
+});
 test("SignIn_PendingAndSlowDown_UsesPortalScopeAndRequiredIntervals", async () => {
   const input = fixture();
   const intervals = [];

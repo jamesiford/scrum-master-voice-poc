@@ -56,7 +56,7 @@ node --check tools\KnowledgeProbe\probe.mjs
 
 `validate` performs no network or sign-in. `probe` makes no direct
 downstream calls, persists HTTP/refusal/latency evidence and stops on
-401/403/404 without authentication retries. `evaluate` rejects incomplete,
+the first failed, malformed or uncited retrieval without retries. `evaluate` rejects incomplete,
 duplicate, changed-fixture or wrong-persona reports, measures correct citations per base,
 checks negative response text and snippets against exact leakage markers,
 and requires positive restricted-document proof plus a successful readable

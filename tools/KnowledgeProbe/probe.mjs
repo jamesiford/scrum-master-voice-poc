@@ -317,6 +317,7 @@ async function jsonRequest(url, options = {}) {
   try {
     body = JSON.parse(raw);
   } catch {
+    if (response.status !== 200) return { status: response.status, body: null };
     throw new Error(
       `Application HTTP ${response.status} returned invalid JSON.`,
     );
@@ -361,13 +362,13 @@ export async function signIn(
     });
     if (result.status === 200 && text(result.body.access_token))
       return result.body.access_token;
-    if (result.body.error === "authorization_pending") continue;
-    if (result.body.error === "slow_down") {
+    if (result.body?.error === "authorization_pending") continue;
+    if (result.body?.error === "slow_down") {
       interval += 5;
       continue;
     }
     throw new Error(
-      `Device sign-in refused (${result.body.error ?? result.status}). No alternate identity is used.`,
+      `Device sign-in refused (${result.body?.error ?? result.status}). No alternate identity is used.`,
     );
   }
   throw new Error(
@@ -468,8 +469,10 @@ export async function probe(
         latencyMs: performance.now() - start,
         ...sample,
       });
-      if ([401, 403, 404].includes(sample.status)) {
-        report.stoppedReason = sample.refusalReason;
+      if (sample.status !== 200 || !validAnswer(sample.body, base.id)) {
+        report.stoppedReason =
+          sample.refusalReason ??
+          "Invalid or uncited application response; retrieval stopped without retry.";
         report.finishedAt = new Date().toISOString();
         return report;
       }
