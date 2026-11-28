@@ -16,8 +16,14 @@ successful actual RP upsert/builds, not an empty cycle.
 Independent mandatoryverify8/8/native5/5 pass with real Direct
 3338/3977ms,n12 and approved revision73; no Teams acceptance is inferred.
 This lifecycle failure is not a region or support prerequisite.
-G8 remains failed at1/2. After the proof, its
-media VM will be deallocated with final application resources retained.
+Final independent mandatoryverify8/8/416.2082s/native5/5 pass:
+Direct3520/4592ms,n12, questions3742/4592ms,n9, approved revision75/
+completeaudit, zero talkovers. The tail is worse than the first-cycle
+3871ms point, not an accepted trade-off; no default changes or promotion.
+G8 remains failed at1/2. Its exact media VM is now deallocated; all25
+resource identities and unchanged API/bridge images remain, both health200.
+Native HTTPS is intentionally unavailable after deallocation; the protected
+zavaw3 demo remains untouched. Fresh catalogue/RSC/guest acceptance is unrun.
 
 The first empty up failed preflight206.1921s without creating resources.
 ADR0039 uses the same real managed gpt-realtime-2.1 Voice Live model, which

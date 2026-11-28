@@ -178,8 +178,98 @@ AppLens does not support Foundry. No source correction or support prerequisite
 is established. Independent native setup382.8562s,
 nativeRequireReady5/5 and mandatoryverify8/8/418.8114s pass, with actual
 Direct3338/3977ms,n12 and approverrevision73/completeaudit.
-No auth loop, support prerequisite or teardown bypass. G8 is failed at1/2;
-final runtime/readiness and VM-only deallocation continue.
+No auth loop, support prerequisite or teardown bypass. G8 is failed at1/2.
+Final independent runtime refresh260.3368s, nativeRequireReady5/5 and
+mandatoryverify8/8/416.2082s pass after the failed replay, with actual
+Direct3520/4592ms,n12, questions3742/4592ms,n9, modelreads10/12,
+19humansegments/zero talkovers and genuine approverrevision75/
+auditzsa-dc8089a89f16. Final public-page/noninteractive-package hooks pass
+without another catalogue POST. These are not a successful second full up.
+
+**Final retained state:** only `vm-media-uaogwrz6uq4hc` was deallocated
+01:04:37Z to01:05:46Z,68.8504s including readback, exit0, exact
+`PowerState/deallocated`. All25 resource identities remain; API/bridge
+healthHTTP200 and unchanged latest=ready revisions are read back01:07:34Z.
+The initial local Windows az.cmd `length(@)` parser failure255 occurred
+before any VM command; parsing scoped JSON fixed it without a cloud retry.
+No final down/purge or protected deployment mutation occurs. Native HTTPS
+is intentionally unavailable after deallocation; readiness was proved first.
+
+Both images use their own registry and managed identity:
+
+| App | Actual image under acrzavascrumuaogwrz6uq4hc.azurecr.io | Digest | Latest and ready |
+| --- | --- | --- | --- |
+| API | zava-scrum-agent/api-zavag8:azd-deploy-1795826686 | sha256:48925d71eaff2878cbe74d0e98788f487362e1872b4fa195dbe70975b81f7e90 | ca-api-uaogwrz6uq4hc--azd-1795826869 |
+| Bridge | zava-scrum-agent/bridge-zavag8:azd-deploy-1795826686 | sha256:d4130563ecc285742fabcfafa712a0c1995137999185ecfc05ec1e2e7de4646d | ca-bridge-uaogwrz6uq4hc--azd-1795826886 |
+
+Retained endpoints:
+https://ca-api-uaogwrz6uq4hc.victoriousriver-9b7c63c3.westus3.azurecontainerapps.io
+and https://ca-bridge-uaogwrz6uq4hc.victoriousriver-9b7c63c3.westus3.azurecontainerapps.io.
+API has0.5CPU/1Gi, bridge2CPU/4Gi, both min1/max1. Registry ARM
+authentication is explicitly enabled and its mode is LegacyRegistryPermissions.
+Application principalf0084539 has scoped Cognitive Services User/Foundry User,
+AcrPull and Communication and Email Service Owner. The project identity
+is not used as the application identity. The actual project principal
+`eebc7b78-9609-4b2e-a8e9-c9414486bb49` has own-registry AcrPull.
+Media principal9c2682bc has vault Secrets User/Certificates Officer and
+media-package Blob Data Reader. Existing application Cosmos roles are read
+back for Sessions, collections and restricted ApprovalRecords. No extra
+role is added to speculate about the project404. All13 selected inputs
+remain unchanged, including MEDIA_HOST_ENABLED=true,
+PROVISION_REALTIME_MODELS=false and Acs/Share/Direct.
+
+**Final actual inventory and hourly cost boundary, USD retail:**
+this table binds all25 retained ARM resource names. Monthly normalisation
+uses730hours; these are component tariffs, not an invoice or an all-in
+environment estimate. Variable charges remain variable, not silent zeroes.
+
+| Actual retained resources | Allocated hourly tariff / retained boundary |
+| --- | --- |
+| vm-media-uaogwrz6uq4hc | Standard_D4als_v7 Windows four-vCPU/Gen2,0.345/hour allocated;0 compute when deallocated |
+| vm-media-uaogwrz6uq4hc-disk-os-01 | Actual127GB StandardSSD_LRS, E10/128GiB billed9.60/month =0.013150685/hour, retained plus disk operations |
+| pip-media-uaogwrz6uq4hc | Standard static IPv4,0.005/hour retained; actual20.106.97.153/DNS remains |
+| vm-media-uaogwrz6uq4hc/MDE.Windows | Existing Standard/P2 subscription plan automatically added this25th resource, no free trial; base P2 Node0.02/hour allocated,0 for deallocated Azure VM; no separate extension fee |
+| vm-media-uaogwrz6uq4hc/MicrosoftAntiMalware | No separate extension fixed fee; included compute/storage boundaries above |
+| acrzavascrumuaogwrz6uq4hc | Basic0.1666/day =0.006941667/hour retained, plus remote builds/additional storage |
+| ca-api-uaogwrz6uq4hc | Min1/max1,0.5CPU/1Gi: idle0.0162/hour or active0.054/hour before shared free grants; requests0.40/million |
+| ca-bridge-uaogwrz6uq4hc | Min1/max1,2CPU/4Gi: idle0.0648/hour or active0.216/hour before shared free grants; requests0.40/million |
+| cae-zava-scrum-uaogwrz6uq4hc | Consumption environment: no separate dedicated-plan baseline added; applicable environment/replica/network charges remain usage-dependent |
+| fdy-zava-scrum-uaogwrz6uq4hc; fdy-zava-scrum-uaogwrz6uq4hc/proj-zava-scrum | Model/Voice Live/hosted usage, not a fixed account/project tariff; failed Agent Service lookup does not prove zero usage charges |
+| cosmos-zava-scrum-uaogwrz6uq4hc | Serverless request units and stored GB billed by actual usage, no invented fixed hourly compute |
+| appi-zava-scrum-uaogwrz6uq4hc; log-zava-scrum-uaogwrz6uq4hc | Ingestion/retention/query usage remains billed separately; no content capture |
+| stmediauaogwrz6uq4hc | Standard_LRS stored GB/operations/transfer usage remains after VM deallocation |
+| kv-media-uaogwrz6uq4hc | Standard secret/certificate operations remain usage-dependent; no secret values logged |
+| acs-zava-scrum-uaogwrz6uq4hc | Calling/media/other service usage, not a fixed account tariff |
+| bot-zava-scrum-uaogwrz6uq4hc; bot-media-zavag8 | F0 registrations,0 separate fixed hourly fee; calling/service consumption remains above |
+| id-zava-scrum-uaogwrz6uq4hc; nsg-media-uaogwrz6uq4hc; vnet-media-uaogwrz6uq4hc; nic-media-uaogwrz6uq4hc |0 separate fixed resource fee; actual network/transfer usage is not asserted free |
+| 1757d789-40f3-5a85-9fe6-b46a00a66aba; Failure Anomalies - appi-zava-scrum-uaogwrz6uq4hc | Workbook/rule definitions0 separate fixed fee; applicable log/query/alert usage remains separate |
+
+Nested model deployments are also read back, both GlobalStandard100/
+Succeeded: `scrum-gpt-5.4-mini`, gpt-5.4-mini2026-03-17, and
+`zava-decision`, Microsoft-Decision-1.1version1. Their model usage is
+separate, not provisioned-throughput hourly pricing. No standalone realtime
+deployment exists; actual managed Voice Live is verified. Entra apps,
+consents, roles/federated credentials and Cosmos definitions carry no
+separate fixed creation tariff; usage remains on their backing services.
+
+The allocated VM/disk/IP subtotal0.363150685/hour becomes
+0.383150685/hour including the existing Defender P2 base tariff.
+Deallocated disk/IP subtotal0.018150685/hour remains; ACR, both active
+application replicas and other foundations/usage remain outside it.
+Actual P2 readback is Standard/P2/freeTrial0; no plan/policy change occurred.
+Retail API returns `Standard P2 Node`, westus3, meter
+`0fad698c-40bf-4ee1-a096-565fc6f0cddd`,0.02USD/1Hour. An MDATP Benefit
+meter is not claimed without evidence of an applicable billing adjustment.
+[Retail API](https://prices.azure.com/api/retail/prices),
+[Defender pricing](https://azure.microsoft.com/en-gb/pricing/details/defender-for-cloud/)
+and [Azure VM power-state billing](https://learn.microsoft.com/en-us/azure/defender-for-cloud/faq-defender-for-servers)
+confirm that deallocating/deallocated Azure VMs are not billed for P2.
+This rule is not the distinct disconnected-Arc billing rule.
+
+Final Direct tail4592ms is worse than first-cycle3871ms (+18.63%);
+median3520ms versus3417ms (+3.01%), different windows, not a causal pair.
+The operator's equal-or-better experience rule remains: no regression is
+accepted as a trade-off and no native/hosted/board default is promoted.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not

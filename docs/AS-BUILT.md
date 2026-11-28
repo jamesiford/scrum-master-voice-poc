@@ -22,7 +22,18 @@ and three real builds succeed, but hosted creation still returns404.
 No safe source correction is established; these retries earn no cycle credit.
 Independent mandatoryverify8/8/418.8114s
 and native5/5 pass: Direct3338/3977ms,n12, approverrevision73/completeaudit.
-G8 remains failed at1/2; final runtime/readiness and VM-only deallocation continue.
+Final native runtime refresh260.3368s/RequireReady5/5 and mandatoryverify
+8/8/416.2082s pass: Direct3520/4592ms,n12, questions3742/4592ms,n9,
+approverrevision75/auditzsa-dc8089a89f16 complete, zero talkovers.
+These independent checks do not credit the failed full up. G8 remains
+failed at1/2. Only vm-media-uaogwrz6uq4hc is deallocated, confirmed
+01:05:46Z; all25 resource identities and unchanged API/bridge images remain,
+both healthHTTP200. The additional MDE.Windows extension came from the
+existing subscription Defender P2 plan, not a policy or template change.
+Its unadjusted retailUSD0.02/hour stops billing when this Azure VM is
+deallocated; retained disk/IPUSD0.018150685/hour is not an all-in bill.
+Final tail4592ms is worse than first-cycle3871ms, not an accepted trade-off
+or promotion proof; G1's failure remains.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the

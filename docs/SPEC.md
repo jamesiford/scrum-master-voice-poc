@@ -34,6 +34,13 @@ despite successful actual RP upsert and real builds, without cycle credit.
 Independent mandatoryverify8/8/418.8114s/native5/5
 pass, Direct3338/3977ms,n12, approverrevision73/completeaudit.
 No support prerequisite or teardown bypass; G8 remains failed at1/2.
+Final independent mandatoryverify8/8/416.2082s and nativeRequireReady5/5
+pass, Direct3520/4592ms,n12, approverrevision75/completeaudit. No second
+full-up credit or adapter promotion follows from those checks. Only the
+fresh media VM is deallocated; all25 resources and both healthy application
+images remain. Existing Defender P2 automatically added MDE.Windows;
+no plan, policy or unrelated role was changed. DEPLOY records the actual
+retained inventory and separate allocated/deallocated retail costs.
 
 **Historical G8 second recovery (ADR0035), provider-blocked at newcycles0/2:** a guarded predown lifecycle hook removes
 only code-owned hosted agents before project teardown and reads back

@@ -63,7 +63,7 @@
     "size": "Standard_D4als_v7",
     "imageSku": "2022-datacenter-g2",
     "windowsComputeUsdPerHour": 0.345,
-    "finalPowerState": "pending_deallocation"
+    "finalPowerState": "PowerState/deallocated"
   },
   "iterations": [
     {
@@ -227,6 +227,196 @@
     "messagingExternalId": "9be7c67b-b372-4668-b448-59726428cf2a",
     "portalSsoId": "275a77d0-016c-4a63-96db-5dca05ca7e00"
   },
+  "finalIndependentCompletion": {
+    "cycleCredit": false,
+    "verificationSource": "9888135238c8697e599728b08cace991c1b63de3",
+    "nativeRuntimeRefresh": {
+      "start": "2026-11-28T00:50:07.3247130+00:00",
+      "end": "2026-11-28T00:54:27.6615225+00:00",
+      "seconds": 260.3368095,
+      "exitCode": 0
+    },
+    "publicPagesAndNoninteractivePackage": {
+      "seconds": 3.8875316,
+      "exitCode": 0,
+      "cataloguePostRepeated": false
+    },
+    "nativeRequireReady": {
+      "start": "2026-11-28T00:55:36.0773246+00:00",
+      "end": "2026-11-28T00:55:43.6858596+00:00",
+      "seconds": 7.608535,
+      "exitCode": 0,
+      "checks": 5
+    },
+    "mandatoryVerify": {
+      "start": "2026-11-28T00:55:36.0773251+00:00",
+      "end": "2026-11-28T01:02:32.2855340+00:00",
+      "seconds": 416.2082089,
+      "exitCode": 0,
+      "checks": 8,
+      "timedTurns": 12,
+      "totalP50Ms": 3520,
+      "totalP95Ms": 4592,
+      "questions": 9,
+      "questionP50Ms": 3742,
+      "questionP95Ms": 4592,
+      "modelReadTurns": 10,
+      "humanSegments": 19,
+      "talkOvers": 0,
+      "sessionId": "bb6e9ef4-f6b0-4f69-8f70-605cb35e4335",
+      "adoComment": "verify-79455612",
+      "adoRevision": 75,
+      "auditTag": "zsa-dc8089a89f16"
+    }
+  },
+  "finalEnvironment": {
+    "deallocationStart": "2026-11-28T01:04:37.5550603+00:00",
+    "deallocationReadbackEnd": "2026-11-28T01:05:46.4054449+00:00",
+    "deallocationAndReadbackSeconds": 68.8503846,
+    "deallocationExitCode": 0,
+    "onlyVmDeallocated": "vm-media-uaogwrz6uq4hc",
+    "powerState": "PowerState/deallocated",
+    "resourceCountBefore": 25,
+    "resourceCountAfter": 25,
+    "allResourceIdsRetained": true,
+    "otherResourcesDeleted": false,
+    "applicationsReadbackTime": "2026-11-28T01:07:34.1060586+00:00",
+    "apps": [
+      {
+        "name": "ca-api-uaogwrz6uq4hc",
+        "url": "https://ca-api-uaogwrz6uq4hc.victoriousriver-9b7c63c3.westus3.azurecontainerapps.io",
+        "health": 200,
+        "image": "acrzavascrumuaogwrz6uq4hc.azurecr.io/zava-scrum-agent/api-zavag8:azd-deploy-1795826686",
+        "digest": "sha256:48925d71eaff2878cbe74d0e98788f487362e1872b4fa195dbe70975b81f7e90",
+        "latestAndReady": "ca-api-uaogwrz6uq4hc--azd-1795826869",
+        "cpu": 0.5,
+        "memory": "1Gi",
+        "minReplicas": 1,
+        "maxReplicas": 1
+      },
+      {
+        "name": "ca-bridge-uaogwrz6uq4hc",
+        "url": "https://ca-bridge-uaogwrz6uq4hc.victoriousriver-9b7c63c3.westus3.azurecontainerapps.io",
+        "health": 200,
+        "image": "acrzavascrumuaogwrz6uq4hc.azurecr.io/zava-scrum-agent/bridge-zavag8:azd-deploy-1795826686",
+        "digest": "sha256:d4130563ecc285742fabcfafa712a0c1995137999185ecfc05ec1e2e7de4646d",
+        "latestAndReady": "ca-bridge-uaogwrz6uq4hc--azd-1795826886",
+        "cpu": 2,
+        "memory": "4Gi",
+        "minReplicas": 1,
+        "maxReplicas": 1
+      }
+    ],
+    "registryArmAuthentication": "enabled",
+    "registryMode": "LegacyRegistryPermissions",
+    "appPrincipal": "f0084539-e243-4ab3-a336-5e4ac68ce690",
+    "appScopedRoles": [
+      "Cognitive Services User",
+      "Foundry User",
+      "AcrPull",
+      "Communication and Email Service Owner"
+    ],
+    "projectPrincipal": "eebc7b78-9609-4b2e-a8e9-c9414486bb49",
+    "projectScopedRoles": ["AcrPull"],
+    "mediaPrincipal": "9c2682bc-5263-4dc9-9d5a-5507f62ac92e",
+    "mediaScopedRoles": [
+      "Key Vault Secrets User",
+      "Key Vault Certificates Officer",
+      "Storage Blob Data Reader"
+    ],
+    "cosmosRoleScopes": ["Sessions", "collections", "ApprovalRecords"],
+    "modelDeployments": [
+      {
+        "name": "scrum-gpt-5.4-mini",
+        "model": "gpt-5.4-mini",
+        "version": "2026-03-17",
+        "sku": "GlobalStandard",
+        "capacity": 100,
+        "state": "Succeeded"
+      },
+      {
+        "name": "zava-decision",
+        "model": "Microsoft-Decision-1.1",
+        "version": "1",
+        "sku": "GlobalStandard",
+        "capacity": 100,
+        "state": "Succeeded"
+      }
+    ],
+    "retainedResourceNames": [
+      "nsg-media-uaogwrz6uq4hc",
+      "id-zava-scrum-uaogwrz6uq4hc",
+      "log-zava-scrum-uaogwrz6uq4hc",
+      "kv-media-uaogwrz6uq4hc",
+      "pip-media-uaogwrz6uq4hc",
+      "stmediauaogwrz6uq4hc",
+      "vnet-media-uaogwrz6uq4hc",
+      "fdy-zava-scrum-uaogwrz6uq4hc",
+      "nic-media-uaogwrz6uq4hc",
+      "appi-zava-scrum-uaogwrz6uq4hc",
+      "vm-media-uaogwrz6uq4hc",
+      "vm-media-uaogwrz6uq4hc-disk-os-01",
+      "1757d789-40f3-5a85-9fe6-b46a00a66aba",
+      "fdy-zava-scrum-uaogwrz6uq4hc/proj-zava-scrum",
+      "cosmos-zava-scrum-uaogwrz6uq4hc",
+      "acrzavascrumuaogwrz6uq4hc",
+      "acs-zava-scrum-uaogwrz6uq4hc",
+      "vm-media-uaogwrz6uq4hc/MicrosoftAntiMalware",
+      "cae-zava-scrum-uaogwrz6uq4hc",
+      "bot-zava-scrum-uaogwrz6uq4hc",
+      "ca-bridge-uaogwrz6uq4hc",
+      "ca-api-uaogwrz6uq4hc",
+      "Failure Anomalies - appi-zava-scrum-uaogwrz6uq4hc",
+      "bot-media-zavag8",
+      "vm-media-uaogwrz6uq4hc/MDE.Windows"
+    ],
+    "selectedInputCount": 13,
+    "selectedInputsUnchanged": true,
+    "nativeUnavailableAfterDeallocationExpected": true,
+    "localCliErrorBeforeVmCommand": "az.cmd length(@) parsing returned255; scoped JSON parsing corrected the local invocation"
+  },
+  "costBoundary": {
+    "currency": "USD",
+    "basis": "unadjusted retail, component tariffs, not an all-in invoice",
+    "windowsVmAllocatedPerHour": 0.345,
+    "windowsVmDeallocatedPerHour": 0,
+    "retainedDiskPerHour": 0.013150685,
+    "retainedStaticIpPerHour": 0.005,
+    "allocatedVmDiskIpSubtotalPerHour": 0.363150685,
+    "retainedDiskIpSubtotalPerHour": 0.018150685,
+    "existingDefenderPlan": "Standard/P2",
+    "defenderFreeTrial": "0:00:00",
+    "automaticExtension": "vm-media-uaogwrz6uq4hc/MDE.Windows",
+    "defenderPlanOrPolicyChanged": false,
+    "defenderAllocatedPerHour": 0.02,
+    "defenderDeallocatedAzureVmPerHour": 0,
+    "defenderMeter": "Standard P2 Node",
+    "defenderMeterId": "0fad698c-40bf-4ee1-a096-565fc6f0cddd",
+    "unverifiedMdatpBenefitDiscountClaimed": false,
+    "allocatedVmDiskIpDefenderSubtotalPerHour": 0.383150685,
+    "retainedAcrBasicPerHour": 0.006941667,
+    "apiIdlePerHourBeforeSharedGrants": 0.0162,
+    "apiActivePerHourBeforeSharedGrants": 0.054,
+    "bridgeIdlePerHourBeforeSharedGrants": 0.0648,
+    "bridgeActivePerHourBeforeSharedGrants": 0.216,
+    "acaRequestsPerMillion": 0.4,
+    "all25ResourceCostBoundaries": "DEPLOY final actual inventory table",
+    "variableChargesRemain": [
+      "models/Voice Live/hosted agents",
+      "Cosmos serverless RU/storage",
+      "logs/retention/queries/alerts",
+      "storage/disk operations/network",
+      "vault operations",
+      "ACS service usage",
+      "ACR builds/additional storage",
+      "applicable Container Apps usage"
+    ],
+    "sources": [
+      "https://prices.azure.com/api/retail/prices",
+      "https://azure.microsoft.com/en-gb/pricing/details/defender-for-cloud/",
+      "https://learn.microsoft.com/en-us/azure/defender-for-cloud/faq-defender-for-servers"
+    ]
+  },
   "interveningPurge": {
     "observationTime": "2026-11-27T23:39:23.5173093+00:00",
     "state": "succeeded",
@@ -252,6 +442,8 @@
     "Previous failures remain historical and do not establish a support prerequisite.",
     "First full cycle and intervening purge/preserved13inputs pass. Second full empty up1192.4071s, seven bounded reads, hosted retry386.4755s and final no-state provision/deploy917.7072s reproduce404. Actual RP upsert and real builds succeed; no safe source-only fix is established. G8failed1/2, without cycle credit, support prerequisite or teardown bypass.",
     "Independent mandatory8/8/native5/5 and actual managed Direct audio/approved revision73/completeaudit pass; these do not repair the failed full-up lifecycle.",
+    "Final independent8/8/416.2082s/native5/5 pass: real Direct3520/4592ms,n12/revision75/completeaudit. Only exact fresh VM deallocated; all25 resource identities and unchanged API/bridge images remain healthy. Existing Defender P2 automatically added MDE.Windows; no policy change. G8failed1/2, closing work complete.",
+    "Final tail4592ms versus first-cycle3871ms is worse, not an accepted trade-off or promotion proof; G1 remains failed.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]
 }

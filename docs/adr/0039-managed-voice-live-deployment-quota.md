@@ -62,6 +62,12 @@ real Direct3338/3977ms,n12, approved revision73/completeaudit and native5/5.
 It verifies the real managed-model correction, not another full-up cycle.
 Both supported lifecycle retries also fail404 after the successful model
 correction; no quota or model change is justified by that distinct failure.
+Final independent verification passes8/8/416.2082s, actual managed Direct
+3520/4592ms,n12, nativeRequireReady5/5 and approved revision75/completeaudit.
+Final25 retained resources include the existing Defender plan's automatic
+MDE.Windows extension, not a new model dependency. Only the fresh media VM
+is deallocated after readiness; API/bridge remain healthy. No second
+full-up credit follows and G8 remains failed1/2.
 
 Both full empty up/verify cycles must prove actual managed Voice Live
 audio, approved writes and the entire footprint before G8 passes.
