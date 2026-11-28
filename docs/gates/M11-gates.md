@@ -17,12 +17,12 @@ targeted Domain49/49 and Api10/10 proof. The old louderguest1000/member500
 fixture suppressed member audio; now it forwards member500 and zero guest
 PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
 required circle-back survives style overrides; the current prefix has
-15/16 complete pre-guard real-model retros, spoken15/16/answered16/16.
+23/24 complete pre-guard real-model retros, spoken23/24/answered24/24.
 Run15 had no agent transcript/first-audio timing between return and answer,
 no talk-over; it remains failed with no session retry. Completion without
 audio could silently hand off against a stale cast caption. A new pure
 Domain guard retries the real response at most twice, then fails explicitly;
-original latency baseline is retained. Remaining14, separate30 guarded
+original latency baseline is retained. Remaining6, separate30 guarded
 retros and runtime after measurement are unrun, not passing evidence.
 API-only
 e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89, HTTP200;

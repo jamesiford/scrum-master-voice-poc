@@ -48,11 +48,16 @@ Real-mediator tests prove the required clause survives the older optional
 style template. `eng/test-retro-fidelity.ps1` drives30 complete existing
 Simulated Room retrospectives against zavaw3, using the real model and
 refreshing API credentials between runs. Each result is saved independently;
-no failed session is silently retried. The pre-guard prefix passes15/16
-complete real-model retrospectives: spoken returns15/16, answers16/16.
-Run15 remains failed, not retried or removed. Remaining14 and the separate
+no failed session is silently retried. The pre-guard prefix passes23/24
+complete real-model retrospectives: spoken returns23/24, answers24/24.
+Run15 remains failed, not retried or removed. Remaining6 and the separate
 30-run guarded cohort are explicitly unrun until the final counts appear in
 `gates/r2-quality-M11.json`.
+
+The original cohort stays on deployed source e7c31fa/revision89; its old
+per-run build labels are local metadata, not runtime provenance. The next
+cohort explicitly pins the live digest-tag source so documentation
+checkpoints cannot change that label.
 
 Focused floor49/49 and native gateway10/10 pass; five new cases cover
 empty-response retries/exhaustion, successful recovery, explicit retry and

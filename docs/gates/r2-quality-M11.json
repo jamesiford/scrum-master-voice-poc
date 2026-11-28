@@ -1,7 +1,7 @@
 {
   "step": "r2-quality",
   "status": "partial",
-  "runtimeSource": "592b6ab",
+  "runtimeSource": "9ea293b",
   "environment": "zavaw3",
   "region": "westus3",
   "defaultAdaptersChanged": false,
@@ -27,17 +27,19 @@
       "binaryCalibrationSamples": 1008, "binaryBrier": 0.03047060788473959, "binaryEce": 0.08289778260789055,
       "intentCalibrationSamples": 112, "intentBrier": 0.025959752680976937, "intentEce": 0.09693312088604658,
       "release": "pass"
-    }
+    },
+    "shipped": { "status": "not_run" }
   },
   "floor": { "domainPassed": 49, "apiPassed": 10, "realNativeAcceptanceSamples": 0 },
   "retro": {
     "status": "running",
     "required": 30,
-    "samples": 16,
-    "passed": 15,
-    "spokenReturns": 15,
-    "answeredReturns": 16,
-    "remaining": 14,
+    "runtimeSource": "e7c31fa",
+    "samples": 24,
+    "passed": 23,
+    "spokenReturns": 23,
+    "answeredReturns": 24,
+    "remaining": 6,
     "failedRuns": [15],
     "retryCount": 0,
     "guardedCohort": { "status": "not_run", "required": 30, "samples": 0, "passed": 0 }
