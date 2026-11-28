@@ -37,6 +37,33 @@ are not consumed by the gateway; corrections still need model retractions.
 
 ## Decision
 
+### Complete baseline and implemented candidate
+
+The complete unchanged3ddd40b cohort is12sessions, three interleaved
+windows with two serial sessions per mode: Model3595/5176ms,n70,
+questions3742/5176ms,n53; Rules3316/4161ms,n71, questions3462/4161ms,
+n53. Talkovers0 in both. Window p50 spread is5.72%/3.58%. Model exceeds
+the westus3 baseline by20.07%/26.83%; Rules by17.26%/7.35%. G1 fails.
+Exact template/configuration/identity restoration passes. Complete
+content-free per-hop/window evidence is `../gates/r2-latency-before-M11.json`.
+
+`Voice:OptimiseTurnPreparation=false` preserves the old path. True selects
+two real optimisations: authoritative comments avoid an unused second
+assessment, and independent team/prompt reads overlap. Corrections and
+updates without authoritative comments still ask the reconciliation model.
+The public diagnostic query defaults to assessment and serial reads.
+The code-decided questions, events, item grounding and every floor rule
+stay unchanged; no model-generated surrogate or response is substituted.
+Greenfield templates expose `VOICE_OPTIMISE_TURN_PREPARATION=false`.
+
+First-audio diagnostic endpoints are captured before latency persistence.
+Previously that write inflated the reported first-audio hop by about110ms
+in the diagnostic window, although total latency was already captured
+before the write. The total definition is unchanged; this correction is
+not credited as a user-perceived latency saving. Application44/floor49/
+Api10/architecture16 focused checks and all three builds pass. Candidate
+deployment and after measurements remain unrun at this checkpoint.
+
 Run three interleaved adjacent windows, alternating Model/Rules order,
 two serial same-cast sessions per cell. This retains the same session
 shape, reaches at least30 questions/configuration and measures window

@@ -1,5 +1,22 @@
 # Zava Scrum Master voice PoC: as built
 
+## Round 2 Direct latency (ADR 0044)
+
+Unchanged3ddd40b baseline: three interleaved windows, six same-cast
+sessions per mode; Model3595/5176ms p50/p95,n70/questions53, Rules3316/
+4161ms,n71/questions53,zero talkovers. Window p50 spread5.72%/3.58%.
+G1 fails the westus3 experience comparison and absolute one-second target.
+See `gates/r2-latency-before-M11.json` for all five hops and every window.
+
+The implemented candidate `Voice:OptimiseTurnPreparation` defaultsfalse:
+it reuses authoritative decision comments and overlaps independent prompt/
+team reads. Corrections, rules/model-failure paths and diagnostic queries
+retain model assessment. Floor silence, barge-in, required circle-back,
+approval guards and Acs/Share/Direct/Simulated Room stay unchanged.
+First-audio hop timestamps no longer include a subsequent persistence
+write; total timing semantics are unchanged. No new route/use case/resource
+or fixed hourly cost. Deployment/after measurements are not yet claimed.
+
 ## Round 2 correctness (ADRs 0041 to 0043)
 
 Decision dates are selected from verbatim transcript candidates, not

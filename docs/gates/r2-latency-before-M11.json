@@ -1,0 +1,294 @@
+{
+  "phase": "before",
+  "source": "3ddd40b",
+  "environment": "zavaw3",
+  "teamId": "team-payments",
+  "completedSessions": 12,
+  "plannedSessions": 12,
+  "percentile": "nearest-rank",
+  "baseline": "docs/gates/baseline-M10-deployed/summary.md (84498ad, three runs/configuration)",
+  "configurations": [
+    {
+      "mode": "Model",
+      "sessions": 6,
+      "windows": [
+        {
+          "window": 1,
+          "sessions": 2,
+          "total": {
+            "p50": 3680,
+            "p95": 5328,
+            "n": 24
+          },
+          "questions": {
+            "p50": 3684,
+            "p95": 7968,
+            "n": 18
+          }
+        },
+        {
+          "window": 2,
+          "sessions": 2,
+          "total": {
+            "p50": 3481,
+            "p95": 4082,
+            "n": 22
+          },
+          "questions": {
+            "p50": 3849,
+            "p95": 4122,
+            "n": 17
+          }
+        },
+        {
+          "window": 3,
+          "sessions": 2,
+          "total": {
+            "p50": 3558,
+            "p95": 4598,
+            "n": 24
+          },
+          "questions": {
+            "p50": 3742,
+            "p95": 5176,
+            "n": 18
+          }
+        }
+      ],
+      "hops": [
+        {
+          "name": "TotalMs",
+          "all": {
+            "p50": 3595,
+            "p95": 5176,
+            "n": 70
+          },
+          "questions": {
+            "p50": 3742,
+            "p95": 5176,
+            "n": 53
+          }
+        },
+        {
+          "name": "SpeechEndToTranscriptMs",
+          "all": {
+            "p50": 0,
+            "p95": 200,
+            "n": 70
+          },
+          "questions": {
+            "p50": 0,
+            "p95": 204,
+            "n": 53
+          }
+        },
+        {
+          "name": "AnalyserMs",
+          "all": {
+            "p50": 50,
+            "p95": 60,
+            "n": 70
+          },
+          "questions": {
+            "p50": 51,
+            "p95": 60,
+            "n": 53
+          }
+        },
+        {
+          "name": "DecisionModelMs",
+          "all": {
+            "p50": 260,
+            "p95": 353,
+            "n": 70
+          },
+          "questions": {
+            "p50": 262,
+            "p95": 353,
+            "n": 53
+          }
+        },
+        {
+          "name": "OrchestrationMs",
+          "all": {
+            "p50": 1900,
+            "p95": 2496,
+            "n": 70
+          },
+          "questions": {
+            "p50": 1960,
+            "p95": 2626,
+            "n": 53
+          }
+        },
+        {
+          "name": "VoiceFirstAudioMs",
+          "all": {
+            "p50": 1473,
+            "p95": 2509,
+            "n": 70
+          },
+          "questions": {
+            "p50": 1473,
+            "p95": 2388,
+            "n": 53
+          }
+        }
+      ],
+      "talkOvers": 0.0,
+      "modelReadTurns": 58,
+      "windowP50SpreadPercent": 5.716748060902033,
+      "westus3Baseline": {
+        "n": 36,
+        "p50": 2994,
+        "p95": 4081
+      },
+      "p50DeltaPercent": 20.073480293921175,
+      "p95DeltaPercent": 26.831658907130596,
+      "toleranceMet": false,
+      "absoluteOneSecondMet": false,
+      "sufficientQuestions": true
+    },
+    {
+      "mode": "Rules",
+      "sessions": 6,
+      "windows": [
+        {
+          "window": 1,
+          "sessions": 2,
+          "total": {
+            "p50": 3319,
+            "p95": 4657,
+            "n": 23
+          },
+          "questions": {
+            "p50": 3492,
+            "p95": 4657,
+            "n": 17
+          }
+        },
+        {
+          "window": 2,
+          "sessions": 2,
+          "total": {
+            "p50": 3381,
+            "p95": 3927,
+            "n": 24
+          },
+          "questions": {
+            "p50": 3502,
+            "p95": 3965,
+            "n": 18
+          }
+        },
+        {
+          "window": 3,
+          "sessions": 2,
+          "total": {
+            "p50": 3264,
+            "p95": 3871,
+            "n": 24
+          },
+          "questions": {
+            "p50": 3332,
+            "p95": 3994,
+            "n": 18
+          }
+        }
+      ],
+      "hops": [
+        {
+          "name": "TotalMs",
+          "all": {
+            "p50": 3316,
+            "p95": 4161,
+            "n": 71
+          },
+          "questions": {
+            "p50": 3462,
+            "p95": 4161,
+            "n": 53
+          }
+        },
+        {
+          "name": "SpeechEndToTranscriptMs",
+          "all": {
+            "p50": 0,
+            "p95": 193,
+            "n": 71
+          },
+          "questions": {
+            "p50": 0,
+            "p95": 205,
+            "n": 53
+          }
+        },
+        {
+          "name": "AnalyserMs",
+          "all": {
+            "p50": 50,
+            "p95": 57,
+            "n": 71
+          },
+          "questions": {
+            "p50": 50,
+            "p95": 57,
+            "n": 53
+          }
+        },
+        {
+          "name": "DecisionModelMs",
+          "all": {
+            "p50": 0,
+            "p95": 0,
+            "n": 71
+          },
+          "questions": {
+            "p50": 0,
+            "p95": 0,
+            "n": 53
+          }
+        },
+        {
+          "name": "OrchestrationMs",
+          "all": {
+            "p50": 1899,
+            "p95": 2361,
+            "n": 71
+          },
+          "questions": {
+            "p50": 1938,
+            "p95": 2391,
+            "n": 53
+          }
+        },
+        {
+          "name": "VoiceFirstAudioMs",
+          "all": {
+            "p50": 1469,
+            "p95": 2430,
+            "n": 71
+          },
+          "questions": {
+            "p50": 1483,
+            "p95": 2430,
+            "n": 53
+          }
+        }
+      ],
+      "talkOvers": 0.0,
+      "modelReadTurns": 0,
+      "windowP50SpreadPercent": 3.5845588235294157,
+      "westus3Baseline": {
+        "n": 36,
+        "p50": 2828,
+        "p95": 3876
+      },
+      "p50DeltaPercent": 17.256011315417254,
+      "p95DeltaPercent": 7.352941176470584,
+      "toleranceMet": false,
+      "absoluteOneSecondMet": false,
+      "sufficientQuestions": true
+    }
+  ]
+}

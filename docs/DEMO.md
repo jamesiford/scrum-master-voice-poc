@@ -1,5 +1,28 @@
 # Demo runbook
 
+## Round 2 latency measurement
+
+Keep Acs/Share/Direct, the same cast and session shape, and no concurrent
+evaluation load. ADR0044 baseline has Model3595/5176ms,n70 and Rules3316/
+4161ms,n71,53questions each,zero talkovers; G1 remainsfailed. Do not choose
+a favourable window or change goldens/thresholds. The candidate
+`Voice:OptimiseTurnPreparation` isfalse until accepted by measured experience.
+
+For an explicitly authorised new controlled cohort on zavaw3 only:
+
+```powershell
+dotnet build tools\GateRunner\GateRunner.csproj -c Release
+pwsh -File eng\test-latency-windows.ps1 -Phase after -Output .m11-plan\run-log\r2-latency-after
+pwsh -File eng\summarise-latency-windows.ps1 -InputDirectory .m11-plan\run-log\r2-latency-after -OutputFile .m11-plan\run-log\r2-latency-after-summary.json
+```
+
+This runs three interleaved windows, two serial sessions per mode per
+window, refreshing credentials and restoring the original Model/Rules
+setting in finally. It pins the actual deployed digest, never resets demo
+storage or retries a failed session. Candidate selection is a separate
+scoped deployment setting, not a label. Simulated transcript0ms does not
+prove real speech-to-text or Teams/native acoustic acceptance.
+
 ## Round 2 correctness checks
 
 Keep Acs/Share/Direct and Simulated Room. Re-prepare a session to capture

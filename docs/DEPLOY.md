@@ -1,5 +1,25 @@
 # Deploying the current solution
 
+## Round 2 latency rollout
+
+ADR0044 adds no Azure resource, identity, permission or secret, fixed
+costUSD0/hour. `VOICE_OPTIMISE_TURN_PREPARATION=false` maps through
+main/compute templates to `Voice__OptimiseTurnPreparation`; true selects
+real authoritative-comment reconciliation and concurrent context reads.
+The default isfalse until measured acceptance. Corrections, rules and
+diagnostic queries still use the model; all floor and approval guards stay.
+No new human gate belongs to this performance work.
+
+Import zavaw3 explicitly as below, build the committed API in existing ACR,
+validate its digest and update only the API image. Do not provision the
+full template, change selected azd defaults, touch native/hosted deployments
+or run another environment lifecycle. Snapshot and compare configuration,
+identity, unrelated env, bridge image and readiness before/after. Select
+the candidate only for controlled measurement; restorefalse unless accepted.
+The before cohort iscomplete12/12 with53questions per mode andzero
+talkovers. Deployment/after measurements are still unrun at this checkpoint.
+Keep all existing user/organiser/source/billing/CI gates elsewhere intact.
+
 ## Round 2 correctness rollout
 
 This runtime-only change adds no Azure resource, role, Entra object or

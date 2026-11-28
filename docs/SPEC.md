@@ -483,6 +483,12 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 
 **Tools.** The Voice Live tools (section 7.2) call these use cases through `ISender`: `get_next_speaker` -> `GetNextSpeakerQuery`, `get_member_brief` -> `GetMemberBriefQuery`, `reconcile_update` -> `ReconcileUpdateQuery`, `record_event` -> `RecordStandupEventCommand`, `park_topic` -> `ParkTopicCommand`, `mark_absent` -> `MarkAbsentCommand`, `get_time_remaining` -> `GetTimeRemainingQuery`, `end_standup` -> `EndStandupCommand`, `get_work_item_details` -> `GetWorkItemDetailsQuery`.
 
+ADR0044 adds no use case: the voice caller can opt out of unused
+`ReconcileUpdateQuery.IncludeModelAssessment` only with authoritative
+comments and no correction, and opt into
+`GetTurnInstructionQuery.ParallelContextReads`. Defaults preserve existing
+diagnostic/serial queries; Domain questions/events/approval rules stay.
+
 **M11 6a:** no Application use case or port is added. The native media presentation routes reuse `GetSessionQuery`, `GetRosterQuery` and the normal `EndStandupCommand`; `GraphMediaBridge` implements the existing `IMeetingBridge`. The ephemeral audio path intentionally bypasses commands and has no writable tool surface (ADR 0023).
 
 **M11 7 (ADR 0024):** `ReceiveMeetingEventCommand` is the Teams use case for
@@ -851,7 +857,15 @@ Scripted G1 regression verification is not Work IQ latency or privacy proof.
 ### 11.2 Latency
 The gateway logs inside a scope carrying the session's `CorrelationId` and `SessionId` (M11, ADR 0017), so every structured line for a turn can be tied to the audit chain. It measures end of speech (`input_audio_buffer.speech_stopped`) to the first agent audio byte for every agent turn. It stores p50 and p95 per session and shows them live in the portal. Target p50 is about 1,000 ms for US participants. Pre-computing `reconcile_update` (section 10.2) is the main lever.
 
-Latest Direct scripted before/after: 3200/5600 ms p50/p95 (n=10) versus
+Round2 complete unchanged3ddd40b baseline: Model3595/5176ms,n70 and
+Rules3316/4161ms,n71,53questions each,zero talkovers across three interleaved
+windows. Window p50 spread5.72%/3.58%; G1 remainsfailed against westus3
+and the one-second target. ADR0044's optional real turn-preparation
+candidate preserves all floor timings; deployment/after remainunrun.
+Total timing is unchanged; diagnostic first-audio endpoints are captured
+before subsequent latency persistence. HTTP routes/payloads are unchanged.
+
+Historical pre-Round2 Direct scripted before/after: 3200/5600 ms p50/p95 (n=10) versus
 3398/4707 ms (n=12); p50 +6.19% fails the historical 5% tolerance.
 Simulated transcript p50=0 is not speech-to-text proof. Timing events and the
 live Insights workbook hold per-hop evidence; dedicated Live per-hop counters
@@ -1284,6 +1298,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `VoiceLive:Endpoint`, `VoiceLive:ApiVersion`, `VoiceLive:Model`, `VoiceLive:Voice`, `VoiceLive:Language` | Voice Live socket (empty endpoint derives it from the Foundry host) | `2026-04-10`, `gpt-realtime-2.1`, `en-US-Ava:DragonHDLatestNeural`, `en-US` |
 | `VoiceLive:AgentName`, `VoiceLive:AgentProjectName` | Optional Foundry voice-agent mode (query parameters unverified) | Empty (model-direct) |
 | `Voice:ParkAfterSeconds`, `Voice:SilenceMs`, `Voice:PauseMs`, `Voice:NoResponseSeconds` | Floor-control timing | Code defaults 60, 1200, 800, 25; `appsettings.json` sets 12, 800, 500, 25. `SilenceMs` 800 was kept after 500, 650 and 800 could not be told apart (ADR 0019) |
+| `Voice:OptimiseTurnPreparation` | Reuse authoritative comments and overlap independent prompt/team reads; corrections and rules retain model assessment (ADR0044) | `false`; greenfield `VOICE_OPTIMISE_TURN_PREPARATION=false`, pending measured acceptance |
 | `Ado:Org`, `Ado:AuthMode` (`Entra` or `Pat`), `Ado:Pat` (**secret**) | Azure DevOps organisation URL and auth | `Entra` |
 | `Team:Id`, `Team:Name`, `Team:TimeZone`, `Team:Project`, `Team:AdoTeam`, `Team:AreaPath`, `Team:SprintGoal` | Default team seeded into the store | `team-payments`, `America/Los_Angeles` |
 | `Demo:HonorAgeTags`, `Demo:HonorOwnerTags`, `Demo:SeedFile`, `Demo:KpiFixture` | Demo behaviour and fixtures | `true`, `true`, `demo/seed-ado.json`, `demo/kpi-history.json` |

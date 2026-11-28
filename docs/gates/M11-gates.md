@@ -1,5 +1,22 @@
 # M11 gates
 
+## Round 2 Direct latency (ADR 0044)
+
+Complete unchanged3ddd40b:12sessions, three interleaved windows, six
+serial same-cast sessions per mode,53questions each. Model3595/5176ms,
+n70; Rules3316/4161ms,n71; zero talkovers. Window p50 spread5.72%/3.58%.
+Against westus3 M10 Model2994/4081ms,n36 and Rules2828/3876ms,n36:
+Model+20.07%/+26.83%, Rules+17.26%/+7.35%; unchanged5%/10%
+tolerances fail in both configurations. Absolute one-second target fails.
+All per-hop/window/question denominators are in `r2-latency-before-M11.json`.
+Candidate `Voice:OptimiseTurnPreparation=false` preserves the baseline;
+true avoids an unused assessment only with authoritative comments and no
+correction, and overlaps independent prompt/team reads. Total timing
+semantics stay; first-audio hop excludes subsequent latency persistence.
+Candidate deployment/after measurements remain unrun at this checkpoint.
+No full suites, threshold/golden changes, native acceptance or other
+environment lifecycle. G2-G11 retain their earlier verdicts below.
+
 ## Round 2 correctness (ADRs0041-0043)
 
 Frozen112synthetic goldens preserve all original72 and add40date cases,
