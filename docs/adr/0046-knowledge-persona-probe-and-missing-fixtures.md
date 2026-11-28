@@ -92,3 +92,14 @@ unchanged. Added fixed cost **USD0/hour**; knowledge usage **n0**.
 names the exact owner actions and executable commands after prerequisites.
 The result remains blocked only by genuine operator/source/persona inputs;
 this is not a gate-failure excuse or a renewed consent request.
+
+Mandatory existing-zavaw3 verify completes7/8, exit1, solely because the
+known native VM is deallocated: exact error "The Windows media VM is not
+running." It was not restarted under another step's completed allocation
+authority. Default standup/real approved write/audit revision83,n1 pass.
+Current Direct3472/5194ms,n12, questions3537/5194ms,n9, talk-overs0;
+preceding3407/6497ms,n12/questions3590/4663ms,n9 gives questionp95
++11.39%. G1 remains failed, not a favourable retry or a knowledge causal
+claim; no knowledge runtime was added. Full hops/actual runtime provenance
+are in [r2-8a-M11.json](../gates/r2-8a-M11.json). API/bridge remain
+Running/ready on the same images, native stays deliberately offline.

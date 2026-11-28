@@ -1220,6 +1220,14 @@ not a per-team content flag. zavaw3 consent is already complete and was
 read back in this attempt: **do not reopen it or change mcm**. No live
 grant/public-client update was needed or performed.
 
+Existing-zavaw3 `infra\hooks\verify.ps1` on this attempt completes7/8:
+native is intentionally deallocated and fails exactly "The Windows media
+VM is not running." No current-step authority to start it was inferred
+from the prior board step. Default standup, portal authentication, approved
+write/audit revision83,n1 and API/bridge health pass; Direct3472/5194ms,
+n12/questions3537/5194ms,n9 does not close failed G1. No runtime was
+added/deployed; leave the unchanged default API/ACS bridge running.
+
 Prompt 8A remains unbuilt before its mandatory permission spike, not deployed.
 Only zavaw3 and its existing portal application are in scope for that spike.
 The27November2026 actual grant/declaration readbacks confirm both retrieval

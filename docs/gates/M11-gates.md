@@ -25,6 +25,21 @@ optimisation and historical G1/G4/G8 failures.
 The [machine-readable result](r2-8a-M11.json) keeps null rates and explicit
 n0 denominators, not success-shaped zeros.
 
+Mandatory existing-zavaw3 verification is **7/8**, exit1: the known
+deallocated native VM fails exactly "The Windows media VM is not running."
+No new allocation was authorised or attempted. The default standup,
+real approved write/audit revision83,n1 and API/bridge health pass.
+Direct current all-turn3472/5194ms,n12 and questions3537/5194ms,n9,
+model10/12, talk-overs0. Previous r2-board after was3407/6497ms,n12,
+questions3590/4663ms,n9: +1.91%/-20.06% all-turn and -1.48%/+11.39%
+question deltas. **G1 remains failed**: question tail worsens, absolute
+one-second target unmet. No favourable retry, promotion or knowledge
+causal claim; both points use the unchanged runtime/default path.
+Current hops p50/p95,n12 each: transcript0/199, analyser50/53,
+decision223/282, orchestration1735/2156, VoiceLive1247/3065ms.
+The harness label7da9e18 is not a deployment: actual API remains
+abdd4ff/revision102, bridge339bb67/revision10, Running/ready.
+
 ## Round 2 native board (ADR0045)
 
 **G4 failed; native not promoted.** The operator's current board gate is
