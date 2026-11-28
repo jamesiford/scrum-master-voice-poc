@@ -128,6 +128,11 @@ describe('Simulated Room retrospective', () => {
 
   it('records the step-away and the self-correction', () => {
     assert.ok(session.events.some((e) => e.type === 'Deferred'));
+    assert.ok(session.events.some((e) => e.type === 'CircledBack'));
+    assert.ok(
+      agentLines().some((l) => /Daniel.*circling back|circling back.*Daniel/i.test(l)),
+      'the circle-back orchestration step was not spoken',
+    );
     assert.ok(!notes().some((n) => /long tickets/i.test(n.text)), 'the corrected note was kept');
     assert.ok(notes().some((n) => /tickets detailed/i.test(n.text)));
   });

@@ -20,12 +20,13 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
     /// <param name="build">The build id.</param>
     /// <param name="timeout">How long to wait for the standup to close.</param>
     /// <param name="ct">Cancellation token.</param>
+    /// <param name="retrospective">Runs the existing retrospective cast and records its circle-back proof instead of a standup.</param>
     /// <returns>The run result.</returns>
-    public async Task<RunResult> RunAsync(string label, string build, TimeSpan timeout, CancellationToken ct)
+    public async Task<RunResult> RunAsync(string label, string build, TimeSpan timeout, CancellationToken ct, bool retrospective = false)
     {
         var startedAt = DateTimeOffset.UtcNow;
         await PostAsync($"/api/teams/{team}/members/sync", new { }, ct);
-        var sessionId = (await PostAsync("/api/sessions/prepare", new { teamId = team }, ct)).Trim('"');
+        var sessionId = (await PostAsync(retrospective ? "/api/retrospective/prepare" : "/api/sessions/prepare", new { teamId = team }, ct)).Trim('"');
         var start = JsonSerializer.Deserialize<StartReply>(await PostAsync($"/api/sessions/{sessionId}/start", new { mode = "simulated", standupMinutes = 15 }, ct), Json)
             ?? throw new InvalidOperationException("start returned nothing");
 
@@ -47,7 +48,10 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
             turns.Where(t => t.Reason != "TalkOver").ToList(), team,
             TalkOvers: turns.Count(t => t.Reason == "TalkOver"),
             HumanSegments: exchanges.Count(e => e.MemberId is not null),
-            Exchanges: exchanges);
+            Exchanges: exchanges)
+        {
+            Retrospective = retrospective ? ReadRetroProof(session) : null,
+        };
     }
 
     // The page shows "Closed" when the standup ends, but in a long multi-team run a page sometimes never repaints it (seen in prompt 4A: the
@@ -96,6 +100,33 @@ internal sealed class RoomRun(string api, string team, string? token) : IDisposa
     }
 
     private static int ReadInt(JsonElement e, string name) => e.TryGetProperty(name, out var v) && v.TryGetInt32(out var i) ? i : 0;
+
+    private static RetroProof ReadRetroProof(JsonElement session)
+    {
+        var events = session.GetProperty("events").EnumerateArray().ToArray();
+        var themes = Array.FindIndex(events, e => e.GetProperty("type").GetString() == "Phase" && e.GetProperty("text").GetString() == "Themes");
+        var circles = events.Select((ev, index) => (Event: ev, Index: index))
+            .Where(e => e.Event.GetProperty("type").GetString() == "CircledBack").ToArray();
+        var members = session.GetProperty("preBrief").GetProperty("members").EnumerateArray().ToArray();
+        var spoken = 0;
+        var answered = 0;
+        foreach (var circle in circles)
+        {
+            var memberId = circle.Event.GetProperty("memberId").GetString();
+            var member = members.First(m => m.GetProperty("memberId").GetString() == memberId);
+            var firstName = member.GetProperty("displayName").GetString()!.Split(' ')[0];
+            var following = events.Skip(circle.Index + 1).Take(Math.Max(0, themes - circle.Index - 1)).ToArray();
+            if (following.Any(e => e.GetProperty("type").GetString() == "Transcript"
+                && e.GetProperty("memberId").ValueKind == JsonValueKind.Null
+                && e.GetProperty("text").GetString() is { } text
+                && text.Contains("circling back", StringComparison.OrdinalIgnoreCase)
+                && text.Contains(firstName, StringComparison.OrdinalIgnoreCase))) { spoken++; }
+            if (following.Any(e => e.GetProperty("type").GetString() == "RetroItem" && e.GetProperty("memberId").GetString() == memberId)) { answered++; }
+        }
+        return new RetroProof(session.GetProperty("status").GetString() == "Ended",
+            events.Count(e => e.GetProperty("type").GetString() == "Deferred"), circles.Length, spoken, answered,
+            events.Count(e => e.GetProperty("type").GetString() == "ActionItem" && !e.GetProperty("retracted").GetBoolean()));
+    }
 
     private static List<TimingTurn> ReadTurns(JsonElement session)
     {

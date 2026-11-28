@@ -44,6 +44,7 @@ internal sealed class AnalyseUtteranceHandler(ISessionRepository sessions, IUtte
                 ? null
                 : await model.ReadAsync(new UtteranceContext(request.Text, request.SpeakerId, request.HolderId, roster, items, request.Asked, request.FocusItemId)
                 {
+                    TeamId = session.TeamId,
                     DateContext = dates,
                 }, ct);
         }

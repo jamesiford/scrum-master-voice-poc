@@ -25,7 +25,24 @@ internal sealed record RunResult(
     string? Team = null,
     int TalkOvers = 0,
     int HumanSegments = 0,
-    IReadOnlyList<Exchange>? Exchanges = null);
+    IReadOnlyList<Exchange>? Exchanges = null)
+{
+    /// <summary>Gets measured retrospective orchestration and real-model speech evidence, when this was a retrospective run.</summary>
+    public RetroProof? Retrospective { get; init; }
+}
+
+/// <summary>Content-free evidence that a deferred member was audibly revisited before themes and could give their notes.</summary>
+/// <param name="Ended">The session ended normally.</param>
+/// <param name="Deferred">Recorded deferrals.</param>
+/// <param name="CircledBack">Orchestrated returns.</param>
+/// <param name="Spoken">Returns spoken to the correct member before themes.</param>
+/// <param name="Answered">Returns followed by that member's retrospective note before themes.</param>
+/// <param name="Actions">Unretracted recorded action items.</param>
+internal sealed record RetroProof(bool Ended, int Deferred, int CircledBack, int Spoken, int Answered, int Actions)
+{
+    /// <summary>Gets whether the cast exercised and completed the mandatory circle-back step.</summary>
+    public bool Passed => Ended && Deferred > 0 && CircledBack > 0 && Spoken == CircledBack && Answered == CircledBack && Actions >= 2;
+}
 
 /// <summary>One transcript line.</summary>
 /// <param name="MemberId">The roster member, or <see langword="null"/> for the agent.</param>

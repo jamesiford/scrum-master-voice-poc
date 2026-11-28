@@ -20,6 +20,9 @@ public sealed record UtteranceContext(
     string? Asked,
     int? FocusItemId)
 {
+    /// <summary>Gets the owning team for prompt resolution and model context isolation.</summary>
+    public string TeamId { get; init; } = string.Empty;
+
     /// <summary>Gets team-local calendar facts built in code, not model-produced dates.</summary>
     public SpokenDateContext? DateContext { get; init; }
 }

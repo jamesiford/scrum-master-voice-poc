@@ -5,6 +5,7 @@ using Zava.Scrum.Domain.Standups;
 using Zava.Scrum.Domain.Voice;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Azure.Identity;
 
 namespace Zava.Scrum.Infrastructure.Agents;
 
@@ -21,16 +22,18 @@ public sealed class DecisionUtteranceAnalyser(
     HttpClient http,
     IOptions<FoundryOptions> foundry,
     IOptions<UtteranceAnalysisOptions> options,
+    IPromptStore prompts,
     ILogger<DecisionUtteranceAnalyser> logger) : IUtteranceAnalyser
 {
     private const string Route = "providers/microsoft/v1/systemone";
     private const string None = "none";
     private const int MaxItems = 16;
     private const int MaxTextLength = 240;
+    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     private static readonly (string Key, string Description)[] Intents =
     [
-        ("update", "The speaker reports on their own work or answers a question put to them"),
+        ("update", string.Empty),
         ("ask_item_info", "The speaker asks a factual question about a work item, such as its state, owner or age"),
         ("ask_what_to_report", "The speaker asks what they are supposed to report on"),
         ("step_away", "Someone says they or a teammate stepped away or needs a moment"),
@@ -44,7 +47,7 @@ public sealed class DecisionUtteranceAnalyser(
     private static readonly (CommentKind Kind, string Question)[] Kinds =
     [
         (CommentKind.Blocker, "Does the speaker say something is blocking or stopping progress (waiting on someone or something, unable to proceed)? Saying there are no blockers is false."),
-        (CommentKind.DateChange, "Does the speaker say that a finish or target date moves, slips or is pulled in?"),
+        (CommentKind.DateChange, string.Empty),
         (CommentKind.Commitment, "Does the speaker say what they will do next, or promise to do something?"),
         (CommentKind.Decision, "Does the speaker say something was decided or agreed?"),
         (CommentKind.Estimate, "Does the speaker say the remaining work or effort changed?"),
@@ -74,11 +77,21 @@ public sealed class DecisionUtteranceAnalyser(
         budget.CancelAfter(o.TimeoutMs);
         try
         {
+            var instructions = string.IsNullOrWhiteSpace(context.TeamId) ? null
+                : (await prompts.ResolveAsync(context.TeamId, "decision-utterance", budget.Token))?.Text;
+            var definitions = instructions is null ? null : JsonSerializer.Deserialize<DecisionInstructions>(instructions, Json);
+            if (definitions is null || string.IsNullOrWhiteSpace(definitions.UpdateIntent)
+                || string.IsNullOrWhiteSpace(definitions.DateChange) || string.IsNullOrWhiteSpace(definitions.RevisedDate))
+            {
+                logger.LogWarning("Decision instructions unavailable for team {TeamId}; using rules", context.TeamId);
+                return new(null, new Dictionary<string, double>(), "instructions_unavailable");
+            }
             // A string body, not PostAsJsonAsync: the route rejects chunked requests and needs a Content-Length header.
-            using var body = new StringContent(BuildRequest(o.DecisionDeployment, context, items).ToJsonString(), System.Text.Encoding.UTF8, "application/json");
+            var request = BuildRequest(o.DecisionDeployment, context, items, definitions);
+            using var body = new StringContent(request.ToJsonString(), System.Text.Encoding.UTF8, "application/json");
             var started = System.Diagnostics.Stopwatch.GetTimestamp();
             using var response = await http.PostAsync(Route, body, budget.Token);
-            logger.LogInformation("Decision model status={Status} httpMs={HttpMs} questions={Questions}", (int)response.StatusCode, (int)System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds, items.Count + Kinds.Length + 3);
+            logger.LogInformation("Decision model status={Status} httpMs={HttpMs} questions={Questions}", (int)response.StatusCode, (int)System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds, request["questions"]!.AsObject().Count);
             if (!response.IsSuccessStatusCode)
             {
                 // 429 is the usual one: the deployment's rate limit. The rules carry the standup meanwhile.
@@ -109,14 +122,14 @@ public sealed class DecisionUtteranceAnalyser(
             logger.LogWarning("Decision model timed out; using rules");
             return new(null, new Dictionary<string, double>(), "timeout");
         }
-        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or AuthenticationFailedException or CredentialUnavailableException)
         {
             logger.LogWarning("Decision model call failed ({Failure}); using rules", ex.GetType().Name);
             return new(null, new Dictionary<string, double>(), ex.GetType().Name);
         }
     }
 
-    private static JsonObject BuildRequest(string deployment, UtteranceContext c, List<BriefItem> items)
+    private static JsonObject BuildRequest(string deployment, UtteranceContext c, List<BriefItem> items, DecisionInstructions definitions)
     {
         string NameOf(string? id) => c.Roster.FirstOrDefault(r => r.MemberId == id)?.DisplayName ?? string.Empty;
         var named = new JsonObject { [None] = "Nobody else is named" };
@@ -128,7 +141,7 @@ public sealed class DecisionUtteranceAnalyser(
         var intents = new JsonObject();
         foreach (var (key, description) in Intents)
         {
-            intents[key] = description;
+            intents[key] = key == "update" ? definitions.UpdateIntent : description;
         }
 
         var questions = new JsonObject
@@ -144,7 +157,18 @@ public sealed class DecisionUtteranceAnalyser(
 
         foreach (var (kind, question) in Kinds)
         {
-            questions[$"kind_{kind}"] = Noul(question);
+            questions[$"kind_{kind}"] = Noul(kind == CommentKind.DateChange ? definitions.DateChange : question);
+        }
+
+        var dates = SpokenDates.FindAll(c.Text);
+        if (dates.Count > 0)
+        {
+            var candidates = new JsonObject { [None] = "No definite revised completion date is stated, or the target is ambiguous" };
+            for (var index = 0; index < dates.Count; index++)
+            {
+                candidates[$"date_{index}"] = $"Occurrence {index + 1} in transcript order: \"{dates[index]}\"";
+            }
+            questions["revised_date"] = Choice(definitions.RevisedDate, candidates);
         }
 
         return new JsonObject
@@ -183,7 +207,7 @@ public sealed class DecisionUtteranceAnalyser(
         var namedId = TryChoice(answers, "named", out var n, out _) && n != None ? n : null;
         var (target, by) = Members(intent, namedId, Yes(answers, "hands_over", threshold), c.SpeakerId);
         var ids = items.Where(i => Yes(answers, $"item_{i.Id.Value}", threshold)).Select(i => i.Id.Value).ToList();
-        return new UtteranceReading(intent, target, by, ids, Comments(answers, intent, ids, c.Text, threshold), confidence);
+        return new UtteranceReading(intent, target, by, ids, Comments(answers, intent, ids, c, threshold), confidence);
     }
 
     // Who a step-away or proxy concerns follows from the named teammate and who is speaking; code decides, the model only answers questions.
@@ -195,17 +219,35 @@ public sealed class DecisionUtteranceAnalyser(
         _ => (null, null),
     };
 
-    private static List<ItemComment> Comments(JsonElement answers, UtteranceIntent intent, List<int> ids, string text, double threshold)
+    private static List<ItemComment> Comments(JsonElement answers, UtteranceIntent intent, List<int> ids, UtteranceContext context, double threshold)
     {
         if (intent is not (UtteranceIntent.Update or UtteranceIntent.OutOfTurnUpdate or UtteranceIntent.Correction or UtteranceIntent.ProxyUpdate))
         {
             return [];
         }
 
+        var text = context.Text;
         var said = text.Length > MaxTextLength ? text[..MaxTextLength].TrimEnd() : text.Trim();
+        var dates = SpokenDates.FindAll(text);
+        string? date = null;
+        if (TryChoice(answers, "revised_date", out var selected, out var dateConfidence))
+        {
+            for (var index = 0; index < dates.Count; index++)
+            {
+                if (selected == $"date_{index}" && dateConfidence >= UtteranceAnalyser.MinConfidence) { date = dates[index]; break; }
+            }
+        }
+        else if (dates.Count == 1)
+        {
+            // A single verbatim phrase needs no disambiguation; multiple phrases never fall back to the first date.
+            date = dates[0];
+        }
         return Kinds
             .Where(k => Yes(answers, $"kind_{k.Kind}", threshold))
-            .Select(k => new ItemComment(k.Kind, ids.Count == 1 ? [.. ids] : [], said, k.Kind == CommentKind.DateChange ? SpokenDates.Find(text) : null))
+            .Select(k => new ItemComment(k.Kind, ids.Count == 1 ? [.. ids] : [], said, k.Kind == CommentKind.DateChange ? date : null)
+            {
+                DateResolution = k.Kind == CommentKind.DateChange ? SpokenDateResolver.Resolve(date, context.DateContext) : null,
+            })
             .ToList();
     }
 
@@ -219,10 +261,14 @@ public sealed class DecisionUtteranceAnalyser(
         }
 
         key = picked;
-        confidence = a.TryGetProperty("confidence", out var p) && p.TryGetDouble(out var d) ? d : 1;
+        confidence = a.TryGetProperty("confidence", out var p) && p.ValueKind == JsonValueKind.Number && p.TryGetDouble(out var d)
+            && double.IsFinite(d) && d is >= 0 and <= 1 ? d : 0;
         return true;
     }
 
     private static bool Yes(JsonElement answers, string name, double threshold) =>
-        answers.TryGetProperty(name, out var a) && a.TryGetProperty("noul", out var p) && p.TryGetDouble(out var d) && d >= threshold;
+        answers.TryGetProperty(name, out var a) && a.TryGetProperty("noul", out var p) && p.ValueKind == JsonValueKind.Number
+        && p.TryGetDouble(out var d) && double.IsFinite(d) && d >= threshold && d <= 1;
+
+    private sealed record DecisionInstructions(string UpdateIntent, string DateChange, string RevisedDate);
 }
