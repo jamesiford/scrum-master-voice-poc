@@ -62,7 +62,14 @@ in the diagnostic window, although total latency was already captured
 before the write. The total definition is unchanged; this correction is
 not credited as a user-perceived latency saving. Application44/floor49/
 Api10/architecture16 focused checks and all three builds pass. Candidate
-deployment and after measurements remain unrun at this checkpoint.
+image `abdd4ff` was built by existing ACR run `ds19`, digest
+`sha256:638e5bc39c7f4d8b7aa533098bef134150079977a9e1f84fdf5caccb2fc0e6ad`.
+Fresh official validation passed 5/5 before its atomic image/flag update
+only to zavaw3. Revision 96 became ready with HTTP 200 and verified
+configuration, identity, unrelated settings, bridge image and existing
+registry AcrPull preservation. The flag is enabled for the controlled
+after cohort, not promoted as a default. After measurements are running;
+their outcomes and final acceptance remain unknown.
 
 Run three interleaved adjacent windows, alternating Model/Rules order,
 two serial same-cast sessions per cell. This retains the same session
