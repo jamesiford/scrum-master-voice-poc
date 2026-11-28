@@ -18,6 +18,9 @@ public sealed class CosmosOptions
     /// <summary>Gets or sets the container with one item per standup session, partitioned by <c>/teamId</c> (ADR 0021). Created by Bicep.</summary>
     public string SessionsContainer { get; set; } = "Sessions";
 
+    /// <summary>Gets or sets the per-item cards, follow-ups and activities container, partitioned by team.</summary>
+    public string TeamRecordsContainer { get; set; } = "TeamRecords";
+
     /// <summary>Gets or sets the append-only approval trail container, partitioned by <c>/correlationId</c>. Created by Bicep.</summary>
     public string ApprovalRecordsContainer { get; set; } = "ApprovalRecords";
 }

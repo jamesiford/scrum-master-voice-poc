@@ -78,6 +78,7 @@ public static class DependencyInjection
         }
         services.AddSingleton<ISessionRepository, SessionRepository>();
         services.AddSingleton<SessionMigration>();
+        services.AddSingleton<ITeamRecordMigration>(sp => sp.GetRequiredService<TeamRecordMigration>());
         services.AddSingleton<ITeamRepository, JsonFileTeamRepository>();
         services.AddSingleton<IMemberRepository, JsonFileMemberRepository>();
         services.AddSingleton<ITeamMembershipRepository, JsonFileTeamMembershipRepository>();
@@ -176,7 +177,10 @@ public static class DependencyInjection
         {
             services.AddSingleton<FileCollectionStore>();
             services.AddSingleton<IDemoStateStore, FileDemoStateStore>();
-            services.AddSingleton<ICollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<FileCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
+            services.AddSingleton<ITeamRecordStore, FileTeamRecordStore>();
+            services.AddSingleton<DemoPublicationCollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<FileCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
+            services.AddSingleton<ICollectionStore>(sp => new RecordCollectionStore(sp.GetRequiredService<DemoPublicationCollectionStore>(), sp.GetRequiredService<ITeamRecordStore>(), sp.GetRequiredService<IDemoStateStore>()));
+            services.AddSingleton<TeamRecordMigration>(sp => new TeamRecordMigration(sp.GetRequiredService<DemoPublicationCollectionStore>(), sp.GetRequiredService<ITeamRecordStore>(), sp.GetRequiredService<IDemoStateStore>(), sp.GetRequiredService<FileSessionItemStore>(), sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<TeamRecordMigration>>()));
             services.AddSingleton<IApprovalRecordStore, FileApprovalRecordStore>();
             services.AddSingleton<FileSessionItemStore>();
             services.AddSingleton<ISessionItemStore>(sp => new DemoPublicationSessionStore(sp.GetRequiredService<FileSessionItemStore>(), sp.GetRequiredService<IDemoStateStore>(), sp.GetRequiredService<IOptions<DemoOptions>>()));
@@ -197,7 +201,14 @@ public static class DependencyInjection
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
             return new CosmosDemoStateStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.Container));
         });
-        services.AddSingleton<ICollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<CosmosCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
+        services.AddSingleton<ITeamRecordStore>(sp =>
+        {
+            var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
+            return new CosmosTeamRecordStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.TeamRecordsContainer));
+        });
+        services.AddSingleton<DemoPublicationCollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<CosmosCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
+        services.AddSingleton<ICollectionStore>(sp => new RecordCollectionStore(sp.GetRequiredService<DemoPublicationCollectionStore>(), sp.GetRequiredService<ITeamRecordStore>(), sp.GetRequiredService<IDemoStateStore>()));
+        services.AddSingleton<TeamRecordMigration>(sp => new TeamRecordMigration(sp.GetRequiredService<DemoPublicationCollectionStore>(), sp.GetRequiredService<ITeamRecordStore>(), sp.GetRequiredService<IDemoStateStore>(), sp.GetRequiredService<CosmosSessionItemStore>(), sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<TeamRecordMigration>>()));
         services.AddSingleton<CosmosSessionItemStore>(sp =>
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
