@@ -26,6 +26,12 @@ separately in `gates/r2-quality-M11.json`. Existing Acs/Share/Direct,
 Simulated Room, native non-recording and approval guards stay unchanged.
 No new use case or API route; full suites belong to r2-reconcile.
 
+Final API-only3ddd40b/revision90 is ready with unchanged configuration,
+identity/environment/bridge image. Final frozen112-case model pass retains
+48/48 dates and40/40 calendar outcomes. Separate afterverify8/8/native5/5
+gives Direct3615/4453ms,n12 versus3418/4559ms,n10 before. P50+5.76%
+keeps G1 failed; this is not accepted parity or a causal model/floor claim.
+
 ## Round 2 storage (ADR 0040)
 
 Cards, follow-ups and bot delivery ids use one item per record in

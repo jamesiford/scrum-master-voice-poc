@@ -24,28 +24,35 @@ audio could silently hand off against a stale cast caption. A new pure
 Domain guard retries the real response at most twice, then fails explicitly;
 original latency baseline is retained. Separate guarded retros pass30/30
 complete real-model sessions, spoken/answered30/30, no session retries.
-Final shipped-model evaluation is running; runtime after measurement is unrun.
+Final compiled3ddd40b model evaluation repeats48/48 dates,40/40 calendar,
+111/112 intent/items/kinds, errors/missing/escaped ids0, releasePASS.
+It ran after both cohorts; mandatory after verification passed8/8 and
+native readiness5/5 without overlapping model load.
 API-only3ddd40b/ACRds18 is digest-pinned on zavaw3 revision90, HTTP200;
 identity/configuration/environment/bridge-image parity pass and defaults
 are unchanged. The first cohort stayed on e7c31fa/revision89 throughout.
 
 Before zavaw3 mandatory8/8/native readiness5/5 pass; Direct3418/4559ms,
 n10, questions3469/4559ms,n8, model8/10, zero talkovers,18transcriptpieces,
-genuine approverrevision78/completeaudit. G1 historical failures remain;
-no accepted regression, paired-causal claim or adapter promotion. G2-G6
+genuine approverrevision78/completeaudit. After: Direct3615/4453ms,n12,
+questions3628/4453ms,n9, model10/12, talkovers0/transcriptpieces19,
+real approverrevision79/completeaudit. P50 worsens+5.76% beyond5%;
+p95 improves2.33%. These are different windows/populations, not paired
+or causal evidence. G1 remains failed: the worse point is a defect, not
+an accepted experience trade-off or promotion. G2-G6
 and G8-G11 inherit their measured/failed/not_run boundaries below, not
 fresh acceptance from this correction. Content-free current details:
 `r2-quality-M11.json`. Full suites belong to r2-reconcile.
 
 | Gate | Current verdict and boundary |
 | --- | --- |
-| G1 | Failed historical experience/point estimates; before3418/4559ms,n10, after pending; native n0 |
+| G1 | Failed historical experience and current p50 point:3418/4559ms,n10 to3615/4453ms,n12,+5.76%/-2.33%; native n0; no causal/accepted-regression claim |
 | G2 | Native attribution/guest acoustic acceptance not_run,n0; focused routing is not human proof |
-| G3 | Measured portal subset: real approver revision78/complete audit,n1 before; fresh after pending |
+| G3 | Measured portal subset: real approver revisions78/79, complete audit,n1 each window; mandatory8/8; live Teams/Copilot n0 |
 | G4 | Failed historical exact board parity11/11; pre-guard retrospective29/30, separate guarded30/30; real rehearsal n0 |
 | G5 | Copilot real positive/negative/streaming not_run,n0; completed consent/catalogue not reopened |
 | G6 | Native stored-link joins not_run,0/10; readiness5/5 is not join acceptance |
-| G7 | Measured synthetic112/date48/calendar40; latest48/48 and40/40 pass unchanged thresholds; shipped recheck/live quality/CI unrun |
+| G7 | Measured final compiled synthetic112/date48/calendar40;48/48 and40/40 pass unchanged thresholds; live quality/CI n0 |
 | G8 | Failed full empty proof1/2; no lifecycle operation or new provider claim here |
 | G9 | New multi-team/human matrix not_run,n0; prior3sessions/36turns/3audit chains retained |
 | G10 | Source-grounded questions/citations/negative-user/latency not_run,n0; consent complete, real corpus/fixtures missing |

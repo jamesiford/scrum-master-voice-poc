@@ -47,6 +47,13 @@ the presenter can unmute to retry or take over. Native follows its existing
 explicit voice-transport failure handling, without persisting transcripts.
 No extra resource, permission, secret, recording exception or human gate.
 
+Final afterverify passes8/8 and native readiness5/5, real approverrevision79
+with complete audit. Direct3615/4453ms,n12 versus3418/4559ms,n10 before
+has p50+5.76%/p95-2.33%; G1 remains failed, not an accepted regression.
+Model/cohort load was finished first. No adapter promotion or new privileged
+action is justified; preserve the existing default paths and all real-user
+acceptance gates. Added fixed hourly cost remains USD0.
+
 ## Additive record-storage rollout (ADR 0040)
 
 `infra\modules\team-records.bicep` is called by `data.bicep` for empty

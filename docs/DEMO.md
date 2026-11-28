@@ -33,6 +33,14 @@ historical/first-extended failures remain. Commands are in
 including any remaining failures, is in `gates/r2-quality-M11.json`.
 No real Teams/native/guest/Copilot acceptance follows from scripted tests.
 
+Final compiled3ddd40b repeats48/48 dates and40/40 calendar outcomes on
+the frozen112 cases. Separate guarded retros pass30/30; the initial
+29/30 and historical failures remain in the evidence, not rerun as green.
+
+Final mandatory verification passes8/8/native readiness5/5. After Direct
+3615/4453ms,n12 versus3418/4559ms,n10 before keeps G1 failed on p50+5.76%;
+the point is not accepted parity or a paired/causal comparison.
+
 ## Round 2 storage reliability
 
 Normal standups no longer append cards, follow-ups or bot deliveries to

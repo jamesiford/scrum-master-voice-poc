@@ -28,7 +28,7 @@ Keep the existing guest cross-talk silence rule and all adapters.
 
 ## Consequences and measurements
 
-Targeted floor44/44 and native gateway10/10 pass. Six table cases cover
+Initial targeted floor44/44 and native gateway10/10 pass. Six table cases cover
 opening/recap/announcement takeover and pause replay. Source selection covers
 louder guest/teammate, silent holder and guest-only inputs. The actual
 gateway overlap fixture now forwards quieter member500 and zero guest PCM,
@@ -36,10 +36,19 @@ where the old fixture forwarded neither overlapping stream. The existing
 guest-only, cross-talk and cancel/truncate tests remain passing.
 
 Baseline actual Direct3418/4559ms p50/p95,n10; questions3469/4559ms,
-n8, model8/10 and zero talkovers. API-only digest rollout is ready on
-zavaw3 revision89 with unchanged settings/identity/defaults. After latency
-remains unrun until the30-run retrospective cohort completes, so concurrent
-test load cannot be mistaken for a paired comparison.
+n8, model8/10 and zero talkovers. Final API-only3ddd40b/ACRds18 rollout is
+ready on zavaw3 revision90 with exact configuration/environment/identity/
+bridge-image parity and unchanged defaults. Final floor49/49 and native
+gateway10/10 pass, including the separate delivery guard in ADR0043.
+
+After all60 retrospectives and the final112-case model evaluation finish,
+mandatory8/8/native readiness5/5 pass. Actual Direct3615/4453ms,n12;
+questions3628/4453ms,n9, model10/12, talkovers0/transcriptpieces19,
+genuine approverrevision79/completeaudit. P50+5.76% exceeds5%, while
+p95 improves2.33%. G1 remains failed; this worse point is a defect, not an
+accepted regression or promotion. Different windows/populations are not a
+paired comparison or causal attribution to the correctness fixes. Owning
+performance work must investigate without changing thresholds.
 
 These are synthetic routing/state tests, not new real Teams acoustic,
 speaker-recognition, guest-screen-share or audible interruption acceptance.

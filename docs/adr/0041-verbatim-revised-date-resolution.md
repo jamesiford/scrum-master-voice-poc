@@ -22,6 +22,13 @@ timeouts0, escaped ids0. G7 synthetic release passes unchanged thresholds.
 This is one authored synthetic run, not live employee quality or a promise
 of perfect future model fidelity.
 
+The final compiled3ddd40b measurement after both retrospective cohorts
+independently repeats48/48 dates,40/40 calendar and111/112 intent/items/kinds,
+with no errors, missing probabilities or escaped ids; release passes.
+Binary calibration n1008/Brier0.0304706/ECE0.0828978 and intent
+n112/Brier0.0259598/ECE0.0969331 retain the unchanged thresholds.
+All prior reports remain separate evidence; there was no content retry.
+
 ## Decision
 
 Use the documented Microsoft-Decision `choice` primitive to select an index

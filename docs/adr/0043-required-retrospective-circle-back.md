@@ -65,6 +65,13 @@ empty-response retries/exhaustion, successful recovery, explicit retry and
 unchanged ordinary/absent turns. Runtime response retries are not whole-session
 test retries and must not be hidden from latency or the failure ledger.
 
+Final verification ran only after both cohorts and the shipped model
+evaluation completed: mandatory8/8/native readiness5/5, Direct3615/4453ms,
+n12 versus3418/4559ms,n10 before. P50+5.76% keeps G1 failed; no causal,
+paired or accepted-regression claim. The successful30/30 scripted cohort
+does not prove that live empty-output exhaustion occurred or that actual
+Teams users/guest audio have been accepted.
+
 No new resource, permission, recording exception, default adapter or fixed
 hourly cost. Voice/model/Cosmos usage remains variable. This proves scripted
 instruction fidelity, not actual Teams/user rehearsal or eternal LLM
