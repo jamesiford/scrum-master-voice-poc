@@ -21,12 +21,17 @@ public static class SpokenDateResolver
         if (expression == "tomorrow") { return new(context.Today.AddDays(1), "resolved"); }
         if (expression is "end of sprint" or "end of the sprint" or "end of this sprint")
         {
-            return Future(context.CurrentIteration?.End, context.Today, "current_iteration_unavailable");
+            var current = context.CurrentIteration;
+            return current is not null && current.Start <= context.Today && current.End >= current.Start
+                ? Future(current.End, context.Today, "current_iteration_unavailable")
+                : new(null, "current_iteration_unavailable");
         }
         if (expression is "end of next sprint" or "end of the next sprint")
         {
             var next = context.NextIteration;
-            return next is not null && context.CurrentIteration is { } current && next.Start > current.End
+            return next is not null && context.CurrentIteration is { } current
+                && current.Start <= context.Today && current.End >= current.Start
+                && next.Start > current.End && next.Start > context.Today && next.End >= next.Start
                 ? Future(next.End, context.Today, "next_iteration_unavailable")
                 : new(null, "next_iteration_unavailable");
         }

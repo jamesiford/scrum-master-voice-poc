@@ -9,7 +9,8 @@ public sealed record StartFloor(DateTimeOffset Now) : FloorInput;
 
 /// <summary>The agent finished speaking (audio fully played).</summary>
 /// <param name="Now">Current time.</param>
-public sealed record AgentSpeechEnded(DateTimeOffset Now) : FloorInput;
+/// <param name="HadAudio">False when the response completed without producing any audio.</param>
+public sealed record AgentSpeechEnded(DateTimeOffset Now, bool HadAudio = true) : FloorInput;
 
 /// <summary>The application chose the next speaker.</summary>
 /// <param name="MemberId">The member, or <see langword="null"/> when everyone has had a turn.</param>

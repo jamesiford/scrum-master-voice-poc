@@ -11,6 +11,12 @@ if ($LASTEXITCODE -ne 0 -or $env:AZURE_ENV_NAME -ne 'zavaw3' -or $env:AZURE_LOCA
   throw 'Retrospective fidelity measurement is restricted to zavaw3/westus3.'
 }
 $repo = (Resolve-Path "$PSScriptRoot\..").Path
+$image = az containerapp show --subscription $env:AZURE_SUBSCRIPTION_ID -g $env:AZURE_RESOURCE_GROUP -n $env:API_APP_NAME `
+  --query 'properties.template.containers[0].image' -o tsv
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($image)) { throw 'Cannot read the live API image; no authentication retry or local-git substitution.' }
+$source = [regex]::Match($image, ':git-([0-9a-f]{7,40})@sha256:[0-9a-f]{64}$')
+if (-not $source.Success) { throw 'Cannot identify the digest-pinned live API source; no local-git substitution.' }
+$build = $source.Groups[1].Value
 $outputPath = [IO.Path]::GetFullPath($Output, $repo)
 New-Item -ItemType Directory -Path $outputPath -Force | Out-Null
 $results = @()
@@ -21,15 +27,15 @@ try {
     $directory = Join-Path $outputPath ("run-{0:d2}" -f $run)
     $started = [DateTimeOffset]::UtcNow
     dotnet run --project (Join-Path $repo 'tools\GateRunner') -c Release --no-build -- `
-      --retro --label r2-quality-retro --runs 1 --api $env:API_URI --team team-payments --out $directory --timeout-minutes 20 `
+      --retro --label r2-quality-retro --build $build --runs 1 --api $env:API_URI --team team-payments --out $directory --timeout-minutes 20 `
       *> (Join-Path $outputPath ("run-{0:d2}.log" -f $run))
     $exit = $LASTEXITCODE
     $files = @(Get-ChildItem -LiteralPath $directory -Filter 'r2-quality-retro-*.json' -ErrorAction SilentlyContinue)
     $proof = if ($files.Count -eq 1) { (Get-Content -LiteralPath $files[0].FullName -Raw | ConvertFrom-Json).Retrospective } else { $null }
     $results += [pscustomobject]@{ run = $run; startedAt = $started; seconds = ([DateTimeOffset]::UtcNow - $started).TotalSeconds; exitCode = $exit; proof = $proof }
-    [pscustomobject]@{ environment = 'zavaw3'; requestedRuns = $Runs; completedRuns = $results.Count; passedRuns = @($results | Where-Object { $_.exitCode -eq 0 -and $_.proof.Passed }).Count; runs = $results } |
+    [pscustomobject]@{ environment = 'zavaw3'; teamId = 'team-payments'; runtimeSource = $build; requestedRuns = $Runs; completedRuns = $results.Count; passedRuns = @($results | Where-Object { $_.exitCode -eq 0 -and $_.proof.Passed }).Count; runs = $results } |
       ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $outputPath 'fidelity.json') -Encoding utf8
-    Write-Host "Retro $run/$Runs exit=$exit circle-back=$($proof.Spoken)/$($proof.CircledBack) answered=$($proof.Answered); no retry."
+    Write-Host "Retro $run/$Runs exit=$exit circle-back=$($proof.Spoken)/$($proof.CircledBack) answered=$($proof.Answered); no session retry."
     if ($exit -ne 0 -and -not $proof) { throw "Run $run did not produce a complete real-session report; inspect its retained log." }
   }
 } finally { Remove-Item Env:\GATE_TOKEN -ErrorAction SilentlyContinue }

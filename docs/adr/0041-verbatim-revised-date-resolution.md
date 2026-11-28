@@ -43,6 +43,11 @@ from actual prepared endpoints. Period-only `next sprint/week/month`,
 ambiguous numeric/month-day dates, stale/missing calendars and unsupported
 expressions abstain explicitly; never assume sprint length or date culture.
 
+Calendar guards also reject reversed ranges, a future-labelled current
+iteration, and a next iteration that has already started. A weekend gap
+does not invalidate a verified future next iteration. Four focused cases
+cover these boundaries without modifying the frozen model goldens.
+
 Application rechecks that a model-selected date is verbatim in the
 transcript and recomputes its absolute date, even for the optional chat
 adapter. Resolution is note metadata, not a `ChangeOp`, proposal or write.

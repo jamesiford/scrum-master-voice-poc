@@ -34,6 +34,15 @@ storage migration/load, reset, quota or tenant-policy changes for this fix.
 Leave zavaw3 running. Re-prepare legacy sessions to obtain calendar context;
 missing context abstains explicitly rather than inventing sprint dates.
 
+The first real retrospective cohort exposed an empty circle-back response
+being treated as completed speech. The delivery guard is built/tested
+(floor49/49, native gateway10/10) but its rollout and separate30-run cohort
+are pending. It uses at most two real-response retries, retaining original
+latency. If all fail, the Simulated Room pauses with `VOICE_NO_AUDIO`:
+the presenter can unmute to retry or take over. Native follows its existing
+explicit voice-transport failure handling, without persisting transcripts.
+No extra resource, permission, secret, recording exception or human gate.
+
 ## Additive record-storage rollout (ADR 0040)
 
 `infra\modules\team-records.bicep` is called by `data.bicep` for empty

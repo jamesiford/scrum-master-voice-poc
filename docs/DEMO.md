@@ -19,6 +19,12 @@ dotnet build -c Release
 pwsh -File eng\test-retro-fidelity.ps1 -Runs 30
 ```
 
+These are no **session** retries. The delivery guard may retry an empty
+real-model response twice; it never supplies fake speech or hides retry
+latency. Exhaustion visibly pauses the room rather than skipping the return.
+The harness pins the actual deployed image source, not the changing local
+documentation head. The pre-guard run15 remains a recorded failure.
+
 The frozen112-case decision set has48eligible spoken dates, unchanged
 original72 cases and unchanged0.7/0.6 thresholds. Its latest synthetic
 release passes48/48 dates and40/40 calendar resolutions/abstentions;

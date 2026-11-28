@@ -872,6 +872,7 @@ Any state -> Paused (portal mute)
 - **Cross-talk:** speech from anyone other than the floor holder is recorded but does not trigger a response. More than 60 seconds of multi-speaker discussion triggers the parking-lot line at the next pause.
 - **Barge-in:** if the floor holder or the human Scrum Master speaks while the agent is talking, the gateway sends `response.cancel` and truncates the audio.
 - **Whole-team exception (ADR0042):** ordinary speech does not interrupt opening, recap or announcements. Explicit human takeover/pause cancels and release replays that phase, rather than skipping it. The gateway owns cancellation; service auto-interruption stays off.
+- **Required circle-back (ADR0043):** a response with no audio is not a delivered invitation. Reissue the real instruction at most twice, then pause/fail explicitly; do not silently hand off or invent speech. Preserve original turn latency across retries.
 - **Timebox:** at 80 % of `standupMinutes` the agent warns; at 100 % the gateway moves to `Recap`.
 - **Late joiner:** if an absent member appears in `participants` before `Recap`, they go to the end of the speaking order.
 

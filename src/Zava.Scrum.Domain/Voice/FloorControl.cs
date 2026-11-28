@@ -24,6 +24,8 @@ public sealed class FloorControl(FloorOptions options)
     private int _version;
     private FloorState _resumeState = FloorState.Idle;
     private SpeakReason _announcementReason;
+    private bool _circleBackRequired;
+    private int _speechRetryAttempt;
 
     /// <summary>Gets the current state.</summary>
     public FloorState State { get; private set; } = FloorState.Idle;
@@ -89,6 +91,24 @@ public sealed class FloorControl(FloorOptions options)
             return None;
         }
 
+        if (State == FloorState.CallingOn && _circleBackRequired && CurrentMemberId is { } member)
+        {
+            if (!e.HadAudio)
+            {
+                if (_speechRetryAttempt < 2)
+                {
+                    return [new AgentSpeak(SpeakReason.CircleBack, member, ++_speechRetryAttempt)];
+                }
+
+                _resumeState = State;
+                State = FloorState.Paused;
+                return [new RequiredSpeechFailed(member)];
+            }
+
+            _circleBackRequired = false;
+            _speechRetryAttempt = 0;
+        }
+
         if (_timeUp && State != FloorState.Recap)
         {
             return StartRecap();
@@ -135,6 +155,8 @@ public sealed class FloorControl(FloorOptions options)
         }
 
         CurrentMemberId = s.MemberId;
+        _circleBackRequired = s.CircleBack && !s.Absent;
+        _speechRetryAttempt = 0;
         _absentCurrent = s.Absent;
         _canClarify = s.CanClarify;
         _offHolderMs = 0;
@@ -345,6 +367,13 @@ public sealed class FloorControl(FloorOptions options)
             return None;
         }
 
+        if (_resumeState == FloorState.CallingOn && _circleBackRequired)
+        {
+            State = FloorState.CallingOn;
+            _speechRetryAttempt = 0;
+            return [new AgentSpeak(SpeakReason.CircleBack, CurrentMemberId)];
+        }
+
         // Whole-team steps must be replayed after an explicit pause/takeover, not skipped or turned into a member's listening turn.
         if (_resumeState is FloorState.Opening or FloorState.Recap or FloorState.Announcing)
         {
@@ -436,6 +465,7 @@ public sealed class FloorControl(FloorOptions options)
 
     private FloorAction[] StartRecap()
     {
+        _circleBackRequired = false;
         State = FloorState.Recap;
         _version++;
         return [new AgentSpeak(SpeakReason.Recap, null)];

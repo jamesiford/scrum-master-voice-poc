@@ -84,6 +84,78 @@ public sealed class FloorControlTests
     }
 
     [Fact]
+    public void AgentSpeechEnded_EmptyCircleBack_RetriesTwiceThenPauses()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(5)));
+        f.Handle(new SpeakerSelected("m1", false, CircleBack: true));
+
+        Assert.Equal(new AgentSpeak(SpeakReason.CircleBack, "m1", 1),
+            Assert.Single(f.Handle(new AgentSpeechEnded(At(8), HadAudio: false))));
+        Assert.Equal(new AgentSpeak(SpeakReason.CircleBack, "m1", 2),
+            Assert.Single(f.Handle(new AgentSpeechEnded(At(10), HadAudio: false))));
+        Assert.Equal(FloorState.CallingOn, f.State);
+        Assert.Equal(new RequiredSpeechFailed("m1"),
+            Assert.Single(f.Handle(new AgentSpeechEnded(At(12), HadAudio: false))));
+        Assert.Equal(FloorState.Paused, f.State);
+        Assert.Empty(f.Handle(new AgentSpeechEnded(At(13), HadAudio: false)));
+    }
+
+    [Fact]
+    public void AgentSpeechEnded_CircleBackRetryHasAudio_Listens()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(5)));
+        f.Handle(new SpeakerSelected("m1", false, CircleBack: true));
+        f.Handle(new AgentSpeechEnded(At(8), HadAudio: false));
+
+        Assert.Empty(f.Handle(new AgentSpeechEnded(At(10), HadAudio: true)));
+        Assert.Equal(FloorState.Listening, f.State);
+    }
+
+    [Fact]
+    public void PauseFloor_RequiredCircleBackFailed_ReplaysOnExplicitRetry()
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(5)));
+        f.Handle(new SpeakerSelected("m1", false, CircleBack: true));
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            f.Handle(new AgentSpeechEnded(At(8 + attempt), HadAudio: false));
+        }
+
+        Assert.Equal(new AgentSpeak(SpeakReason.CircleBack, "m1"),
+            Assert.Single(f.Handle(new PauseFloor(false))));
+        Assert.Equal(FloorState.CallingOn, f.State);
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    public void AgentSpeechEnded_NonRequiredOrAbsentTurn_PreservesCompletion(bool absent, bool circleBack)
+    {
+        var f = Floor();
+        f.Handle(new StartFloor(T0));
+        f.Handle(new AgentSpeechEnded(At(5)));
+        f.Handle(new SpeakerSelected("m1", absent, CircleBack: circleBack));
+
+        var actions = f.Handle(new AgentSpeechEnded(At(8), HadAudio: false));
+
+        if (absent)
+        {
+            Assert.Equal(new AdvanceSpeaker(), Assert.Single(actions));
+        }
+        else
+        {
+            Assert.Empty(actions);
+            Assert.Equal(FloorState.Listening, f.State);
+        }
+    }
+
+    [Fact]
     public void SpeakerSelected_NobodyLeft_GoesToRecapThenClosesAfterRecap()
     {
         var f = Floor();

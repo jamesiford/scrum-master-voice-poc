@@ -63,6 +63,54 @@ public sealed class SpokenDatesTests
     }
 
     [Fact]
+    public void Resolve_NextIterationAlreadyStarted_AbstainsInsteadOfUsingStaleLabel()
+    {
+        var context = new SpokenDateContext(new(2026, 11, 30),
+            new("Sprint 1", new(2026, 11, 16), new(2026, 11, 27)),
+            new("Sprint 2", new(2026, 11, 30), new(2026, 12, 11)));
+
+        var resolution = SpokenDateResolver.Resolve("end of next sprint", context);
+
+        Assert.Null(resolution.Date);
+        Assert.Equal("next_iteration_unavailable", resolution.Status);
+    }
+
+    [Fact]
+    public void Resolve_InvalidNextIterationRange_Abstains()
+    {
+        var context = new SpokenDateContext(new(2026, 11, 26),
+            new("Sprint 1", new(2026, 11, 16), new(2026, 11, 27)),
+            new("Sprint 2", new(2026, 12, 20), new(2026, 12, 11)));
+
+        var resolution = SpokenDateResolver.Resolve("end of next sprint", context);
+
+        Assert.Null(resolution.Date);
+        Assert.Equal("next_iteration_unavailable", resolution.Status);
+    }
+
+    [Fact]
+    public void Resolve_CurrentIterationNotStarted_Abstains()
+    {
+        var context = new SpokenDateContext(new(2026, 11, 26),
+            new("future", new(2026, 11, 30), new(2026, 12, 11)));
+
+        var resolution = SpokenDateResolver.Resolve("end of sprint", context);
+
+        Assert.Null(resolution.Date);
+        Assert.Equal("current_iteration_unavailable", resolution.Status);
+    }
+
+    [Fact]
+    public void Resolve_BetweenIterations_StillResolvesVerifiedFutureNextEnd()
+    {
+        var context = new SpokenDateContext(new(2026, 11, 28),
+            new("Sprint 1", new(2026, 11, 16), new(2026, 11, 27)),
+            new("Sprint 2", new(2026, 11, 30), new(2026, 12, 11)));
+
+        Assert.Equal(new DateOnly(2026, 12, 11), SpokenDateResolver.Resolve("end of next sprint", context).Date);
+    }
+
+    [Fact]
     public void Resolve_StaleOrNonSubsequentIteration_DoesNotInventSprintLength()
     {
         var old = new Zava.Scrum.Domain.Work.IterationInfo("old", new(2026, 10, 1), new(2026, 10, 14));

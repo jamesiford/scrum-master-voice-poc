@@ -13,12 +13,17 @@ escapedids0. The latest synthetic release passes unchanged0.7/0.6
 thresholds; real employee/CI/knowledge/Work IQ content remain unrun.
 
 Whole-team opening/recap/announcement replay and roster-first audio have
-targeted Domain44/44 and Api10/10 proof. The old louderguest1000/member500
+targeted Domain49/49 and Api10/10 proof. The old louderguest1000/member500
 fixture suppressed member audio; now it forwards member500 and zero guest
 PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
 required circle-back survives style overrides; the current prefix has
-10/10 complete real-model retros, spoken/answered returns10/10, no retries.
-Remaining20 and runtime after measurement are unrun, not passing evidence.
+15/16 complete pre-guard real-model retros, spoken15/16/answered16/16.
+Run15 had no agent transcript/first-audio timing between return and answer,
+no talk-over; it remains failed with no session retry. Completion without
+audio could silently hand off against a stale cast caption. A new pure
+Domain guard retries the real response at most twice, then fails explicitly;
+original latency baseline is retained. Remaining14, separate30 guarded
+retros and runtime after measurement are unrun, not passing evidence.
 API-only
 e7c31fa/ACRds16 is digest-pinned on zavaw3 revision89, HTTP200;
 identity/configuration/environment parity pass and defaults are unchanged.

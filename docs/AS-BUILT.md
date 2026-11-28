@@ -16,7 +16,11 @@ Whole-team opening/recap/announcement steps are protected from ordinary
 speech and replay after explicit pause/takeover. Native unmixed audio
 prefers the audible verified holder/roster before louder guests, whose
 audio remains excluded. Mandatory retro circle-back instructions are
-appended after optional team style; real30-run measurement is recorded
+appended after optional team style. Empty responses cannot silently complete circle-back:
+two bounded real-response retries, then explicit pause/transport failure;
+successful retry includes its original latency. Pre-guard16-run prefix has
+15spoken returns/16answers, one retained failed run; separate guarded
+real30-run measurement is recorded
 separately in `gates/r2-quality-M11.json`. Existing Acs/Share/Direct,
 Simulated Room, native non-recording and approval guards stay unchanged.
 No new use case or API route; full suites belong to r2-reconcile.

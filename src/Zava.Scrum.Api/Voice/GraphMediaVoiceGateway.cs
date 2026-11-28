@@ -40,6 +40,7 @@ public sealed class GraphMediaVoiceGateway(
     private DateTimeOffset? _vadStartedAt;
     private DateTimeOffset _lastInput;
     private bool _discard;
+    private bool _turnHadAudio;
     private bool _finished;
     private long _playedMs;
     private long _turnStarted;
@@ -260,7 +261,7 @@ public sealed class GraphMediaVoiceGateway(
                 }
                 else
                 {
-                    await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow)));
+                    await ExecuteAsync(_floor.Handle(new AgentSpeechEnded(clock.UtcNow, _turnHadAudio)));
                 }
 
                 break;
@@ -282,6 +283,7 @@ public sealed class GraphMediaVoiceGateway(
                 break;
             case AgentItemStarted item: _itemId = item.ItemId; break;
             case AgentAudio audio when !_discard:
+                _turnHadAudio |= audio.Pcm.Length > 0;
                 await _bridge.SendAudioAsync(audio.Pcm, _ct);
                 if (_turnStarted != 0)
                 {
@@ -380,6 +382,13 @@ public sealed class GraphMediaVoiceGateway(
             switch (action)
             {
                 case AgentSpeak speak:
+                    if (speak.RetryAttempt > 0)
+                    {
+                        logger.LogWarning("Empty circle-back response for {TeamId}/{SessionId}/{MemberId}; retry {Attempt}/2",
+                            _context.Session.TeamId, _context.Session.Id, speak.MemberId, speak.RetryAttempt);
+                    }
+
+                    _turnHadAudio = false;
                     var brief = _context.Session.PreBrief!.Members.FirstOrDefault(m => m.MemberId == speak.MemberId);
                     var turn = JsonSerializer.Serialize(new
                     {
@@ -390,7 +399,7 @@ public sealed class GraphMediaVoiceGateway(
                         retro = _context.Session.Kind == CeremonyKind.Retrospective ? _board.Project(_floor.CurrentMemberId, true, false) : null,
                     });
                     _itemId = null;
-                    _turnStarted = Stopwatch.GetTimestamp();
+                    if (speak.RetryAttempt == 0 || _turnStarted == 0) { _turnStarted = Stopwatch.GetTimestamp(); }
                     await _voice.CreateResponseAsync(turn, _ct);
                     break;
                 case AdvanceSpeaker:
@@ -432,6 +441,10 @@ public sealed class GraphMediaVoiceGateway(
                     await _voice.CancelResponseAsync(_ct);
                     break;
                 case EndSession: _finished = true; break;
+                case RequiredSpeechFailed failed:
+                    logger.LogError("Circle-back audio unavailable for {TeamId}/{SessionId}/{MemberId}",
+                        _context.Session.TeamId, _context.Session.Id, failed.MemberId);
+                    throw new WebSocketException("Voice Live did not produce circle-back audio after two retries.");
             }
         }
     }
