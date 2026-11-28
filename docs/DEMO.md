@@ -14,6 +14,10 @@ not real Teams delivery/guest acceptance. See ADR 0040 and
 The live storage proof writes 5,400 records for 300 standups without HTTP
 413; bounded reads have unchanged RUs at 1/100/300 histories. This is not
 a claim of 300 real meetings or successful Teams delivery.
+The after-deployment cast passes mandatory8/8 with zero talkovers and a
+complete approval audit, but its3631/6166ms,n11 latency point is worse
+than the3449/3987ms,n8 baseline. Do not present this as latency parity or
+promote another adapter; G1 stays failed and the working defaults remain.
 
 ## Current G8 rehearsal boundary
 

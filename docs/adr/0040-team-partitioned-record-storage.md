@@ -104,6 +104,22 @@ artificially cheap stand-in. Full-history lists still scale with output.
 These synthetic items are not delivered to Teams and never apply ADO changes.
 Deployment and postdeployment evidence are in the gate file.
 
+After deployment and exclusive load cleanup, mandatory verification passes
+8/8 and native readiness 5/5. Actual Direct p50/p95 is 3631/6166 ms, n=11;
+questions 3712/6166 ms, n=8; model reads 10/11, 19 transcript pieces,
+zero talkovers, approver-authored revision77 and a complete audit.
+Both exact temporary probe grants are removed and the generated team has
+zero remaining items. API and bridge remain running.
+
+Total latency points worsen by 5.28%/54.65% against 3449/3987 ms, n=8,
+in independent windows/populations. This is a failed experience point, not
+an accepted trade-off, causal storage attribution or promotion proof.
+The worst turn has 51 ms analyser, 206 ms decision model, 3211 ms
+orchestration and 2814 ms first audio; overlapping intervals must not be
+added. G1 remains failed and Acs/Share/Direct remain defaults. The owning
+performance work must investigate the actual per-hop evidence without
+tuning thresholds or restoring whole-document writes.
+
 No new fixed hourly compute charge: serverless container RUs and stored
 bytes are variable usage. Roles have no separate hourly charge. Retained
 legacy bytes are a deliberate additive-migration storage cost.

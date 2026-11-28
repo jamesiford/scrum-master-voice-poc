@@ -16,6 +16,9 @@ The deployed additive migration preserves 21 sessions, 37 approval records
 and all 4 raw legacy sources. The live 5,400-record load has zero HTTP 413
 and a maximum 8,672-byte item. Point and bounded composed-read RUs are flat
 at 1/100/300 standups, n=10 per collection/checkpoint; full lists are not.
+Mandatory after verification is 8/8, native readiness 5/5, with complete
+approver-authored revision77 audit. Direct3631/6166ms,n11 worsens against
+3449/3987ms,n8 in different windows: G1 stays failed, not accepted parity.
 Full suites belong to r2-reconcile, not this step.
 
 ## Current G8 proof scope (27 November 2026)

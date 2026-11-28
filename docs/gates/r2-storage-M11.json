@@ -1,6 +1,6 @@
 {
   "step": "r2-storage",
-  "status": "partial",
+  "status": "done",
   "environment": "zavaw3",
   "adr": "0040",
   "baseline": {
@@ -60,9 +60,33 @@
     ],
     "flatAtAllCheckpoints": true,
     "boundary": "Each rounded RU is unchanged at 1, 100 and 300 standups. Composed repository reads include publication metadata. Full-history lists scale with output. Create RU excludes reads, conflict checks and cleanup.",
-    "cleanupVerified": false
+    "cleanupVerified": true,
+    "remainingOwnedItems": 0
   },
-  "after": null,
+  "after": {
+    "harnessSourceLabel": "2dacbfc",
+    "deployedSource": "be487f70d9844079a1a80e612ff73818e4ea22c3",
+    "mandatoryChecks": { "passed": 8, "n": 8 },
+    "nativeReadiness": { "passed": 5, "n": 5 },
+    "total": { "p50Ms": 3631, "p95Ms": 6166, "n": 11 },
+    "questions": { "p50Ms": 3712, "p95Ms": 6166, "n": 8 },
+    "modelReads": { "n": 10, "timedTurns": 11 },
+    "transcriptPieces": 19,
+    "talkovers": 0,
+    "castElapsedSeconds": 390,
+    "approvedRevision": 77,
+    "auditComplete": true
+  },
+  "experienceComparison": {
+    "totalP50ChangePercent": 5.28,
+    "totalP95ChangePercent": 54.65,
+    "questionP50ChangePercent": 7.63,
+    "verdict": "Failed latency point, not an accepted trade-off or parity/promotion proof. G1 remains failed; defaults are unchanged.",
+    "boundary": "Independent windows and populations: before n8 total/n6 questions; after n11 total/n8 questions. No causal attribution to storage is established.",
+    "worstAfterTurn": { "totalMs": 6166, "analyserMs": 51, "decisionModelMs": 206, "orchestrationMs": 3211, "voiceFirstAudioMs": 2814 },
+    "hopBoundary": "Hop intervals overlap and must not be added."
+  },
+  "temporaryProbeGrantsRemoved": true,
   "fixedHourlyCostAddedUsd": 0,
   "costBoundary": "Serverless RUs and stored bytes are variable, not free. Scoped roles have no separate hourly charge.",
   "experiencePromotion": false,

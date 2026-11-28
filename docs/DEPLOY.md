@@ -61,6 +61,12 @@ and actual composed-read RU costs, not full-list constant cost. The new
 serverless container and roles add USD0 fixed hourly compute; RUs, stored
 bytes and retained export/legacy storage are variable charges. Actual
 measurements/deployment/verification are in `gates/r2-storage-M11.json`.
+The zavaw3 rollout is complete: authoritative data preservation passes,
+all 5,400 generated items are removed and both temporary grants are absent.
+Mandatory verification passes8/8/native readiness5/5 with revision77 and a
+complete audit; API/bridge stay running. The worse3631/6166ms,n11 Direct
+latency point remains a failed G1, not a reason to roll back to stale legacy
+documents or promote an unproven adapter. There is no new storage human gate.
 
 The checked-in Bicep/hooks describe a new-resource-group deployment: Foundry
 with chat, realtime and decision deployments (three by default), ACS, Cosmos,

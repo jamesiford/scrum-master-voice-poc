@@ -19,6 +19,16 @@ createRU in683.4913s, excluding cleanup. At1/100/300 standups, n10 each:
 cards point/session/composed1.33/3.64/13.60RU; followups1.14/3.23/13.18;
 activities1.00/3.29/13.26. Each is flat at all checkpoints, including
 real publication metadata in composed reads. Full lists scale with output.
+All5400 exact generated items are removed; independent exact-team count0,
+and both temporary probe grants are absent. Mandatory afterverify8/8 and
+native readiness5/5 pass: Direct3631/6166ms,n11; questions3712/6166ms,n8;
+model10/11/transcriptpieces19/talkovers0, approverrevision77/completeaudit.
+After total points worsen+5.28%/+54.65% versus3449/3987ms,n8, different
+windows/populations, not causal storage attribution. G1 remains failed:
+this is not accepted parity or a promotion trade-off. Worst turn6166ms
+has analyser51/model206/orchestration3211/firstaudio2814; do not add
+overlapping hops. Defaults stay unchanged; owning performance work must
+investigate without threshold changes or whole-document rollback.
 These scripted samples do not close historical G1/Teams acceptance failures.
 Full suites are reserved for r2-reconcile.
 
