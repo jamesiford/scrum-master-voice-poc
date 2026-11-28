@@ -128,6 +128,74 @@
     }
   ],
   "defaults": { "bridge": "Acs", "board": "Share", "voice": "Direct" },
+  "lifecycleDiagnostics": {
+    "backoffSeconds": [0, 30, 60, 120, 240, 300, 300],
+    "samples": 7,
+    "firstRead": "2026-11-28T00:02:07.1376675+00:00",
+    "lastRead": "2026-11-28T00:19:45.3832689+00:00",
+    "allStatus": 404,
+    "allError": "NotFound: Project not found",
+    "lastRequestId": "f8ec1cca-3fb4-4fb3-9913-08b4678993d4",
+    "sameCredentialWorkingAgentStatus": 200,
+    "freshConnectionsStatus": 200,
+    "freshConnectionCount": 0,
+    "freshAgentApiVersions": ["v1", "2025-05-01"],
+    "freshAgentApiStatuses": [404, 404],
+    "latestArmApiVersion": "2026-09-01",
+    "latestArmState": "Succeeded",
+    "freshAndWorkingCapabilityHosts": 0,
+    "callerOwnerAndFoundryUser": true,
+    "sourceCorrectionEstablished": false,
+    "destructiveGuardBypassed": false,
+    "supportedHostedHookRetry": {
+      "start": "2026-11-28T00:21:42.2943918+00:00",
+      "end": "2026-11-28T00:28:08.7698526+00:00",
+      "seconds": 386.4754608,
+      "exitCode": 1,
+      "error": "HTTP 404 NotFound: Project not found",
+      "cycleCredit": false
+    },
+    "finalSupportedExistingFootprintReconciliation": "running_without_empty_cycle_credit"
+  },
+  "independentCompletionAfterFailedUp": {
+    "cycleCredit": false,
+    "nativeSetup": {
+      "start": "2026-11-28T00:07:36.9830540+00:00",
+      "end": "2026-11-28T00:13:59.8392931+00:00",
+      "seconds": 382.8562391,
+      "exitCode": 0
+    },
+    "nativeRequireReady": {
+      "start": "2026-11-28T00:14:48.9057873+00:00",
+      "end": "2026-11-28T00:14:56.0346765+00:00",
+      "seconds": 7.1288892,
+      "exitCode": 0,
+      "checks": 5
+    },
+    "mandatoryVerify": {
+      "start": "2026-11-28T00:14:48.9057892+00:00",
+      "end": "2026-11-28T00:21:47.7172137+00:00",
+      "seconds": 418.8114245,
+      "exitCode": 0,
+      "checks": 8,
+      "timedTurns": 12,
+      "totalP50Ms": 3338,
+      "totalP95Ms": 3977,
+      "questions": 9,
+      "questionP50Ms": 3522,
+      "questionP95Ms": 3724,
+      "modelReadTurns": 10,
+      "humanSegments": 19,
+      "talkOvers": 0,
+      "adoRevision": 73,
+      "auditTag": "zsa-6cfb7830316b"
+    },
+    "publicLegalPages": "pass",
+    "packagesMatchCurrentOutputs": true,
+    "mediaExternalId": "acb3c894-4b16-4e82-bd2b-69a91e34b2fc",
+    "messagingExternalId": "9be7c67b-b372-4668-b448-59726428cf2a",
+    "portalSsoId": "275a77d0-016c-4a63-96db-5dca05ca7e00"
+  },
   "interveningPurge": {
     "observationTime": "2026-11-27T23:39:23.5173093+00:00",
     "state": "succeeded",
@@ -151,7 +219,8 @@
   "notes": [
     "Fresh westus3 proof is operator-approved; former target was operator-deleted.",
     "Previous failures remain historical and do not establish a support prerequisite.",
-    "First full postdeploy/verification and intervening purge/preserved13inputs pass. Second full empty up fails1192.4071s during hosted creation with project404 despite ARM Succeeded/new identity; bounded propagation/API/ordering investigation is running, not a support prerequisite.",
+    "First full cycle and intervening purge/preserved13inputs pass. Second full empty up fails1192.4071s at hosted creation; seven bounded reads and a supported hosted-hook retry also fail404. Final supported same-template reconciliation is running on the existing footprint, without empty-cycle credit or teardown bypass.",
+    "Independent mandatory8/8/native5/5 and actual managed Direct audio/approved revision73/completeaudit pass; these do not repair the failed full-up lifecycle.",
     "Readiness, scripted verification and real Teams acceptance are distinct."
   ]
 }

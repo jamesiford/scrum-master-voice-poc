@@ -15,8 +15,12 @@ complete. The guarded intervening purge passed1700.1703s, with exact
 absence and all13 inputs preserved. The second full empty up failed1192.4071s
 at hosted creation with `Project not found`404 despite new ARM identity/
 internal id and Succeeded state. Same-credential working-project read is200;
-bounded lifecycle/API/ordering recovery is running without teardown bypass.
-G8 remains failed at1/2; independent native/verification/final deallocation continue.
+Seven bounded backoff reads through00:19:45Z remain404; connections read200,
+and supported hosted-hook retry386.4755s also fails404. The second and final
+supported retry reconciles the same validated templates on the existing
+footprint, not an empty-cycle proof. Independent mandatoryverify8/8/418.8114s
+and native5/5 pass: Direct3338/3977ms,n12, approverrevision73/completeaudit.
+G8 remains failed at1/2; final VM-only deallocation remains required.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the

@@ -57,6 +57,9 @@ The guarded intervening purge passed1700.1703s with exact absence.
 Second full empty up fails1192.4071s at hosted creation with project404,
 after real models/images provision. This is a distinct lifecycle failure,
 not a managed Voice Live quota regression; G8 is failed at1/2.
+Independent verification after that failed up also passes8/8/418.8114s:
+real Direct3338/3977ms,n12, approved revision73/completeaudit and native5/5.
+It verifies the real managed-model correction, not another full-up cycle.
 
 Both full empty up/verify cycles must prove actual managed Voice Live
 audio, approved writes and the entire footprint before G8 passes.

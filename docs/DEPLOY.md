@@ -166,9 +166,14 @@ account/deleted vault absence and all13 inputs preserved. The second full
 empty up fails1192.4071s during hosted version creation with exact
 `HTTP404 NotFound: Project not found`, despite ARM Succeeded and new
 project identity/internal id. Same-credential working-project GET is200.
-Bounded backoff/API/ordering investigation continues; no auth loop,
-support prerequisite or teardown bypass. G8 is failed at1/2; independent
-native/verification and final VM-only deallocation remain required.
+Seven bounded backoff reads through00:19:45Z remain404; connections read200.
+One supported hosted-hook retry fails404 in386.4755s. The second and final
+supported retry reconciles the same validated templates on the existing
+footprint, without empty-cycle credit. Independent native setup382.8562s,
+nativeRequireReady5/5 and mandatoryverify8/8/418.8114s pass, with actual
+Direct3338/3977ms,n12 and approverrevision73/completeaudit.
+No auth loop, support prerequisite or teardown bypass. G8 is failed at1/2;
+final VM-only deallocation remains required.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not
@@ -189,7 +194,9 @@ retry or broader CLI permission grant is made. A Teams administrator must
 use Teams admin centre > Teams apps > Manage apps > Upload new app for
 `appPackage\dist\zava-media-bot.zip`, verified external id
 `acb3c894-4b16-4e82-bd2b-69a91e34b2fc`, and the final
-`appPackage\dist\zava-scrum-agent-zavag8-1.1.0.zip` generated after cycle two.
+`appPackage\dist\zava-scrum-agent-zavag8-1.1.0.zip`, verified current
+bot/external id `9be7c67b-b372-4668-b448-59726428cf2a` and portal SSO
+id `275a77d0-016c-4a63-96db-5dca05ca7e00`, generated after recreation.
 Upload only these fresh packages, never replace the completed zavaw3
 entries or the old mcm app. Organiser meeting/chat install, RSC and lobby
 admission remain separate real-human gates. This catalogue refusal does

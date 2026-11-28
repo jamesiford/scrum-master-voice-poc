@@ -55,7 +55,18 @@ Intervening guarded purge passed1700.1703s, with exact absence and all13
 inputs preserved. Second full empty up fails1192.4071s at hosted creation
 with project404, despite new ARM identity/internal id and Succeeded state.
 Working-project same-credential/APIv1 GET is200; repeated lifecycle, not
-region, is implicated. Bounded propagation/API/ordering recovery runs
-without teardown bypass; G8 remains failed1/2. The fresh catalogue
+region, is implicated. Seven bounded backoff reads through00:19:45Z
+remain404; connections read200, both agent API versions return404.
+Current ARM API retains the same Succeeded identity/id; working and fresh
+capability hosts are empty. Current Learn makes these optional in the
+default managed setup, so adding BYO storage/Search or unrelated roles
+would not be an evidence-backed correction.
+One supported hosted-hook retry fails404 in386.4755s; the second and final
+supported retry reconciles the existing validated templates, not an empty
+cycle. Independent native5/5 and mandatoryverify8/8/418.8114s pass,
+Direct3338/3977ms,n12, approverrevision73/completeaudit.
+No source-only cause or safe correction is established; no speculative
+delay, identity toggle or teardown bypass is shipped. G8 remains failed1/2.
+The fresh catalogue
 POST403 is a separate OAuth-scope human gate, not a support prerequisite.
 No runtime feature, Domain invariant, default adapter or public API changes.
