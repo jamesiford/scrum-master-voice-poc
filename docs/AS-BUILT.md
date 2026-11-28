@@ -12,8 +12,11 @@ Calls.AccessMedia.All setup have succeeded automatically. First full
 empty up1665.7626s and mandatoryverify8/8/407.4025s/native5/5 pass,
 with real managed Voice Live3417/3871ms,n10 and approverrevision71/audit
 complete. The guarded intervening purge passed1700.1703s, with exact
-absence and all13 inputs preserved. The second full empty up is running;
-its verification and final VM-only deallocation remain, so G8 is not yet a pass.
+absence and all13 inputs preserved. The second full empty up failed1192.4071s
+at hosted creation with `Project not found`404 despite new ARM identity/
+internal id and Succeeded state. Same-credential working-project read is200;
+bounded lifecycle/API/ordering recovery is running without teardown bypass.
+G8 remains failed at1/2; independent native/verification/final deallocation continue.
 No default adapter, public API, Domain rule or zavaw3 runtime change.
 
 ADR0039 corrects the standalone realtime quota prerequisite for the

@@ -1,6 +1,6 @@
 # ADR 0038: Run the greenfield proof in a fresh westus3 environment
 
-Date: 27 November 2026. Status: accepted; first full cycle verified, second pending.
+Date: 27 November 2026. Status: accepted; first cycle verified, second lifecycle failed.
 
 ## Context
 
@@ -52,7 +52,10 @@ Real managed Direct3417/3871ms,n10, approverrevision71/auditcomplete and
 24 resources are measured. Owned hosted version1 reads HTTP200/active;
 this first fresh cycle does not reproduce the former project404.
 Intervening guarded purge passed1700.1703s, with exact absence and all13
-inputs preserved. The second full empty up is running; G8 remains1/2.
-The fresh catalogue
+inputs preserved. Second full empty up fails1192.4071s at hosted creation
+with project404, despite new ARM identity/internal id and Succeeded state.
+Working-project same-credential/APIv1 GET is200; repeated lifecycle, not
+region, is implicated. Bounded propagation/API/ordering recovery runs
+without teardown bypass; G8 remains failed1/2. The fresh catalogue
 POST403 is a separate OAuth-scope human gate, not a support prerequisite.
 No runtime feature, Domain invariant, default adapter or public API changes.

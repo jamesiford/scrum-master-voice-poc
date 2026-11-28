@@ -54,7 +54,9 @@ firstaudio1235/2269ms, approverrevision71/completeaudit and native5/5.
 All24 resources/requiredmodels and owned hosted version1active are real.
 No standalone realtime deployment is created or protected quota changed.
 The guarded intervening purge passed1700.1703s with exact absence.
-The second full empty up is running; G8 is still1/2, not a pass.
+Second full empty up fails1192.4071s at hosted creation with project404,
+after real models/images provision. This is a distinct lifecycle failure,
+not a managed Voice Live quota regression; G8 is failed at1/2.
 
 Both full empty up/verify cycles must prove actual managed Voice Live
 audio, approved writes and the entire footprint before G8 passes.

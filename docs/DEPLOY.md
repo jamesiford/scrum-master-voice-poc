@@ -163,8 +163,12 @@ nativeRequireReady5/5, Direct3417/3871ms,n10, approverrevision71 with
 complete audit. All24 resources and the real hosted version1 are present;
 the guarded intervening purge passed1700.1703s with exact group/deleted
 account/deleted vault absence and all13 inputs preserved. The second full
-empty up is running; its verification and final VM-only deallocation remain,
-so G8 is not yet a pass.
+empty up fails1192.4071s during hosted version creation with exact
+`HTTP404 NotFound: Project not found`, despite ARM Succeeded and new
+project identity/internal id. Same-credential working-project GET is200.
+Bounded backoff/API/ordering investigation continues; no auth loop,
+support prerequisite or teardown bypass. G8 is failed at1/2; independent
+native/verification and final VM-only deallocation remain required.
 
 **Managed Voice Live correction (ADR0039):** the first full up fails
 preflight206.1921s with no resources created. DataZoneStandard is not

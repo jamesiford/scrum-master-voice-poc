@@ -9,8 +9,10 @@ as defaults. First full up/verify/native readiness passes, cycles1/2;
 real Direct3417/3871ms,n10 and approved revision71 are scripted proof,
 not a live Teams rehearsal or a passing final G8. The guarded intervening
 purge passed1700.1703s with exact absence/all13 inputs preserved; the second
-full empty up is running. After the proof, its media VM will be
-deallocated with the final application resources retained.
+full empty up failed1192.4071s at hosted creation with project404.
+This reproduced lifecycle failure is being investigated, not a region
+or support prerequisite. G8 remains failed at1/2. After the proof, its
+media VM will be deallocated with final application resources retained.
 
 The first empty up failed preflight206.1921s without creating resources.
 ADR0039 uses the same real managed gpt-realtime-2.1 Voice Live model, which
