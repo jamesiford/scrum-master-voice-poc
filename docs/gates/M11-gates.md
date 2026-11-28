@@ -1,5 +1,198 @@
 # M11 gates
 
+## Current G8 fresh westus3 proof
+
+Operator-selected fresh **zavag8/westus3** replaces the deleted former
+eastus2 target (ADR0038). New successful full empty cycles1/2.
+Prior404/409 failures remain historical evidence, not a support prerequisite
+or an authorised target. Portal baseline consent/app roles and dedicated
+media Calls.AccessMedia.All setup succeed automatically. Native and
+real Teams acceptance remain separate. No protected deployment is mutated.
+
+| Gate | Current verdict | Actual evidence |
+| --- | --- | --- |
+| G8 fresh westus3 greenfield | Failed1/2; closing work complete | Initial up206.1921s fails unused standalone realtime SKU before resources. Real managed Voice Live correction retains defaults; first full up1665.7626s/mandatoryverify8/8/407.4025s/native5/5 pass, Direct3417/3871ms,n10/questions3442/3871ms,n8, zero talkovers, approverrevision71/complete audit. First24resources/hosted1active and guarded purge1700.1703s/exactabsence/preserved13inputs pass. Second full empty up1192.4071s fails hosted creation with project404 despite ARM Succeeded/new identity/internalid; same-credential workingGET200. Seven bounded reads and supported hosted retry386.4755s remain404. Final no-state provision/deploy917.7072s fails404 despite actual RP upsert589.6757s and real builds; no empty-cycle credit or source-only fix established. Independent mandatory8/8/418.8114s/native5/5 pass,3338/3977ms,n12/revision73. Final native refresh260.3368s/ready5/5 and mandatory8/8/416.2082s pass, Direct3520/4592ms,n12/questions3742/4592ms,n9/modelreads10/12/humansegments19/talkovers0/revision75/completeaudit, not cycle credit. Only exact fresh VM deallocated68.8504s/PowerState-deallocated; all25 identities retained/API+bridge200/unchanged images/latest=ready. Automatic MDE.Windows comes from existing P2, not changed policy; actual base0.02/hour allocated/0 deallocated, disk+IP0.018150685/hour retained subtotal only. No support prerequisite/teardown bypass. Fresh cataloguePOST403 separate named human gate. Focused20/14/16/all3builds/.NET0warnings/errors pass; no full-suite reruns. See g8-proof-3-M11.json/ADR0038/0039/DEPLOY costs. |
+
+Final Direct points versus first-cycle3417/3871ms are+3.01%/+18.63%,
+different windows, not causal or paired acceptance. The worsened tail is
+not an accepted trade-off; G1 remains failed and defaults remain Acs/Share/Direct.
+G3's final genuine approver-authored comment is verify-79455612/revision75,
+auditzsa-dc8089a89f16, one complete chain. Native readiness is not G2/G6/
+RSC/guest acceptance; inherited failed/not_run gates remain unchanged.
+
+## Film implementation checkpoint (27 November 2026)
+
+Scope is only zavaw3/westus3. ADR0036 adds real authorised audit/latency
+reads and participant identity presentation; ADR0037 records the separate
+approved ADO reset and atomic application-publication boundary. Aggregate
+source verification and actual deployment/live proof are complete.
+No threshold, prompt/golden, Acs/Share/Direct or native non-recording change.
+
+The unchanged harness baseline on source215fe44 is a real Simulated Room,
+not Teams meeting acceptance: session81a1690b-b58d-410e-9a73-4c0fa9e4585f,
+correlation564629bf03056c87cf14f4b57a12f537, total3419/4912ms p50/p95,n12;
+questions3645/4912ms,n9; zero talk-overs, model10/12 and19 transcript pieces.
+Hop intervals overlap and must not be added. The new counter excludes
+uncalled model placeholders rather than fabricating samples.
+
+After end, twelve own-session follow-ups are Sent and fourteen card outbox
+records exist without invoking the manual send endpoint (finding1.20).
+That proves automatic application/outbox behaviour, not Teams delivery.
+Focused Application26/26, Domain3/3, API133/133 and portal2/2 pass; targeted
+portal/bridge builds/typechecks/lints pass. Initial reset-focused29checks
+pass. Real local Edge UI has no page errors, readable roster/guest names,
+an empty counter with no numeric rows and actual API-backed audit session;
+it is isolated local data, not a real approval or meeting.
+
+The requested first .NET aggregate is1038/1039/0skips; only locked-mode
+startup failed because a local journal read resolved an ADO credential.
+The root is repaired without weakening identity/tests, and that unchanged
+case plus3new durable-history cases pass:1042unique.NETcases have passing
+evidence. Counts are Domain434,Application242,Infrastructure131,API190,
+Architecture16,AgentHost9,Media20. Final solution7.74s/0warnings/errors;
+both TS builds/typechecks/ESLint/Prettier pass, bridgeunit13/13,portal2/2.
+One real Edge E2E aggregate passes12/12/0retries/0skips:
+retro302.571s,standup369.451s,total673.170s. These are scripted, not Teams.
+Existing hook17/17 passes after the new Bicep loop's BCP138 repair;
+new configuration7cases/3hookparsers pass. Full C# format's only3new
+line-ending failures and new history files pass focused repair/verification.
+Goldens, models and gate thresholds are unchanged.
+
+### Actual zavaw3 deployment and after measurements
+
+Committed runtime339bb67 is deployed digest-pinned only to existing zavaw3,
+API86/bridge10, both HTTP200. Actual existing ACR builds are API ds14 and
+bridge ds13; local Docker daemon was unavailable. Official core validation
+passes5/5, effective policy read includes8 inherited assignments, and existing
+AcrPull/Cosmos collection/session/append-only approval roles are read back.
+Only six owned demo reset environment keys are added; identities, secrets
+metadata, configuration, resources, scale, probes and other environment
+values match the immediate pre-deployment fingerprint. Added fixed cost
+USD0/hour; no resource/role/policy/native/hosted/G8 lifecycle change.
+
+Mandatory `infra\hooks\verify.ps1 -Runs 1` passes8/8, including native
+readiness5/5 (not Teams acceptance). The unchanged cast harness finishes
+in366s with12 timed turns/19 transcript pieces/zero talk-overs. Actual session
+`8fc23213-7ec5-4954-a49a-98246050d180`, correlation
+`d5870d3e2a682dfd06f82330c1e01fad`, is a Simulated Room run, not a Teams meeting.
+
+| Measurement | Before p50/p95 ms | After p50/p95 ms | n before/after |
+| --- | ---: | ---: | ---: |
+| Total | 3419/4912 | 3140/4719 | 12/12 |
+| Questions | 3645/4912 | 3957/4719 | 9/9 |
+| Speech end to transcript | 0/259 | 0/205 | 12/12 |
+| Grounding/analyser | 26/28 | 25/41 | 12/12 |
+| Orchestration | 1496/2713 | 1732/2402 | 12/12 |
+| Voice Live first audio | 1640/2417 | 1488/2877 | 12/12 |
+
+These are independent single-run point estimates, not a formal paired gate
+or a sub-second pass. Total improves279/193ms, but question median worsens
+312ms; do not promote an adapter or change a threshold from these samples.
+The product counter's six actual rows match every real harness sample.
+Its real-model row is142/223ms,n10; legacy harness143/223ms,n12 includes
+two rules placeholders and is not the same population. No browser-send
+sample exists in this headless run, so no such row is fabricated.
+
+All six automatically created own-session follow-ups are Sent after end;
+eight actual outbox cards contain no manual verification-follow-up id.
+No manual send endpoint is invoked. The separate manually proposed
+verification follow-up is Applied and excluded from the automatic count.
+This confirms finding1.20 application/outbox behaviour, not Teams delivery.
+Its complete actual audit has Approved/Applied and item1/revision68; the
+comment names **System Administrator**, the validated actor, and includes
+`zsa-d5870d3e2a68`, authored by the actual Admin UPN. Anonymous audit/latency
+requests independently return401. This authorised Admin's supplied team-b
+query is ignored: both reads still resolve owning Payments, not team-b.
+Negative-member/tenant isolation is covered by API/mediator tests; real
+other-tenant/user fixture n0 is not manufactured.
+
+### Actual guarded clean baseline
+
+Before opt-in, all five entries are unmarked and reset refuses403 with no
+registry mutation. Exact markers pass5/5; first operation
+`86f3a14f-bc60-4b54-9540-51a27d24e88e` reviews29 seed keys/fields, then
+uses the real Admin approval/apply/commit pipeline. Pending apply403,
+premature commit409 and wrong operation team403 leave all ADO revisions
+unchanged. All29 actual staged fields match:19 Demo Sprint/10 root backlog,
+Sprint43 empty. Four reviewed connections,226 old follow-ups (214 open)
+and20 sessions are logically hidden, leaving the active primary and
+Daniel/Maya/Admin roster. Unknown real teams observed n0; no guessing.
+Completed same-id replay keeps the next take and changes no ADO revisions.
+Retained Approved/Applied records contain29 real revisions after cleanup,
+with the actual System Administrator/UPN/tag comment. Atomicity is only
+one application publication; external ADO remains recoverable, not ACID.
+
+After capturing all after evidence, final reviewed operation
+`67ad9b4c-2614-4af5-965b-d6b84e938a34` completes another approved29-item
+baseline. Marker replay uses removal history and leaves all four cleaned
+connections absent. The exact existing clean API revision86 is restarted
+once to check durability, without image/config/native changes. Readback
+still shows only the Active demo primary, Daniel/Maya/Admin roster and
+zero sessions/follow-ups. All29 final fields match; completed replay changes
+no ADO revision. Prior verification approval records and comment text are
+byte-for-byte retained after cleanup/restart. API/bridge remain HTTP200.
+Only the owned local API/bridge/Vite helpers are stopped and their exact
+isolated data leaf removed; Azure remains running.
+
+Inherited verdicts remain G1/G4/G7/G8failed, G3measured and
+G2/G5/G6/G9/G10/G11not_run. The historical sections below are not new film
+deployment or G8 cycle evidence.
+
+## G8 second recovery attempt (27 November 2026)
+
+**Current G8 failed/provider-blocked, newcycles0/2.** Initial purge
+1641.7849s and exact empty readbacks pass. New fullup1205.4765s fails after
+version1 creation30402ms: persistent HTTP404 `Project not found` on version,
+agent and list routes, despite ARM Succeeded/fresh principal/internalId.
+Controlled same-project cleanup removed the observed retained binding,
+not the provider's entire project lifecycle problem. Thirteen focused
+cleanup checks pass, including refusal of project404 as false agent absence.
+Provider repair is required before another safe purge; independent native/
+Direct verification and final VM-only deallocation are separate evidence.
+
+Current unchanged calling-app PATCH/Calls.AccessMedia.All reconciliation
+passes, n=1; historical403 is resolved for this operation. Controlled
+data-plane cleanup of the retained owned hosted relay passes with404
+readback, canary already absent. Pre-purge deleted account list[] and
+projectSucceeded/old agent identity readbacks support a retained lifecycle
+state cause: same-project recreation createsversion1 in30222ms and is
+active43485ms, unchanged project identity and new instancec1aa55e6.
+New guarded predown hook and13focused regression checks pass; existing
+greenfield17checks and all3builds pass (.NET0warnings/errors).
+Both new full empty up/verify cycles are pending, so G8 stays failed,
+not a passing cleanup proxy. Final media VM deallocation is complete below.
+ADR0035 and DEPLOY.md record scope/decision; older sections are historical.
+
+Early privileged native recovery is now complete: actual certificate
+registration/bootstrap and focused RequireReady5/5 pass. Baseline
+verification7/8 in401.92s retained a native SSL check performed while
+bootstrap was unfinished; subsequent focusednative5/5 recovers that check,
+not a new full8/8baseline. Direct total3021/4168ms,n12,questions3136/4168ms,n9,
+modelread10,humansegments19,talkovers0; realapproverrevision64 and complete
+auditzsa-ace415470fde. Initial full purge passes1641.7849s; exact group/
+account/vault absence and native/D4als_v7/Gen2/Direct/Acs/Share inputs read
+back19:13:50Z. First NEW full up starts19:13:52Z from12be35e;
+completed newcycles0/2.
+[Content-free second-attempt evidence](g8-proof-2-M11.json) retains the
+historical failure and controlled root-cause measurements.
+
+Final independent recovery: native5/5 and mandatoryverify8/8 in376.6268s;
+Direct total2862/4397ms,n12, questions3247/4397ms,n9, modelread10/12,
+humansegments19/talkovers0, approverrevision66/auditzsa-67e38e91111a.
+Baseline point deltas-5.26%/+5.49% satisfy existing5%/10% tolerances,
+not paired/native/hosted acceptance; inherited G1 failures remain.
+Final VMdeallocated19:51:52Z;25 resources retained/API+bridge200.
+The final guarded down fails11.7053s at19:53:44Z before any deletion on
+the same project404, proving live fail-closed handling. G8 newcycles0/2.
+Known retained media disk/IPUSD0.018150685/hour plus foundations/usage;
+computeUSD0.345/hour removed. F0nativebot fixedUSD0/hour.
+
+Independent legal pages/package generation pass. Actual catalogue POST
+20:00:28Z refuses403Forbidden for missing delegated catalogue scopes,
+request47576c18-613e-4c3b-bb4a-8124f00f84d1, distinct from resolved
+calling-app403. Teams administrator uploads only the generatedzavagf1.1.0
+package/id654a0c74 per DEPLOY. No auth retry/CLI grant or zavaw3/mcm change.
+
 ## Reconciliation validation (27 November 2026)
 
 One aggregate .NET run passes **968/968**, zero failures/skips: Domain424,
@@ -55,7 +248,7 @@ it does not replace their measured failures or invent retrieval samples.
 
 | Gate | Current result | Measured evidence and remaining boundary |
 | --- | --- | --- |
-| G8 final greenfield proof | Failed | 1/2 complete empty cycles. First up 1828.77 s and verify 8/8 in 344.83 s. Full second up failed after 1229.56 s: three workspace-identity 409 creations despite two successful reads; independent calling-app reconciliation returned 403 Authorization_RequestDenied. Current 24-resource zavagf footprint remains unbootstrapped at known VM/disk/IP USD0.363150685/hour plus variable charges. No zavagf operation in reconciliation. |
+| G8 final greenfield proof | Failed; provider-blocked | Previous1/2 proof/409/403 retained. Newcycles0/2: purge1641.7849s/empty readbacks pass; full up1205.4765s fails project404 afterversion1 creation30402ms. ARM Succeeded/newidentity; version/agent/list reads404. Guarded down11.7053s refuses before deletion. Independentverify8/8/376.63s/native5/5, Direct2862/4397ms,n12/revision66 are not cycle credit. VMdeallocated,25 resources retained/API+bridge200;13new/17existingchecks/all3builds pass. Exact provider action: DEPLOY/ADR0035. |
 | G10 knowledge grounding | Not_run, n=0 | Consent/declaration reads n=1 each and genuine administrator Graph OBO/identity reads n=1 each pass; 5.362 s probe is not retrieval latency. Five teams have zero knowledge bases/stored memberships. Approved corpus, restricted document and real positive/negative members are missing; retrieval/citations/leakage/latency all n=0. |
 | G11 Work IQ signals | Not_run, n=0 | WorkIQAgent.Ask consent/declaration reads n=1 each; genuine administrator OBO/initialisations n=2 each; tools/list n=1, HTTP 200/12 tools. Complete discovery 9.352 s is not retrieval latency or billing approval. Approved Copilot Credits assignment, lead/channel/meeting UID/negative-user fixtures are missing; content/scoping/leakage/latency all n=0. |
 
@@ -203,7 +396,9 @@ native Teams joins/attribution/board/barge-in remain not_run. No full suites.
 
 ## G8 recovery attempt 1 (26 November 2026 after20:00PT)
 
-Only zavagf/eastus2 is used; zavaw3/mcm are not modified. Actual Global
+That retired attempt used the former eastus2 target; the operator has
+since moved G8 to fresh zavag8/westus3, the proven hosted region.
+zavaw3/mcm are not modified. Actual Global
 Administrator readback, unchanged application/AllPrincipals consent
 PATCH/readback n1 each, portal reconciliation and dedicated native
 Calls.AccessMedia.All consent pass. Old group13resources.
@@ -552,7 +747,8 @@ sample is removed by a later better run.
 
 ### Final G8 attempt
 
-Target is only `zavagf`/`eastus2`, subscription
+The historical target was `zavagf`/`eastus2`; it is operator-deleted and
+never reused. Current G8 is fresh `zavag8`/`westus3`, subscription
 `4b0dd31f-5379-4acc-8dcd-60f2929d2513`; the existing resource group
 `rg-zava-scrum-zavagf` contains13resources. One current full preflight ran
 03:04:32.2709665Z to03:08:23.5667972Z on27November (231.2965s):
@@ -1159,7 +1355,8 @@ Environment `zavaw3` (westus3), `REALTIME_CAPACITY=5`, `REALTIME_SKU=GlobalStand
 Two things went wrong on the way and are recorded as they happened. (1) A rebuild attempt failed in preflight because the Azure CLI reused a cached Graph token (`TokenCreatedWithOutdatedPolicies`); the hooks now pass `--resource https://graph.microsoft.com`. (2) A later attempt failed preflight on quota (0 of 10 free) because the torn-down Foundry account was still soft-deleted and holding quota; `azd down --purge` had been interrupted, and purging the account freed it. Neither is a template fault, but the second shows `azd down --purge` must be allowed to finish.
 
 Closed on the owner's decision: a second destroy-and-rebuild cycle was not run (the rebuild above is the proof that an empty environment comes up and verifies), and the westus3 deployed baseline (`baseline-M10-deployed-westus3/`) was not saved. The 3B work will measure a westus3 baseline itself. The westus3 p50 (3439 to 3470 ms) against 2994 ms in eastus2 is region and capacity, not a regression. That teardown is historical; zavaw3 was subsequently rebuilt and is running.
-It is protected from this final G8 proof, which targets only zavagf/eastus2.
+It is protected from G8, which now targets only fresh zavag8/westus3
+by operator decision; the former eastus2 target is retired (ADR0038).
 
 ## 3B: realtime model and silence (ADR 0019)
 

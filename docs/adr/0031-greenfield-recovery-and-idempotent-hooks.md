@@ -2,9 +2,14 @@
 
 Date:26November2026. Status:accepted implementation; G8 blocked at1/2 cycles.
 
+**Historical scope superseded by ADR0038:** the operator deleted the
+former eastus2 target after its409/404 failures. G8 now uses only fresh
+zavag8/westus3, the proven hosted-agent region. Old names/errors below
+are provenance, not authorised targets or outstanding owner actions.
+
 ## Evidence
 
-Only zavagf/eastus2 is authorised for the two-cycle destructive proof.
+The retired attempt authorised only the former zavagf/eastus2 target.
 Global Administrator is renewed: actual directory-role read and unchanged
 application/AllPrincipals consent PATCH/readback pass, n1 each.
 Portal reconciliation and dedicated Calls.AccessMedia.All consent pass.

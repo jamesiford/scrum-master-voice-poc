@@ -61,6 +61,9 @@ export interface Team {
   /** The ceremony flags, never null. */
   ceremonyFlags: Ceremonies;
   entraGroupId: string | null;
+  /** Explicit opt-in; normal and other-tenant teams cannot be re-seeded. */
+  isDemo: boolean;
+  demoTenantId: string | null;
 }
 
 /** Editable team settings sent with `PUT /api/teams/{id}`. */
@@ -88,6 +91,8 @@ export interface Member {
   active: boolean;
   /** Share of a normal sprint the member is available for, 0 to 100. */
   availabilityPct: number;
+  /** Verified Entra roster identity, absent for unmapped cast members or guests. */
+  entraObjectId: string | null;
 }
 
 /** Flags raised by the flag rules. */
@@ -351,12 +356,22 @@ export function getSession(sessionId: string, signal?: AbortSignal): Promise<Ses
 /** Approval lifecycle of a follow-up. */
 export type FollowUpStatus = 'Pending' | 'Sent' | 'Approved' | 'Rejected' | 'Applied';
 
+/** The exact approved baseline and journal identity for one existing sandbox item. */
+export interface DemoWorkItemReset {
+  operationId: string;
+  project: string;
+  areaPath: string;
+  keyTag: string;
+  fields: Record<string, string | null>;
+}
+
 /** A change proposed to Azure DevOps. */
 export interface ProposedChange {
   workItemId: number;
-  op: 'Comment' | 'State' | 'Tag' | 'SetIteration' | 'Assign' | 'CreateWorkItem';
+  op: 'Comment' | 'State' | 'Tag' | 'SetIteration' | 'Assign' | 'CreateWorkItem' | 'ResetDemoItem';
   value: string;
   rationale: string;
+  demoReset?: DemoWorkItemReset | null;
 }
 
 /** What a follow-up is for. Pack kinds are ceremony packs for the Scrum Master. */
@@ -548,6 +563,8 @@ export async function savePrompt(teamId: string, name: string, text: string): Pr
 
 /** Live floor and timebox state of a running standup. */
 export interface LiveState {
+  /** Browser send/playback intervals, measured locally; not end-to-end network latency. */
+  bridgeHops?: HopLatency[];
   recording?: boolean;
   callState?: string;
   boardState?: string;
@@ -568,6 +585,99 @@ export interface LiveState {
   p95: number;
   running: boolean;
   ended?: boolean;
+}
+
+/** Nearest-rank percentiles of actual interval samples. */
+export interface HopLatency {
+  hop: string;
+  p50Ms: number;
+  p95Ms: number;
+  n: number;
+}
+
+/** Session-scoped timing summary; missing hops have no samples, not zero latency. */
+export interface SessionLatency {
+  teamId: string;
+  sessionId: string;
+  hops: HopLatency[];
+}
+
+/** Reads recorded per-hop intervals for a session. */
+export function getSessionLatency(
+  sessionId: string,
+  signal?: AbortSignal,
+): Promise<SessionLatency> {
+  return request<SessionLatency>(
+    'GET',
+    `/api/sessions/${encodeURIComponent(sessionId)}/latency`,
+    undefined,
+    signal,
+  );
+}
+
+/** Named, authenticated actor in an immutable audit record. */
+export interface AuditActor {
+  objectId: string;
+  tenantId: string;
+  displayName: string;
+  userPrincipalName: string | null;
+}
+
+/** Complete server-assembled approval chain; no links are inferred by the portal. */
+export interface AuditChain {
+  correlationId: string;
+  tag: string;
+  teamId: string;
+  complete: boolean;
+  missing: string[];
+  joinUrl: string | null;
+  meeting: {
+    meetingId: string;
+    conversationId: string;
+    startedAt: string | null;
+    endedAt: string | null;
+  } | null;
+  session: {
+    id: string;
+    kind: string;
+    mode: string | null;
+    createdAt: string;
+    startedAt: string | null;
+    endedAt: string | null;
+  } | null;
+  turns: { at: string; type: string; memberId: string | null; workItemIds: number[] }[];
+  followUps: {
+    id: string;
+    kind: string;
+    status: string;
+    memberId: string | null;
+    proposalHash: string;
+    changes: number;
+    approvedBy: string | null;
+  }[];
+  records: {
+    id: string;
+    followUpId: string;
+    kind: string;
+    proposalHash: string;
+    actor: AuditActor;
+    channel: string;
+    occurredAt: string;
+    decisionRecordId: string | null;
+    adoRevisions: { workItemId: number; revision: number }[];
+  }[];
+  cards: { id: string; sentAt: string; kind: string; followUpId: string | null }[];
+  approvedCount: number;
+}
+
+/** Reads a team-authorised audit chain by full correlation id or the comment's zsa tag. */
+export function getAuditChain(reference: string, signal?: AbortSignal): Promise<AuditChain> {
+  return request<AuditChain>(
+    'GET',
+    `/api/audit/${encodeURIComponent(reference)}`,
+    undefined,
+    signal,
+  );
 }
 
 /**
@@ -669,6 +779,54 @@ export function getDemoStatus(teamId: string, signal?: AbortSignal): Promise<Dem
 /** Clears sessions, follow-ups and cards. Azure DevOps is not touched. */
 export async function resetDemo(): Promise<void> {
   await request<unknown>('POST', '/api/demo/reset');
+}
+
+/** Durable, team-scoped re-seed publication status. */
+export interface DemoReseedStatus {
+  operationId: string;
+  teamId: string;
+  followUpId: string;
+  state: 'AwaitingApprovalOrApply' | 'Completed' | 'Aborted';
+  teamIds: string[];
+  /** Explains the separate approved ADO and atomic application-publication boundaries. */
+  boundary: string;
+}
+
+/** Stages a reset proposal without writing Azure DevOps or publishing application state. */
+export function stageDemoReseed(teamId: string): Promise<string> {
+  return request<string>('POST', `/api/demo/reseed?teamId=${encodeURIComponent(teamId)}`, {});
+}
+
+/** Reads a persisted reset operation; the API requires Admin and the owning team. */
+export function getDemoReseed(
+  teamId: string,
+  operationId: string,
+  signal?: AbortSignal,
+): Promise<DemoReseedStatus> {
+  return request<DemoReseedStatus>(
+    'GET',
+    `/api/demo/reseed/${encodeURIComponent(operationId)}?teamId=${encodeURIComponent(teamId)}`,
+    undefined,
+    signal,
+  );
+}
+
+/** Atomically publishes a staged reset only after its approved ADO follow-up has applied. */
+export function commitDemoReseed(teamId: string, operationId: string): Promise<string> {
+  return request<string>(
+    'POST',
+    `/api/demo/reseed/${encodeURIComponent(operationId)}/commit?teamId=${encodeURIComponent(teamId)}`,
+    {},
+  );
+}
+
+/** Aborts an unapplied reset; the server refuses to hide an already-started ADO boundary. */
+export function abortDemoReseed(teamId: string, operationId: string): Promise<string> {
+  return request<string>(
+    'POST',
+    `/api/demo/reseed/${encodeURIComponent(operationId)}/abort?teamId=${encodeURIComponent(teamId)}`,
+    {},
+  );
 }
 
 /** Team KPIs over a window of sprints. */

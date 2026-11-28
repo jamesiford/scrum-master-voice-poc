@@ -1,6 +1,6 @@
 import { Check, X, RotateCw, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
-import { useTeamId } from '../../team/TeamContext';
+import { useTeamId, useTeams } from '../../team/TeamContext';
 import {
   applyFollowUp,
   getRoster,
@@ -147,6 +147,9 @@ const kindTitle: Record<FollowUp['kind'], string> = {
 };
 
 function FollowUpCard({ followUp: f, who, onApprove, onReject, onRetry }: FollowUpCardProps) {
+  const { isAdmin } = useTeams();
+  const reset = f.changes.some((c) => c.op === 'ResetDemoItem');
+  const canDecide = !reset || isAdmin;
   const undecided = f.status === 'Pending' || f.status === 'Sent';
   return (
     <Card
@@ -172,6 +175,11 @@ function FollowUpCard({ followUp: f, who, onApprove, onReject, onRetry }: Follow
                     : `Work item ${c.workItemId} · ${c.op}`}
                 </span>
                 <span className="text-muted"> {c.value}</span>
+                {c.demoReset && (
+                  <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap text-xs">
+                    {JSON.stringify(c.demoReset, null, 2)}
+                  </pre>
+                )}
               </li>
             ))}
           </ul>
@@ -180,8 +188,11 @@ function FollowUpCard({ followUp: f, who, onApprove, onReject, onRetry }: Follow
         {f.rejectedBy && <p className="text-xs text-muted">Rejected by {f.rejectedBy}</p>}
         <p className="text-xs text-muted">Correlation: zsa-{f.correlationId.slice(0, 12)}</p>
         {f.applyError && <Alert tone="bad">Azure DevOps write failed: {f.applyError}</Alert>}
+        {reset && !isAdmin && (
+          <Alert>An app Admin must decide or retry this demo re-seed proposal.</Alert>
+        )}
         <div className="flex flex-wrap gap-2">
-          {undecided && f.changes.length > 0 && (
+          {canDecide && undecided && f.changes.length > 0 && (
             <>
               <Button variant="primary" icon={<Check className="size-4" />} onClick={onApprove}>
                 Approve and write
@@ -191,7 +202,7 @@ function FollowUpCard({ followUp: f, who, onApprove, onReject, onRetry }: Follow
               </Button>
             </>
           )}
-          {f.status === 'Approved' && (
+          {canDecide && f.status === 'Approved' && (
             <Button icon={<RotateCw className="size-4" />} onClick={onRetry}>
               Retry write
             </Button>

@@ -1,5 +1,35 @@
 # Demo runbook
 
+## Current G8 rehearsal boundary
+
+The greenfield proof runs only in fresh **zavag8/westus3** (ADR0038);
+the operator-deleted former eastus2 target and its recovery commands below
+are historical only. Keep the zavaw3 demo untouched and Acs/Share/Direct
+as defaults. First full up/verify/native readiness passes, cycles1/2;
+real Direct3417/3871ms,n10 and approved revision71 are scripted proof,
+not a live Teams rehearsal or a passing final G8. The guarded intervening
+purge passed1700.1703s with exact absence/all13 inputs preserved; the second
+full empty up failed1192.4071s at hosted creation with project404.
+Seven bounded backoff reads and the supported hosted-hook retry remain404;
+the final supported no-state provision/deploy917.7072s also fails404 after
+successful actual RP upsert/builds, not an empty cycle.
+Independent mandatoryverify8/8/native5/5 pass with real Direct
+3338/3977ms,n12 and approved revision73; no Teams acceptance is inferred.
+This lifecycle failure is not a region or support prerequisite.
+Final independent mandatoryverify8/8/416.2082s/native5/5 pass:
+Direct3520/4592ms,n12, questions3742/4592ms,n9, approved revision75/
+completeaudit, zero talkovers. The tail is worse than the first-cycle
+3871ms point, not an accepted trade-off; no default changes or promotion.
+G8 remains failed at1/2. Its exact media VM is now deallocated; all25
+resource identities and unchanged API/bridge images remain, both health200.
+Native HTTPS is intentionally unavailable after deallocation; the protected
+zavaw3 demo remains untouched. Fresh catalogue/RSC/guest acceptance is unrun.
+
+The first empty up failed preflight206.1921s without creating resources.
+ADR0039 uses the same real managed gpt-realtime-2.1 Voice Live model, which
+needs no standalone OpenAI deployment, rather than taking quota from
+the demo. No model, voice route or experience is substituted.
+
 ## Final M11 rehearsal boundary (27 November 2026)
 
 Rehearse the saved-follow-up story with **Acs / Share / Direct**, then the
@@ -9,14 +39,18 @@ stable 4 is an optional previously measured relay; candidate 5 is unpromoted
 after readiness/protocol 424 failure (completed paired samples n=0).
 Knowledge and Work IQ are not built and the demo does not rely on either.
 
-Redo reconciliation passes968.NET, bridgeunit13 and real E2E12 on first
-aggregate runs, plus17pure hook checks; all builds/format/lints pass.
-Mandatory zavaw3 verify8/8 includes actual approver-authored revision62/audit,
-Direct3065/3933ms,n12,talkovers0 and native readiness5/5 without a restart.
-The E2E retrospective takes310.03s and standup387.26s, not real Teams
-acceptance. Historical failed gates and prior retrospective model deviation
-remain visible; G8 is failed1/2, G10/G11not_run,n0. No feature/runtime or
-golden/threshold change. See [reconciliation evidence](gates/reconcile-M11.json).
+Film source339bb67 is deployed only to zavaw3 API86/bridge10. All builds,
+format/lints and1042 unique.NET checks have passing aggregate/repair evidence;
+bridgeunit13,portal2 and first real E2E12/0retries pass. E2E retrospective
+302.571s/standup369.451s are scripted, not real Teams acceptance.
+Mandatory verify8/8 includes actual approver-authored revision68/complete
+audit and native readiness5/5. Unchanged cast before3419/4912ms,n12 becomes
+3140/4719ms,n12; question median worsens3645 to3957ms,n9. This is not a
+sub-second or formal paired gate pass. Six automatic end follow-ups are
+Sent with eight actual outbox cards, not proof of Teams delivery.
+Historical failed gates remain; G8failed1/2, G10/G11not_run,n0. Goldens,
+models and thresholds are unchanged. See [current film gates](gates/M11-gates.md);
+[reconciliation evidence](gates/reconcile-M11.json) is historical.
 
 The final real Teams meeting and Copilot rehearsal are **not run, n=0**.
 Scout has completed both zavaw3 catalogue uploads and delegated IQ consents.
@@ -29,17 +63,89 @@ Existing measured scripted evidence is session
 `e48b795beab7972d69f7145550a925f0`, approver-authored revision 52,
 with positive n=1 and separate unapproved/refused n=1.
 
-For each take: choose the intended team, reset application state, re-seed
-only its approved sandbox project, verify the roster and cast configuration,
+For each take: choose the intended demo team, use the guarded re-seed below,
+verify the roster and cast configuration,
 prepare a fresh session, run the standup, approve one follow-up and reject
-another, then inspect the audit API and the actual Azure DevOps comment.
-The Live console has aggregate latency/events; the workbook has per-hop
-measurements. A dedicated audit portal page, Live per-hop counter panel,
-readable names for every participant and an atomic roster/cast/Sprint 43
-re-seed remain product follow-ons, not features delivered by this docs step.
-Do not edit the Presenter Pack or fabricate UI/evidence for the film.
+another, then open **Audit chain**, paste its full correlation id or `zsa-`
+tag and inspect the actual Azure DevOps comment. The page shows the stored
+meeting/session identity, turns, proposal hash, named Entra decision,
+approval-record link and real item/revision ids; missing evidence is explicit.
+The Live console shows each measured hop's p50/p95 and sample count. Missing
+samples are not zero estimates; browser send timing is local, not network
+latency, and overlapping hop percentiles must not be added. Roster identities
+provide readable speaker names, while unmapped/anonymous participants are
+labelled guests. Display-name matching never authorises approval.
+ADR0036 describes these product reads; new live deployment evidence is
+recorded in the gate table. Do not edit the Presenter Pack or
+fabricate UI/evidence for the film.
+
+### Guarded film re-seed (ADR0037)
+
+An app Admin opens **Live > Re-seed demo**, stages the configured demo set,
+reviews its exact item baseline and team ids, explicitly approves, then
+publishes after the follow-up is Applied. Keep the operation id: interrupted
+apply is resumed, not approved again, and completed publication replay is a
+no-op. The regular Follow-ups page also displays the baseline; only an app
+Admin can approve or retry it. Unmarked/non-demo or foreign-tenant teams,
+changed connections, overlapping real areas, running takes and stale
+preparations are refused. An undecided/rejected operation can be aborted;
+approved/partially applied operations must resume.
+
+The reviewed zavaw3 scope is `team-payments`, `team-identity`,
+`team-catalogue`, `team-b`, `team-c` in `demo\film-reset-scope.json`.
+The last two are individually named test debris, not a name-based discovery
+rule. Identity/Catalogue's failing connections and the selected test records
+are removed logically; other teams remain untouched. Source YAML is immutable,
+and the seed roster and empty session/cast progress are published together.
+Sprint43's existing seed items regain their baseline fields/iteration paths;
+iteration dates/settings are not changed and no item/project is created.
+Approval records and Azure DevOps comments remain append-only.
+
+The live reviewed29-item reset has been approved and verified:214 open/
+226 total old follow-ups,20 sessions and four connections are logically
+cleaned. All seed fields match;19 items return to Demo Sprint,10 to the
+root backlog and Sprint43 is empty. Completed same-id replay changes no
+ADO revisions and does not clear a new take. The actual approval record/
+comment names System Administrator, not a typed generic display name.
+
+The final next-take operation is
+`67ad9b4c-2614-4af5-965b-d6b84e938a34`. It is Completed; replay is a no-op.
+Even after an exact API86 restart, there is one Active demo primary with
+the seed roster and zero sessions/follow-ups, while earlier approvals and
+comment text remain unchanged. Prepare a new session for the next take.
+
+After DEPLOY.md's exact marker/configuration preparation, the script equivalent
+is:
+
+```powershell
+azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\demo-reseed.ps1 -TeamId team-payments
+# Review the returned operation and its follow-up before explicit approval.
+azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\demo-reseed.ps1 -TeamId team-payments -OperationId <id> -Approve
+```
+
+Only application-state publication is atomic, not an Azure DevOps transaction.
+Per-item approved patches are idempotent/recoverable while the prior local
+state is guarded. Do not invoke standalone SeedAdo or comment cleanup between
+film takes. The legacy local reset now refuses unmarked/global scope and
+preserves approvals/other-team data; it is not this approved baseline flow.
 
 ### G8 recovery evidence is not a real Teams rehearsal
+
+Second recovery is provider-blocked (ADR0035), only zavagf/eastus2. Current calling-app
+PATCH succeeds and the owned retained relay is deleted with absence
+readback by the new predown hook. Same-project recreation becomes active
+in43485ms with a new agent identity and no409. The first NEW empty up
+fails1205.4765s: version1 creation30402ms succeeds, then version/agent/list
+reads return404 `Project not found` despite ARM Succeeded. Newcycles0/2;
+do not label independent native/Direct recovery as a completed cycle.
+Provider repair precedes another safe purge; cleanup fails closed on this404.
+Do not change the untouched zavaw3 demo or infer native Teams acceptance.
+The current attempt ends with the zavagf media VM deallocated.
+Final independent verify8/8/native5/5/revision66 and Direct2862/4397ms,n12
+pass, not a full-cycle or Teams sample. VMdeallocated19:51:52Z, all25
+resources retained/API+bridge200; native HTTPS unavailable by design.
+Final guarded down fails11.71s before deletion on the same project404.
+The chronology below belongs to the previous attempt.
 
 Only zavagf/eastus2 is rebuilt. First empty up passes1828.77s and mandatory
 verify8/8 passes344.83s; actual approved auditrevision55 is positive n1.
@@ -61,7 +167,7 @@ deployment or a native/live acceptance sample.
 The full native-enabled retry failed1229.5552s after three409 creations/two
 successful reads. Independent media completion then failed403
 Authorization_RequestDenied, request07d95ae3-fd0a-4479-9442-9e7d14dd3abf.
-G8 is human-blocked,1/2 complete cycles; the allocated current native VM is
+G8 was then human-blocked,1/2 complete cycles; that allocated native VM was
 not bootstrapped. Independent legal pages/messaging package generation
 passed without a catalogue authentication retry. Follow DEPLOY.md's exact
 administrator/support actions; retain the untouched zavaw3 demo.
@@ -117,7 +223,7 @@ prerequisites only, not cited knowledge or a permission-trimming demonstration.
 Redo existing-zavaw3 verification passes8/8 with real approver/auditrevision59;
 Direct2969/4875ms,n12,talkovers0. Native hosting readiness does not establish
 native meeting acceptance; inherited failed gates remain visible.
-For the separately authorised G8 proof use only zavagf/eastus2 and DEPLOY.md's
+For the separately authorised G8 proof use only fresh zavag8/westus3 and DEPLOY.md's
 exact Gen2/purge parameters; never reset or tear down the running demo zavaw3.
 
 ## Before the demo (5 minutes)

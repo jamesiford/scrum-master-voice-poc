@@ -1,0 +1,64 @@
+{
+  "environment": "zavaw3",
+  "tenantId": "fb049398-a8b8-4ade-8543-1ae7a82f4869",
+  "organisation": "https://dev.azure.com/fordjames-demos",
+  "canonicalSeedTeamIds": ["team-payments", "team-identity", "team-catalogue"],
+  "testDebrisTeamIds": ["team-b", "team-c"],
+  "teams": [
+    {
+      "teamId": "team-payments",
+      "expectedAdo": {
+        "org": "https://dev.azure.com/fordjames-demos",
+        "project": "Zava-Scrum-Demo",
+        "team": "Payments (Demo)",
+        "areaPath": "Zava-Scrum-Demo\\Payments"
+      }
+    },
+    {
+      "teamId": "team-identity",
+      "expectedAdo": {
+        "org": "https://dev.azure.com/fordjames-demos",
+        "project": "Zava-Scrum-Identity",
+        "team": "Identity (Demo)",
+        "areaPath": "Zava-Scrum-Identity\\Identity"
+      }
+    },
+    {
+      "teamId": "team-catalogue",
+      "expectedAdo": {
+        "org": "https://dev.azure.com/fordjames-demos",
+        "project": "Zava-Scrum-Catalogue",
+        "team": "Catalogue (Demo)",
+        "areaPath": "Zava-Scrum-Catalogue\\Catalogue"
+      }
+    },
+    {
+      "teamId": "team-b",
+      "expectedAdo": {
+        "org": "https://dev.azure.com/fordjames-demos",
+        "project": "Zava-Scrum-Demo",
+        "team": "Payments (Demo)",
+        "areaPath": "Zava-Scrum-Demo\\Payments"
+      }
+    },
+    {
+      "teamId": "team-c",
+      "expectedAdo": {
+        "org": "https://dev.azure.com/fordjames-demos",
+        "project": "Zava-Scrum-Demo",
+        "team": "Payments (Demo)",
+        "areaPath": "Zava-Scrum-Demo\\Payments"
+      }
+    }
+  ],
+  "evidence": {
+    "capturedAt": "2026-11-27T20:44:23Z",
+    "tenantVerifiedAgainst": "Validated portal API access and selected zavaw3 AZURE_TENANT_ID; no token retained.",
+    "canonicalSeeds": ["demo/seed-ado.json", "demo/seed-ado-identity.json", "demo/seed-ado-catalogue.json"],
+    "namedDebrisEvidence": ".m11-plan/run-log/8B-r-team-metadata.json contains the exact team-b/team-c registry fingerprints; the authorised scope names these ids explicitly.",
+    "openFollowUpsByTeam": { "team-payments": 203, "team-b": 6, "team-c": 5, "team-identity": 0, "team-catalogue": 0 },
+    "unknownTeamIdsObserved": [],
+    "unclassifiableDebrisObserved": [],
+    "liveMutationsPerformed": 0
+  }
+}

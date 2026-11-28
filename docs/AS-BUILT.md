@@ -1,6 +1,122 @@
 # Zava Scrum Master voice PoC: as built
 
-**Date:** November 27, 2026 (M11 redo reconciliation).
+## Current G8 proof scope (27 November 2026)
+
+G8 moved by operator decision to fresh **zavag8/westus3** (ADR0038).
+The former eastus2 resources/apps were operator-deleted; previous404/409
+and support actions below are historical, not active deployment targets
+or prerequisites. Exact destructive guards now permit only zavag8/westus3
+and refuse the former target and protected deployments.
+Fresh portal baseline consent/administrator roles and dedicated media
+Calls.AccessMedia.All setup have succeeded automatically. First full
+empty up1665.7626s and mandatoryverify8/8/407.4025s/native5/5 pass,
+with real managed Voice Live3417/3871ms,n10 and approverrevision71/audit
+complete. The guarded intervening purge passed1700.1703s, with exact
+absence and all13 inputs preserved. The second full empty up failed1192.4071s
+at hosted creation with `Project not found`404 despite new ARM identity/
+internal id and Succeeded state. Same-credential working-project read is200;
+Seven bounded backoff reads through00:19:45Z remain404; connections read200,
+and supported hosted-hook retry386.4755s also fails404. The final supported
+no-state provision/deploy retry fails917.7072s: actual RP upsert589.6757s
+and three real builds succeed, but hosted creation still returns404.
+No safe source correction is established; these retries earn no cycle credit.
+Independent mandatoryverify8/8/418.8114s
+and native5/5 pass: Direct3338/3977ms,n12, approverrevision73/completeaudit.
+Final native runtime refresh260.3368s/RequireReady5/5 and mandatoryverify
+8/8/416.2082s pass: Direct3520/4592ms,n12, questions3742/4592ms,n9,
+approverrevision75/auditzsa-dc8089a89f16 complete, zero talkovers.
+These independent checks do not credit the failed full up. G8 remains
+failed at1/2. Only vm-media-uaogwrz6uq4hc is deallocated, confirmed
+01:05:46Z; all25 resource identities and unchanged API/bridge images remain,
+both healthHTTP200. The additional MDE.Windows extension came from the
+existing subscription Defender P2 plan, not a policy or template change.
+Its unadjusted retailUSD0.02/hour stops billing when this Azure VM is
+deallocated; retained disk/IPUSD0.018150685/hour is not an all-in bill.
+Final tail4592ms is worse than first-cycle3871ms, not an accepted trade-off
+or promotion proof; G1's failure remains.
+No default adapter, public API, Domain rule or zavaw3 runtime change.
+
+ADR0039 corrects the standalone realtime quota prerequisite for the
+existing managed Voice Live URL. The new infrastructure-only input
+`PROVISION_REALTIME_MODELS=false` omits unused OpenAI realtime deployments
+for this proof; true preserves existing deployment inputs. Chat/decision/
+native and real managed audio stay required. Initial preflight206.1921s
+failed before any resource creation; quota10/10 is not changed.
+
+**Date:** November 27, 2026 (M11 film features).
+
+**Film product reads (ADR0036):** the portal has an Audit chain page for a
+full correlation id or `zsa-` tag, including stored meeting/session identity,
+turns, proposals, named approval records, revision ids and outbox evidence.
+Missing evidence is explicit. Live shows measured per-hop p50/p95/n from
+recorded Timing events and ephemeral browser send samples; absent hops are
+not estimated and overlapping percentile values must not be added.
+Readable speakers come from the team roster; ACS participant presentation
+uses unique non-anonymous Entra object ids where available and labels all
+others guests. Presentation never grants approval authority. Stored resource
+team scope cannot be overridden by a query-string team id. Source339bb67
+is deployed only to zavaw3, API revision86 and bridge revision10, using
+validated image digests. Existing identities, secrets, scale, resource
+settings and unrelated configuration are unchanged. Current aggregate/live
+evidence is in [M11 gates](gates/M11-gates.md), separate from older runs.
+
+**Guarded film re-seed (ADR0037):** an app Admin stages a pending baseline
+follow-up, reviews and explicitly approves its `ResetDemoItem` changes,
+applies/retries through the existing approved writer, then atomically
+publishes demo collections, seed roster, empty sessions/cast progress and
+completed journal. ADO patches are separately idempotent/recoverable, not
+distributed ACID. Exact tenant, seed fingerprints, allowlist and persisted
+demo markers are required; running/stale takes and changed/overlapping
+connections refuse. `demo\film-reset-scope.json` and the two guarded hooks
+prepare/opt in only the reviewed five-team zavaw3 set. Failed Identity/
+Catalogue connections and named test debris are logically removed without
+touching unselected teams. Startup reads local-only removal history even
+when reset is disabled; it never recreates removed connections or resolves
+ADO credentials merely to read that history. Approval records/comments
+remain append-only. Existing Sprint43 item fields/paths are restored;
+iteration settings/dates and external meeting state are not reset.
+
+The first live approved reset completes as operation
+`86f3a14f-bc60-4b54-9540-51a27d24e88e`: all29 existing seed items match the
+staged fields, with19 in Demo Sprint and10 in the root backlog; Sprint43 is
+empty. It removes four reviewed connections,226 old follow-ups (214 open)
+and20 old sessions from normal reads, leaving the active primary and
+Daniel/Maya/Admin roster. Unmarked reset/apply and wrong-team probes refuse
+403; premature commit refuses409, without ADO revision changes. Completed
+same-id replay preserves the next take and all revisions. The retained
+`zsa-86f3a14fbc60` Approved/Applied records contain29 real revisions; its ADO
+comment names **System Administrator**, authored by the actual approver UPN.
+No unknown real team was observed; cross-tenant/non-Admin isolation also has
+focused test evidence, not an invented live user fixture.
+
+Mandatory deployed verify8/8 passes: after total3140/4719ms,n12 versus
+before3419/4912ms,n12; questions3957/4719ms,n9 versus3645/4912ms,n9.
+Six automatic Sent follow-ups/eight actual outbox cards are not Teams
+delivery. All six counter rows match real samples, model142/223ms,n10.
+Final operation67ad9b4c-2614-4af5-965b-d6b84e938a34 leaves the next take
+clean even after an exact API86 restart: one Active primary, seed roster,
+zero sessions/follow-ups, earlier approvals/comments unchanged. Azure
+remains running; only owned isolated local test helpers/data are removed.
+
+**Historical G8 second recovery (ADR0035), provider-blocked at newcycles0/2.** Guarded azd predown now
+deletes the two owned hosted data-plane agents before project identity
+teardown, with absence readback. Current calling-app PATCH succeeds;
+historical403 is resolved for that operation. Same-project recreation passes
+(version1 created30222ms/active43485ms) with unchanged project identity
+and new agent identity, demonstrating the retained-binding cleanup.
+However, the new empty up fails1205.4765s after version1 creation30402ms:
+GET version/agent/list returns persistent404 `Project not found` while
+ARM is Succeeded with a fresh project identity. Cleanup now refuses this
+ambiguous404 instead of falsely proving agent absence;13focused and17existing
+hook checks/all3builds pass. Provider repair is required before another safe
+purge; independent native/Direct checks and final VM-only deallocation completed
+separately. G8 remains failed; previous-attempt details below are historical.
+
+Final independent verify8/8/376.63s, native5/5, Direct2862/4397ms,n12 and
+real approverrevision66/auditzsa-67e38e91111a pass, not cycle credit.
+Final VM is deallocated19:51:52Z; all25 resources remain and API/bridge200.
+The guarded restart refuses the same project404 before deletion in11.71s.
+Native HTTPS is intentionally down; inherited gates/adapters are unchanged.
 
 **Acceptance is not implementation.** The current demo is Acs/Share/Direct
 with Simulated Room fallback. Stable hosted relay 4 is retained; candidate 5
@@ -11,7 +127,7 @@ attribution/join/board acceptance. Five delegated Copilot skills and package
 (75%, n=8); historical fallback p95 regression fails (+12.75%, n=12/12),
 and historical p50 +6.19% remains failed. Final configured suites have
 passing evidence after one unchanged retrospective retry; its initial
-model deviation remains a reliability risk. G8 recovery has one complete
+model deviation remains a reliability risk. The previous G8 recovery had one complete
 verified empty up/verify cycle of two; intervening purge passed1639.20s
 with group/vault/Foundry absence readback. The second cycle is incomplete.
 The attempted second deployment was reduced because teardown erased the
@@ -27,10 +143,10 @@ started07:15:07Z after complete absence and13 documented input readbacks.
 It failed 1229.5552 s later: three hosted-version creations returned the
 same409 despite two successful reads. Independent native completion then
 received403 Authorization_RequestDenied, request
-07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 is human-blocked at 1/2;
+07d95ae3-fd0a-4479-9442-9e7d14dd3abf. G8 was then human-blocked at 1/2;
 legal pages and messaging package generation independently passed.
-Current24-resource native VM/vault provisioning is not certificate,
-SYSTEM task or renderer readiness; the current host is unbootstrapped.
+That24-resource native VM/vault provisioning was not certificate,
+SYSTEM task or renderer readiness; the host was then unbootstrapped.
 DEPLOY.md records exact administrator/support actions and continuing costs.
 Final independent mandatory verify passes8/8 in361.4580s, approved audit/
 revision58, Direct2821/4189ms p50/p95,n10,talkovers0. It explicitly prints
@@ -212,19 +328,20 @@ Catalogue upload/RSC and a real meeting are still required to verify delivery.
 Overview, Sessions (with pre-brief and timeline), Live console, Follow-ups, Reports, Planning, Retrospective, Story Writer, Models and email, Schedule, Prompts, Team, Roster. Light and dark themes, responsive.
 
 M11 adds team switching, fleet/registry/onboarding and membership management.
-Film-feature gaps: no dedicated correlation-id audit page, no Live per-hop
-counter panel and no verified readable speaker names for every participant.
-The API/workbook and aggregate latency are not those UI features. SeedAdo
-resets seeded work items/relative sprint dates; app reset does not reset
-Azure DevOps, external meeting state or the whole roster/cast configuration.
+Film product surfaces are now implemented above (ADR0036/0037), rather than
+inferred from an API/workbook. Real Teams participant/meeting acceptance is
+still unrun; the native bot remains non-recording. Guarded film re-seed
+restores only the approved item/application baseline, not external meeting
+state or iteration dates/settings. Standalone SeedAdo remains privileged
+greenfield bootstrap, not the between-takes reset path.
 
 ## 7. Demo environment
-- Azure DevOps organisation `<your-organisation>`, project `Zava-Scrum-Demo`, seeded idempotently by `tools/SeedAdo` from `demo/seed-ado.json` (29 items: 19 in the sprint and 10 backlog items, plus the next iteration "Sprint 43"; each assigned to the signed-in user and tagged `demo-owner-{key}`, ADR 0002; roster Daniel Park, Maya Lin, Admin, matching the tenant users "Daniel Park", "Maya Lin", "System Administrator").
+- Azure DevOps organisation `<your-organisation>`, project `Zava-Scrum-Demo`, seeded idempotently by `tools/SeedAdo` from `demo/seed-ado.json` (29 items: 19 in the sprint and 10 backlog items, plus the next iteration "Sprint 43"; assigned sandbox items use the signed-in user and `demo-owner-{key}` tags, ADR 0002). Scripted roster is Daniel Park, Maya Lin, Admin; distinct real-user Entra links remain an unrun fixture, not inferred from display names.
 - Demo cast (`demo/cast/payments-standup.yaml`) lets one presenter run a full three-person standup with a scripted side conversation.
 - Deploy with `azd up` / `azd deploy`. Run the runbook in `DEMO.md`.
 
 ## 8. Known limits and open items
-- Teams app installation from the admin center failed repeatedly with a tenant/admin-portal error; sideloading per user is the workaround. Until installed, cards fall back to the portal outbox.
+- Both zavaw3 Teams catalogue uploads are completed. Real-user/per-chat installation and organiser RSC remain separate gates; without an actual conversation binding, cards stay in the portal outbox. The earlier administrator upload failure is historical, not an open consent/catalogue gate.
 - Finding 1.20 (recap and follow-ups sometimes missing after the standup ends): root cause and fix in ADR 0016 (ending the standup now publishes its events on `CancellationToken.None`, because leaving the call cancelled the gateway's token). Covered by an Application test and **resolved**: verified in a real Teams meeting on 24 November 2026 (ADR 0016). Before (build 84498ad): recap recorded 130 ms after the end, no follow-ups; a manual send created 4. After (3c78835, three consecutive runs): 4 follow-ups, all Sent, 2.4 to 2.5 s after the end, delivered to the Admin's chat. Not covered: the agent ending the standup itself (same `EndAsync` path) and a run with spoken answers.
 - Voice latency p50 is about 3.7 seconds (p95 5.0 s) in the 23 November Teams take, against a 1 second target; with the M10 decision model on, the Simulated Room measured 6.2 s p50 against 4.2 s with rules (ADR 0014). Each speaker now waits briefly while the agent checks their update.
 - The utterance classifier recognises English phrasing; unusual wording can be missed by the rules. The M10 decision model (ADR 0014) reads ambiguous speech first and the rules remain the fallback. PROD: tune the model and the thresholds on real standups.

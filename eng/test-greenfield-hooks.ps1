@@ -38,10 +38,10 @@ $empty = @(Merge-RequiredResourceAccess $null $required)
 if ($empty.Count -ne 2) { throw 'Merge_EmptyApplication_AddsBaseline failed' }
 
 foreach ($case in @(
-  @{ name = 'zavagf'; location = 'eastus2'; group = 'rg-zava-scrum-zavagf'; allowed = $true }
+  @{ name = 'zavag8'; location = 'westus3'; group = 'rg-zava-scrum-zavag8'; allowed = $true }
   @{ name = 'zavaw3'; location = 'westus3'; group = 'rg-zava-scrum-zavaw3'; allowed = $true }
   @{ name = 'mcm'; location = 'westus3'; group = 'rg-mcm-scrum-demo-wus3'; allowed = $false }
-  @{ name = 'zavagf'; location = 'westus3'; group = 'rg-zava-scrum-zavagf'; allowed = $false }
+  @{ name = 'zavag8'; location = 'eastus2'; group = 'rg-zava-scrum-zavag8'; allowed = $false }
   @{ name = 'zavagf'; location = 'eastus2'; group = 'rg-zava-scrum-zavaw3'; allowed = $false })) {
   $env:AZURE_ENV_NAME = $case.name
   $env:AZURE_LOCATION = $case.location
@@ -51,15 +51,41 @@ foreach ($case in @(
   try { Assert-MediaDeploymentEnvironment } catch { $accepted = $false }
   if ($accepted -ne $case.allowed) { throw "Environment_ExactScope_Enforced failed: $($case | ConvertTo-Json -Compress)" }
 }
-$env:AZURE_ENV_NAME = 'zavagf'
-$env:AZURE_LOCATION = 'eastus2'
-$env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavagf'
+$env:AZURE_ENV_NAME = 'zavag8'
+$env:AZURE_LOCATION = 'westus3'
+$env:AZURE_RESOURCE_GROUP = 'rg-zava-scrum-zavag8'
 $env:AZURE_SUBSCRIPTION_ID = 'another-subscription'
 $refused = $false
 try { Assert-MediaDeploymentEnvironment } catch { $refused = $true }
 if (-not $refused) { throw 'Environment_WrongSubscription_Refused failed' }
 $preflight = [System.Management.Automation.Language.Parser]::ParseFile(
   "$PSScriptRoot\..\infra\hooks\preflight.ps1", [ref]$null, [ref]$null)
+$modelLoop = $preflight.Find({
+  param($node)
+  $node -is [System.Management.Automation.Language.ForEachStatementAst] -and
+    $node.Condition.Extent.Text -eq '$regions.requiredModels'
+}, $true)
+if (-not $modelLoop) { throw 'Cannot locate the real model quota preflight loop.' }
+$modelBlock = [scriptblock]::Create($modelLoop.Extent.Text)
+$regions = @{ requiredModels = @(
+  @{ name = 'voice'; sku = '{realtimeSku}' }
+  @{ name = 'chat'; sku = 'GlobalStandard' }
+  @{ name = 'decision'; sku = 'GlobalStandard' }
+) }
+$catalogue = @()
+$sku = 'GlobalStandard'
+$loc = 'westus3'
+foreach ($case in @(
+  @{ value = 'false'; failures = 2 }
+  @{ value = 'true'; failures = 3 }
+  @{ value = ''; failures = 3 }
+)) {
+  $env:PROVISION_REALTIME_MODELS = $case.value
+  $script:Failures = 0
+  & $modelBlock | Out-Null
+  if ($script:Failures -ne $case.failures) { throw "ManagedVoice_OnlyOptionalRealtimeQuotaSkipped failed: $($case.value)" }
+}
+$env:PROVISION_REALTIME_MODELS = $null
 $capacity = $preflight.Find({
   param($node)
   $node -is [System.Management.Automation.Language.IfStatementAst] -and
@@ -74,14 +100,14 @@ function az {
     'vm list-skus' { ConvertTo-Json -InputObject @($script:sku) -Depth 10 -Compress }
     'vm list-usage' { ConvertTo-Json -InputObject $script:usage -Depth 10 -Compress }
     'group exists' { if ($script:existingVm) { 'true' } else { 'false' } }
-    'vm list' { ConvertTo-Json -InputObject @(@{ location = 'eastus2'; hardwareProfile = @{ vmSize = 'test-size' } }) -Compress }
+    'vm list' { ConvertTo-Json -InputObject @(@{ location = 'westus3'; hardwareProfile = @{ vmSize = 'test-size' } }) -Compress }
     default { throw "Unexpected cloud command in capacity fixture: $command" }
   }
 }
 $env:MEDIA_HOST_ENABLED = 'true'
 $env:MEDIA_VM_SIZE = 'test-size'
 $env:MEDIA_VM_IMAGE_SKU = '2022-datacenter-g2'
-$loc = 'eastus2'
+$loc = 'westus3'
 foreach ($case in @(
   @{ name = 'restricted'; restricted = $true; cores = 4; available = 4; gen = 'V2'; free = 100; existing = $false; pass = $false }
   @{ name = 'small'; restricted = $false; cores = 2; available = 2; gen = 'V2'; free = 100; existing = $false; pass = $false }
@@ -108,4 +134,4 @@ foreach ($case in @(
   & $capacityBlock | Out-Null
   if (($script:Failures -eq 0) -ne $case.pass) { throw "Capacity_$($case.name)_ExpectedVerdict failed" }
 }
-Write-Host 'PASS 17 focused greenfield hook checks'
+Write-Host 'PASS 20 focused greenfield hook checks'

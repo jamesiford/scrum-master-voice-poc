@@ -126,6 +126,11 @@ internal sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> d
 
     private async Task<List<object>?> BuildOperationsAsync(ApprovedChange change, CancellationToken ct)
     {
+        if (change.Op == ChangeOp.ResetDemoItem)
+        {
+            return await DemoResetOperationsAsync(change, ct);
+        }
+
         var ops = new List<object>();
         switch (change.Op)
         {
@@ -165,6 +170,77 @@ internal sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> d
                 break;
         }
 
+        return ops;
+    }
+
+    private async Task<List<object>?> DemoResetOperationsAsync(ApprovedChange change, CancellationToken ct)
+    {
+        var reset = change.DemoReset ?? throw new InvalidOperationException("A demo reset requires an approved baseline.");
+        using var response = await http.GetAsync($"_apis/wit/workitems/{change.WorkItemId}?{ApiVersion}", ct);
+        response.EnsureSuccessStatusCode();
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+        var fields = doc.RootElement.GetProperty("fields");
+        var tags = fields.GetProperty(AdoFields.Tags).GetString()!.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (fields.GetProperty("System.TeamProject").GetString() != reset.Project
+            || fields.GetProperty(AdoFields.AreaPath).GetString() != reset.AreaPath
+            || !tags.Contains("zava-demo", StringComparer.Ordinal) || !tags.Contains(reset.KeyTag, StringComparer.Ordinal))
+        {
+            throw new InvalidOperationException("The approved reset item is no longer in its exact tagged demo scope. Nothing was written.");
+        }
+
+        var marker = $"demo-reset-{reset.OperationId:N}";
+        if (tags.Contains(marker, StringComparer.Ordinal))
+        {
+            return null;
+        }
+
+        var allowed = new HashSet<string>(StringComparer.Ordinal)
+        {
+            AdoFields.Title, AdoFields.State, AdoFields.IterationPath, AdoFields.Tags, AdoFields.AssignedTo,
+            AdoFields.StoryPoints, AdoFields.RemainingWork, AdoFields.OriginalEstimate, AdoFields.FinishDate, AdoFields.AcceptanceCriteria,
+        };
+        var ops = new List<object> { new { op = "test", path = "/rev", value = doc.RootElement.GetProperty("rev").GetInt32() } };
+        foreach (var field in reset.Fields)
+        {
+            if (!allowed.Contains(field.Key))
+            {
+                throw new InvalidOperationException("The demo seed contains a field outside the reset allowlist.");
+            }
+
+            if (field.Key == AdoFields.Tags)
+            {
+                continue;
+            }
+
+            var value = field.Value;
+            if (value is null)
+            {
+                if (fields.TryGetProperty(field.Key, out _))
+                {
+                    ops.Add(new { op = "remove", path = "/fields/" + field.Key });
+                }
+            }
+            else
+            {
+                object typed = value;
+                if (field.Key is AdoFields.StoryPoints or AdoFields.RemainingWork or AdoFields.OriginalEstimate)
+                {
+                    if (!double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number)
+                        || !double.IsFinite(number))
+                    {
+                        throw new InvalidOperationException("A demo numeric baseline must be a finite invariant-culture number.");
+                    }
+
+                    typed = number;
+                }
+
+                ops.Add(Add(field.Key, typed));
+            }
+        }
+
+        // ADO's add operation appends tags; replace is required to remove stale cast owners and prior operation markers.
+        ops.Add(new { op = "replace", path = "/fields/" + AdoFields.Tags, value = reset.Fields[AdoFields.Tags] + "; " + marker });
+        ops.Add(Add(AdoFields.History, $"Restored demo baseline.<br/><i>{Encode(change.Attribution)}</i>"));
         return ops;
     }
 
@@ -212,7 +288,7 @@ internal sealed class AdoWorkItemWriter(HttpClient http, IOptions<DemoOptions> d
         return string.Join("; ", set);
     }
 
-    private static object Add(string field, string value) => new { op = "add", path = $"/fields/{field}", value };
+    private static object Add(string field, object value) => new { op = "add", path = $"/fields/{field}", value };
 
     private static string Encode(string text) => WebUtility.HtmlEncode(text);
 }

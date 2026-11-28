@@ -1,19 +1,15 @@
 using Zava.Scrum.Application.Abstractions.Messaging;
 using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Domain.Common;
+using Zava.Scrum.Domain.Identity;
 namespace Zava.Scrum.Application.Features.Demo.ResetDemo;
 
-/// <summary>Resets demo state, and clears today's run marks so a scheduled standup can fire again.</summary>
-internal sealed class ResetDemoHandler(IDemoReset reset, IScheduleRepository schedules) : IRequestHandler<ResetDemoCommand, Result>
+/// <summary>Preserves the legacy endpoint with safe tenant-scoped demo-only publication instead of a global wipe.</summary>
+internal sealed class ResetDemoHandler(IDemoReseed reset) : IRequestHandler<ResetDemoCommand, Result>
 {
-    public async Task<Result> Handle(ResetDemoCommand request, CancellationToken ct)
-    {
-        await reset.ResetAsync(ct);
-        foreach (var s in await schedules.ListAsync(ct))
-        {
-            await schedules.SaveAsync(s with { PreparedFor = null, PreparedSessionId = null, StartedFor = null }, ct);
-        }
-
-        return Result.Success();
-    }
+    /// <inheritdoc />
+    public Task<Result> Handle(ResetDemoCommand request, CancellationToken ct) =>
+        request.Decision is null || !request.Decision.Roles.Contains(AppRoles.Admin, StringComparer.Ordinal)
+            ? Task.FromResult(Result.Failure(Error.Forbidden("demo.admin_required", "Demo reset requires a validated Admin caller.")))
+            : reset.ClearAsync(request.Decision.Actor.TenantId, ct);
 }

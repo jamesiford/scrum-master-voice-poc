@@ -35,7 +35,9 @@ public sealed class JsonFileTeamRepository : ITeamRepository, IDisposable
             15,
             new AdoSettings(ado.Value.Org, d.Project, d.AdoTeam, d.AreaPath),
             flags.Value.ToBehaviours(),
-            d.SprintGoal);
+            d.SprintGoal,
+            IsDemo: d.IsDemo,
+            DemoTenantId: d.DemoTenantId);
     }
 
     /// <inheritdoc />

@@ -8,6 +8,55 @@
 
 ### M11 acceptance boundary
 
+**Current G8 scope (ADR0038):** the operator moved the proof to fresh
+zavag8/westus3 and deleted the former eastus2 resources/apps. Earlier
+target/support instructions below are historical only, not current
+prerequisites. Two FULL empty up/verify cycles with an intervening guarded
+purge are required; then retain resources and deallocate only its media VM.
+Exact lifecycle guards admit only the fresh target. No API/use-case,
+Domain invariant or default-adapter change.
+
+ADR0039 makes unused standalone realtime deployments optional through
+`PROVISION_REALTIME_MODELS` (true by default). The fresh proof uses false:
+the existing managed Voice Live gpt-realtime-2.1 model requires no separate
+Azure OpenAI quota. Chat/decision/native and actual audio verification
+remain mandatory; no API/use-case or runtime adapter changes.
+
+First fresh full cycle passes: up1665.7626s, mandatoryverify8/8/407.4025s,
+native5/5 and real managed Voice Live3417/3871ms,n10, with genuine
+approverrevision71/completeaudit. Intervening guarded purge passed1700.1703s,
+exact absence/all13 inputs preserved. Second full empty up fails1192.4071s
+at hosted creation with project404 despite ARM Succeeded/new identity.
+The first cycle did not reproduce404; the repeated lifecycle does.
+Seven bounded backoff reads and one supported hosted-hook retry remain404;
+the final supported no-state provision/deploy917.7072s also fails404,
+despite successful actual RP upsert and real builds, without cycle credit.
+Independent mandatoryverify8/8/418.8114s/native5/5
+pass, Direct3338/3977ms,n12, approverrevision73/completeaudit.
+No support prerequisite or teardown bypass; G8 remains failed at1/2.
+Final independent mandatoryverify8/8/416.2082s and nativeRequireReady5/5
+pass, Direct3520/4592ms,n12, approverrevision75/completeaudit. No second
+full-up credit or adapter promotion follows from those checks. Only the
+fresh media VM is deallocated; all25 resources and both healthy application
+images remain. Existing Defender P2 automatically added MDE.Windows;
+no plan, policy or unrelated role was changed. DEPLOY records the actual
+retained inventory and separate allocated/deallocated retail costs.
+
+**Historical G8 second recovery (ADR0035), provider-blocked at newcycles0/2:** a guarded predown lifecycle hook removes
+only code-owned hosted agents before project teardown and reads back
+absence. Current calling-app reconciliation and controlled same-project
+recreation succeed, demonstrating retained-binding cleanup, not a full
+project lifecycle fix. The first new empty up fails1205.4765s after version1
+creation30402ms with persistent404 `Project not found` despite ARM Succeeded.
+The hook refuses project404 as false agent absence; provider repair is
+required before the two successful full empty cycles. This is not a G8 pass. All
+historical failures and existing adapters remain unchanged.
+
+Independent Direct verify8/8/native5/5 and approvedrevision66 pass after
+the failed full up, not cycle credit. Final media VM is deallocated;
+API/bridge remain healthy and the25-resource footprint is retained. The final
+guarded down refuses persistent project404 before any deletion.
+
 The working demo remains **Acs / Share / Direct**, with the Simulated Room
 fallback. The optional hosted relay uses stable version 4; candidate 5 returned
 424 during paired testing and is not promoted. The Windows native media/board
@@ -407,7 +456,7 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 | Sprint calendar (M9d) | `ProposeSprintCalendarCommand`, `ApproveSprintCalendarCommand`, `RejectSprintCalendarCommand` | `GetSprintCalendarQuery`, `ListSprintCalendarsQuery` | `SprintCalendarProposed` -> `SendCalendarCardOnSprintCalendarProposed` |
 | Schedules and prompts | `UpdateScheduleCommand`, `UpdatePromptCommand`, `RunScheduleTickCommand` | `GetScheduleQuery`, `GetPromptQuery`, `ListPromptsQuery` | |
 | Voice | `AnalyseUtteranceQuery` (intent, items and comment kinds for one utterance; model first, rules as fallback) |
-| Standups | `PrepareStandupCommand` (creates session and pre-brief), `StartStandupCommand`, `JoinMeetingCommand`, `ControlStandupCommand`, `RecordStandupEventCommand`, `RetractStandupEventCommand`, `MarkAbsentCommand`, `ResolveUnblockerCommand` (M9-R2), `ParkTopicCommand`, `CompleteSpeakerTurnCommand`, `RecordAgentLatencyCommand`, `EndStandupCommand` | `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetWorkItemDetailsQuery`, `GetTimeRemainingQuery`, `GetTurnInstructionQuery`, `GetFacilitatorInstructionsQuery`, `GetLiveStateQuery`, `ListSessionsQuery`, `GetSessionQuery` (includes the pre-brief), `GetSessionEventsQuery` | `StandupPrepared` -> `SendPreBriefCardOnStandupPrepared`; `StandupEnded` -> `PostRecapOnStandupEnded` (routed to the recap channel and meeting chat), `SendFollowUpsOnStandupEnded` (sends `SendFollowUpsCommand`), `LeaveMeetingOnStandupEnded` |
+| Standups | `PrepareStandupCommand` (creates session and pre-brief), `StartStandupCommand`, `JoinMeetingCommand`, `ControlStandupCommand`, `RecordStandupEventCommand`, `RetractStandupEventCommand`, `MarkAbsentCommand`, `ResolveUnblockerCommand` (M9-R2), `ParkTopicCommand`, `CompleteSpeakerTurnCommand`, `RecordAgentLatencyCommand`, `EndStandupCommand` | `GetNextSpeakerQuery`, `GetMemberBriefQuery`, `ReconcileUpdateQuery`, `GetWorkItemDetailsQuery`, `GetTimeRemainingQuery`, `GetTurnInstructionQuery`, `GetFacilitatorInstructionsQuery`, `GetLiveStateQuery`, `ListSessionsQuery`, `GetSessionQuery` (includes the pre-brief), `GetSessionEventsQuery`, `GetSessionLatencyQuery` (measured per-hop p50/p95/n) | `StandupPrepared` -> `SendPreBriefCardOnStandupPrepared`; `StandupEnded` -> `PostRecapOnStandupEnded` (routed to the recap channel and meeting chat), `SendFollowUpsOnStandupEnded` (sends `SendFollowUpsCommand`), `LeaveMeetingOnStandupEnded` |
 | Follow-ups | `ProposeAdoChangeCommand`, `SendFollowUpsCommand` (also plans escalation, absent and no-response follow-ups), `ApproveFollowUpCommand` (carries a `DecisionContext`: the verified `ActorIdentity`, channel, authentication claims and roles; refused unless `ApprovalAuthority` allows it, and it appends an `ApprovalRecord`), `RejectFollowUpCommand`, `ApplyApprovedChangesCommand` | `ListFollowUpsQuery`, `GetFollowUpQuery`, `ListEmailsQuery` | `FollowUpApproved` -> `ApplyOnFollowUpApproved` (sends `ApplyApprovedChangesCommand`), `UpdateFollowUpCardHandler`; `FollowUpRejected`, `FollowUpApplied` -> `UpdateFollowUpCardHandler` |
 | Reports and Q&A | | `GetKpisQuery`, `GetSprintReportQuery`, `GetMonthlyReportQuery`, `AnswerTeamQuestionQuery` (legacy Teams chat Q&A), `AnswerCopilotQuestionQuery(asker, skill, chosenTeamId)` (five delegated read-only skills, M11 8) | |
 | Ceremonies (M9) | `CreateCeremonyPackCommand` (builds the review or retrospective pack and sends it as a Scrum Master follow-up) | | |
@@ -415,7 +464,7 @@ Workflow names used elsewhere in this spec (for example `PrepareStandup`, `Apply
 | Audit (M11) | none (the approval trail is appended by `ApproveFollowUpCommand`, `RejectFollowUpCommand` and `ApplyApprovedChangesHandler`) | `GetAuditChainQuery` | none |
 | Retrospective by voice (M9b) | `PrepareRetrospectiveCommand`, `NameRetroThemesCommand`, `CreateRetroOutcomeCommand` | `ReconcileRetroUpdateQuery`, `GetRetroBoardQuery` | `RetrospectiveEnded` -> `FinishOnRetrospectiveEnded` (leaves the meeting, sends `CreateRetroOutcomeCommand`) |
 | Planning and stretch | | `GetPlanningPrepQuery`, `GetRetrospectiveQuery`, `DraftUserStoryQuery`, `ListParkedTopicsQuery`, `GetModelComparisonQuery` | |
-| Demo and health | `ResetDemoCommand` | `GetDemoStatusQuery`, `GetHealthQuery` | |
+| Demo and health | `ResetDemoCommand`, `OptInDemoScopeCommand`, `ReseedDemoCommand`, `AbortDemoReseedCommand` | `GetDemoStatusQuery`, `GetDemoReseedQuery`, `GetHealthQuery` | Exact manifest opt-in, approved ADO recovery, then atomic local publication (ADR 0037); authenticated Admin, real team permission and explicit demo tenant/team markers required. Legacy reset is demo-scoped. |
 
 **Planned but not built, and why:** `GetPreBriefQuery` (the pre-brief is returned inside `GetSessionQuery`); `EscalateBlockerCommand` and the `BlockerEscalated` event with `NotifyScrumMasterHandler` (escalation is a follow-up kind planned by `FollowUpPlanner`, ADR 0004).
 
@@ -931,13 +980,14 @@ indexed Blob content. No catalogue or use-case entry is added without code.
 | Reports | Sprint summary and monthly report; KPI charts with the "illustrative" label when fixture-backed |
 | Overview, Planning, Retrospective, Story Writer, Models and email | **As built (M8):** the four-step flow overview; load, carry-over, readiness gaps and suggested owners; start-stop-continue draft; user story draft from a parked topic; realtime model cost and latency comparison and the email outbox |
 
-**As built:** the portal has 13 pages in a sidebar layout (light and dark) and Prompts edits are stored in Cosmos so they survive restarts.
+**As built:** the portal has feature-organised pages in a sidebar layout (light and dark) and Prompts edits are stored in Cosmos so they survive restarts.
 
-M11 also adds administration/team-switcher pages. The existing audit API is
-not a dedicated correlation-id portal page. The Live console shows aggregate
-latency and events, not the requested per-hop film counters. Knowledge and
-Work IQ connection pages are unbuilt. Do not claim a completed film UI from
-the API/workbook or substitute screenshots of contract tests.
+M11 also adds administration/team-switcher pages and an Audit chain page
+backed by `GET /api/audit/{correlationId}`. Live shows measured per-hop
+p50/p95/n, readable roster speaker names and distinct Entra/guest participant
+labels (ADR0036). Browser samples are local intervals, not network delivery;
+native non-recording measurements are not retained. Knowledge and Work IQ
+connection pages remain unbuilt.
 
 **Sign-in and roles (ADRs 0017, 0018).** MSAL sends the portal-scoped bearer
 token on every call. The API validates signature, issuer, audience, lifetime,
@@ -995,6 +1045,7 @@ portal calls fail closed.
 | POST | `/api/followups/propose` | `FollowUpsEndpoints.cs` | `ProposeAdoChangeCommand` |
 | POST | `/api/followups/{id}/approve`, `/reject` | `FollowUpsEndpoints.cs` | `ApproveFollowUpCommand`, `RejectFollowUpCommand` with a `DecisionContext` built from the validated token (approver role; any body is ignored). The Teams card actions send the same commands with channel `Teams` |
 | GET | `/api/audit/{correlationId}` | `AuditEndpoints.cs` | `GetAuditChainQuery` (reader role); the full trace id or the `zsa-` tag |
+| GET | `/api/sessions/{id}/latency` | `SessionsEndpoints.cs` | `GetSessionLatencyQuery`; actual measured hops with p50/p95/n, authorised against the stored session's team |
 | GET | `/portal-config.json` | `PortalConfigEndpoint.cs` | Public client id and tenant for MSAL (anonymous, outside `/api`) |
 | POST | `/api/followups/{id}/apply` | `FollowUpsEndpoints.cs` | `ApplyApprovedChangesCommand` (retry of a failed write) |
 | GET | `/api/cards?sessionId=` | `FollowUpsEndpoints.cs` | `ListCardsQuery` (card outbox) |
@@ -1004,7 +1055,12 @@ portal calls fail closed.
 | GET | `/api/retrospective` | `InsightsEndpoints.cs` | `GetRetrospectiveQuery` |
 | GET, POST | `/api/stories/topics`, `/api/stories/draft` | `InsightsEndpoints.cs` | `ListParkedTopicsQuery`, `DraftUserStoryQuery` |
 | GET | `/api/models`, `/api/emails` | `InsightsEndpoints.cs` | `GetModelComparisonQuery`, `ListEmailsQuery` |
-| POST | `/api/demo/reset` | `DemoEndpoints.cs` | `ResetDemoCommand` |
+| POST | `/api/demo/reset` | `DemoEndpoints.cs` | `ResetDemoCommand` (Admin; allowlisted/marked demo tenant only, atomic local clear) |
+| POST | `/api/demo/reseed-scope` | `DemoEndpoints.cs` | `OptInDemoScopeCommand` (Admin; exact reviewed canonical seed/test-debris fingerprints) |
+| POST | `/api/demo/reseed?teamId=` | `DemoEndpoints.cs` | `ReseedDemoCommand` (stage; Admin) |
+| GET | `/api/demo/reseed/{operationId}?teamId=` | `DemoEndpoints.cs` | `GetDemoReseedQuery` (recovery journal; Admin) |
+| POST | `/api/demo/reseed/{operationId}/commit?teamId=` | `DemoEndpoints.cs` | `ReseedDemoCommand` (atomic local publication after approved ADO apply; Admin) |
+| POST | `/api/demo/reseed/{operationId}/abort?teamId=` | `DemoEndpoints.cs` | `AbortDemoReseedCommand` (unapproved only; Admin) |
 | GET | `/api/demo/status?teamId=` | `DemoEndpoints.cs` | `GetDemoStatusQuery` |
 | GET | `/api/health` | `HealthEndpoints.cs` | `GetHealthQuery` |
 | POST | `/api/messages` | `Program.cs` | Bot endpoint (`RequireAuthorization`; the card actions and chat run through `ScrumAgent`) |
@@ -1165,7 +1221,8 @@ approval/write invariants are unchanged. ADR0028/G7 hold actual live evidence.
 
 **M11 10 status (documentation/deployment subset).** Reconcile documentation,
 human prerequisites and final gate evidence; attempt G8 only in the authorised
-old `zavagf`/`eastus2` environment. Earlier smaller-runtime G8 history does not
+fresh `zavag8`/`westus3` environment (ADR0038 supersedes the old target).
+Earlier smaller-runtime G8 history does not
 prove the final solution. Historical final validation records947.NET/25bridge
 checks with passing evidence after one unchanged retrospective retry, all
 three builds/checks and zavaw3 verify8/8. Initial retro11/12 aggregate,
@@ -1205,6 +1262,7 @@ Every key the code binds or reads (checked against the options classes, `IConfig
 | `Ado:Org`, `Ado:AuthMode` (`Entra` or `Pat`), `Ado:Pat` (**secret**) | Azure DevOps organisation URL and auth | `Entra` |
 | `Team:Id`, `Team:Name`, `Team:TimeZone`, `Team:Project`, `Team:AdoTeam`, `Team:AreaPath`, `Team:SprintGoal` | Default team seeded into the store | `team-payments`, `America/Los_Angeles` |
 | `Demo:HonorAgeTags`, `Demo:HonorOwnerTags`, `Demo:SeedFile`, `Demo:KpiFixture` | Demo behaviour and fixtures | `true`, `true`, `demo/seed-ado.json`, `demo/kpi-history.json` |
+| `Demo:ResetTenantId`, `Demo:ResetTeamIds`, `Team:IsDemo`, `Team:DemoTenantId` | Explicit re-seed tenant/allowlist and newly configured default-team opt-in; persisted legacy teams are never implicitly marked (ADR 0037). Extra new demo teams accept `IsDemo`/`DemoTenantId` in `Demo:Teams`. | Disabled: empty tenant/id set, `false`, `null` |
 | `Store:Mode` (`Json` or `Cosmos`), `Store:DataPath` | Persistence | `Json`, `data` |
 | `Cosmos:Endpoint`, `Cosmos:Database`, `Cosmos:Container` | Cosmos (Entra only, no keys) | `zavascrum`, `collections` |
 | `Bridge:RoomBaseUrl`, `Bridge:BaseUrl`, `Bridge:ApiPublicUrl`, `Bridge:ApiKey` (**secret**) | Room URL, bridge control URL, public API URL, shared secret for API-to-bridge calls | `RoomBaseUrl` defaults to `http://localhost:5090` |

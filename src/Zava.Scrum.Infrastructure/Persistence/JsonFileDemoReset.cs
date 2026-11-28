@@ -1,19 +1,19 @@
 using Zava.Scrum.Application.Abstractions.Ports;
+using Microsoft.Extensions.Options;
+using Zava.Scrum.Infrastructure.Ado;
 
 namespace Zava.Scrum.Infrastructure.Persistence;
 
-/// <summary>Deletes the demo collections. Teams, roster, schedule and Teams conversations are kept so the demo can be re-run at once.</summary>
-public sealed class JsonFileDemoReset(ICollectionStore store, ISessionItemStore sessions) : IDemoReset
+/// <summary>Preserves the legacy reset port with explicit demo-only atomic publication; no collections or real-team sessions are globally deleted.</summary>
+public sealed class JsonFileDemoReset(IDemoReseed reset, IOptions<DemoOptions> options) : IDemoReset
 {
-    private static readonly string[] Collections = ["followups.json", "cards.json", "bot-activities.json", "planning-packs.json", "sprint-calendars.json"];
-
     /// <inheritdoc />
     public async Task ResetAsync(CancellationToken ct)
     {
-        await sessions.DeleteAllAsync(ct);
-        foreach (var name in Collections)
+        var result = await reset.ClearAsync(options.Value.ResetTenantId, ct);
+        if (!result.IsSuccess)
         {
-            await store.DeleteAsync(name, ct);
+            throw new InvalidOperationException(result.Error!.Message);
         }
     }
 }

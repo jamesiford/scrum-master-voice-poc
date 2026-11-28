@@ -15,6 +15,8 @@ namespace Zava.Scrum.Domain.Teams;
 /// <param name="KnowledgeBaseIds">Knowledge bases the team uses (reserved for a later step; empty).</param>
 /// <param name="WorkSignalsEnabled">Whether work signals feed the team (reserved for a later step; off).</param>
 /// <param name="EntraGroupId">Optional Entra group whose members are synced into the team's memberships.</param>
+/// <param name="IsDemo">Explicit destructive-reset opt-in, false for all legacy and real teams.</param>
+/// <param name="DemoTenantId">Tenant owning this opted-in demo team.</param>
 public sealed record Team(
     string Id,
     string Name,
@@ -29,7 +31,9 @@ public sealed record Team(
     CeremoniesEnabled? Ceremonies = null,
     IReadOnlyList<string>? KnowledgeBaseIds = null,
     bool WorkSignalsEnabled = false,
-    string? EntraGroupId = null)
+    string? EntraGroupId = null,
+    bool IsDemo = false,
+    Guid? DemoTenantId = null)
 {
     /// <summary>Gets the bindings, never <see langword="null"/>.</summary>
     public IReadOnlyList<TeamsBinding> Bindings => TeamsBindings ?? [];

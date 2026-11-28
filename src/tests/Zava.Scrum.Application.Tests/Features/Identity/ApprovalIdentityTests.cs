@@ -50,6 +50,31 @@ public sealed class ApprovalIdentityTests : IAsyncDisposable
 
     private ISender Sender => _sp.GetRequiredService<ISender>();
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task Approve_ResetProposalWithoutPortalAppAdmin_RefusesBeforeDecisionOrWrite(bool teamsAdmin, bool sent)
+    {
+        var followUp = FollowUp.Create(Guid.NewGuid(), "t1", Guid.NewGuid(), null, FollowUpKind.Followup, "restore",
+            [new ProposedChange(1, ChangeOp.ResetDemoItem, "seed", "restore", DemoReset: new DemoWorkItemReset(Guid.NewGuid(),
+                "Project", "Project\\Area", "demo-key-one", new Dictionary<string, string?> { ["System.Title"] = "seed" }))],
+            new DateOnly(2026, 1, 8), StandupHarness.Now, forScrumMaster: true);
+        if (sent)
+        {
+            followUp.MarkSent();
+        }
+        await _followUps.SaveAsync(followUp, default);
+
+        var result = await Sender.Send(new ApproveFollowUpCommand(followUp.Id, teamsAdmin ? Who.TeamsAdmin() : Who.Portal()));
+
+        Assert.Equal("demo.admin_required", result.Error!.Code);
+        Assert.Empty(_records.All);
+        Assert.Empty(_writer.Written);
+        Assert.Equal(sent ? FollowUpStatus.Sent : FollowUpStatus.Pending, (await _followUps.GetAsync(followUp.Id, default))!.Status);
+    }
+
     [Fact]
     public async Task Approve_TeamsMemberOnTheirOwnFollowUp_IsRecordedWithIdentityAndHash()
     {
@@ -225,6 +250,23 @@ public sealed class ApprovalIdentityTests : IAsyncDisposable
         Assert.Equal([ApprovalChannel.Teams, ApprovalChannel.Portal], chain.Value.Records.Where(r => r.Kind == ApprovalRecordKind.Approved).Select(r => r.Channel));
         Assert.All(chain.Value.Records.Where(r => r.Kind == ApprovalRecordKind.Applied), r => Assert.NotEmpty(r.AdoRevisions));
         Assert.All(_writer.Written, w => Assert.EndsWith($"Correlation: {Correlation.Tag(session.CorrelationId)}", w.Attribution, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task AuditChain_StoredMeeting_PreservesRealMeetingIdentity()
+    {
+        var session = StandupSession.Prepare(Guid.NewGuid(), "t1", StandupHarness.Now, null);
+        const string link = "https://teams.microsoft.com/l/meetup-join/chat/0";
+        session.Start("acs", link, 15, StandupHarness.Now);
+        session.RecordMeetingEvent("meeting", "chat", link, false, StandupHarness.Now);
+        await _sessions.SaveAsync(session, default);
+
+        var result = await Sender.Send(new GetAuditChainQuery(session.CorrelationId));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("meeting", result.Value.Meeting?.MeetingId);
+        Assert.Equal("chat", result.Value.Meeting?.ConversationId);
+        Assert.Equal(link, result.Value.JoinUrl);
     }
 
     [Fact]

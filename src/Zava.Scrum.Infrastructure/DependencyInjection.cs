@@ -63,6 +63,10 @@ public static class DependencyInjection
         AddIdentity(services, configuration);
 
         AddCollectionStore(services, configuration);
+        services.AddSingleton<DemoReseedPlan>();
+        services.AddSingleton<DemoAdoResetGate>();
+        services.AddSingleton<IDemoReseed, PersistentDemoReseed>();
+        services.AddSingleton<IDemoTeamRemovalHistory, PersistentDemoTeamRemovalHistory>();
         // The voice route picks between two real adapters of the same port: the hosted agent (a relay endpoint is set) or Voice Live directly.
         if (!string.IsNullOrWhiteSpace(configuration["VoiceLive:RelayEndpoint"]))
         {
@@ -170,9 +174,12 @@ public static class DependencyInjection
         services.AddOptions<CosmosOptions>().Bind(configuration.GetSection(CosmosOptions.SectionName));
         if (!string.Equals(configuration["Store:Mode"], "Cosmos", StringComparison.OrdinalIgnoreCase))
         {
-            services.AddSingleton<ICollectionStore, FileCollectionStore>();
+            services.AddSingleton<FileCollectionStore>();
+            services.AddSingleton<IDemoStateStore, FileDemoStateStore>();
+            services.AddSingleton<ICollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<FileCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
             services.AddSingleton<IApprovalRecordStore, FileApprovalRecordStore>();
-            services.AddSingleton<ISessionItemStore, FileSessionItemStore>();
+            services.AddSingleton<FileSessionItemStore>();
+            services.AddSingleton<ISessionItemStore>(sp => new DemoPublicationSessionStore(sp.GetRequiredService<FileSessionItemStore>(), sp.GetRequiredService<IDemoStateStore>(), sp.GetRequiredService<IOptions<DemoOptions>>()));
             return;
         }
 
@@ -180,16 +187,23 @@ public static class DependencyInjection
             sp.GetRequiredService<IOptions<CosmosOptions>>().Value.Endpoint,
             sp.GetRequiredService<TokenCredential>(),
             new Microsoft.Azure.Cosmos.CosmosClientOptions { UseSystemTextJsonSerializerWithOptions = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web) }));
-        services.AddSingleton<ICollectionStore>(sp =>
+        services.AddSingleton<CosmosCollectionStore>(sp =>
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
             return new CosmosCollectionStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.Container));
         });
-        services.AddSingleton<ISessionItemStore>(sp =>
+        services.AddSingleton<IDemoStateStore>(sp =>
+        {
+            var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
+            return new CosmosDemoStateStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.Container));
+        });
+        services.AddSingleton<ICollectionStore>(sp => new DemoPublicationCollectionStore(sp.GetRequiredService<CosmosCollectionStore>(), sp.GetRequiredService<IDemoStateStore>()));
+        services.AddSingleton<CosmosSessionItemStore>(sp =>
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;
             return new CosmosSessionItemStore(sp.GetRequiredService<Microsoft.Azure.Cosmos.CosmosClient>().GetContainer(cosmos.Database, cosmos.SessionsContainer));
         });
+        services.AddSingleton<ISessionItemStore>(sp => new DemoPublicationSessionStore(sp.GetRequiredService<CosmosSessionItemStore>(), sp.GetRequiredService<IDemoStateStore>(), sp.GetRequiredService<IOptions<DemoOptions>>()));
         services.AddSingleton<IApprovalRecordStore>(sp =>
         {
             var cosmos = sp.GetRequiredService<IOptions<CosmosOptions>>().Value;

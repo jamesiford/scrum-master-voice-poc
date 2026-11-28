@@ -57,6 +57,8 @@ public sealed class PortalAuthorizationTests : IClassFixture<ApiFactory>
         { "GET", "/api/sessions?teamId=team-b" },
         { "GET", $"/api/sessions/{SessionB}" },
         { "GET", $"/api/sessions/{SessionB}/events" },
+        { "GET", $"/api/sessions/{SessionB}/latency" },
+        { "GET", $"/api/sessions/{SessionB}/latency?teamId=team-a" },
         { "POST", $"/api/sessions/{SessionB}/control" },
         { "POST", $"/api/sessions/{SessionB}/start" },
         { "POST", "/api/sessions/prepare" },
@@ -251,6 +253,18 @@ public sealed class PortalAuthorizationTests : IClassFixture<ApiFactory>
 
         Assert.Equal(HttpStatusCode.Unauthorized, (await none.GetAsync(path)).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await admin.GetAsync(path)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Audit_QueryTeamCannotOverrideStoredTeam_AndOwnReaderCanReadChain()
+    {
+        var session = (await _factory.Services.GetRequiredService<ISessionRepository>().GetAsync(SessionB, default))!;
+        using var other = _factory.ClientWith(_factory.Token(oid: LeadA.ToString()));
+        using var own = _factory.ClientWith(_factory.Token(oid: LeadB.ToString()));
+        var path = $"/api/audit/{session.CorrelationId}?teamId=team-a";
+
+        Assert.Equal(HttpStatusCode.NotFound, (await other.GetAsync(path)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await own.GetAsync(path)).StatusCode);
     }
 
     [Fact]

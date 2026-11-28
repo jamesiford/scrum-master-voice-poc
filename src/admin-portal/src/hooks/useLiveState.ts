@@ -15,6 +15,8 @@ export function useLiveState(sessionId: string | null): {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    setState(undefined);
+    setConnected(false);
     if (!sessionId) return;
     const controller = new AbortController();
     void streamLiveState(sessionId, setState, setConnected, controller.signal);

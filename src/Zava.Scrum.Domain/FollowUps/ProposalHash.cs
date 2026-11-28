@@ -25,6 +25,19 @@ public static class ProposalHash
                     .Append('|').Append(string.Join(',', n.Tags.OrderBy(t => t, StringComparer.Ordinal))).Append('|').Append(Clean(n.IterationPath)).Append('|').Append(Clean(n.AssignedTo));
             }
 
+            if (c.Op == ChangeOp.ResetDemoItem && c.DemoReset is { } reset)
+            {
+                canonical.Append("|demo-reset|").Append(reset.OperationId.ToString("N"));
+                AppendExact(canonical, reset.Project);
+                AppendExact(canonical, reset.AreaPath);
+                AppendExact(canonical, reset.KeyTag);
+                foreach (var field in reset.Fields.OrderBy(f => f.Key, StringComparer.Ordinal))
+                {
+                    AppendExact(canonical, field.Key);
+                    AppendExact(canonical, field.Value);
+                }
+            }
+
             canonical.Append('\n');
         }
 
@@ -32,4 +45,7 @@ public static class ProposalHash
     }
 
     private static string Clean(string? value) => (value ?? string.Empty).Replace('\n', ' ').Replace('\r', ' ').Replace('|', '/').Trim();
+
+    private static void AppendExact(StringBuilder canonical, string? value) =>
+        canonical.Append('|').Append(value?.Length ?? -1).Append(':').Append(value);
 }

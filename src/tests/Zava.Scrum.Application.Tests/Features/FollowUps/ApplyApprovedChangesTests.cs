@@ -6,6 +6,7 @@ using Zava.Scrum.Application.Features.FollowUps.RejectFollowUp;
 using Zava.Scrum.Application.Tests.TestDoubles;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.FollowUps;
+using Zava.Scrum.Domain.Identity;
 using Zava.Scrum.Domain.Teams;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,6 +46,23 @@ public sealed class ApplyApprovedChangesTests : IAsyncDisposable
         var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
 
         Assert.Equal(ErrorType.NotApproved, result.Error!.Type);
+        Assert.Empty(_writer.Written);
+    }
+
+    [Fact]
+    public async Task Apply_ApprovedDemoResetForUnmarkedTeam_IsRefusedAndNothingIsWritten()
+    {
+        var id = Guid.NewGuid();
+        var followUp = FollowUp.Create(id, "t1", Guid.NewGuid(), null, FollowUpKind.Followup, "reset",
+            [new ProposedChange(1, ChangeOp.ResetDemoItem, "baseline", "demo",
+                DemoReset: new DemoWorkItemReset(Guid.NewGuid(), "p", "a", "demo-key-one", new Dictionary<string, string?>()))],
+            DateOnly.FromDateTime(StandupHarness.Now.UtcDateTime), StandupHarness.Now);
+        await _repo.SaveAsync(followUp, default);
+        await Sender.Send(new ApproveFollowUpCommand(id, Who.Portal("Dana", AppRoles.Approver, AppRoles.Admin)));
+
+        var result = await Sender.Send(new ApplyApprovedChangesCommand(id));
+
+        Assert.Equal("demo.reset_scope_refused", result.Error!.Code);
         Assert.Empty(_writer.Written);
     }
 

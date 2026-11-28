@@ -20,6 +20,7 @@ using Zava.Scrum.Application.Features.Standups.RecordStandupEvent;
 using Zava.Scrum.Application.Features.Standups.ReconcileUpdate;
 using Zava.Scrum.Application.Features.Standups.ResolveUnblocker;
 using Zava.Scrum.Application.Features.Standups.RetractStandupEvent;
+using Zava.Scrum.Application.Features.Teams.GetRoster;
 using Zava.Scrum.Application.Features.Voice.AnalyseUtterance;
 using Zava.Scrum.Application.Tools;
 using Zava.Scrum.Domain.Common;
@@ -63,6 +64,8 @@ public sealed class VoiceGateway(
     private readonly HashSet<string> _unblockerAsked = [];
     private readonly HashSet<string> _awaitingUnblocker = [];
     private List<NameRef> _roster = [];
+    private IReadOnlyList<Domain.Members.Member> _identityRoster = [];
+    private IReadOnlyList<ParticipantLabel> _participants = [];
     private string? _directive;
     private string? _deferNotes;
     private string? _speechSpeaker;
@@ -72,6 +75,7 @@ public sealed class VoiceGateway(
     private readonly List<string> _offTopic = [];
     private readonly List<string> _parking = [];
     private readonly List<int> _latencies = [];
+    private readonly Dictionary<string, List<int>> _bridgeSamples = [];
     private readonly HashSet<string> _absent = [];
     private BridgeConnection _bridge = null!;
     private IVoiceSession _voice = null!;
@@ -207,6 +211,14 @@ public sealed class VoiceGateway(
         }
 
         _session = session.Value;
+        var roster = await sender.Send(new GetRosterQuery(_session.TeamId), ct);
+        if (!roster.IsSuccess)
+        {
+            await Fail("ROSTER_UNAVAILABLE", roster.Error!.Message);
+            return false;
+        }
+
+        _identityRoster = roster.Value;
         using var connectHop = ScrumTelemetry.StartHop("voice.connect", _session.TeamId, _sessionId, _session.CorrelationId);
         _roster = _session.PreBrief?.Members.Select(m => new NameRef(m.MemberId, m.DisplayName)).ToList() ?? [];
         var o = options.Value;
@@ -242,7 +254,12 @@ public sealed class VoiceGateway(
                 kind = _session.Kind.ToString(),
                 version = 1,
                 standupMinutes = _session.StandupMinutes,
-                members = _roster.Select(m => new { memberId = m.MemberId, displayName = m.DisplayName }),
+                members = _roster.Select(m => new
+                {
+                    memberId = m.MemberId,
+                    displayName = m.DisplayName,
+                    entraObjectId = _identityRoster.FirstOrDefault(r => r.Id == m.MemberId)?.EntraObjectId,
+                }),
             },
             ct);
         return true;
@@ -413,6 +430,26 @@ public sealed class VoiceGateway(
             case "participants":
                 await OnParticipantsAsync(json);
                 break;
+            case "participantNames":
+                if (Str(json, "teamId") != _session.TeamId || !Guid.TryParse(Str(json, "sessionId"), out var participantSession) || participantSession != _sessionId)
+                {
+                    logger.LogWarning("Refused cross-scope participant names for team {TeamId} session {SessionId}", _session.TeamId, _sessionId);
+                    break;
+                }
+
+                if (json.TryGetProperty("items", out var names) && names.ValueKind == JsonValueKind.Array)
+                {
+                    _participants = names.EnumerateArray().Select(item => ParticipantLabel.Resolve(
+                        Str(item, "participantId") ?? string.Empty,
+                        Guid.TryParse(Str(item, "objectId"), out var objectId) ? objectId : null,
+                        Str(item, "displayName"), _identityRoster)).ToList();
+                }
+                else
+                {
+                    logger.LogWarning("Invalid participant names for team {TeamId} session {SessionId}", _session.TeamId, _sessionId);
+                }
+
+                break;
             case "localSpeaker":
                 _presenter = Str(json, "memberId") ?? _presenter;
                 break;
@@ -443,6 +480,12 @@ public sealed class VoiceGateway(
                     var name = Str(json, "hop")!;
                     using var bridgeHop = ScrumTelemetry.StartHop(name, _session.TeamId, _sessionId, _session.CorrelationId);
                     ScrumTelemetry.RecordHop(name, _session.TeamId, Int(json, "durationMs"));
+                    if (!_bridgeSamples.TryGetValue(name, out var samples))
+                    {
+                        _bridgeSamples[name] = samples = [];
+                    }
+
+                    samples.Add(Int(json, "durationMs"));
                 }
                 break;
             case "command":
@@ -1354,12 +1397,22 @@ public sealed class VoiceGateway(
         {
             floor = ended ? "Closed" : _floor.State.ToString(),
             currentSpeaker = _floor.CurrentMemberId,
+            teamId = _session.TeamId,
+            sessionId = _sessionId,
+            participants = _participants,
             agentSpeaking = _floor.AgentHasFloor,
             remainingSec = remaining,
             parkingLot = _parking,
             absent = _absent,
             p50 = LatencyStats.Percentile(_latencies, 50),
             p95 = LatencyStats.Percentile(_latencies, 95),
+            bridgeHops = _bridgeSamples.Select(s => new
+            {
+                hop = s.Key,
+                p50Ms = LatencyStats.Percentile(s.Value, 50),
+                p95Ms = LatencyStats.Percentile(s.Value, 95),
+                n = s.Value.Count,
+            }),
             running = _begun,
         };
         live.Update(_sessionId, JsonSerializer.Serialize(state));

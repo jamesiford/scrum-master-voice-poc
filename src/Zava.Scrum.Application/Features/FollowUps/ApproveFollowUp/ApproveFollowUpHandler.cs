@@ -4,6 +4,7 @@ using Zava.Scrum.Application.Features.Identity;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.FollowUps;
 using Zava.Scrum.Application.Behaviors;
+using Zava.Scrum.Domain.Identity;
 
 namespace Zava.Scrum.Application.Features.FollowUps.ApproveFollowUp;
 
@@ -22,6 +23,12 @@ internal sealed class ApproveFollowUpHandler(IFollowUpRepository followUps, Appr
         }
 
         var decision = request.Decision;
+        if (followUp.Changes.Any(change => change.Op == ChangeOp.ResetDemoItem)
+            && (decision.Actor.Source != ActorSource.Portal || !decision.Roles.Contains(AppRoles.Admin, StringComparer.Ordinal)))
+        {
+            return Result.Failure(Error.Forbidden("demo.admin_required", "Restoring the film sandbox requires an authenticated portal app Admin's explicit approval."));
+        }
+
         using var hop = ScrumTelemetry.StartHop("approval.decision", followUp.TeamId, followUp.SessionId, followUp.CorrelationId);
         var allowed = await gate.AuthoriseAsync(decision, followUp.TeamId, followUp.MemberId, followUp.ForScrumMaster, ct);
         if (!allowed.IsSuccess)

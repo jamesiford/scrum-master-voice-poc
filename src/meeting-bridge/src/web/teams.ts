@@ -6,7 +6,10 @@ import {
   type Call,
   type RemoteParticipant,
 } from '@azure/communication-calling';
-import { AzureCommunicationTokenCredential } from '@azure/communication-common';
+import {
+  AzureCommunicationTokenCredential,
+  isMicrosoftTeamsUserIdentifier,
+} from '@azure/communication-common';
 import { AgentPlayer, SAMPLE_RATE } from './audio.js';
 import { BoardRenderer } from './board.js';
 import type { ClientMessage, RoomMember, ServerMessage } from './protocol.js';
@@ -30,6 +33,7 @@ const telemetry = new BridgeTelemetry();
 let socket: WebSocket;
 let call: Call | undefined;
 let members: RoomMember[] = [];
+let teamId: string | undefined;
 let begun = false;
 let player: AgentPlayer;
 let context: AudioContext;
@@ -100,9 +104,36 @@ function watchParticipant(p: RemoteParticipant): void {
   const key = String((p.identifier as { rawId?: string }).rawId ?? p.displayName);
   if (wired.has(key)) return;
   wired.add(key);
+  p.on('stateChanged', reportParticipantNames);
   p.on('isSpeakingChanged', () => {
     const member = matchMember(p.displayName);
     if (member) send({ type: 'speaking', memberId: member.memberId, active: p.isSpeaking });
+  });
+}
+
+function reportParticipantNames(): void {
+  if (!call || !teamId) return;
+  send({
+    type: 'participantNames',
+    teamId,
+    sessionId,
+    items: call.remoteParticipants
+      .filter((participant) => participant.state !== 'Disconnected')
+      .map((participant) => {
+        const identifier = participant.identifier;
+        const objectId =
+          isMicrosoftTeamsUserIdentifier(identifier) && !identifier.isAnonymous
+            ? identifier.microsoftTeamsUserId
+            : null;
+        return {
+          participantId:
+            'rawId' in identifier && identifier.rawId
+              ? identifier.rawId
+              : JSON.stringify(identifier),
+          objectId,
+          displayName: participant.displayName || 'Guest',
+        };
+      }),
   });
 }
 
@@ -267,8 +298,12 @@ async function join(): Promise<void> {
       default:
     }
   });
-  c.on('remoteParticipantsUpdated', (e) => e.added.forEach(watchParticipant));
+  c.on('remoteParticipantsUpdated', (e) => {
+    e.added.forEach(watchParticipant);
+    reportParticipantNames();
+  });
   c.remoteParticipants.forEach(watchParticipant);
+  reportParticipantNames();
   await pipeRemoteAudio(c, worklet);
   beginWhenReady(c);
   void c.feature(Features.Capabilities);
@@ -277,6 +312,7 @@ async function join(): Promise<void> {
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case 'hello':
+      teamId = message.teamId;
       telemetry.bind(message.teamId, message.traceParent);
       members = message.members;
       join().catch((e: unknown) =>

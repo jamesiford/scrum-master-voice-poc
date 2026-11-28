@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Zava.Scrum.Api.Endpoints;
 using Zava.Scrum.Application.Abstractions.Messaging;
+using Zava.Scrum.Application.Abstractions.Ports;
 using Zava.Scrum.Application.Features.Teams;
 using Zava.Scrum.Domain.Common;
 using Zava.Scrum.Domain.Identity;
@@ -41,7 +42,8 @@ public static class CallerContextFactory
 /// may do what the route does to that team, and refuses otherwise. A route that names no team and is not marked as team-free is refused,
 /// so a new route is closed until someone says which team it belongs to. A team the caller is not in is answered "not found", as if it did not exist.
 /// </summary>
-public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IResourceTeamLocator locator, ILogger<TeamAuthorizationFilter> logger) : IEndpointFilter
+public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IResourceTeamLocator locator, ILogger<TeamAuthorizationFilter> logger,
+    IDemoReseed demoReseed) : IEndpointFilter
 {
     /// <summary>The key under which the resolved <see cref="Team"/> is kept for the request.</summary>
     public const string TeamItem = "Zava.Team";
@@ -104,6 +106,18 @@ public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IRes
         var ct = http.RequestAborted;
         var path = http.Request.Path.Value ?? string.Empty;
         var route = http.Request.RouteValues;
+        if (path.StartsWith("/api/demo/reseed/", StringComparison.OrdinalIgnoreCase)
+            && route.TryGetValue("operationId", out var operationValue) && Guid.TryParse(operationValue?.ToString(), out var operationId))
+        {
+            var owned = await demoReseed.LocateTeamAsync(operationId, ct);
+            if (owned.IsSuccess && http.Request.Query["teamId"].FirstOrDefault() is { Length: > 0 } supplied && supplied != owned.Value)
+            {
+                return Result<string>.Failure(Error.Forbidden("demo.operation_team_mismatch", "The supplied team does not own this reset operation."));
+            }
+
+            return owned;
+        }
+
         if (route.TryGetValue("teamId", out var rt) && rt is string routeTeam)
         {
             return Result<string>.Success(routeTeam);
@@ -112,11 +126,6 @@ public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IRes
         if (path.StartsWith("/api/teams/", StringComparison.OrdinalIgnoreCase) && route.TryGetValue("id", out var id) && id is string teamsId)
         {
             return Result<string>.Success(teamsId);
-        }
-
-        if (http.Request.Query["teamId"].FirstOrDefault() is { Length: > 0 } queryTeam)
-        {
-            return Result<string>.Success(queryTeam);
         }
 
         if (MatchGuid(SessionPath(), path) is { } session)
@@ -142,6 +151,11 @@ public sealed partial class TeamAuthorizationFilter(ITeamResolver resolver, IRes
         if (AuditPath().Match(path) is { Success: true } audit)
         {
             return await locator.ForCorrelationAsync(audit.Groups[1].Value, ct);
+        }
+
+        if (http.Request.Query["teamId"].FirstOrDefault() is { Length: > 0 } queryTeam)
+        {
+            return Result<string>.Success(queryTeam);
         }
 
         if (Guid.TryParse(http.Request.Query["sessionId"].FirstOrDefault(), out var querySession))

@@ -38,7 +38,12 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0028](0028-observability-and-evaluation.md) | Content-free telemetry and failed date release gate |
 | [0029](0029-final-documentation-and-greenfield-proof.md) | Final documentation and G8 acceptance boundary |
 | [0030](0030-final-validation-and-live-model-variance.md) | Final validation and retained live model failures |
-| [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Authorised eastus2 recovery, compatible image/purge parameters and idempotent hooks |
+| [0031](0031-greenfield-recovery-and-idempotent-hooks.md) | Historical recovery, compatible image/purge parameters and idempotent hooks; scope moved to fresh westus3 in0038 |
 | [0032](0032-foundry-workspace-version-recovery.md) | Bounded service-directed hosted-version workspace conflict recovery |
 | [0033](0033-foundry-iq-consent-redo-and-fixture-boundary.md) | Knowledge consent verified; real source and permission fixtures still required |
 | [0034](0034-work-iq-live-discovery-and-source-fixtures.md) | Work IQ delegated metadata discovery succeeds; scoped content and billing fixtures remain required |
+| [0035](0035-hosted-agent-teardown-lifecycle.md) | Guarded hosted data-plane lifecycle cleanup before authorised project teardown |
+| [0036](0036-film-evidence-surfaces.md) | Team-authorised audit page, measured Live counters and Entra/guest participant names |
+| [0037](0037-guarded-demo-reseed-publication.md) | Explicit demo opt-in, approved recoverable ADO baseline and atomic application publication |
+| [0038](0038-greenfield-proof-westus3.md) | Fresh westus3 greenfield proof with protected-environment lifecycle guards |
+| [0039](0039-managed-voice-live-deployment-quota.md) | Managed Voice Live does not require unused standalone Azure OpenAI deployment quota |

@@ -62,6 +62,13 @@ internal sealed class ApplyApprovedChangesHandler(IFollowUpRepository followUps,
             return Result.Failure(TeamErrors.NotFound(followUp.TeamId));
         }
 
+        if (changes.Value.Any(c => c.Op == ChangeOp.ResetDemoItem)
+            && (!team.IsDemo || team.DemoTenantId != decision.Actor.TenantId
+                || changes.Value.Any(c => c.DemoReset is null || c.DemoReset.Project != team.Ado.Project || c.DemoReset.AreaPath != team.Ado.AreaPath)))
+        {
+            return Result.Failure(Error.Forbidden("demo.reset_scope_refused", "Reset writes require an explicitly demo-marked team in the approver's tenant and its exact area."));
+        }
+
         // Every change must be inside this team's project and area path before any is written; a write aimed at another team's item is refused
         // even though it was approved (ADR 0018).
         var inScope = await CheckScopeAsync(team.Ado, changes.Value, ct);

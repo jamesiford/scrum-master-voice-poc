@@ -57,6 +57,9 @@ public static class AdoFields
     /// <summary>Iteration path.</summary>
     public const string IterationPath = "System.IterationPath";
 
+    /// <summary>Exact work item area used to guard demo reset writes.</summary>
+    public const string AreaPath = "System.AreaPath";
+
     /// <summary>Fields requested for every sprint item.</summary>
     public static readonly IReadOnlyList<string> SprintItemFields =
     [

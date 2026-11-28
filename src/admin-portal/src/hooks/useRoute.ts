@@ -6,6 +6,7 @@ export type PageId =
   | 'sessions'
   | 'live'
   | 'followups'
+  | 'audit'
   | 'reports'
   | 'planning'
   | 'retrospective'
@@ -24,6 +25,7 @@ const pages: PageId[] = [
   'sessions',
   'live',
   'followups',
+  'audit',
   'reports',
   'planning',
   'retrospective',

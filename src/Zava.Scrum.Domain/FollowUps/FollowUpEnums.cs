@@ -64,4 +64,7 @@ public enum ChangeOp
 
     /// <summary>Create a work item from <see cref="ProposedChange.New"/>.</summary>
     CreateWorkItem,
+
+    /// <summary>Restores an existing, tagged demo item to an approved seed baseline. Never creates or deletes items.</summary>
+    ResetDemoItem,
 }

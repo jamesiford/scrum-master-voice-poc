@@ -24,6 +24,12 @@ public sealed class DemoOptions
     /// <summary>Gets or sets a value indicating whether to register only Payments, for the film, even when <see cref="Teams"/> lists more.</summary>
     public bool PaymentsOnly { get; set; }
 
+    /// <summary>Gets or sets the tenant allowed to reset explicitly marked demo teams. Empty disables re-seeding.</summary>
+    public Guid ResetTenantId { get; set; }
+
+    /// <summary>Gets or sets the exact demo team ids that may be reset or removed as film debris. No name-based matching.</summary>
+    public List<string> ResetTeamIds { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the demo members' email addresses by member key (for example <c>daniel</c>), used as the Azure DevOps unique name when the seed file has none.
     /// Kept in configuration (user secrets or the azd environment) so no tenant identity is committed. They are who the sprint calendar invites.
@@ -43,4 +49,6 @@ public sealed class DemoOptions
 /// <param name="SprintGoal">Sprint goal.</param>
 /// <param name="SeedFile">The seed file (<c>tools/SeedAdo</c>) that holds the roster.</param>
 /// <param name="TimeZone">IANA time zone.</param>
-public sealed record DemoTeam(string Id, string Name, string Project, string AdoTeam, string AreaPath, string SprintGoal, string SeedFile, string TimeZone = "UTC");
+/// <param name="IsDemo">Explicit destructive-reset opt-in, false by default.</param>
+/// <param name="DemoTenantId">Tenant owning the opted-in demo team.</param>
+public sealed record DemoTeam(string Id, string Name, string Project, string AdoTeam, string AreaPath, string SprintGoal, string SeedFile, string TimeZone = "UTC", bool IsDemo = false, Guid? DemoTenantId = null);
