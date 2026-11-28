@@ -1,5 +1,32 @@
 # Demo runbook
 
+## Round 2 correctness checks
+
+Keep Acs/Share/Direct and Simulated Room. Re-prepare a session to capture
+actual team time zone and sprint dates. Date notes preserve the spoken
+revised expression; code resolves only safe relative expressions, never an
+automatic Azure DevOps date write. Ambiguous periods/numeric dates remain
+explicitly unresolved. Approval remains required for every write.
+Pause/takeover during opening, recap or themes should stop speech; releasing
+repeats that whole-team step rather than skipping it.
+
+The retrospective cast must hear an explicit return to its deferred member
+and its three-point invitation before themes. Run the complete real-model
+fidelity measurement, with no retry or substituted completion:
+
+```powershell
+dotnet build -c Release
+pwsh -File eng\test-retro-fidelity.ps1 -Runs 30
+```
+
+The frozen112-case decision set has48eligible spoken dates, unchanged
+original72 cases and unchanged0.7/0.6 thresholds. Its latest synthetic
+release passes48/48 dates and40/40 calendar resolutions/abstentions;
+historical/first-extended failures remain. Commands are in
+`demo\evaluation\README.md`; measured runtime/retrospective acceptance,
+including any remaining failures, is in `gates/r2-quality-M11.json`.
+No real Teams/native/guest/Copilot acceptance follows from scripted tests.
+
 ## Round 2 storage reliability
 
 Normal standups no longer append cards, follow-ups or bot deliveries to

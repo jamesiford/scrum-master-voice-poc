@@ -1,5 +1,34 @@
 # Deploying the current solution
 
+## Round 2 correctness rollout
+
+This runtime-only change adds no Azure resource, role, Entra object or
+configuration secret. Existing greenfield templates already deploy the
+API/prompt files; additive prebrief calendar fields need no data rewrite.
+Added fixed hourly cost is USD0; model/Voice Live/Cosmos usage is variable.
+No new human gate belongs to this correction. Existing real meeting/user/
+source/consent fixtures elsewhere remain separate acceptance prerequisites.
+
+Import only zavaw3 into the current process; do not change azd's selected
+environment, which may belong to another step:
+
+```powershell
+foreach ($line in (azd env get-values --environment zavaw3)) {
+  if ($line -match '^([A-Za-z_][A-Za-z0-9_]*)="?(.*?)"?$') {
+    [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2])
+  }
+}
+pwsh -File infra\hooks\deploy-service.ps1 -Service api
+pwsh -File infra\hooks\verify.ps1 -GateOutput .m11-plan\run-log\r2-quality-after-gates
+pwsh -File eng\test-retro-fidelity.ps1 -Runs 30
+```
+
+Commit runtime inputs first. The existing hook archives committed source
+and preserves app settings/secrets. Do not run `azd up`, hosted/native hooks,
+storage migration/load, reset, quota or tenant-policy changes for this fix.
+Leave zavaw3 running. Re-prepare legacy sessions to obtain calendar context;
+missing context abstains explicitly rather than inventing sprint dates.
+
 ## Additive record-storage rollout (ADR 0040)
 
 `infra\modules\team-records.bicep` is called by `data.bicep` for empty

@@ -1,12 +1,23 @@
 # Decision and continuous evaluation
 
-`decision-goldens.json` is 72 authored synthetic utterances in six categories,
+`decision-goldens.json` is 112 authored synthetic utterances in six categories,
 not employee transcripts or an Azure DevOps export. Expected roster and sprint
 ids belong only to `team-evaluation`; the tool never prepares sessions or writes
 work items. Freeze its hash before a model run and review expectation changes
 independently, never to match the latest model output.
 The retained M11 report used CRLF input bytes; `docs/gates/decision-M11/provenance.json`
 records its measured hash and the semantically identical LF source hash.
+
+Round2 appends40date-bearing cases without changing any of the original72
+cases, roster or items; eligible spoken-date n=48. New expected calendar
+results use a fixed UTC instant that is still the previous day in the
+team's Pacific time zone, with explicit current/next sprint endpoints.
+Both safe resolutions and necessary abstentions are scored separately.
+Frozen SHA256 is
+`f392fc39d9fd96eeb9dbe6918c192cfa78dbf5f41aa13ef13d8fa66011223294`.
+The evaluator acquires one genuine in-memory Entra token outside model
+timing; it does not launch Azure CLI inside every sample's latency budget.
+No synthetic probability, credential or model completion is substituted.
 
 ```powershell
 dotnet run --project tools\GateRunner -c Release -- --evaluate demo\evaluation\decision-goldens.json --out .m11-plan\run-log\evaluation-rules

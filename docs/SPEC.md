@@ -8,6 +8,19 @@
 
 ### M11 acceptance boundary
 
+**Round 2 correctness (ADRs0041-0043):** frozen112synthetic cases preserve
+the original72 and add40date cases. Final revised expressions48/48 and
+safe calendar resolution/abstention40/40 pass unchanged release thresholds;
+the earlier39/48 and historical6/8 failures remain evidence. Relative
+dates use the team-local clock and actual prepared iteration endpoints,
+never a model-generated writable date. Whole-team floor steps replay after
+pause/takeover; native roster audio takes precedence over louder guests.
+Retrospective circle-back has a mandatory structured instruction after
+optional team style. Its separate real30-run proof and deployment timings
+are in `gates/r2-quality-M11.json`; unrun acceptance is not inferred.
+No new catalogue use case (6.1.4), endpoint (14), adapter default or
+approval/write invariant. Full suites remain owned by r2-reconcile.
+
 **Current G8 scope (ADR0038):** the operator moved the proof to fresh
 zavag8/westus3 and deleted the former eastus2 resources/apps. Earlier
 target/support instructions below are historical only, not current
@@ -829,7 +842,7 @@ Scripted G1 regression verification is not Work IQ latency or privacy proof.
     "input_audio_echo_cancellation": { "type": "server_echo_cancellation" },
     "input_audio_transcription": { "model": "azure-speech", "language": "en-US" },
     "turn_detection": { "type": "azure_semantic_vad", "silence_duration_ms": 600, "remove_filler_words": true,
-                        "create_response": false, "interrupt_response": true },
+                        "create_response": false, "interrupt_response": false },
     "tools": [ /* section 7.2 */ ], "tool_choice": "auto" } }
 ```
 
@@ -858,6 +871,7 @@ Any state -> Paused (portal mute)
 - `Listening(m)` -> `Reconciling(m)` after the floor holder stops and 1.2 seconds of silence pass. This is configurable; Indian and Costa Rican teams may need longer.
 - **Cross-talk:** speech from anyone other than the floor holder is recorded but does not trigger a response. More than 60 seconds of multi-speaker discussion triggers the parking-lot line at the next pause.
 - **Barge-in:** if the floor holder or the human Scrum Master speaks while the agent is talking, the gateway sends `response.cancel` and truncates the audio.
+- **Whole-team exception (ADR0042):** ordinary speech does not interrupt opening, recap or announcements. Explicit human takeover/pause cancels and release replays that phase, rather than skipping it. The gateway owns cancellation; service auto-interruption stays off.
 - **Timebox:** at 80 % of `standupMinutes` the agent warns; at 100 % the gateway moves to `Recap`.
 - **Late joiner:** if an absent member appears in `participants` before `Recap`, they go to the end of the speaking order.
 

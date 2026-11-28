@@ -1,5 +1,32 @@
 # M11 gates
 
+## Round 2 correctness (ADRs0041-0043)
+
+Frozen112synthetic goldens preserve all original72 and add40date cases,
+eligible spoken dates48, calendar resolution/abstention40. Historical
+G7 dates6/8 (75%), timeout1, missing binary/intent9/1 remain evidence.
+First extended run39/48 (81.25%), calendar33/40 fails unchanged release
+thresholds. General team-scoped revised-target/sprint instructions then
+give48/48dates and40/40calendar results; intent/items/kinds111/112 each,
+accepted binary138/142 (97.18%), intent106/106, errors0/missing0/0/
+escapedids0. The latest synthetic release passes unchanged0.7/0.6
+thresholds; real employee/CI/knowledge/Work IQ content remain unrun.
+
+Whole-team opening/recap/announcement replay and roster-first audio have
+targeted Domain44/44 and Api10/10 proof. The old louderguest1000/member500
+fixture suppressed member audio; now it forwards member500 and zero guest
+PCM. Native real Teams acoustic acceptance remains n=0. Retrospective
+required circle-back survives style overrides; its30real runs and runtime
+after measurement remain explicitly unrun until final evidence.
+
+Before zavaw3 mandatory8/8/native readiness5/5 pass; Direct3418/4559ms,
+n10, questions3469/4559ms,n8, model8/10, zero talkovers,18transcriptpieces,
+genuine approverrevision78/completeaudit. G1 historical failures remain;
+no accepted regression, paired-causal claim or adapter promotion. G2-G6
+and G8-G11 inherit their measured/failed/not_run boundaries below, not
+fresh acceptance from this correction. Content-free current details:
+`r2-quality-M11.json`. Full suites belong to r2-reconcile.
+
 ## Round 2 per-item storage
 
 ADR 0040 adds team-partitioned card/follow-up/activity items and removes

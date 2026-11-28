@@ -1,0 +1,45 @@
+{
+  "step": "r2-quality",
+  "status": "partial",
+  "runtimeSource": "592b6ab",
+  "environment": "zavaw3",
+  "region": "westus3",
+  "defaultAdaptersChanged": false,
+  "addedFixedHourlyCostUsd": 0,
+  "goldens": {
+    "originalCasesRetained": 72,
+    "totalCases": 112,
+    "dateEligible": 48,
+    "calendarEligible": 40,
+    "sha256": "f392fc39d9fd96eeb9dbe6918c192cfa78dbf5f41aa13ef13d8fa66011223294",
+    "binaryThreshold": 0.7,
+    "intentThreshold": 0.6
+  },
+  "dateMeasurements": {
+    "historical": { "correct": 6, "samples": 8, "timeouts": 1, "missingBinary": 9, "missingIntent": 1 },
+    "firstExtended": { "correct": 39, "samples": 48, "calendarCorrect": 33, "calendarSamples": 40, "release": "fail" },
+    "final": {
+      "correct": 48, "samples": 48, "calendarCorrect": 40, "calendarSamples": 40,
+      "totalCases": 112, "intentCorrect": 111, "itemsCorrect": 111, "kindsCorrect": 111,
+      "modelFailures": 0, "ruleFallbacks": 6, "missingBinary": 0, "missingIntent": 0,
+      "escapedIds": 0, "binaryAccepted": 142, "binaryAcceptedCorrect": 138,
+      "intentAccepted": 106, "intentAcceptedCorrect": 106, "release": "pass"
+    }
+  },
+  "floor": { "domainPassed": 44, "apiPassed": 10, "realNativeAcceptanceSamples": 0 },
+  "retro": { "status": "not_run", "required": 30, "samples": 0, "passed": 0, "retryCount": 0 },
+  "before": {
+    "mandatoryPassed": 8, "mandatoryTotal": 8, "nativeReadinessPassed": 5, "nativeReadinessTotal": 5,
+    "directP50Ms": 3418, "directP95Ms": 4559, "samples": 10,
+    "questionP50Ms": 3469, "questionP95Ms": 4559, "questionSamples": 8,
+    "modelSamples": 8, "talkovers": 0, "transcriptPieces": 18
+  },
+  "after": { "status": "not_run" },
+  "deployment": { "status": "not_run" },
+  "boundaries": [
+    "Historical and first extended failures retained; final synthetic pass is not live employee or model CI acceptance.",
+    "No date resolution is a write or approval bypass.",
+    "Native Teams/guest acoustic acceptance remains unrun; defaults unchanged.",
+    "Full suites are owned by r2-reconcile."
+  ]
+}
