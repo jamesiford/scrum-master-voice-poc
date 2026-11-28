@@ -22,8 +22,9 @@ Run15 had no agent transcript/first-audio timing between return and answer,
 no talk-over; it remains failed with no session retry. Completion without
 audio could silently hand off against a stale cast caption. A new pure
 Domain guard retries the real response at most twice, then fails explicitly;
-original latency baseline is retained. Separate30 guarded retros are
-running; final shipped-model and runtime after measurements are unrun.
+original latency baseline is retained. Separate guarded retros have a
+5/5 complete real-model prefix, spoken/answered5/5;25remaining unrun.
+Final shipped-model and runtime after measurements are unrun.
 API-only3ddd40b/ACRds18 is digest-pinned on zavaw3 revision90, HTTP200;
 identity/configuration/environment/bridge-image parity pass and defaults
 are unchanged. The first cohort stayed on e7c31fa/revision89 throughout.
