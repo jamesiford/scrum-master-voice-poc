@@ -1,5 +1,28 @@
 # Demo runbook
 
+## Round 2 board review
+
+The default demo remains Acs/Share/Direct. Native may look different and
+better, but must automatically reach guests as a shared screen, remain
+intuitive, include the same information and update within2seconds.
+Do not treat eleven historical pixel differences as a current defect.
+Do not promise saved follow-ups on the native non-recording route.
+
+```powershell
+dotnet test src\tests\Zava.Scrum.MediaBot.Tests --filter "FullyQualifiedName~BoardRendererTests|FullyQualifiedName~BoardShareSessionTests|FullyQualifiedName~BoardReceiverTests"
+powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File eng\measure-board-ocr.ps1
+```
+
+Review the four-state1080p/480p contact sheets and raw OCR in
+`gates\r2-board`; the frozen content/legibility thresholds are in
+`gates\r2-board-checks.md`. The TCP receiver is not a Teams client or SDK
+encoder. Use DEPLOY.md's BOARD-ROSTER-GUEST/BOARD-ENCODER protocol for
+an actual organiser-approved meeting, then restore the default adapter.
+Final native OCR is52/53 atbothsizes: zero days fails strict recognition,
+even though glyph12/18/8px passes. G4 remains failed. Local first/change/
+reconnect maxima153.51/113.80/147.02ms,n10 each are not live delivery.
+Retain initial failed reports; do not choose the best earlier OCR cohort.
+
 ## Round 2 latency measurement
 
 Keep Acs/Share/Direct, the same cast and session shape, and no concurrent

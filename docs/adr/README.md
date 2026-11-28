@@ -50,3 +50,4 @@ mean every live gate passed. Historical measurements remain in their ADRs.
 | [0041](0041-verbatim-revised-date-resolution.md) | Verbatim revised-date selection and deterministic team-local calendar resolution |
 | [0042](0042-whole-team-floor-and-roster-audio.md) | Replay whole-team phases and preserve quieter verified roster audio |
 | [0043](0043-required-retrospective-circle-back.md) | Mandatory circle-back instruction and real-model fidelity measurement |
+| [0045](0045-native-board-content-and-delivery.md) | Native content/legibility and real delivery, not Chromium raster identity |

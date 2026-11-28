@@ -8,6 +8,20 @@
 
 ### M11 acceptance boundary
 
+**Round 2 native board (ADR0045):** G4 is automatic screen-share reception
+for all participants/guests, intuitive legibility, the same browser content,
+and first/change delivery<=2seconds, not raster identity. Native standup
+presentation separates goal/coverage and enlarges text, preserving supplied
+ids/flags/status/progress. The received recap is submitted before call
+deletion; non-recording completion never promises saved follow-ups.
+Frozen four-state OCR/ink/receiver checks and the full standup/retro element
+table are in `gates/r2-board-checks.md` and `gates/r2-board-audit.md`.
+Final OCR52/53 at1080and480 fails the unchanged100% requirement;
+glyph12/18/8px and localTCP153.51/113.80/147.02ms,n10 each pass their
+own thresholds, not Teams acceptance. Real meeting reception/encoder/
+reconnect remain n0/not_run; Acs/Share/Direct is not promoted away.
+No use case (6.1.4), endpoint (14), Domain rule or data store is added.
+
 **Round 2 correctness (ADRs0041-0043):** frozen112synthetic cases preserve
 the original72 and add40date cases. Final revised expressions48/48 and
 safe calendar resolution/abstention40/40 pass unchanged release thresholds;

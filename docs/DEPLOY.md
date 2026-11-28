@@ -1,5 +1,84 @@
 # Deploying the current solution
 
+## Round 2 native board (ADR0045)
+
+Keep Acs/Share/Direct and Simulated Room. Native runtime changes are
+deployed through the existing scoped hook, not a full environment lifecycle:
+
+```powershell
+azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\media-host.ps1 -RuntimeOnly
+azd exec -e zavaw3 -- pwsh -NoProfile -File infra\hooks\verify.ps1 -GateOutput .m11-plan\run-log\r2-board-after
+```
+
+No resource, permission, SKU, tenant policy or default adapter is changed.
+Only vm-media-3fsyvjqqjw5go inRG-ZAVA-SCRUM-ZAVAW3/westus3 is authorised
+to start for this step; read12:04:26Z confirmsRunning afterDeallocated.
+Compute adds aboutUSD0.35-0.38/hour while allocated; deallocate it again
+after testing. API/bridge stay running. Do not touch mcm or other environments.
+
+**Human gate BOARD-ROSTER-GUEST, real meeting organiser and observers:**
+use an actual stored Teams meeting with verified distinct roster object ids.
+The organiser installs the already-published dedicated zavaw3 media app in
+that meeting chat, consents Calls.JoinGroupCalls.Chat and admits the bot.
+Do not reopen completed tenant catalogue/admin-consent gates. Obtain two
+real roster observers and one guest, including a mobile/480p view. In the
+authorised isolated rehearsal, the deployment operator temporarily selects
+GraphMedia/MediaShare using the two environment-wide keys below, then
+restores Acs/Share. These are not per-session portal switches: coordinate
+with the environment owner so no other meeting is using it. Direct voice
+is unchanged. Start without any viewer installing an app,
+clicking a tab or choosing the share. Record each viewer's first frame and
+ten item/speaker/status changes, then one reconnect, with event/display
+timestamps: every delay<=2000ms. A required viewer action FAILS requirement(a)
+and must be reported prominently, not replaced by a personal-tab workaround.
+Capture the recap and non-recording wording before call departure.
+
+```powershell
+azd env set BRIDGE_MODE GraphMedia -e zavaw3
+azd env set BOARD_MODE MediaShare -e zavaw3
+az containerapp update -g RG-ZAVA-SCRUM-ZAVAW3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=GraphMedia" "Board__Mode=MediaShare" -o none
+# After the isolated rehearsal, restore both persisted and live defaults:
+azd env set BRIDGE_MODE Acs -e zavaw3
+azd env set BOARD_MODE Share -e zavaw3
+az containerapp update -g RG-ZAVA-SCRUM-ZAVAW3 -n ca-api-3fsyvjqqjw5go --set-env-vars "Bridge__Mode=Acs" "Board__Mode=Share" -o none
+```
+
+**Human gate BOARD-ENCODER, same organiser plus deployment operator:**
+while that real call shares, sample actual media-host CPU once per second
+for60seconds at existing cap1. Average<=70%,p95<=85%; retain sample count,
+VM/process identity, actual negotiated VBSS format and receive timestamps.
+A loopback RGB24 receiver, startup health or renderer CPU is not SDK encoder
+or participant delivery proof. No authorised actual meeting/guest fixture
+exists in this unattended run; those live checks remain not_run,n0.
+See `gates/r2-board-checks.md` for frozen thresholds and checklist.
+After confirming that the actual call is sharing, capture the real host
+samples (this is whole-host CPU while the SDK encodes, not an isolated
+encoder-component attribution):
+
+```powershell
+$probe = @'
+$ErrorActionPreference = 'Stop'
+$process = @(Get-Process | Where-Object Path -eq 'C:\ProgramData\ZavaMedia\app\Zava.Scrum.MediaBot.exe')
+if ($process.Count -ne 1) { throw 'Expected exactly one native media host process.' }
+$cpu = @((Get-Counter '\Processor(_Total)\% Processor Time' -SampleInterval 1 -MaxSamples 60).CounterSamples | Select-Object Timestamp,CookedValue)
+$sorted = @($cpu.CookedValue | Sort-Object)
+[pscustomobject]@{
+  vm = $env:COMPUTERNAME; pid = $process[0].Id; path = $process[0].Path
+  n = $cpu.Count; average = ($cpu.CookedValue | Measure-Object -Average).Average
+  p95 = $sorted[[Math]::Ceiling(0.95 * $sorted.Count) - 1]; samples = $cpu
+} | ConvertTo-Json -Depth 5
+'@
+[IO.File]::WriteAllText((Join-Path (Get-Location) '.m11-plan\run-log\r2-board-live-cpu.ps1'), $probe)
+az vm run-command invoke -g RG-ZAVA-SCRUM-ZAVAW3 -n vm-media-3fsyvjqqjw5go --command-id RunPowerShellScript --scripts '@.m11-plan\run-log\r2-board-live-cpu.ps1' -o json > .m11-plan\run-log\r2-board-live-cpu.json
+```
+
+Retain the share-active interval and negotiated VBSS format from the same
+call's media diagnostics beside this report; missing call/format evidence
+leaves encoder acceptance not_run even if the CPU values are low.
+Use the file argument as shown: Windows Azure CLI stripped embedded quotes
+from an inline receipt script in this step. Do not interpret a successful
+run-command envelope with script stderr as a successful measurement.
+
 ## Round 2 latency rollout
 
 ADR0044 adds no Azure resource, identity, permission or secret, fixed
